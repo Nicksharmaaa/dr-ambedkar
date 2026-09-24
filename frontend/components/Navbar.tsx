@@ -15,16 +15,19 @@ import {
   Menu,
   X,
   Database,
+  Compass,
 } from "lucide-react";
 import { api } from "@/lib/api";
+import { VoiceSearchModal } from "./voice/VoiceSearchModal";
 
 const navItems = [
   { name: "Archive", href: "/documents", icon: BookOpen },
-  { name: "Search", href: "/search", icon: Search },
-  { name: "Timeline", href: "/timeline", icon: Clock },
-  { name: "Assistant", href: "/assistant", icon: Bot },
   { name: "Knowledge Map", href: "/knowledge-map", icon: Share2 },
+  { name: "Timeline", href: "/timeline", icon: Clock },
+  { name: "Stories", href: "/stories", icon: Compass },
   { name: "Media", href: "/media", icon: Mic },
+  { name: "Assistant", href: "/assistant", icon: Bot },
+  { name: "Search", href: "/search", icon: Search },
   { name: "Preservation", href: "/preservation", icon: ShieldCheck },
   { name: "Admin", href: "/admin", icon: Settings },
 ];
@@ -32,6 +35,7 @@ const navItems = [
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [voiceSearchOpen, setVoiceSearchOpen] = useState(false);
   const [apiConnected, setApiConnected] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -90,8 +94,17 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* System Status Indicator */}
+        {/* Voice Search [ 🎤 Ask the Archive ] & System Status */}
         <div className="hidden lg:flex items-center gap-3">
+          <button
+            onClick={() => setVoiceSearchOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 text-xs font-medium shadow-sm transition-all"
+            title="Voice Search: Ask the Archive in English, Hindi, or Marathi"
+          >
+            <Mic className="h-3.5 w-3.5 text-blue-400 animate-pulse" />
+            <span className="hidden xl:inline">Ask the Archive</span>
+          </button>
+
           <div
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono border border-slate-800 bg-slate-900/60"
             title={apiConnected ? "Backend & Turso connected" : "Backend connection pending"}
@@ -110,6 +123,12 @@ export default function Navbar() {
             </span>
           </div>
         </div>
+
+        {/* Voice Search Modal */}
+        <VoiceSearchModal
+          isOpen={voiceSearchOpen}
+          onClose={() => setVoiceSearchOpen(false)}
+        />
 
         {/* Mobile menu button */}
         <button

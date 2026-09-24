@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Body
 from pydantic import BaseModel, Field
 
 from app.db.database import DatabaseClient, get_db_client
@@ -136,6 +136,30 @@ async def ask_page(
         top_k=1,
     )
     return await svc.answer(full_req)
+
+
+@router.post("/ask-page-action", summary="Ask This Page Signature Actions")
+async def ask_page_action(
+    req: dict = Body(...),
+    db: DatabaseClient = Depends(get_db_client),
+) -> dict:
+    """
+    Phase 9 Signature Feature: Execute structured actions on an active document page.
+    Actions: SUMMARIZE, EXPLAIN, TRANSLATE, READ_ALOUD, IDENTIFY_ENTITIES, CUSTOM_QUESTION.
+    Distinguishes strictly between 'Source: Current Page' and supplementary related citations.
+    """
+    from app.services.assistant.ask_page import AskPageEngine, AskPageRequest as ActionReq, PageAction
+    action_enum = PageAction(req.get("action", "SUMMARIZE"))
+    action_req = ActionReq(
+        object_id=req["object_id"],
+        page_number=int(req["page_number"]),
+        action=action_enum,
+        question=req.get("question"),
+        target_language=req.get("target_language", "en"),
+    )
+    engine = AskPageEngine(db)
+    res = await engine.execute(action_req)
+    return res.model_dump()
 
 
 @router.post("/validate-claims", summary="Validate Claims Against Evidence")

@@ -225,3 +225,264 @@ export interface AssistantModeInfo {
   requires_page_number: boolean;
 }
 
+// ── Phase 8: Knowledge Graph, Timeline & Story Engine ────────
+
+export interface EntityItem {
+  id: string;
+  entity_type: string;
+  canonical_name: string;
+  description: string | null;
+  source: string;
+  status: "CANDIDATE" | "VERIFIED" | "REJECTED";
+  date: string | null;
+  date_precision: string | null;
+  language: string;
+  location: string | null;
+  aliases: string[];
+  external_identifiers: Record<string, any>;
+  rights: string;
+  object_id: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CytoscapeNodeData {
+  id: string;
+  label: string;
+  type: string;
+  description: string | null;
+  status: string;
+  year: string | null;
+  degree: number;
+}
+
+export interface CytoscapeNode {
+  data: CytoscapeNodeData;
+}
+
+export interface CytoscapeEdgeData {
+  id: string;
+  source: string;
+  target: string;
+  label: string;
+  status: string;
+  confidence: number;
+  has_evidence: boolean;
+}
+
+export interface CytoscapeEdge {
+  data: CytoscapeEdgeData;
+}
+
+export interface GraphNeighborhood {
+  center_id: string;
+  nodes: CytoscapeNode[];
+  edges: CytoscapeEdge[];
+  total_nodes: number;
+  total_edges: number;
+}
+
+export interface WhyConnectedEvidence {
+  predicate: string;
+  subject_name: string;
+  object_name: string;
+  document_id: string | null;
+  document_title: string | null;
+  page_number: number | null;
+  chunk_id: string | null;
+  evidence_text: string;
+  viewer_url: string;
+  confidence: number;
+  status: string;
+}
+
+export interface WhyConnectedResponse {
+  entity_a: EntityItem;
+  entity_b: EntityItem;
+  direct_connection: boolean;
+  path_length: number;
+  connections: WhyConnectedEvidence[];
+  summary: string;
+}
+
+export interface TimelineEventItem {
+  id: string;
+  title: string;
+  description: string;
+  start_date: string;
+  end_date: string | null;
+  date_precision: "DAY" | "MONTH" | "YEAR" | "RANGE" | "APPROXIMATE" | "UNKNOWN";
+  category: string;
+  location: string | null;
+  related_people: string[];
+  related_documents: string[];
+  related_topics: string[];
+  source: string;
+  document_id: string | null;
+  page_number: number | null;
+  evidence_chunk_id: string | null;
+  evidence_text: string | null;
+  publication_status: string;
+  viewer_url: string | null;
+  created_at?: string;
+}
+
+export interface StoryItem {
+  id: string;
+  story_id: string;
+  sequence: number;
+  title: string;
+  narrative_text?: string;
+  body?: string;
+  document_id: string | null;
+  document_title?: string | null;
+  page_number: number | null;
+  source_chunk_id?: string | null;
+  chunk_id?: string | null;
+  evidence_quote?: string | null;
+  highlighted_passage?: string | null;
+  media_type: string;
+  media_url: string | null;
+  caption?: string | null;
+  viewer_url: string | null;
+}
+
+export interface StoryCollectionItem {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  summary: string;
+  cover_image_url: string | null;
+  category: string;
+  published: boolean;
+  display_order: number;
+  items: StoryItem[];
+}
+
+// ── Phase 9: Multilingual, Media, Multimodal & Accessibility ──
+
+export interface TranslationResponse {
+  source_text: string;
+  source_language: string;
+  target_language: string;
+  translated_text: string;
+  translation_model: string;
+  translation_version: string;
+  review_status: string;
+  is_cached: boolean;
+  chunk_id?: string | null;
+}
+
+export interface TTSResponse {
+  audio_url: string;
+  filename: string;
+  duration_seconds: number;
+  language: string;
+  voice: string;
+  is_cached: boolean;
+  generation_type: "ORIGINAL_RECORDING" | "AI_NARRATION";
+}
+
+export interface VoiceTranscriptionResponse {
+  text: string;
+  language: string;
+  duration_seconds: number;
+  segments: {
+    id: number;
+    start: number;
+    end: number;
+    text: string;
+  }[];
+}
+
+export interface TranscriptSegment {
+  id: string;
+  media_id: string;
+  start_time: number;
+  end_time: number;
+  text: string;
+  language: string;
+  speaker_id: string;
+  speaker_name: string;
+  confidence: number;
+  source: string;
+}
+
+export interface MediaTrack {
+  id: string;
+  object_id: string;
+  title: string;
+  asset_type: "audio" | "video";
+  duration_seconds: number;
+  codec: string;
+  language: string;
+  file_path: string;
+  recording_date?: string | null;
+  segments?: TranscriptSegment[];
+}
+
+export interface SpokenSearchResult {
+  segment_id: string;
+  media_id: string;
+  media_title: string;
+  asset_type: "audio" | "video";
+  timestamp_seconds: number;
+  timestamp_str: string;
+  speaker_name: string;
+  matching_text: string;
+  seek_url: string;
+}
+
+export interface MultimodalPageAnalysis {
+  object_id: string;
+  page_number: number;
+  layout_type: string;
+  visual_structure: {
+    has_footnotes: boolean;
+    has_signatures: boolean;
+    has_tables: boolean;
+    has_marginalia: boolean;
+    column_count: number;
+    visual_condition: string;
+  };
+  visual_transcription: string;
+  has_ocr_conflict: boolean;
+  ocr_conflicts: {
+    type: string;
+    ocr_reading: string;
+    visual_reading: string;
+    confidence: number;
+    explanation: string;
+  }[];
+  model: string;
+}
+
+export type PageActionType =
+  | "SUMMARIZE"
+  | "EXPLAIN"
+  | "TRANSLATE"
+  | "READ_ALOUD"
+  | "IDENTIFY_ENTITIES"
+  | "CUSTOM_QUESTION";
+
+export interface AskPageActionResponse {
+  object_id: string;
+  page_number: number;
+  action: PageActionType;
+  language: string;
+  answer: string;
+  source_attribution: string;
+  current_page_citation: {
+    source: string;
+    document_id: string;
+    document_title?: string;
+    page_number: number;
+    chunk_count?: number;
+  };
+  related_citations: any[];
+  audio_url?: string | null;
+  model_name: string;
+  took_ms: number;
+}
+

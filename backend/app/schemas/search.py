@@ -42,6 +42,8 @@ class SearchResponse(BaseModel):
     took_ms: float
     fts_count: int = 0
     vector_count: int = 0
+    detected_language: str | None = None
+    translated_query: str | None = None
 
 
 class SearchStats(BaseModel):

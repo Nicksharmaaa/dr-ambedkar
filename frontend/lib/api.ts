@@ -16,6 +16,19 @@ import {
   AssistantRequest,
   AssistantResponse,
   EvidenceChainRecord,
+  EntityItem,
+  GraphNeighborhood,
+  WhyConnectedResponse,
+  TimelineEventItem,
+  StoryCollectionItem,
+  TranslationResponse,
+  TTSResponse,
+  VoiceTranscriptionResponse,
+  MediaTrack,
+  SpokenSearchResult,
+  MultimodalPageAnalysis,
+  PageActionType,
+  AskPageActionResponse,
 } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
@@ -303,6 +316,123 @@ export const api = {
     }>("/assistant/validate-claims", {
       method: "POST",
       body: JSON.stringify({ answer, evidence_chunks: evidenceChunks }),
+    }),
+
+  // Phase 8 Knowledge Graph
+  getEntity: (id: string) =>
+    fetchJson<EntityItem>(`/graph/entities/${id}`),
+
+  getGraphNeighborhood: (id: string, depth = 1, limit = 40) =>
+    fetchJson<GraphNeighborhood>(`/graph/entities/${id}/neighbors?depth=${depth}&limit=${limit}`),
+
+  searchGraph: (query: string, entityType?: string, limit = 20) => {
+    const params = new URLSearchParams({ q: query, limit: String(limit) });
+    if (entityType) params.append("entity_type", entityType);
+    return fetchJson<{ query: string; total: number; entities: any[] }>(`/graph/search?${params.toString()}`);
+  },
+
+  getRelationship: (id: string) =>
+    fetchJson<any>(`/graph/relationships/${id}`),
+
+  getRelationshipEvidence: (id: string) =>
+    fetchJson<{ relationship_id: string; evidence_count: number; evidence: any[] }>(`/graph/relationships/${id}/evidence`),
+
+  whyConnected: (sourceId: string, targetId: string) =>
+    fetchJson<WhyConnectedResponse>(`/graph/why-connected?source_id=${encodeURIComponent(sourceId)}&target_id=${encodeURIComponent(targetId)}`),
+
+  // Phase 8 Timeline
+  getTimelineEvents: (params?: { year_from?: number; year_to?: number; category?: string; limit?: number; offset?: number }) => {
+    const q = new URLSearchParams();
+    if (params?.year_from) q.append("year_from", String(params.year_from));
+    if (params?.year_to) q.append("year_to", String(params.year_to));
+    if (params?.category) q.append("category", params.category);
+    if (params?.limit) q.append("limit", String(params.limit));
+    if (params?.offset) q.append("offset", String(params.offset));
+    const qs = q.toString();
+    return fetchJson<TimelineEventItem[]>(`/timeline${qs ? `?${qs}` : ""}`);
+  },
+
+  getTimelineEvent: (id: string) =>
+    fetchJson<TimelineEventItem>(`/timeline/events/${id}`),
+
+  searchTimeline: (query: string, limit = 20) =>
+    fetchJson<TimelineEventItem[]>(`/timeline/search?q=${encodeURIComponent(query)}&limit=${limit}`),
+
+  getTimelineCategories: () =>
+    fetchJson<{ categories: { category: string; count: number }[] }>("/timeline/categories"),
+
+  // Phase 8 Heritage Stories
+  getStories: () =>
+    fetchJson<StoryCollectionItem[]>("/stories"),
+
+  getStory: (slugOrId: string) =>
+    fetchJson<StoryCollectionItem>(`/stories/${slugOrId}`),
+
+  // Phase 9 Multilingual, Media, Voice & Multimodal
+  translate: (text: string, targetLanguage: string, sourceLanguage?: string, chunkId?: string) =>
+    fetchJson<TranslationResponse>("/indic/translate", {
+      method: "POST",
+      body: JSON.stringify({
+        text,
+        target_language: targetLanguage,
+        source_language: sourceLanguage,
+        chunk_id: chunkId,
+      }),
+    }),
+
+  synthesizeSpeech: (text: string, language = "en", gender = "female") =>
+    fetchJson<TTSResponse>("/indic/tts/synthesize", {
+      method: "POST",
+      body: JSON.stringify({ text, language, gender }),
+    }),
+
+  getEntityLocalizations: (id: string) =>
+    fetchJson<{ entity_id: string; localizations: { language: string; localized_name: string; localized_description: string | null }[] }>(`/indic/localizations/entities/${id}`),
+
+  getTimelineLocalizations: (id: string) =>
+    fetchJson<{ event_id: string; localizations: { language: string; localized_title: string; localized_description: string | null }[] }>(`/indic/localizations/timeline/${id}`),
+
+  transcribeVoice: async (audioBlob: Blob, language?: string) => {
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "voice_query.wav");
+    if (language) formData.append("language", language);
+
+    const res = await fetch(`${API_BASE}/voice/transcribe`, {
+      method: "POST",
+      body: formData,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Voice transcription failed");
+    }
+    return (await res.json()) as VoiceTranscriptionResponse;
+  },
+
+  getMediaTracks: (assetType?: "audio" | "video") =>
+    fetchJson<MediaTrack[]>(`/media/tracks${assetType ? `?asset_type=${assetType}` : ""}`),
+
+  getMediaTrack: (id: string) =>
+    fetchJson<MediaTrack>(`/media/tracks/${id}`),
+
+  searchSpokenMedia: (q: string, limit = 20) =>
+    fetchJson<{ query: string; total: number; matches: SpokenSearchResult[] }>(`/media/search?q=${encodeURIComponent(q)}&limit=${limit}`),
+
+  analyzePageFacsimile: (objectId: string, pageNumber: number) =>
+    fetchJson<MultimodalPageAnalysis>("/multimodal/analyze-page", {
+      method: "POST",
+      body: JSON.stringify({ object_id: objectId, page_number: pageNumber }),
+    }),
+
+  askPageAction: (objectId: string, pageNumber: number, action: PageActionType, question?: string, targetLanguage = "en") =>
+    fetchJson<AskPageActionResponse>("/assistant/ask-page-action", {
+      method: "POST",
+      body: JSON.stringify({
+        object_id: objectId,
+        page_number: pageNumber,
+        action,
+        question,
+        target_language: targetLanguage,
+      }),
     }),
 };
 

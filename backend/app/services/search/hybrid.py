@@ -60,16 +60,42 @@ class HybridSearchService:
         """
         t0 = time.monotonic()
 
+        # ── 0. Multilingual Detection & Cross-Lingual Query Normalization ─────
+        from app.services.multilingual.translator import detect_language, TranslationService
+        detected_lang = detect_language(query)
+        effective_queries = [query]
+        translated_query: str | None = None
+
+        if detected_lang != "en":
+            try:
+                trans_svc = TranslationService(self.db)
+                trans_res = await trans_svc.translate(
+                    text=query,
+                    target_language="en",
+                    source_language=detected_lang,
+                )
+                if trans_res and trans_res.translated_text:
+                    translated_query = trans_res.translated_text.strip()
+                    if translated_query and translated_query.lower() != query.lower():
+                        effective_queries.append(translated_query)
+            except Exception as e:
+                logger.warning("Cross-lingual query translation failed: %s", e)
+
         # ── 1. FTS5 Lexical Search ────────────────────────────────────────────
         fts_results: list[dict] = []
         if mode in ("hybrid", "fts"):
             try:
-                fts_rows = await self.chunk_repo.fts_search(
-                    query=query,
-                    limit=50,
-                    object_id=object_id,
-                )
-                fts_results = fts_rows
+                seen_fts = set()
+                for q_term in effective_queries:
+                    fts_rows = await self.chunk_repo.fts_search(
+                        query=q_term,
+                        limit=50,
+                        object_id=object_id,
+                    )
+                    for row in fts_rows:
+                        if row["id"] not in seen_fts:
+                            seen_fts.add(row["id"])
+                            fts_results.append(row)
             except Exception as exc:
                 logger.warning("FTS5 search failed", exc_info=exc)
 
@@ -79,15 +105,20 @@ class HybridSearchService:
             try:
                 from app.services.search.embedder import EmbeddingEngine
                 engine = EmbeddingEngine.get()
-                query_vec = engine.embed_query(query)
                 model_name = engine.model_name
 
-                vec_hits = await self.vector_store.search(
-                    query_embedding=query_vec,
-                    top_k=50,
-                    model_name=model_name,
-                )
-                vector_results = [{"id": h.chunk_id, "vector_score": h.score} for h in vec_hits]
+                seen_vec = set()
+                for q_term in effective_queries:
+                    query_vec = engine.embed_query(q_term)
+                    vec_hits = await self.vector_store.search(
+                        query_embedding=query_vec,
+                        top_k=50,
+                        model_name=model_name,
+                    )
+                    for h in vec_hits:
+                        if h.chunk_id not in seen_vec:
+                            seen_vec.add(h.chunk_id)
+                            vector_results.append({"id": h.chunk_id, "vector_score": h.score})
             except Exception as exc:
                 logger.warning("Vector search failed", exc_info=exc)
 
@@ -100,7 +131,7 @@ class HybridSearchService:
             merged = [{"id": r["id"], "rrf_score": r["vector_score"]} for r in vector_results]
 
         if not merged:
-            return self._empty_response(query, mode, t0)
+            return self._empty_response(query, mode, t0, detected_lang, translated_query)
 
         # ── 4. Enrich with chunk text + metadata ──────────────────────────────
         candidate_ids = [m["id"] for m in merged]
@@ -115,7 +146,7 @@ class HybridSearchService:
         )
 
         if not enriched:
-            return self._empty_response(query, mode, t0)
+            return self._empty_response(query, mode, t0, detected_lang, translated_query)
 
         # ── 5. Rerank top results ─────────────────────────────────────────────
         reranked = enriched[: min(limit * 2, 40)]  # send top-40 to reranker
@@ -146,12 +177,14 @@ class HybridSearchService:
         took_ms = round((time.monotonic() - t0) * 1000, 2)
 
         return {
-            "results":      final,
-            "total":        len(final),
-            "took_ms":      took_ms,
-            "fts_count":    len(fts_results),
-            "vector_count": len(vector_results),
-            "mode":         mode,
+            "results":          final,
+            "total":            len(final),
+            "took_ms":          took_ms,
+            "fts_count":        len(fts_results),
+            "vector_count":     len(vector_results),
+            "mode":             mode,
+            "detected_language": detected_lang,
+            "translated_query":  translated_query,
         }
 
     # ── Helpers ───────────────────────────────────────────────────────────────
@@ -265,12 +298,21 @@ class HybridSearchService:
         enriched.sort(key=lambda x: x["score"], reverse=True)
         return enriched
 
-    def _empty_response(self, query: str, mode: str, t0: float) -> dict:
+    def _empty_response(
+        self,
+        query: str,
+        mode: str,
+        t0: float,
+        detected_language: str = "en",
+        translated_query: str | None = None,
+    ) -> dict:
         return {
-            "results":      [],
-            "total":        0,
-            "took_ms":      round((time.monotonic() - t0) * 1000, 2),
-            "fts_count":    0,
-            "vector_count": 0,
-            "mode":         mode,
+            "results":           [],
+            "total":             0,
+            "took_ms":           round((time.monotonic() - t0) * 1000, 2),
+            "fts_count":         0,
+            "vector_count":      0,
+            "mode":              mode,
+            "detected_language": detected_language,
+            "translated_query":   translated_query,
         }

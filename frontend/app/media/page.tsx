@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Mic,
   Play,
@@ -10,152 +10,227 @@ import {
   Clock,
   Languages,
   FileAudio,
+  Film,
   Radio,
   Share2,
+  Search,
   CheckCircle2,
 } from "lucide-react";
-
-interface MediaTrack {
-  id: string;
-  title: string;
-  date: string;
-  duration: string;
-  source: string;
-  format: string;
-  language: string;
-  description: string;
-  transcript: {
-    time: string;
-    speaker: string;
-    textEn: string;
-    textHi?: string;
-    textMr?: string;
-  }[];
-}
-
-const MEDIA_TRACKS: MediaTrack[] = [
-  {
-    id: "track-bbc-1931",
-    title: "BBC Radio Address on Constitutional Safeguards",
-    date: "1931",
-    duration: "04:18",
-    source: "BBC Sound Archive / British Library",
-    format: "FLAC / 44.1kHz (PREMIS Archived)",
-    language: "English",
-    description:
-      "Recorded during Dr. Ambedkar's participation in the Second Round Table Conference in London, delineating the human rights imperative of political representation for the Depressed Classes.",
-    transcript: [
-      {
-        time: "00:05",
-        speaker: "Dr. B.R. Ambedkar",
-        textEn:
-          "The Depressed Classes must be provided with constitutional safeguards that will guarantee their emancipation from social tyranny.",
-        textHi:
-          "दलित वर्गों को संवैधानिक सुरक्षा प्रदान की जानी चाहिए जो सामाजिक अत्याचार से उनकी मुक्ति की गारंटी दे।",
-        textMr:
-          "शोषित वर्गांना सामाजिक अत्याचारापासून मुक्ततेची हमी देणारी घटनात्मक संरक्षणे दिलीच पाहिजेत.",
-      },
-      {
-        time: "01:12",
-        speaker: "Dr. B.R. Ambedkar",
-        textEn:
-          "We do not seek favours; we claim rights as equal citizens of a free India.",
-        textHi: "हम कोई कृपा नहीं मांगते; हम एक स्वतंत्र भारत के समान नागरिक के रूप में अपने अधिकारों का दावा करते हैं।",
-        textMr: "आम्ही उपकार मागत नाही; स्वतंत्र भारताचे समान नागरिक म्हणून आम्ही आमच्या हक्कांचा दावा करतो.",
-      },
-      {
-        time: "02:45",
-        speaker: "Dr. B.R. Ambedkar",
-        textEn:
-          "Political democracy cannot last unless there lies at the base of it social democracy.",
-        textHi: "राजनीतिक लोकतंत्र तब तक जीवित नहीं रह सकता जब तक कि इसके आधार में सामाजिक लोकतंत्र न हो।",
-        textMr: "राजकीय लोकशाही तोपर्यंत टिकू शकत नाही जोपर्यंत तिच्या पायाशी सामाजिक लोकशाही नसेल.",
-      },
-    ],
-  },
-  {
-    id: "track-air-1950",
-    title: "All India Radio: Voice of the Republic",
-    date: "26 January 1950",
-    duration: "06:45",
-    source: "All India Radio National Archives",
-    format: "WAV Broadcast Master",
-    language: "English",
-    description:
-      "Dr. Ambedkar's radio message on the inauguration of the Republic of India, emphasizing constitutional morality, secularism, and fraternity.",
-    transcript: [
-      {
-        time: "00:10",
-        speaker: "Dr. B.R. Ambedkar",
-        textEn:
-          "Today we enter into an era where the law knows no caste, no creed, and no privilege. The Constitution is our supreme covenant.",
-      },
-      {
-        time: "02:15",
-        speaker: "Dr. B.R. Ambedkar",
-        textEn:
-          "Fraternity means a sense of common brotherhood of all Indians — of Indians being one people.",
-      },
-    ],
-  },
-  {
-    id: "track-nagpur-1956",
-    title: "Nagpur Deeksha Historic Address",
-    date: "14 October 1956",
-    duration: "18:22",
-    source: "People's Education Society Archival Recording",
-    format: "Archival Reel-to-Reel",
-    language: "Marathi",
-    description:
-      "Historic speech delivered at Deekshabhoomi, Nagpur, explaining the philosophical necessity of embracing Buddhism for the realization of liberty, equality, and fraternity.",
-    transcript: [
-      {
-        time: "00:20",
-        speaker: "Dr. B.R. Ambedkar",
-        textEn:
-          "I have undertaken this historic step not for political power, but for human dignity, self-respect, and moral elevation.",
-        textMr: "मी हे ऐतिहासिक पाऊल राजकीय सत्तेसाठी उचललेले नाही, तर मानवी प्रतिष्ठा, स्वाभिमान आणि नैतिक उन्नतीसाठी उचललेले आहे.",
-      },
-    ],
-  },
-];
+import { api } from "@/lib/api";
+import { MediaTrack, TranscriptSegment, SpokenSearchResult } from "@/lib/types";
 
 export default function MediaPage() {
-  const [selectedTrack, setSelectedTrack] = useState<MediaTrack>(MEDIA_TRACKS[0]);
+  const [tracks, setTracks] = useState<MediaTrack[]>([]);
+  const [selectedTrack, setSelectedTrack] = useState<MediaTrack | null>(null);
+  const [selectedTrackDetails, setSelectedTrackDetails] = useState<MediaTrack | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
   const [activeLang, setActiveLang] = useState<"en" | "hi" | "mr">("en");
+  const [assetFilter, setAssetFilter] = useState<"all" | "audio" | "video">("all");
+
+  // Spoken Media Search State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SpokenSearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Load tracks on mount
+  useEffect(() => {
+    let mounted = true;
+    const fetchTracks = async () => {
+      try {
+        const filter = assetFilter === "all" ? undefined : assetFilter;
+        const res = await api.getMediaTracks(filter);
+        if (mounted && res.length > 0) {
+          setTracks(res);
+          if (!selectedTrack) {
+            setSelectedTrack(res[0]);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch media tracks:", err);
+      }
+    };
+    fetchTracks();
+    return () => {
+      mounted = false;
+    };
+  }, [assetFilter]);
+
+  // Load selected track details with segments
+  useEffect(() => {
+    if (!selectedTrack) return;
+    let mounted = true;
+    const fetchTrackDetails = async () => {
+      try {
+        const details = await api.getMediaTrack(selectedTrack.id);
+        if (mounted) {
+          setSelectedTrackDetails(details);
+        }
+      } catch (err) {
+        console.error("Failed to fetch track details:", err);
+      }
+    };
+    fetchTrackDetails();
+    return () => {
+      mounted = false;
+    };
+  }, [selectedTrack?.id]);
+
+  // Handle Spoken Search
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const res = await api.searchSpokenMedia(searchQuery.trim());
+      setSearchResults(res.matches || []);
+    } catch (err) {
+      console.error("Spoken search failed:", err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const seekTo = (seconds: number) => {
+    setCurrentTime(seconds);
+    if (selectedTrack?.asset_type === "video" && videoRef.current) {
+      videoRef.current.currentTime = seconds;
+      videoRef.current.play().catch(() => {});
+      setIsPlaying(true);
+    } else if (audioRef.current) {
+      audioRef.current.currentTime = seconds;
+      audioRef.current.play().catch(() => {});
+      setIsPlaying(true);
+    }
+  };
 
   const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+    const el = selectedTrack?.asset_type === "video" ? videoRef.current : audioRef.current;
+    if (!el) return;
+    if (isPlaying) {
+      el.pause();
+      setIsPlaying(false);
+    } else {
+      el.play().catch(() => {});
+      setIsPlaying(true);
+    }
+  };
+
+  const formatSeconds = (sec: number) => {
+    const mins = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${String(mins).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 text-slate-100">
       {/* Header */}
-      <div className="pb-6 border-b border-white/10">
+      <div className="pb-6 border-b border-slate-800">
         <div className="flex items-center gap-2 text-xs font-mono text-amber-400 uppercase">
           <Mic className="h-3.5 w-3.5" />
-          <span>Audio Heritage & Spoken Word</span>
+          <span>Audio & Video Heritage (Phase 9)</span>
         </div>
-        <h1 className="mt-1 text-3xl font-serif font-bold text-slate-100">
-          Historical Audio & Speeches
+        <h1 className="mt-1 text-3xl font-serif font-bold text-white">
+          Historical Audio, Speeches & Video Archive
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Archival voice recordings of Dr. Ambedkar synchronized with IndicConformer ASR & IndicTrans2
-          multilingual transcriptions.
+          Synchronized timestamped transcripts, speaker segmentation, and seek-to-timestamp search.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-        {/* Track Selection List */}
-        <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-3">
-          <div className="text-xs font-mono uppercase text-slate-400 pb-2 border-b border-slate-800">
-            Archival Recordings ({MEDIA_TRACKS.length})
+      {/* Spoken Word Search Bar (Section 8 & 9) */}
+      <div className="my-6 p-4 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl">
+        <form onSubmit={handleSearch} className="flex gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search spoken words across audio and video recordings (e.g. 'Constitutional morality', 'Constitution', 'Water')..."
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isSearching}
+            className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-slate-950 font-semibold text-sm transition-all shadow-md shadow-amber-500/20"
+          >
+            {isSearching ? "Searching..." : "Search Spoken Words"}
+          </button>
+        </form>
+
+        {/* Search Results Drawer */}
+        {searchResults.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-slate-800 space-y-2">
+            <div className="text-xs font-mono text-slate-400">
+              Found {searchResults.length} spoken occurrences:
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
+              {searchResults.map((hit) => (
+                <div
+                  key={hit.segment_id}
+                  onClick={() => {
+                    const tr = tracks.find((t) => t.id === hit.media_id);
+                    if (tr) setSelectedTrack(tr);
+                    seekTo(hit.timestamp_seconds);
+                  }}
+                  className="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-amber-500/50 cursor-pointer transition-all space-y-1"
+                >
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-amber-300 truncate max-w-[200px]">
+                      {hit.media_title}
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-amber-950 text-amber-400 font-mono text-[10px]">
+                      {hit.timestamp_str}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-400 font-mono">
+                    Speaker: <span className="text-slate-200">{hit.speaker_name}</span>
+                  </div>
+                  <p className="text-xs text-slate-300 italic line-clamp-2">
+                    "{hit.matching_text}"
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
+        {/* Track Selection Catalog */}
+        <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+            <span className="text-xs font-mono uppercase text-slate-400">
+              Recordings ({tracks.length})
+            </span>
+            <div className="flex gap-1">
+              {(["all", "audio", "video"] as const).map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => setAssetFilter(filter)}
+                  className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase transition-colors ${
+                    assetFilter === filter
+                      ? "bg-amber-500 text-slate-950 font-bold"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-2">
-            {MEDIA_TRACKS.map((track) => {
-              const isSelected = selectedTrack.id === track.id;
+            {tracks.map((track) => {
+              const isSelected = selectedTrack?.id === track.id;
               return (
                 <div
                   key={track.id}
@@ -170,14 +245,24 @@ export default function MediaPage() {
                   }`}
                 >
                   <div className="flex items-center justify-between text-[11px] mb-1">
-                    <span className="font-mono text-amber-400">{track.date}</span>
-                    <span className="font-mono text-slate-500">{track.duration}</span>
+                    <span className="flex items-center gap-1 font-mono text-amber-400">
+                      {track.asset_type === "video" ? (
+                        <Film className="w-3 h-3" />
+                      ) : (
+                        <FileAudio className="w-3 h-3" />
+                      )}
+                      {(track.asset_type || "audio").toUpperCase()}
+                    </span>
+                    <span className="font-mono text-slate-500">
+                      {formatSeconds(track.duration_seconds || 0)}
+                    </span>
                   </div>
                   <h3 className="font-serif font-bold text-sm text-slate-100 line-clamp-1">
                     {track.title}
                   </h3>
-                  <div className="mt-2 text-[10px] text-slate-500 font-mono truncate">
-                    {track.source}
+                  <div className="mt-2 flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                    <span>{track.codec || "MP3"}</span>
+                    <span>{(track.language || "en").toUpperCase()}</span>
                   </div>
                 </div>
               );
@@ -185,113 +270,147 @@ export default function MediaPage() {
           </div>
         </div>
 
-        {/* Player & Synchronized Transcript */}
+        {/* Media Player & Interactive Synchronized Transcripts */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Audio Player Card */}
-          <div className="glass-card rounded-2xl p-6 border border-slate-800">
-            <div className="flex flex-wrap items-center justify-between gap-2 text-xs mb-3">
-              <span className="px-2.5 py-0.5 rounded bg-slate-800 font-mono text-amber-400 text-[10px]">
-                {selectedTrack.format}
-              </span>
-              <span className="font-mono text-slate-400 text-[11px]">{selectedTrack.date}</span>
-            </div>
-
-            <h2 className="text-xl font-serif font-bold text-slate-100">{selectedTrack.title}</h2>
-            <p className="mt-2 text-xs text-slate-400 leading-relaxed">
-              {selectedTrack.description}
-            </p>
-
-            {/* Custom Audio Controls Bar */}
-            <div className="mt-6 p-4 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-4">
-              <button
-                onClick={togglePlay}
-                className="h-12 w-12 rounded-full bg-amber-500 hover:bg-amber-600 text-slate-950 flex items-center justify-center font-bold transition-transform active:scale-95 shadow-md shadow-amber-500/30"
-              >
-                {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
-              </button>
-
-              <div className="flex-1 space-y-1">
-                <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full bg-amber-500 rounded-full ${
-                      isPlaying ? "w-1/3 animate-pulse" : "w-0"
-                    }`}
-                  />
-                </div>
-                <div className="flex justify-between text-[10px] font-mono text-slate-500">
-                  <span>{isPlaying ? "01:24" : "00:00"}</span>
-                  <span>{selectedTrack.duration}</span>
-                </div>
-              </div>
-
-              <div className="hidden sm:flex items-center gap-2 text-slate-400">
-                <Volume2 className="h-4 w-4 text-slate-500" />
-                <div className="h-1.5 w-16 bg-slate-800 rounded-full">
-                  <div className="h-full bg-slate-400 w-3/4 rounded-full" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Transcript Viewer with Multilingual Tabs */}
-          <div className="glass-card rounded-2xl p-6 border border-slate-800">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800/80">
-              <div className="flex items-center gap-2">
-                <Radio className="h-4 w-4 text-amber-400" />
-                <h3 className="font-serif font-bold text-sm text-slate-100">
-                  Synchronized Archival Transcript
-                </h3>
-              </div>
-
-              <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800 text-xs">
-                <Languages className="h-3 w-3 text-slate-400 ml-1 mr-1" />
-                {[
-                  { id: "en", label: "English" },
-                  { id: "hi", label: "Hindi (हिंदी)" },
-                  { id: "mr", label: "Marathi (मराठी)" },
-                ].map((l) => (
-                  <button
-                    key={l.id}
-                    onClick={() => setActiveLang(l.id as any)}
-                    className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                      activeLang === l.id
-                        ? "bg-amber-500 text-slate-950 font-semibold"
-                        : "text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    {l.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-4 space-y-4">
-              {selectedTrack.transcript.map((line, idx) => {
-                const textToShow =
-                  activeLang === "hi" && line.textHi
-                    ? line.textHi
-                    : activeLang === "mr" && line.textMr
-                    ? line.textMr
-                    : line.textEn;
-
-                return (
-                  <div
-                    key={idx}
-                    className="p-3.5 rounded-xl bg-slate-900/50 border border-slate-800/60 hover:border-slate-700 transition-colors"
-                  >
-                    <div className="flex items-center gap-2 text-[11px] mb-1 font-mono">
-                      <span className="text-amber-400">{line.time}</span>
-                      <span className="text-slate-500">•</span>
-                      <span className="text-slate-300 font-semibold">{line.speaker}</span>
-                    </div>
-                    <p className="font-serif text-slate-200 text-sm leading-relaxed">
-                      {textToShow}
-                    </p>
+          {selectedTrack && (
+            <>
+              {/* Media Player Card */}
+              <div className="glass-card rounded-2xl p-6 border border-slate-800 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded bg-slate-800 font-mono text-amber-400 text-[10px]">
+                      {selectedTrack.codec}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono text-[10px] border border-emerald-800">
+                      ORIGINAL_RECORDING
+                    </span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                  <span className="font-mono text-slate-400 text-[11px]">
+                    {selectedTrack.recording_date || "Archival Date Verified"}
+                  </span>
+                </div>
+
+                <h2 className="text-xl font-serif font-bold text-white">
+                  {selectedTrack.title}
+                </h2>
+
+                {/* Player Element */}
+                {selectedTrack.asset_type === "video" ? (
+                  <div className="rounded-xl overflow-hidden bg-black aspect-video flex items-center justify-center border border-slate-800">
+                    <video
+                      ref={videoRef}
+                      controls
+                      src="/videos/cad_speech_1949.mp4"
+                      className="w-full h-full"
+                      onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+                      onError={() => console.log("Archival video demonstration placeholder")}
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <audio
+                      ref={audioRef}
+                      src={`/audio/${selectedTrack.id}.mp3`}
+                      onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+                      onEnded={() => setIsPlaying(false)}
+                      onError={() => console.log("Archival audio demonstration placeholder")}
+                      className="hidden"
+                    />
+                    {/* Visual Player Controls */}
+                    <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-4">
+                      <button
+                        onClick={togglePlay}
+                        className="h-12 w-12 rounded-full bg-amber-500 hover:bg-amber-600 text-slate-950 flex items-center justify-center font-bold transition-transform active:scale-95 shadow-md shadow-amber-500/30"
+                      >
+                        {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
+                      </button>
+
+                      <div className="flex-1 space-y-1">
+                        <input
+                          type="range"
+                          min={0}
+                          max={selectedTrack.duration_seconds}
+                          value={currentTime}
+                          onChange={(e) => seekTo(Number(e.target.value))}
+                          className="w-full accent-amber-500 cursor-pointer"
+                        />
+                        <div className="flex justify-between text-[10px] font-mono text-slate-500">
+                          <span>{formatSeconds(currentTime)}</span>
+                          <span>{formatSeconds(selectedTrack.duration_seconds)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Timestamped Transcripts (Section 8 & 9: Seek to Timestamp) */}
+              <div className="glass-card rounded-2xl p-6 border border-slate-800">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-800/80">
+                  <div className="flex items-center gap-2">
+                    <Radio className="h-4 w-4 text-amber-400" />
+                    <h3 className="font-serif font-bold text-sm text-white">
+                      Synchronized Spoken Transcript ({selectedTrackDetails?.segments?.length || 0} segments)
+                    </h3>
+                  </div>
+
+                  {/* Language Selector */}
+                  <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800 text-xs">
+                    <Languages className="h-3.5 w-3.5 text-slate-400 ml-1 mr-1" />
+                    {(["en", "hi", "mr"] as const).map((lang) => (
+                      <button
+                        key={lang}
+                        onClick={() => setActiveLang(lang)}
+                        className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
+                          activeLang === lang
+                            ? "bg-amber-500 text-slate-950 font-semibold"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        {lang === "en" ? "English" : lang === "hi" ? "हिंदी" : "मराठी"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Segments List */}
+                <div className="mt-4 space-y-3 max-h-[420px] overflow-y-auto pr-1">
+                  {selectedTrackDetails?.segments?.map((seg) => {
+                    const isActive =
+                      currentTime >= seg.start_time && currentTime <= seg.end_time;
+
+                    return (
+                      <div
+                        key={seg.id}
+                        onClick={() => seekTo(seg.start_time)}
+                        className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
+                          isActive
+                            ? "bg-amber-500/15 border-amber-500/60 shadow-lg ring-1 ring-amber-500/30"
+                            : "bg-slate-900/50 border-slate-800/60 hover:border-slate-700"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between text-[11px] mb-1 font-mono">
+                          <div className="flex items-center gap-2">
+                            <span className="text-amber-400 font-semibold">
+                              {formatSeconds(seg.start_time)} - {formatSeconds(seg.end_time)}
+                            </span>
+                            <span className="text-slate-500">•</span>
+                            <span className="text-slate-200 font-semibold">
+                              {seg.speaker_name}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-slate-500">Click to seek</span>
+                        </div>
+                        <p className="font-serif text-slate-200 text-sm leading-relaxed">
+                          "{seg.text}"
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
