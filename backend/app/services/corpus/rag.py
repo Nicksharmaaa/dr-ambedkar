@@ -146,60 +146,101 @@ class AmbedkarRAGService:
 
         # 2. Build prompt and attempt generation with fast timeout
         prompt = _build_context_prompt(question, results)
-        models_to_try = [self.model_name]
-        for m in ["gemini-3.6-flash", "gemini-3.8-flash"]:
-            if m not in models_to_try:
-                models_to_try.append(m)
-
         answer_text = None
-        used_model = self.model_name
+        used_model = settings.groq_model if settings.groq_api_key else (settings.gemini_model or "qwen/qwen3.8-27b")
 
-        # Try modern google.genai first
-        genai_client = self._get_gemini_client()
-        if genai_client:
-            from google.genai import types
-            for candidate_model in models_to_try:
+        # 2a. Try Groq Primary API
+        if settings.groq_api_key:
+            import httpx
+
+            groq_models = [settings.groq_model, "qwen/qwen3.8-27b", "openai/gpt-oss-120b", "llama-3.3-70b-versatile"]
+            for candidate in groq_models:
                 try:
-                    import asyncio
-                    response = await asyncio.to_thread(
-                        genai_client.models.generate_content,
-                        model=candidate_model,
-                        contents=prompt,
-                        config=types.GenerateContentConfig(
-                            system_instruction=SYSTEM_PROMPT,
-                            temperature=0.2,
-                            top_p=0.95,
-                            max_output_tokens=2048,
-                        ),
-                    )
-                    if response and response.text:
-                        answer_text = response.text.strip()
-                        used_model = candidate_model
-                        break
+                    headers = {
+                        "Authorization": f"Bearer {settings.groq_api_key}",
+                        "Content-Type": "application/json",
+                    }
+                    payload = {
+                        "model": candidate,
+                        "messages": [
+                            {"role": "system", "content": SYSTEM_PROMPT},
+                            {"role": "user", "content": prompt},
+                        ],
+                        "temperature": 0.2,
+                        "max_tokens": 2048,
+                        "top_p": 0.95,
+                    }
+                    async with httpx.AsyncClient(timeout=30.0) as client:
+                        resp = await client.post(
+                            "https://api.groq.com/openai/v1/chat/completions",
+                            headers=headers,
+                            json=payload,
+                        )
+                        if resp.status_code == 200:
+                            data = resp.json()
+                            choices = data.get("choices", [])
+                            if choices and "message" in choices[0]:
+                                text = choices[0]["message"].get("content", "").strip()
+                                if text:
+                                    answer_text = text
+                                    used_model = candidate
+                                    break
+                        else:
+                            logger.warning("Groq API returned HTTP %s: %s", resp.status_code, resp.text[:120])
                 except Exception as e:
-                    logger.warning("google.genai generation attempt failed on %s: %s", candidate_model, str(e)[:100])
+                    logger.warning("Groq generation failed for %s: %s", candidate, str(e)[:100])
 
-        # If google.genai didn't succeed, try legacy google.generativeai
-        if not answer_text:
-            for candidate_model in models_to_try:
-                legacy_model = self._get_legacy_model(candidate_model)
-                if not legacy_model:
-                    continue
-                try:
-                    import asyncio
-                    response = await asyncio.to_thread(
-                        legacy_model.generate_content,
-                        prompt,
-                        request_options={"timeout": 6.0},
-                    )
-                    if response and response.text:
-                        answer_text = response.text.strip()
-                        used_model = candidate_model
-                        break
-                except Exception as e:
-                    logger.warning("Legacy generation attempt failed on %s: %s", candidate_model, str(e)[:100])
+        # 2b. Try Gemini Fallback
+        if not answer_text and settings.gemini_api_key:
+            models_to_try = [settings.gemini_model, "gemini-3.6-flash", "gemini-3.8-flash"]
+            genai_client = self._get_gemini_client()
+            if genai_client:
+                from google.genai import types
 
-        # If API model is unavailable or rate limited, provide instant extractive archival grounding
+                for candidate_model in models_to_try:
+                    try:
+                        import asyncio
+
+                        response = await asyncio.to_thread(
+                            genai_client.models.generate_content,
+                            model=candidate_model,
+                            contents=prompt,
+                            config=types.GenerateContentConfig(
+                                system_instruction=SYSTEM_PROMPT,
+                                temperature=0.2,
+                                top_p=0.95,
+                                max_output_tokens=2048,
+                            ),
+                        )
+                        if response and response.text:
+                            answer_text = response.text.strip()
+                            used_model = candidate_model
+                            break
+                    except Exception as e:
+                        logger.warning("google.genai generation attempt failed on %s: %s", candidate_model, str(e)[:100])
+
+            # Try legacy google.generativeai if modern failed
+            if not answer_text:
+                for candidate_model in models_to_try:
+                    legacy_model = self._get_legacy_model(candidate_model)
+                    if not legacy_model:
+                        continue
+                    try:
+                        import asyncio
+
+                        response = await asyncio.to_thread(
+                            legacy_model.generate_content,
+                            prompt,
+                            request_options={"timeout": 6.0},
+                        )
+                        if response and response.text:
+                            answer_text = response.text.strip()
+                            used_model = candidate_model
+                            break
+                    except Exception as e:
+                        logger.warning("Legacy generation attempt failed on %s: %s", candidate_model, str(e)[:100])
+
+        # 2c. Fallback to instant extractive archival grounding
         if not answer_text:
             logger.info("Providing direct extractive archival grounding.")
             answer_text = self._fallback_extractive_synthesis(question, results)
@@ -247,51 +288,111 @@ class AmbedkarRAGService:
 
         # 2. Stream generation
         prompt = _build_context_prompt(question, results)
-        genai_client = self._get_gemini_client()
         streamed = False
+        used_model = settings.groq_model if settings.groq_api_key else (settings.gemini_model or "qwen/qwen3.8-27b")
 
-        if genai_client:
-            from google.genai import types
-            for candidate_model in [self.model_name, "gemini-3.6-flash", "gemini-3.8-flash"]:
+        # 2a. Stream via Groq
+        if settings.groq_api_key:
+            import httpx
+
+            groq_models = [settings.groq_model, "qwen/qwen3.8-27b", "openai/gpt-oss-120b", "llama-3.3-70b-versatile"]
+            for candidate in groq_models:
                 try:
-                    stream = genai_client.models.generate_content_stream(
-                        model=candidate_model,
-                        contents=prompt,
-                        config=types.GenerateContentConfig(
-                            system_instruction=SYSTEM_PROMPT,
-                            temperature=0.2,
-                            top_p=0.95,
-                            max_output_tokens=2048,
-                        ),
-                    )
-                    for chunk in stream:
-                        if chunk.text:
-                            yield json.dumps({"type": "token", "text": chunk.text})
-                    streamed = True
-                    break
+                    headers = {
+                        "Authorization": f"Bearer {settings.groq_api_key}",
+                        "Content-Type": "application/json",
+                    }
+                    payload = {
+                        "model": candidate,
+                        "messages": [
+                            {"role": "system", "content": SYSTEM_PROMPT},
+                            {"role": "user", "content": prompt},
+                        ],
+                        "temperature": 0.2,
+                        "max_tokens": 2048,
+                        "top_p": 0.95,
+                        "stream": True,
+                    }
+                    async with httpx.AsyncClient(timeout=45.0) as client:
+                        async with client.stream(
+                            "POST",
+                            "https://api.groq.com/openai/v1/chat/completions",
+                            headers=headers,
+                            json=payload,
+                        ) as response:
+                            if response.status_code == 200:
+                                async for line in response.aiter_lines():
+                                    line = line.strip()
+                                    if not line or not line.startswith("data: "):
+                                        continue
+                                    data_str = line[len("data: "):].strip()
+                                    if data_str == "[DONE]":
+                                        break
+                                    try:
+                                        chunk_data = json.loads(data_str)
+                                        delta = chunk_data.get("choices", [{}])[0].get("delta", {})
+                                        content = delta.get("content", "")
+                                        if content:
+                                            yield json.dumps({"type": "token", "text": content})
+                                    except Exception:
+                                        continue
+                                streamed = True
+                                used_model = candidate
+                                break
+                            else:
+                                logger.warning("Groq stream HTTP %s", response.status_code)
                 except Exception as e:
-                    logger.warning("google.genai stream failed on %s: %s", candidate_model, str(e)[:100])
+                    logger.warning("Groq stream failed on %s: %s", candidate, str(e)[:100])
 
-        if not streamed:
-            legacy_model = self._get_legacy_model(self.model_name)
-            if legacy_model:
-                try:
-                    response_stream = legacy_model.generate_content(prompt, stream=True)
-                    for chunk in response_stream:
-                        if chunk.text:
-                            yield json.dumps({"type": "token", "text": chunk.text})
-                    streamed = True
-                except Exception as e:
-                    yield json.dumps({"type": "error", "message": str(e)})
+        # 2b. Stream via Gemini if Groq did not stream
+        if not streamed and settings.gemini_api_key:
+            genai_client = self._get_gemini_client()
+            if genai_client:
+                from google.genai import types
 
+                for candidate_model in [settings.gemini_model, "gemini-3.6-flash", "gemini-3.8-flash"]:
+                    try:
+                        stream = genai_client.models.generate_content_stream(
+                            model=candidate_model,
+                            contents=prompt,
+                            config=types.GenerateContentConfig(
+                                system_instruction=SYSTEM_PROMPT,
+                                temperature=0.2,
+                                top_p=0.95,
+                                max_output_tokens=2048,
+                            ),
+                        )
+                        for chunk in stream:
+                            if chunk.text:
+                                yield json.dumps({"type": "token", "text": chunk.text})
+                        streamed = True
+                        used_model = candidate_model
+                        break
+                    except Exception as e:
+                        logger.warning("google.genai stream failed on %s: %s", candidate_model, str(e)[:100])
+
+            if not streamed:
+                legacy_model = self._get_legacy_model(settings.gemini_model)
+                if legacy_model:
+                    try:
+                        response_stream = legacy_model.generate_content(prompt, stream=True)
+                        for chunk in response_stream:
+                            if chunk.text:
+                                yield json.dumps({"type": "token", "text": chunk.text})
+                        streamed = True
+                        used_model = settings.gemini_model
+                    except Exception as e:
+                        yield json.dumps({"type": "error", "message": str(e)})
+
+        # 2c. Fallback to extractive synthesis
         if not streamed:
-            # Fallback to extractive synthesis
             fallback = self._fallback_extractive_synthesis(question, results)
             yield json.dumps({"type": "token", "text": fallback})
+            used_model = "extractive-archival-grounding"
 
         confidence = self._calculate_confidence(results)
         yield json.dumps({
             "type": "done",
             "confidence": confidence,
-            "model": self.model_name,
+            "model": used_model,
         })

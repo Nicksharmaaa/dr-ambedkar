@@ -11,6 +11,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      cytoscape:
+        specifier: ^3.34.3
+        version: 3.34.3
       lucide-react:
         specifier: ^0.475.0
         version: 0.475.0(react@19.3.0)
@@ -27,6 +30,9 @@ importers:
         specifier: ^3.0.2
         version: 3.7.0
     devDependencies:
+      '@types/cytoscape':
+        specifier: ^3.31.0
+        version: 3.31.0
       '@types/node':
         specifier: ^22.13.1
         version: 22.20.4
@@ -303,6 +309,10 @@ packages:
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
 
+  '@types/cytoscape@3.31.0':
+    resolution: {integrity: sha512-EXHOHxqQjGxLDEh5cP4te6J0bi7LbCzmZkzsR6f703igUac8UGMdEohMyU3GHAayCTZrLQOMnaE/lqB2Ekh8Ww==}
+    deprecated: This is a stub types definition. cytoscape provides its own type definitions, so you do not need this installed.
+
   '@types/node@22.20.4':
     resolution: {integrity: sha512-zJRE40jpHtKqE/C4fgHrAKQLJuSpzEnP9ff9Y7YtoR3Wd2pwqzlekDeEuUQXjRd+QCYnVnNwuJYmhdk9XV8gvA==}
 
@@ -378,6 +388,10 @@ packages:
 
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
+
+  cytoscape@3.34.3:
+    resolution: {integrity: sha512-yfYGhRcGAntq6YBD583j4n0Eg3jIxvWmZtz/5uz9UYkeIStSlMxuUja+ec5j3iBD8nv1rwaOAYMW09tBdkSeaQ==}
+    engines: {node: '>=0.10'}
 
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
@@ -893,6 +907,10 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  '@types/cytoscape@3.31.0':
+    dependencies:
+      cytoscape: 3.34.3
+
   '@types/node@22.20.4':
     dependencies:
       undici-types: 6.21.0
@@ -964,6 +982,8 @@ snapshots:
   cssesc@3.0.0: {}
 
   csstype@3.2.3: {}
+
+  cytoscape@3.34.3: {}
 
   detect-libc@2.1.2:
     optional: true

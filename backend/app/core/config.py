@@ -65,11 +65,13 @@ class Settings(BaseSettings):
     # Model provider: "local" uses local GPU; "cloud" uses API
     model_provider: Literal["local", "cloud"] = "local"
 
-    # Cloud API fallback keys (optional)
+    # Cloud LLM / API Settings
+    llm_provider: str = "groq"
+    groq_api_key: str = ""
+    groq_model: str = "qwen/qwen3.8-27b"
     gemini_api_key: str = ""
     gemini_model: str = "gemini-3.6-flash"
     openrouter_api_key: str = ""
-    groq_api_key: str = ""
 
     # RAG Settings
     rag_top_k: int = 10
