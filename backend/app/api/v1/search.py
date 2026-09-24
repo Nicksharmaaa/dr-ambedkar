@@ -84,6 +84,8 @@ async def search_get(
         took_ms=result["took_ms"],
         fts_count=result["fts_count"],
         vector_count=result["vector_count"],
+        detected_language=result.get("detected_language"),
+        translated_query=result.get("translated_query"),
     )
 
 
@@ -116,6 +118,8 @@ async def search_post(body: SearchRequest) -> SearchResponse:
         took_ms=result["took_ms"],
         fts_count=result["fts_count"],
         vector_count=result["vector_count"],
+        detected_language=result.get("detected_language"),
+        translated_query=result.get("translated_query"),
     )
 
 

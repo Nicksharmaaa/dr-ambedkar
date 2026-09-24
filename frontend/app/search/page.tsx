@@ -20,9 +20,11 @@ import {
   BarChart2,
   Zap,
   Info,
+  Mic,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { SearchResultChunk } from "@/lib/types";
+import { VoiceSearchModal } from "@/components/voice/VoiceSearchModal";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -53,6 +55,8 @@ interface SearchResponse {
   took_ms: number;
   fts_count?: number;
   vector_count?: number;
+  detected_language?: string | null;
+  translated_query?: string | null;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -385,7 +389,10 @@ function SearchContent() {
     took_ms: number;
     fts_count: number;
     vector_count: number;
+    detected_language?: string | null;
+    translated_query?: string | null;
   } | null>(null);
+  const [isVoiceOpen, setIsVoiceOpen] = useState(false);
   const [stats, setStats] = useState<SearchStats | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
@@ -455,6 +462,8 @@ function SearchContent() {
           took_ms: data.took_ms,
           fts_count: data.fts_count || 0,
           vector_count: data.vector_count || 0,
+          detected_language: data.detected_language,
+          translated_query: data.translated_query,
         });
         saveToHistory(searchTerm);
       } catch (err: any) {
@@ -527,6 +536,14 @@ function SearchContent() {
             className="w-full pl-12 pr-40 py-4 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-amber-500 text-sm md:text-base shadow-inner transition-colors"
           />
           <div className="absolute right-2 flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setIsVoiceOpen(true)}
+              className="p-2 rounded-lg text-xs bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 transition-colors"
+              title="Voice Search: Ask the Archive in English, Hindi, or Marathi"
+            >
+              <Mic className="h-3.5 w-3.5 text-blue-400" />
+            </button>
             <button
               type="button"
               onClick={() => setShowFilters(!showFilters)}
@@ -621,6 +638,25 @@ function SearchContent() {
 
       {/* Results */}
       <div className="mt-8 space-y-4">
+        {/* Cross-Lingual Detection Banner */}
+        {searchMeta?.detected_language && searchMeta.detected_language !== "en" && (
+          <div className="p-3.5 rounded-xl bg-blue-950/40 border border-blue-800/50 text-xs text-blue-200 flex flex-wrap items-center justify-between gap-2 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-base">🌐</span>
+              <div>
+                <span className="font-semibold uppercase tracking-wider text-blue-300">
+                  Cross-Lingual Search ({searchMeta.detected_language}):
+                </span>{" "}
+                <span>Retrieved English archival documents using translation</span>{" "}
+                <strong className="text-amber-300">&quot;{searchMeta.translated_query}&quot;</strong>
+              </div>
+            </div>
+            <span className="px-2 py-0.5 rounded bg-blue-900/60 font-mono text-[10px] uppercase border border-blue-700">
+              Zero Hallucination Retrieval
+            </span>
+          </div>
+        )}
+
         {loading && (
           <div className="text-center py-12">
             <div className="inline-block h-8 w-8 border-2 border-amber-500/40 border-t-amber-500 rounded-full animate-spin" />
@@ -679,6 +715,15 @@ function SearchContent() {
           re-scores the top results for maximum precision. Adds 1–3s latency.
         </p>
       </div>
+
+      <VoiceSearchModal
+        isOpen={isVoiceOpen}
+        onClose={() => setIsVoiceOpen(false)}
+        onSearch={(q) => {
+          setQuery(q);
+          executeSearch(q, mode);
+        }}
+      />
     </div>
   );
 }

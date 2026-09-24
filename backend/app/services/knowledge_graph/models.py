@@ -226,6 +226,14 @@ class StoryItem(BaseModel):
     viewer_url: str | None = None
     interactive_graph_config: dict[str, Any] | None = None
 
+    @property
+    def body(self) -> str:
+        return self.narrative_text
+
+    @property
+    def highlighted_passage(self) -> str | None:
+        return self.evidence_quote
+
 
 class StoryCollectionItem(BaseModel):
     id: str

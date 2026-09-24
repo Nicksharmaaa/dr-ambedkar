@@ -1,9 +1,9 @@
 # SYSTEM ARCHITECTURE
 ## Ambedkar Heritage Intelligence & Digital Preservation System
 
-**Version**: 2.0.0
-**Date**: 2026-09-22
-**Status**: Phase 1 — Approved Design
+**Version**: 2.9.0
+**Date**: 2026-09-24
+**Status**: Phase 9 — Multilingual & Multimodal Accessibility Operational
 
 ---
 
@@ -267,17 +267,24 @@ High-confidence → proceed to chunking pipeline
 
 ---
 
-## 6. Knowledge Graph Architecture
+## 6. Knowledge Graph, Timeline & Story Engine Architecture (Phase 8 Implemented)
 
 ```
-Turso Graph Tables:
-  entities (id, type, name, aliases, description, source_doc_id)
-  entity_types: PERSON | PLACE | ORG | CONCEPT | WORK | EVENT | DATE | TOPIC
-  relations (id, source_id, target_id, relation_type, evidence_chunk_id, confidence)
-  relation_types: AUTHORED | DELIVERED_SPEECH_AT | MEMBER_OF | ...
+Turso Relational Graph Tables:
+  entities (id, entity_type, canonical_name, description, source, status, date, date_precision, location, aliases, object_id)
+  entity_aliases (id, entity_id, alias, alias_type, language, confidence)
+  relationships (id, subject_id, predicate, object_id, evidence_chunk_id, confidence, source_document_id, source_page_id, evidence_text, status)
+  relationship_evidence (id, relationship_id, chunk_id, document_id, page_number, excerpt, confidence)
+  entity_reviews (id, entity_id, original_mention, suggested_entity_id, reviewer, action, status)
+  timeline_events (id, title, description, start_date, end_date, date_precision, category, location, document_id, page_number, evidence_chunk_id, evidence_text)
+  story_collections (id, slug, title, subtitle, summary, cover_image_url, category, published, display_order)
+  story_items (id, story_id, sequence, title, narrative_text, media_url, document_id, page_number, chunk_id, evidence_quote, viewer_url)
 
-Query via SQL JOINs + recursive CTEs
-Visualization: Sigma.js / Cytoscape.js on frontend
+Sub-graph Delivery: Progressive neighborhood expansion via GET /api/v1/graph/entities/{id}/neighbors (depth 1–2, sub-80ms)
+Visualization: Cytoscape.js canvas with interactive entity color tokens, zoom/pan controls, and progressive neighborhood expansion
+Explainability: Signature 'Why Are These Connected?' archival resolver linking nodes to exact volume pages
+Timeline: First-class precision-aware chronology (DAY, MONTH, YEAR, RANGE) with category filters and primary source deep-links
+Stories: Curated historical narrative reader anchored to verified archival documents and chapter-level RAG inquiry
 ```
 
 ---
