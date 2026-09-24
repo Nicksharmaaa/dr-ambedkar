@@ -1,0 +1,352 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 222 47% 7%;
+  --foreground: 210 40% 98%;
+
+  --card: 222 47% 10%;
+  --card-foreground: 210 40% 98%;
+
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 11%;
+  --primary-hover: 217 91% 50%;
+
+  --secondary: 217 33% 17%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217 33% 15%;
+  --muted-foreground: 215 20% 65%;
+
+  --accent: 43 74% 53%;
+  --accent-foreground: 222 47% 11%;
+
+  --border: 217 33% 20%;
+  --ring: 217 91% 60%;
+}
+
+* {
+  border-color: hsl(var(--border));
+  box-sizing: border-box;
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  min-height: 100vh;
+  overflow-x: hidden;
+  selection-background-color: hsl(var(--accent));
+  selection-color: #000;
+}
+
+/* Glassmorphism cards */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(30, 41, 59, 0.45);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(212, 175, 55, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Institutional gold accent badge */
+.badge-gold {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(180, 140, 20, 0.05) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: #fbbf24;
+}
+
+/* Subtle gradient text */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #fef08a 0%, #d4af37 50%, #b45309 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-blue {
+  background: linear-gradient(135deg, #93c5fd 0%, #3b82f6 50%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* ── Ingestion Dashboard ─────────────────────────────────────────────────── */
+
+.ingestion-dashboard {
+  @apply flex flex-col gap-0;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ingestion-header {
+  @apply flex items-center justify-between px-6 py-5;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ingestion-title {
+  @apply text-lg font-semibold text-white/95 tracking-tight;
+}
+
+.ingestion-subtitle {
+  @apply text-xs text-zinc-500 mt-0.5;
+}
+
+.ingestion-phase-badge {
+  @apply text-xs font-semibold px-3 py-1 rounded-full;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(139, 92, 246, 0.15) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  color: #a5b4fc;
+}
+
+.ingestion-tabs {
+  @apply flex border-b;
+  border-color: rgba(255, 255, 255, 0.06);
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.ingestion-tab {
+  @apply px-5 py-3 text-sm font-medium transition-all duration-200 border-b-2;
+  border-color: transparent;
+  color: rgb(113, 113, 122);
+}
+
+.ingestion-tab:hover {
+  color: rgb(212, 212, 216);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.ingestion-tab-active {
+  color: #93c5fd;
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.ingestion-panel {
+  @apply p-6 flex flex-col gap-5;
+}
+
+.ingestion-panel-actions {
+  @apply flex items-center justify-between gap-4;
+}
+
+.ingestion-panel-hint {
+  @apply text-sm text-zinc-400;
+}
+
+.ingestion-panel-hint code {
+  @apply text-xs px-1.5 py-0.5 rounded font-mono;
+  background: rgba(255,255,255,0.07);
+  color: #93c5fd;
+}
+
+.ingestion-btn {
+  @apply px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.ingestion-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  transform: translateY(-1px);
+}
+
+.ingestion-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ingestion-btn-danger {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border-color: rgba(220, 38, 38, 0.5);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+}
+
+.ingestion-btn-danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+}
+
+.ingestion-error {
+  @apply mx-6 mb-0 px-4 py-3 rounded-lg text-sm;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.ingestion-warning {
+  @apply px-4 py-3 rounded-lg text-sm;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+}
+
+.ingestion-warning code {
+  @apply text-xs px-1 py-0.5 rounded font-mono;
+  background: rgba(255,255,255,0.07);
+}
+
+.ingestion-empty {
+  @apply text-center py-12 flex flex-col gap-2;
+  color: rgb(113, 113, 122);
+}
+
+.ingestion-empty p:first-child {
+  @apply text-2xl;
+}
+
+.ingestion-empty-hint {
+  @apply text-xs;
+  color: rgb(82, 82, 91);
+}
+
+.ingestion-empty-hint code {
+  @apply text-xs px-1 py-0.5 rounded font-mono;
+  background: rgba(255,255,255,0.05);
+  color: #71717a;
+}
+
+.ingestion-table {
+  @apply w-full text-sm border-collapse;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.ingestion-table th {
+  @apply text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgb(113, 113, 122);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ingestion-table td {
+  @apply px-4 py-3;
+  color: rgb(212, 212, 216);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.ingestion-table tr:last-child td {
+  border-bottom: none;
+}
+
+.ingestion-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.ingestion-badge {
+  @apply text-xs font-medium px-2.5 py-0.5 rounded-full border;
+  text-transform: capitalize;
+}
+
+/* Summary stats bar */
+.ingestion-summary-bar {
+  @apply grid grid-cols-5 gap-3;
+}
+
+.ingestion-stat {
+  @apply flex flex-col items-center gap-1 py-3 rounded-lg;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ingestion-stat-value {
+  @apply text-2xl font-bold tabular-nums;
+}
+
+.ingestion-stat-label {
+  @apply text-xs;
+  color: rgb(113, 113, 122);
+}
+
+/* Scan controls */
+.ingestion-scan-controls {
+  @apply flex items-center justify-between gap-4;
+}
+
+.ingestion-results {
+  @apply flex flex-col gap-4;
+}
+
+.ingestion-results-header h3 {
+  @apply text-sm font-semibold text-zinc-200;
+}
+
+/* Dry-run toggle */
+.ingestion-dry-toggle {
+  @apply flex items-center gap-4;
+}
+
+.ingestion-toggle-label {
+  @apply flex flex-col cursor-pointer;
+  color: rgb(212, 212, 216);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.ingestion-toggle-hint {
+  @apply text-xs;
+  color: rgb(113, 113, 122);
+}
+
+.ingestion-toggle {
+  @apply relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 cursor-pointer;
+  border: 1px solid rgba(255,255,255,0.1);
+  flex-shrink: 0;
+}
+
+.ingestion-toggle-on {
+  background: #3b82f6;
+}
+
+.ingestion-toggle-off {
+  background: rgba(63, 63, 70, 0.8);
+}
+
+.ingestion-toggle-knob {
+  @apply block h-4 w-4 rounded-full bg-white transition-transform duration-200;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.ingestion-toggle-on .ingestion-toggle-knob {
+  transform: translateX(22px);
+}
+
+.ingestion-toggle-off .ingestion-toggle-knob {
+  transform: translateX(3px);
+}

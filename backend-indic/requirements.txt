@@ -1,0 +1,28 @@
+﻿# venv-indic (Python 3.10) — Indic AI Microservice Requirements
+
+# Web Framework
+fastapi[standard]>=0.115.0
+uvicorn[standard]>=0.32.0
+pydantic>=2.10.0
+
+# PyTorch (Python 3.10 compatible)
+# pip install torch==2.3.0 --index-url https://download.pytorch.org/whl/cu121
+
+# IndicTrans2
+# pip install git+https://github.com/AI4Bharat/IndicTrans2.git@main
+sentencepiece>=0.2.0
+sacremoses>=0.1.1
+
+# IndicConformer (NeMo-based)
+# pip install nemo_toolkit[asr]>=2.0.0
+
+# IndicF5
+# pip install git+https://github.com/AI4Bharat/IndicF5.git@main
+
+# Audio
+soundfile>=0.13.0
+librosa>=0.10.2
+numpy<2.0  # NeMo constraint
+
+# Testing
+pytest>=7.4.0
