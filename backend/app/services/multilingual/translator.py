@@ -29,40 +29,52 @@ HINDI_MARKERS = re.compile(r"(है|हैं|था|थी|थे|किया
 
 
 def detect_language(text: str) -> str:
-    """Detect if text is English, Hindi, or Marathi based on script and vocabulary."""
+    """Detect language based on Unicode script range and morphological vocabulary."""
     if not text or not text.strip():
         return "en"
 
-    # Check for Devanagari script range: \u0900 - \u097F
+    # 1. Check for Tamil script range: \u0B80 - \u0BFF
+    tamil_chars = len(re.findall(r"[\u0B80-\u0BFF]", text))
+    if tamil_chars > 0 and tamil_chars >= len(text) * 0.15:
+        return "ta"
+
+    # 2. Check for Bengali script range: \u0980 - \u09FF
+    bengali_chars = len(re.findall(r"[\u0980-\u09FF]", text))
+    if bengali_chars > 0 and bengali_chars >= len(text) * 0.15:
+        return "bn"
+
+    # 3. Check for Gujarati script range: \u0A80 - \u0AFF
+    gujarati_chars = len(re.findall(r"[\u0A80-\u0AFF]", text))
+    if gujarati_chars > 0 and gujarati_chars >= len(text) * 0.15:
+        return "gu"
+
+    # 4. Check for Devanagari script range: \u0900 - \u097F
     devanagari_chars = len(re.findall(r"[\u0900-\u097F]", text))
     latin_chars = len(re.findall(r"[a-zA-Z]", text))
 
-    if devanagari_chars == 0:
-        return "en"
-
-    if devanagari_chars > latin_chars * 0.5:
+    if devanagari_chars > 0 and devanagari_chars >= latin_chars * 0.4:
         # Check Marathi vs Hindi markers
-        if MARATHI_MARKERS.search(text):
+        if "ळ" in text or MARATHI_MARKERS.search(text):
             return "mr"
         if HINDI_MARKERS.search(text):
             return "hi"
-        # If Devanagari with letter 'ळ' (U+0933) -> Marathi
-        if "ळ" in text:
-            return "mr"
         return "hi"
 
     return "en"
 
 
 TRANSLATION_SYSTEM_PROMPT = """You are an authoritative archival translation engine for the Dr. B.R. Ambedkar Digital Heritage System.
-Translate the input text accurately between English, Hindi, and Marathi.
+Translate the input text accurately between English, Hindi, Marathi, Bengali, Gujarati, and Tamil.
 
 STRICT TRANSLATION RULES:
 1. Preserve all proper nouns, historical names (e.g. Dr. B.R. Ambedkar, Chhatrapati Shahu Maharaj, Columbia University, John Dewey).
 2. Maintain formal academic, constitutional, and historical terminology.
 3. In Hindi: use respectful scholarly Devanagari.
 4. In Marathi: use authentic scholarly Marathi (e.g. घटनात्मक नैतिकता for Constitutional Morality, जातीचा उच्छेद for Annihilation of Caste).
-5. Output ONLY the translated text. Do not provide explanations, preamble, or conversational commentary.
+5. In Bengali: use standard literary Bengali (e.g. সংবিধান for Constitution, জাতিভেদ প্রথা for Caste System).
+6. In Gujarati: use formal scholarly Gujarati (e.g. બંધારણ for Constitution, જ્ઞાતિ પ્રથા for Caste System).
+7. In Tamil: use formal classical/standard Tamil (e.g. அரசியலமைப்பு for Constitution, சாதி ஒழிப்பு for Annihilation of Caste).
+8. Output ONLY the translated text. Do not provide explanations, preamble, or conversational commentary.
 """
 
 

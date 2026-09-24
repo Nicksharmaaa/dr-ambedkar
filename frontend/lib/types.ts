@@ -397,16 +397,16 @@ export interface VoiceTranscriptionResponse {
 }
 
 export interface TranscriptSegment {
-  id: string;
-  media_id: string;
+  id?: string;
+  media_id?: string;
   start_time: number;
   end_time: number;
   text: string;
-  language: string;
-  speaker_id: string;
-  speaker_name: string;
-  confidence: number;
-  source: string;
+  language?: string;
+  speaker_id?: string;
+  speaker_name?: string;
+  confidence?: number;
+  source?: string;
 }
 
 export interface MediaTrack {
@@ -414,10 +414,15 @@ export interface MediaTrack {
   object_id: string;
   title: string;
   asset_type: "audio" | "video";
-  duration_seconds: number;
-  codec: string;
-  language: string;
-  file_path: string;
+  duration_seconds?: number;
+  duration_secs?: number;
+  codec?: string;
+  language?: string;
+  transcript_language?: string;
+  file_path?: string;
+  storage_key?: string;
+  mime_type?: string;
+  description?: string | null;
   recording_date?: string | null;
   segments?: TranscriptSegment[];
 }

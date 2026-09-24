@@ -1,0 +1,92 @@
+{
+  "dataset_id": "ambedkar_kg_entity_benchmark",
+  "dataset_version": "1.0.0",
+  "category": "CURATOR_VERIFIED",
+  "description": "Curator ground-truth entities and relations spanning People, Places, Works, Events, and Concepts.",
+  "language": "en",
+  "source_document_ids": [
+    "AMBEDKAR-VOL-01",
+    "AMBEDKAR-VOL-13"
+  ],
+  "source_hashes": [
+    "edbcb7c51699aa53"
+  ],
+  "creation_method": "historical_ontology_curation",
+  "split": "test",
+  "generation_model": null,
+  "generation_model_version": null,
+  "review_status": "CURATOR_VERIFIED",
+  "created_at": "2026-09-24T16:45:17.238163+00:00",
+  "total_items": 8,
+  "items": [
+    {
+      "id": "ent-01",
+      "entity_name": "Dr. B.R. Ambedkar",
+      "type": "PERSON",
+      "canonical_id": "P001",
+      "aliases": [
+        "Babasaheb",
+        "Bhimrao Ramji Ambedkar"
+      ]
+    },
+    {
+      "id": "ent-02",
+      "entity_name": "Mahad Satyagraha",
+      "type": "EVENT",
+      "canonical_id": "E001",
+      "aliases": [
+        "Chavdar Tale Water Satyagraha"
+      ],
+      "year": 1927
+    },
+    {
+      "id": "ent-03",
+      "entity_name": "Annihilation of Caste",
+      "type": "WORK",
+      "canonical_id": "W001",
+      "aliases": [
+        "Jat-Pat Todak Mandal Speech"
+      ],
+      "year": 1936
+    },
+    {
+      "id": "ent-04",
+      "entity_name": "Constituent Assembly of India",
+      "type": "ORGANIZATION",
+      "canonical_id": "O001",
+      "aliases": [
+        "Drafting Committee"
+      ]
+    },
+    {
+      "id": "ent-05",
+      "entity_name": "Social Democracy",
+      "type": "CONCEPT",
+      "canonical_id": "C001",
+      "aliases": [
+        "Trinity of Liberty, Equality, Fraternity"
+      ]
+    },
+    {
+      "id": "rel-01",
+      "source_id": "P001",
+      "target_id": "W001",
+      "relationship_type": "AUTHORED",
+      "status": "VERIFIED"
+    },
+    {
+      "id": "rel-02",
+      "source_id": "P001",
+      "target_id": "E001",
+      "relationship_type": "LED",
+      "status": "VERIFIED"
+    },
+    {
+      "id": "rel-03",
+      "source_id": "P001",
+      "target_id": "O001",
+      "relationship_type": "CHAIRED_DRAFTING_COMMITTEE",
+      "status": "VERIFIED"
+    }
+  ]
+}

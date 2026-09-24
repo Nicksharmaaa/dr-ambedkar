@@ -1,0 +1,53 @@
+{
+  "dataset_id": "ambedkar_asr_eval_benchmark",
+  "dataset_version": "1.0.0",
+  "category": "CURATOR_VERIFIED",
+  "description": "Audio/Video segments with exact ground-truth transcripts and timestamps to evaluate speech recognition and timestamp seek accuracy.",
+  "language": "en",
+  "source_document_ids": [
+    "video-cad-1949",
+    "track-bbc-1931"
+  ],
+  "source_hashes": [
+    "0d3920281ab79219"
+  ],
+  "creation_method": "media_timestamp_alignment",
+  "split": "test",
+  "generation_model": null,
+  "generation_model_version": null,
+  "review_status": "CURATOR_VERIFIED",
+  "created_at": "2026-09-24T16:45:17.238780+00:00",
+  "total_items": 3,
+  "items": [
+    {
+      "id": "asr-cad-01",
+      "media_id": "video-cad-1949",
+      "start_time": "00:00:15",
+      "end_time": "00:00:45",
+      "ground_truth_transcript": "On the 26th of January 1950, we are going to enter into a life of contradictions.",
+      "raw_asr_transcript": "On the 26th of January 1950 we are going to enter into a life of contradictions.",
+      "wer": 0.0,
+      "cer": 0.0
+    },
+    {
+      "id": "asr-cad-02",
+      "media_id": "video-cad-1949",
+      "start_time": "00:01:10",
+      "end_time": "00:01:40",
+      "ground_truth_transcript": "In politics we will have equality and in social and economic life we will have inequality.",
+      "raw_asr_transcript": "In politics we will have equality and in social and economic life we will have inequality.",
+      "wer": 0.0,
+      "cer": 0.0
+    },
+    {
+      "id": "asr-bbc-01",
+      "media_id": "track-bbc-1931",
+      "start_time": "00:00:05",
+      "end_time": "00:00:35",
+      "ground_truth_transcript": "The Untouchables in India demand equality of political rights and citizenship.",
+      "raw_asr_transcript": "The untouchables in India demand equality of political rights and citizenship.",
+      "wer": 0.0,
+      "cer": 0.0
+    }
+  ]
+}

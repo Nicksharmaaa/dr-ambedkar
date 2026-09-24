@@ -172,6 +172,14 @@ class TursoVectorStore(VectorStore):
 
         # 1. Fast path: load from pre-built local vector cache
         mat, chunk_ids = self._load_cache()
+        if mat is not None and mat.shape[1] != len(query_embedding):
+            logger.warning(
+                "Vector cache dimension mismatch (%d vs %d); falling back to DB",
+                mat.shape[1],
+                len(query_embedding),
+            )
+            mat = None
+            chunk_ids = []
 
         # 2. Slow fallback: fetch from Turso in safe pages of 1000
         if mat is None or len(chunk_ids) == 0:

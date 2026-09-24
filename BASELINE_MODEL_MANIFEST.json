@@ -1,0 +1,106 @@
+{
+  "manifest_version": "1.0.0",
+  "phase": "11-baseline",
+  "timestamp": "2026-09-24T16:45:00Z",
+  "system": {
+    "name": "Ambedkar Heritage Intelligence & Digital Preservation System",
+    "architecture_version": "v2.10.0",
+    "database_backend": "Turso Cloud (libSQL)",
+    "database_url": "libsql://ambedkar-archive-deadrobo.aws-ap-south-1.turso.io",
+    "hardware": {
+      "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU (6.0 GB VRAM)",
+      "cuda": "12.8 / 13.3",
+      "ram": "15.8 GB Total (~1.4 GB Free)",
+      "python": "3.14.5",
+      "pytorch": "2.11.0+cu128"
+    }
+  },
+  "subsystems": {
+    "embedding": {
+      "model_identifier": "Qwen/Qwen3-Embedding-0.6B",
+      "architecture": "Dense Transformer Bi-Encoder (Qwen3)",
+      "license": "Apache-2.0",
+      "serving_mode": "Local PyTorch in-process",
+      "dimensions": 1024,
+      "distance_metric": "cosine",
+      "batch_size": 16,
+      "storage_format": "Float32 NumPy (.npz) + Turso Cloud vectors",
+      "cached_vectors_count": 12154,
+      "frozen_state": true
+    },
+    "reranker": {
+      "model_identifier": "Qwen/Qwen3-Reranker-0.6B",
+      "architecture": "Cross-Encoder Sequence Classification",
+      "license": "Apache-2.0",
+      "serving_mode": "Local PyTorch in-process",
+      "top_k_candidates": 10,
+      "score_normalization": "sigmoid",
+      "frozen_state": true
+    },
+    "lexical_search": {
+      "engine": "SQLite FTS5 BM25",
+      "table": "fts_chunks",
+      "tokenizer": "unicode61",
+      "rrf_k": 60,
+      "frozen_state": true
+    },
+    "ocr": {
+      "engine": "PaddleOCR PP-OCRv5 + Multimodal Indic Engine",
+      "architecture": "PP-OCRv5 (DBNet text detection + SVTR text recognition) + LayoutLMv3",
+      "license": "Apache-2.0",
+      "serving_port": 8002,
+      "supported_scripts": ["Devanagari (hi, mr)", "Bengali (bn)", "Gujarati (gu)", "Tamil (ta)", "Latin (en)"],
+      "authority_levels": ["OCR_UNREVIEWED", "OCR_REVIEWED"],
+      "frozen_state": true
+    },
+    "translation": {
+      "engine": "Groq LPU Qwen 27B / IndicTrans2",
+      "model_identifier": "qwen/qwen3.8-27b",
+      "serving_mode": "Groq Cloud LPU + Permanent SHA-256 translations_cache",
+      "supported_languages": ["en", "hi", "mr", "bn", "gu", "ta"],
+      "frozen_state": true
+    },
+    "speech_to_text_asr": {
+      "engine": "Whisper Large v3 Turbo",
+      "model_identifier": "whisper-large-v3-turbo",
+      "serving_mode": "Groq Cloud LPU API",
+      "output_format": "Segmented timestamped transcript JSON",
+      "frozen_state": true
+    },
+    "text_to_speech_tts": {
+      "engine": "Microsoft Edge Neural TTS",
+      "voices": {
+        "hi": "hi-IN-SwaraNeural",
+        "mr": "mr-IN-AarohiNeural",
+        "en": "en-IN-NeerjaNeural"
+      },
+      "serving_mode": "Local headless async synthesis + tts_cache",
+      "sample_rate_hz": 24000,
+      "frozen_state": true
+    },
+    "rag_generator": {
+      "primary_model": "qwen/qwen3.8-27b",
+      "failover_models": ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "extractive-fallback"],
+      "serving_mode": "Groq Cloud LPU + Local Extractive Fallback",
+      "temperature": 0.1,
+      "top_p": 0.95,
+      "max_tokens": 2048,
+      "system_prompt_isolation": "<ARCHIVAL_EVIDENCE> XML tags",
+      "abstention_string": "The available archive does not contain sufficient evidence to answer this reliably.",
+      "frozen_state": true
+    },
+    "claim_validator": {
+      "engine": "ClaimValidator Dual-Stage Auditor",
+      "stages": ["Atomic proposition extraction", "Passage entailment cross-matching"],
+      "output_labels": ["SUPPORTED", "PARTIAL", "UNSUPPORTED", "CONFLICTING"],
+      "frozen_state": true
+    },
+    "knowledge_graph": {
+      "engine": "Phase 8 Graph Resolution Service",
+      "entity_types": 18,
+      "predicate_types": ["AUTHORED", "DELIVERED", "PARTICIPATED_IN", "DISCUSSED", "SUPPORTS", "OPPOSES", "INFLUENCED_BY", "LOCATED_IN"],
+      "storage_tables": ["entities", "entity_aliases", "relationships", "relationship_evidence"],
+      "frozen_state": true
+    }
+  }
+}

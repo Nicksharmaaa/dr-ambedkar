@@ -1,7 +1,7 @@
-# Unified API Contract Specification — Phase 9
+# Unified API Contract Specification — Phase 10
 
 ## Version & Host
-- **API Version**: `0.9.0-phase9`
+- **API Version**: `0.10.0-phase10`
 - **Prefix**: `/api/v1`
 - **Protocol**: HTTP/1.1 REST + JSON
 
@@ -70,3 +70,17 @@
 - `GET /api/v1/timeline/events/{id}`: Single event with full archival citation.
 - `GET /api/v1/stories`: Directory of published narrative journeys.
 - `GET /api/v1/stories/{id}`: Complete sequential chapter reader with archival viewer deep-links.
+
+---
+
+## 10. Multilingual Corpus, Curation & Comparison (Phase 9.5 & Phase 10)
+- `GET /api/v1/multilingual-corpus/dashboard`: Aggregated dashboard metrics for 112 documents, page counts by language, and authority tiers.
+- `GET /api/v1/multilingual-corpus/works`: List canonical creative works (FRBR Work level).
+- `GET /api/v1/multilingual-corpus/relationships`: Cross-document relationships (`translation_of`, `edition_of`, `volume_split`).
+- `GET /api/v1/multilingual-corpus/alignments`: Structural passage, chapter, and section cross-lingual alignments.
+- `GET /api/v1/multilingual-corpus/documents`: Cryptographic manifest entries filterable by language name, code, or format nature.
+- `GET /api/v1/ocr/baseline`: Empirical OCR baseline metrics reported separately for Hindi, Bengali, Gujarati, and Tamil.
+- `GET /api/v1/ocr/page/{document_id}/{page_number}`: Fetch raw and reviewed OCR text for an archival page.
+- `POST /api/v1/ocr/review`: Non-destructive curator review endpoint updating `reviewed_ocr_text` without altering immutable `raw_ocr_text`.
+- `POST /api/v1/assistant/ask` with `mode: "compare"`: Source comparison engine generating structured analysis of common themes, divergences, and supporting passages across two selected archival works.
+

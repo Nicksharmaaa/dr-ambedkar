@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import {
   Mic,
   Play,
@@ -15,6 +16,7 @@ import {
   Share2,
   Search,
   CheckCircle2,
+  ArrowRight,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { MediaTrack, TranscriptSegment, SpokenSearchResult } from "@/lib/types";
@@ -212,12 +214,12 @@ export default function MediaPage() {
               Recordings ({tracks.length})
             </span>
             <div className="flex gap-1">
-              {(["all", "audio", "video"] as const).map((filter) => (
+              {(["all", "audio", "video", "photos"] as const).map((filter) => (
                 <button
                   key={filter}
-                  onClick={() => setAssetFilter(filter)}
+                  onClick={() => setAssetFilter(filter as any)}
                   className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase transition-colors ${
-                    assetFilter === filter
+                    assetFilter === (filter as any)
                       ? "bg-amber-500 text-slate-950 font-bold"
                       : "text-slate-400 hover:text-white"
                   }`}
@@ -279,15 +281,21 @@ export default function MediaPage() {
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-0.5 rounded bg-slate-800 font-mono text-amber-400 text-[10px]">
-                      {selectedTrack.codec}
+                      {selectedTrack.codec || "Archival"}
                     </span>
                     <span className="px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono text-[10px] border border-emerald-800">
                       ORIGINAL_RECORDING
                     </span>
                   </div>
-                  <span className="font-mono text-slate-400 text-[11px]">
-                    {selectedTrack.recording_date || "Archival Date Verified"}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={selectedTrack.asset_type === "video" ? `/media/video/${selectedTrack.id}` : `/media/audio/${selectedTrack.id}`}
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-xs font-medium transition-colors"
+                    >
+                      <span>Dedicated Player Page</span>
+                      <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  </div>
                 </div>
 
                 <h2 className="text-xl font-serif font-bold text-white">
@@ -303,7 +311,7 @@ export default function MediaPage() {
                       src="/videos/cad_speech_1949.mp4"
                       className="w-full h-full"
                       onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-                      onError={() => console.log("Archival video demonstration placeholder")}
+                      onError={() => setIsPlaying(false)}
                     />
                   </div>
                 ) : (
@@ -313,7 +321,7 @@ export default function MediaPage() {
                       src={`/audio/${selectedTrack.id}.mp3`}
                       onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
                       onEnded={() => setIsPlaying(false)}
-                      onError={() => console.log("Archival audio demonstration placeholder")}
+                      onError={() => setIsPlaying(false)}
                       className="hidden"
                     />
                     {/* Visual Player Controls */}
@@ -329,14 +337,14 @@ export default function MediaPage() {
                         <input
                           type="range"
                           min={0}
-                          max={selectedTrack.duration_seconds}
+                          max={selectedTrack.duration_seconds || selectedTrack.duration_secs || 100}
                           value={currentTime}
                           onChange={(e) => seekTo(Number(e.target.value))}
                           className="w-full accent-amber-500 cursor-pointer"
                         />
                         <div className="flex justify-between text-[10px] font-mono text-slate-500">
                           <span>{formatSeconds(currentTime)}</span>
-                          <span>{formatSeconds(selectedTrack.duration_seconds)}</span>
+                          <span>{formatSeconds(selectedTrack.duration_seconds || selectedTrack.duration_secs || 0)}</span>
                         </div>
                       </div>
                     </div>

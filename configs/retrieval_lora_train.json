@@ -1,0 +1,32 @@
+{
+  "experiment_id": "exp-retrieval-lora-v1",
+  "base_model": "Qwen/Qwen3-Embedding-0.6B",
+  "dataset_manifest": "datasets/ambedkar_retrieval_benchmark_v1.0.0.json",
+  "training_split": "train",
+  "validation_split": "val",
+  "hardware_requirements": {
+    "recommended_gpu": "NVIDIA A10G / A100",
+    "minimum_vram_gb": 16,
+    "local_execution": "LOCAL TRAINING NOT FEASIBLE (6GB VRAM Insufficient)"
+  },
+  "hyperparameters": {
+    "learning_rate": 2e-5,
+    "batch_size": 16,
+    "gradient_accumulation_steps": 2,
+    "epochs": 3,
+    "warmup_ratio": 0.1,
+    "weight_decay": 0.01,
+    "fp16": true,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "target_modules": ["q_proj", "v_proj", "k_proj", "o_proj"]
+  },
+  "loss_function": "MultipleNegativesRankingLoss",
+  "evaluation_metrics": ["Recall@5", "Recall@10", "MRR", "nDCG@10"],
+  "early_stopping": {
+    "patience": 2,
+    "metric": "eval_mrr",
+    "mode": "max"
+  }
+}

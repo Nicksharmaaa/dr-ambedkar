@@ -1,0 +1,58 @@
+{
+  "dataset_id": "ambedkar_translation_aligned_benchmark",
+  "dataset_version": "1.0.0",
+  "category": "CURATOR_VERIFIED",
+  "description": "Parallel verified sentences across English and Indic editions to benchmark translation fidelity.",
+  "language": "multilingual",
+  "source_document_ids": [
+    "AMBEDKAR-VOL-01",
+    "AMBEDKAR-VOL-13"
+  ],
+  "source_hashes": [
+    "a99a061f1894d46a"
+  ],
+  "creation_method": "parallel_text_alignment",
+  "split": "test",
+  "generation_model": null,
+  "generation_model_version": null,
+  "review_status": "CURATOR_VERIFIED",
+  "created_at": "2026-09-24T16:45:17.237002+00:00",
+  "total_items": 5,
+  "items": [
+    {
+      "id": "trans-en-hi-01",
+      "src_lang": "en",
+      "tgt_lang": "hi",
+      "source_text": "Political democracy cannot last unless there lies at the base of it social democracy.",
+      "reference_translation": "राजनीतिक लोकतंत्र तब तक टिक नहीं सकता जब तक कि उसके आधार में सामाजिक लोकतंत्र न हो।"
+    },
+    {
+      "id": "trans-hi-en-01",
+      "src_lang": "hi",
+      "tgt_lang": "en",
+      "source_text": "जाति प्रथा केवल श्रम का विभाजन नहीं है, अपितु श्रमिकों का विभाजन है।",
+      "reference_translation": "Caste system is not merely division of labour, but also a division of labourers."
+    },
+    {
+      "id": "trans-en-ta-01",
+      "src_lang": "en",
+      "tgt_lang": "ta",
+      "source_text": "Social democracy is a way of life which recognizes liberty, equality and fraternity as the principles of life.",
+      "reference_translation": "சமூக ஜனநாயகம் என்பது சுதந்திரம், சமத்துவம் மற்றும் சகோதரத்துவத்தை வாழ்க்கையின் கோட்பாடுகளாக அங்கீகரிக்கும் வாழ்க்கை முறையாகும்."
+    },
+    {
+      "id": "trans-en-bn-01",
+      "src_lang": "en",
+      "tgt_lang": "bn",
+      "source_text": "We must make our political democracy a social democracy as well.",
+      "reference_translation": "আমাদের রাজনৈতিক গণতন্ত্রকে সামাজিক গণতন্ত্রেও পরিণত করতে হবে।"
+    },
+    {
+      "id": "trans-en-gu-01",
+      "src_lang": "en",
+      "tgt_lang": "gu",
+      "source_text": "Political democracy cannot last unless there lies at the base of it social democracy.",
+      "reference_translation": "રાજકીય લોકશાહી ત્યાં સુધી ટકી શકતી નથી જ્યાં સુધી તેના પાયામાં સામાજિક લોકશાહી ન હોય."
+    }
+  ]
+}

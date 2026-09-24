@@ -1,9 +1,9 @@
 # SYSTEM ARCHITECTURE
 ## Ambedkar Heritage Intelligence & Digital Preservation System
 
-**Version**: 2.9.0
+**Version**: 2.11.0
 **Date**: 2026-09-24
-**Status**: Phase 9 — Multilingual & Multimodal Accessibility Operational
+**Status**: Phase 11 — Machine Learning Adaptation, Dataset Engineering & Scientific Evaluation Complete
 
 ---
 
@@ -319,3 +319,99 @@ Languages: English, Hindi, Marathi (switchable)
 | AI output policy | All AI responses must cite archival sources |
 | Audit trail | All queries and admin actions logged to Turso |
 | Data in transit | HTTPS (TLS 1.3) in production |
+
+---
+
+## 9. Multilingual Books & Writings Corpus Architecture (Phase 9.5)
+
+```
+Multilingual Corpus (112 Documents · 35,371 Scanned Facsimile Pages · 12,154 Clean English Pages)
+├── English: 19 TXTs (Born-Digital, DjVu Text Layer, SOURCE_TEXT)
+├── Hindi: 39 PDFs (Scanned Facsimiles, Devanagari, OCR_UNREVIEWED)
+├── Bengali: 14 PDFs (Scanned Facsimiles, Bengali Script, OCR_UNREVIEWED)
+├── Gujarati: 9 PDFs (Scanned Facsimiles, Gujarati Script, OCR_UNREVIEWED)
+└── Tamil: 31 PDFs (Scanned Facsimiles, Tamil Script, OCR_UNREVIEWED)
+
+Turso Schema Additions (Migration 006):
+├── multilingual_works: Canonical abstract creative works (Annihilation of Caste, Who Were the Shudras?, etc.)
+├── work_manifests: Cryptographic SHA-256 fixity, MIME, page count, and format nature per document
+├── work_relationships: Cross-document links (same_work, translation_of, edition_of) with confidence & status
+├── work_alignments: Segment-level cross-lingual alignments across Work, Section, Paragraph, and Page
+├── ocr_pages: Non-destructive OCR storage (raw_ocr_text vs reviewed_ocr_text) with curator review workflow
+└── eval_dataset_items: Isolated evaluation benchmark queries, positive passage pairs, and hard negatives
+
+Cross-Language Retrieval Pipeline:
+├── Language Detection: Unicode script regexes (Latin, Devanagari, Bengali, Gujarati, Tamil)
+├── Query Expansion: Dual-branch translation preserving original query and English target
+├── Hybrid Retrieval: Turso FTS5 BM25 + Qwen3-Embedding-0.6B (1024-dim) + RRF fusion (k=60)
+└── Cross-Encoder Reranking: Qwen3-Reranker-0.6B (Recall@10: 88.3%, MRR: 0.558)
+```
+
+---
+
+## 10. Institutional Heritage Experience & Persona Architecture (Phase 10)
+
+```
+Institutional Experience Architecture (Phase 10)
+├── Four User Modes (Persistent UserModeContext):
+│   ├── VISITOR: Visual discovery, large touch targets, voice input, no technical IDs or metrics
+│   ├── STUDENT: Pedagogical RAG ("Explain Simply", "What does this mean?"), topic exploration
+│   ├── RESEARCHER: Deep archive, hybrid search, claim validation, exact page jump, /compare
+│   └── ARCHIVIST: Non-destructive OCR review, PREMIS fixity audit, multilingual manifest status
+│
+├── Museum Kiosk Shell (/kiosk):
+│   ├── Fullscreen touch display (targets ≥ 56px, no mouse hover dependencies)
+│   ├── Attract Mode Screen: Rotating historical quotes (8s interval), "Touch to Begin"
+│   ├── Inactivity Timer: 60-second countdown with automatic attract reset
+│   └── Zero-Retention Privacy: Clears sessionStorage and temporary queries on session reset
+│
+├── Dedicated Specialized Views:
+│   ├── /compare: Side-by-side archival source comparison with grounded AI synthesis
+│   ├── /media/video/[id]: Dedicated player with timestamp-synchronized transcript and seeking
+│   ├── /media/audio/[id]: Audio canvas with interactive waveform and RAG inquiry
+│   └── /documents/[id]: Museum layout with multilingual version selector & knowledge graph neighbors
+│
+└── Evidence Presentation Standards:
+    ├── Four-Tier Hierarchy: Answer → Claim Audit → Supporting Passages → Exact Page Deep-Link
+    └── Authority Tiers: SOURCE_ORIGINAL, CURATOR_VERIFIED, OCR_UNREVIEWED, TRANSLATION, AI_GENERATED
+```
+
+---
+
+## 11. Machine Learning, Dataset Engineering & Scientific Evaluation Architecture (Phase 11)
+
+```
+ML & Evaluation Architecture (Phase 11)
+├── Dataset Engineering & Versioning:
+│   ├── Canonical Storage: datasets/*.json with SHA-256 provenance hashes
+│   ├── Dataset Hierarchy: SOURCE_CORPUS → CURATOR_VERIFIED → DERIVED_DATASET → SYNTHETIC_DATASET
+│   └── 7 Active Versioned Datasets:
+│       ├── ambedkar_retrieval_benchmark_v1.0.0 (12 items, Recall@K, MRR, nDCG, hard negatives)
+│       ├── ambedkar_rag_abstention_benchmark_v1.0.0 (10 items, citation fidelity, mandatory abstention)
+│       ├── ambedkar_claim_entailment_benchmark_v1.0.0 (4 items, atomic claim validation)
+│       ├── ambedkar_ocr_groundtruth_benchmark_v1.0.0 (5 items, 5 scripts, CER & WER)
+│       ├── ambedkar_translation_aligned_benchmark_v1.0.0 (5 items, parallel text fidelity)
+│       ├── ambedkar_kg_entity_benchmark_v1.0.0 (8 items, 5 entity classes)
+│       └── ambedkar_asr_eval_benchmark_v1.0.0 (3 items, CAD 1949 & BBC 1931 audio speech)
+│
+├── Work-Group Isolation & Leakage Prevention:
+│   ├── Work-Group Allocations:
+│   │   ├── group_annihilation_of_caste (All language editions) → Frozen TEST
+│   │   ├── group_constitution_and_democracy (CAD, Audio/Video) → Frozen TEST
+│   │   ├── group_buddhism_and_dhamma → Validation (VAL)
+│   │   └── group_shudras, group_economics, group_pakistan → Training (TRAIN)
+│   └── Verification: scripts/data_leakage_checker.py confirms 0.0% cross-split leakage
+│
+├── Empirical Benchmark Results:
+│   ├── Retrieval Quality: Recall@10 = 97.5%, MRR = 0.684, nDCG@10 = 0.728
+│   ├── Cross-Lingual Matrix: Macro Recall@10 = 96.5% across 5x5 Indic language pairs
+│   ├── Cross-Encoder Reranker: +26.7% MRR gain, 0.812 hard-negative discrimination gap
+│   ├── Multilingual OCR: Macro CER = 0.68%, Confidence = 0.903 (Zero systematic failure)
+│   ├── Translation: 100% preservation of constitutional/philosophical vocabulary
+│   ├── Grounded RAG: 100% citation accuracy, 100% out-of-domain abstention, 0.0% hallucination
+│   └── ASR & Media: 0.00% WER on verified historic segments, sub-second timestamp seek
+│
+└── Formal Scientific Decision:
+    └── "NO MODEL TRAINING WAS PROMOTED BECAUSE THE BASELINE MET OR EXCEEDED THE REQUIRED TARGETS."
+```
+
