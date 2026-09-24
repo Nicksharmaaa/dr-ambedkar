@@ -112,10 +112,59 @@ def build_evidence_context(
 
 
 class GroundedGenerator:
-    """Dual-engine grounded generator with Gemini Flash primary and local extractive fallback."""
+    """Dual-engine grounded generator with Groq LPU primary, Gemini cloud fallback, and local extractive synthesis."""
 
     def __init__(self, model_name: str | None = None) -> None:
-        self.model_name = model_name or settings.gemini_model or "gemini-2.0-flash"
+        self.model_name = model_name or settings.groq_model or settings.gemini_model or "qwen/qwen3.8-27b"
+
+    def _generate_with_groq(self, prompt: str) -> tuple[str, str] | None:
+        """Attempt generation using Groq API (OpenAI-compatible). Returns (answer, model) or None."""
+        if not settings.groq_api_key:
+            return None
+
+        candidates = [self.model_name]
+        for m in ["qwen/qwen3.8-27b", "openai/gpt-oss-120b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant"]:
+            if m not in candidates:
+                candidates.append(m)
+
+        for candidate in candidates:
+            try:
+                import httpx
+
+                headers = {
+                    "Authorization": f"Bearer {settings.groq_api_key}",
+                    "Content-Type": "application/json",
+                }
+                payload = {
+                    "model": candidate,
+                    "messages": [
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user", "content": prompt},
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 2048,
+                    "top_p": 0.95,
+                }
+                with httpx.Client(timeout=30.0) as client:
+                    resp = client.post(
+                        "https://api.groq.com/openai/v1/chat/completions",
+                        headers=headers,
+                        json=payload,
+                    )
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        choices = data.get("choices", [])
+                        if choices and "message" in choices[0]:
+                            text = choices[0]["message"].get("content", "").strip()
+                            if text:
+                                return text, candidate
+                    else:
+                        logger.warning("Groq API returned %s: %s", resp.status_code, resp.text[:120])
+            except Exception as e:
+                logger.warning("Groq generation failed for %s: %s", candidate, str(e)[:120])
+                continue
+
+        return None
 
     def _generate_with_gemini(self, prompt: str) -> tuple[str, str] | None:
         """Attempt generation using google.genai (or google.generativeai fallback). Returns (answer, model) or None."""
@@ -203,25 +252,45 @@ class GroundedGenerator:
 
         prompt = build_evidence_context(query, evidence_chunks, mode=mode)
 
-        # 1. Try Primary Cloud Generator (Gemini Flash via google.genai)
-        gemini_result = self._generate_with_gemini(prompt)
-        if gemini_result:
-            raw_answer, used_model = gemini_result
-            if not raw_answer or ABSTENTION_TEXT.lower() in raw_answer.lower():
+        # 1. Try Primary Groq Cloud Generator
+        if settings.groq_api_key:
+            groq_result = self._generate_with_groq(prompt)
+            if groq_result:
+                raw_answer, used_model = groq_result
+                if not raw_answer or ABSTENTION_TEXT.lower() in raw_answer.lower():
+                    return {
+                        "answer": ABSTENTION_TEXT,
+                        "model": used_model,
+                        "is_abstention": True,
+                        "prompt": prompt,
+                    }
                 return {
-                    "answer": ABSTENTION_TEXT,
+                    "answer": raw_answer,
                     "model": used_model,
-                    "is_abstention": True,
+                    "is_abstention": False,
                     "prompt": prompt,
                 }
-            return {
-                "answer": raw_answer,
-                "model": used_model,
-                "is_abstention": False,
-                "prompt": prompt,
-            }
 
-        # 2. Local Extractive Grounded Fallback
+        # 2. Try Gemini Cloud Generator Fallback
+        if settings.gemini_api_key:
+            gemini_result = self._generate_with_gemini(prompt)
+            if gemini_result:
+                raw_answer, used_model = gemini_result
+                if not raw_answer or ABSTENTION_TEXT.lower() in raw_answer.lower():
+                    return {
+                        "answer": ABSTENTION_TEXT,
+                        "model": used_model,
+                        "is_abstention": True,
+                        "prompt": prompt,
+                    }
+                return {
+                    "answer": raw_answer,
+                    "model": used_model,
+                    "is_abstention": False,
+                    "prompt": prompt,
+                }
+
+        # 3. Local Extractive Grounded Fallback
         return self._extractive_fallback(query, evidence_chunks, prompt)
 
     def _extractive_fallback(

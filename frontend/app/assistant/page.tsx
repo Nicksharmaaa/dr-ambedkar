@@ -58,7 +58,7 @@ const INITIAL_MESSAGES: ChatMessage[] = [
     text: "Welcome to the Ambedkar Heritage AI Research Assistant. I am an evidence-grounded research intelligence engine connected directly to the 12,154 verified archival pages of Dr. Babasaheb Ambedkar's Writings & Speeches.\n\nStrict Archival Source Policy:\n1. All factual assertions are derived exclusively from retrieved archival evidence.\n2. Model pre-training memory is never treated as archive truth.\n3. Every claim is mapped to verified volume and page citations with deep-links to the archival viewer.\n4. When the available archive lacks sufficient evidence, I will explicitly abstain.\n\nSelect a research mode below and enter your scholarly inquiry.",
     confidence: 1.0,
     is_abstention: false,
-    model: "gemini-3.6-flash / hybrid-engine",
+    model: "groq (qwen-3.8-27b) / hybrid-engine",
   },
 ];
 
