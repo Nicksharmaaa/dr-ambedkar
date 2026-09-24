@@ -21,6 +21,8 @@ from app.api.v1 import (
     ingestion, corpus, preservation, iiif, assistant,
     graph, timeline, stories,
     indic, voice, media, multimodal,
+    ocr, multilingual_corpus,
+    hardware, kiosk,
 )
 
 configure_logging()
@@ -59,7 +61,7 @@ app = FastAPI(
         "AI-powered institutional archive for Dr. B.R. Ambedkar's writings and speeches. "
         "Archival corpus is the source of truth. Zero hallucination policy."
     ),
-    version="0.9.0-phase9",
+    version="0.9.5-phase9.5",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
@@ -94,8 +96,12 @@ app.include_router(timeline.router,     prefix=PREFIX)
 app.include_router(stories.router,      prefix=PREFIX)
 app.include_router(indic.router,        prefix=PREFIX)
 app.include_router(voice.router,        prefix=PREFIX)
-app.include_router(media.router,        prefix=PREFIX)
-app.include_router(multimodal.router,   prefix=PREFIX)
+app.include_router(media.router,               prefix=PREFIX)
+app.include_router(multimodal.router,          prefix=PREFIX)
+app.include_router(ocr.router,                 prefix=PREFIX)
+app.include_router(multilingual_corpus.router, prefix=PREFIX)
+app.include_router(hardware.router,            prefix=PREFIX)
+app.include_router(kiosk.router,               prefix=PREFIX)
 
 
 # ── Global exception handler ──────────────────────────────────────────────────
@@ -113,7 +119,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 async def root() -> dict:
     return {
         "service": "ambedkar-heritage-api",
-        "version": "0.9.0-phase9",
+        "version": "0.9.5-phase9.5",
         "docs": "/api/docs",
         "health": "/api/v1/health",
     }

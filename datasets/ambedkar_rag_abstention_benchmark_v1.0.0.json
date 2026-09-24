@@ -1,0 +1,113 @@
+{
+  "dataset_id": "ambedkar_rag_abstention_benchmark",
+  "dataset_version": "1.0.0",
+  "category": "TEST_DATA",
+  "description": "Curated answerable and unanswerable inquiries to test factual grounding, citation accuracy, and zero-hallucination abstention.",
+  "language": "multilingual",
+  "source_document_ids": [
+    "AMBEDKAR-VOL-01",
+    "AMBEDKAR-VOL-13"
+  ],
+  "source_hashes": [
+    "e36a65efccbd775e"
+  ],
+  "creation_method": "scholarly_curation",
+  "split": "test",
+  "generation_model": null,
+  "generation_model_version": null,
+  "review_status": "CURATOR_VERIFIED",
+  "created_at": "2026-09-24T16:45:17.233489+00:00",
+  "total_items": 10,
+  "items": [
+    {
+      "id": "rag-01",
+      "question": "What is social democracy according to Dr. Ambedkar?",
+      "lang": "en",
+      "type": "ANSWERABLE",
+      "expected_abstention": false,
+      "target_doc": "AMBEDKAR-VOL-13",
+      "expected_citation_doc": "AMBEDKAR-VOL-13"
+    },
+    {
+      "id": "rag-02",
+      "question": "What are liberty, equality, and fraternity according to Ambedkar?",
+      "lang": "en",
+      "type": "ANSWERABLE",
+      "expected_abstention": false,
+      "target_doc": "AMBEDKAR-VOL-13",
+      "expected_citation_doc": "AMBEDKAR-VOL-13"
+    },
+    {
+      "id": "rag-03",
+      "question": "How did Dr. Ambedkar distinguish division of labour from division of labourers?",
+      "lang": "en",
+      "type": "ANSWERABLE",
+      "expected_abstention": false,
+      "target_doc": "AMBEDKAR-VOL-01",
+      "expected_citation_doc": "AMBEDKAR-VOL-01"
+    },
+    {
+      "id": "rag-04",
+      "question": "डॉ. आम्बेडकर के अनुसार सामाजिक लोकतंत्र के तीन सिद्धांत क्या हैं?",
+      "lang": "hi",
+      "type": "ANSWERABLE",
+      "expected_abstention": false,
+      "target_doc": "AMBEDKAR-VOL-13",
+      "expected_citation_doc": "AMBEDKAR-VOL-13"
+    },
+    {
+      "id": "rag-05",
+      "question": "அரசியலமைப்பு சபையில் டாக்டர் அம்பேத்கர் முன்வைத்த சமூக ஜனநாயகம் என்றால் என்ன?",
+      "lang": "ta",
+      "type": "ANSWERABLE",
+      "expected_abstention": false,
+      "target_doc": "AMBEDKAR-VOL-13",
+      "expected_citation_doc": "AMBEDKAR-VOL-13"
+    },
+    {
+      "id": "rag-06",
+      "question": "ডঃ আম্বেদকর সামাজিক গণতন্ত্র বলতে কি বুঝিয়েছিলেন?",
+      "lang": "bn",
+      "type": "ANSWERABLE",
+      "expected_abstention": false,
+      "target_doc": "AMBEDKAR-VOL-13",
+      "expected_citation_doc": "AMBEDKAR-VOL-13"
+    },
+    {
+      "id": "rag-abs-01",
+      "question": "What were Dr. Ambedkar's views on quantum mechanics and general relativity?",
+      "lang": "en",
+      "type": "UNANSWERABLE",
+      "expected_abstention": true,
+      "target_doc": null,
+      "expected_citation_doc": null
+    },
+    {
+      "id": "rag-abs-02",
+      "question": "Which cricket player did Dr. Ambedkar support in the 1983 World Cup?",
+      "lang": "en",
+      "type": "UNANSWERABLE",
+      "expected_abstention": true,
+      "target_doc": null,
+      "expected_citation_doc": null
+    },
+    {
+      "id": "rag-abs-03",
+      "question": "डॉ. आम्बेडकर की स्मार्टफोन और कृत्रिम बुद्धिमत्ता पर क्या राय थी?",
+      "lang": "hi",
+      "type": "UNANSWERABLE",
+      "expected_abstention": true,
+      "target_doc": null,
+      "expected_citation_doc": null
+    },
+    {
+      "id": "rag-abs-04",
+      "question": "What was Dr. Ambedkar's favorite computer operating system?",
+      "lang": "en",
+      "type": "UNANSWERABLE",
+      "expected_abstention": true,
+      "target_doc": null,
+      "expected_citation_doc": null
+    }
+  ]
+}

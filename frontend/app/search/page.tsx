@@ -302,6 +302,9 @@ function FilterPanel({
             <option value="en">English</option>
             <option value="hi">Hindi</option>
             <option value="mr">Marathi</option>
+            <option value="bn">Bengali (বাংলা)</option>
+            <option value="gu">Gujarati (ગુજરાતી)</option>
+            <option value="ta">Tamil (தமிழ்)</option>
           </select>
         </div>
 

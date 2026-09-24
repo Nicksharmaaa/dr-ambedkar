@@ -96,7 +96,19 @@ class Settings(BaseSettings):
     # ── Logging ───────────────────────────────────────────────
     log_level: str = "INFO"
 
-    @field_validator("storage_local_root", "ai_model_cache_dir", mode="before")
+    @field_validator("storage_local_root", mode="before")
+    @classmethod
+    def _storage_root(cls, v: str | Path) -> Path:
+        p = Path(v)
+        if not p.is_absolute():
+            candidate = Path("backend") / p
+            if (candidate / "originals").exists():
+                return candidate
+            if candidate.exists() and not p.exists():
+                return candidate
+        return p
+
+    @field_validator("ai_model_cache_dir", mode="before")
     @classmethod
     def _as_path(cls, v: str | Path) -> Path:
         return Path(v)

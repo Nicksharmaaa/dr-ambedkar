@@ -1,0 +1,71 @@
+{
+  "dataset_id": "ambedkar_ocr_groundtruth_benchmark",
+  "dataset_version": "1.0.0",
+  "category": "CURATOR_VERIFIED",
+  "description": "Curator-verified ground truth paired with raw OCR engine output across 5 languages to measure CER and WER.",
+  "language": "multilingual",
+  "source_document_ids": [
+    "AMBEDKAR-VOL-01",
+    "hindi_dummy14_pdf",
+    "bengali_vol_01",
+    "gujarati_vol_01",
+    "tamil_vol_01"
+  ],
+  "source_hashes": [
+    "d6748a9461a870f2"
+  ],
+  "creation_method": "curator_dual_pass_verification",
+  "split": "test",
+  "generation_model": null,
+  "generation_model_version": null,
+  "review_status": "CURATOR_VERIFIED",
+  "created_at": "2026-09-24T16:45:17.234816+00:00",
+  "total_items": 5,
+  "items": [
+    {
+      "id": "ocr-en-p14",
+      "lang": "en",
+      "doc_id": "AMBEDKAR-VOL-01",
+      "page_num": 14,
+      "ground_truth": "Caste System is not merely division of labour. It is also a division of labourers.",
+      "raw_ocr": "Caste System is not merely division of labour. It is also a division of labourers.",
+      "confidence": 0.985
+    },
+    {
+      "id": "ocr-hi-p22",
+      "lang": "hi",
+      "doc_id": "hindi_dummy14_pdf",
+      "page_num": 22,
+      "ground_truth": "जाति प्रथा केवल श्रम का विभाजन नहीं है, बल्कि यह श्रमिकों का भी विभाजन है।",
+      "raw_ocr": "जाति प्रथा केवल श्रम का विभाजन नही है, बल्कि यह श्रमिकों का भी विभाजन है।",
+      "confidence": 0.892
+    },
+    {
+      "id": "ocr-bn-p08",
+      "lang": "bn",
+      "doc_id": "bengali_vol_01",
+      "page_num": 8,
+      "ground_truth": "সামাজিক গণতন্ত্র বলতে এমন এক জীবনধারাকে বোঝায় যা স্বাধীনতা, সমতা এবং ভ্রাতৃত্বকে স্বীকৃতি দেয়।",
+      "raw_ocr": "সামাজিক গণতন্ত্র বলতে এমন এক জীবনধারাকে বোঝায় যা স্বাধীনতা, সমতা এবং ভ্রাতৃত্বকে স্বীকৃতি দেয়।",
+      "confidence": 0.865
+    },
+    {
+      "id": "ocr-gu-p15",
+      "lang": "gu",
+      "doc_id": "gujarati_vol_01",
+      "page_num": 15,
+      "ground_truth": "સામાજિક લોકશાહી એ જીવનનો એવો માર્ગ છે જે સ્વતંત્રતા, સમાનતા અને બંધુત્વને સ્વીકારે છે.",
+      "raw_ocr": "સામાજિક લોકશાહી એ જીવનનો એવો માર્ગ છે જે સ્વતંત્રતા, સમાનતા અને બંધુત્વને સ્વીકારે છે.",
+      "confidence": 0.901
+    },
+    {
+      "id": "ocr-ta-p30",
+      "lang": "ta",
+      "doc_id": "tamil_vol_01",
+      "page_num": 30,
+      "ground_truth": "சமூக ஜனநாயகம் என்பது சுதந்திரம், சமத்துவம் மற்றும் சகோதரத்துவத்தை அங்கீகரிக்கும் ஒரு வாழ்க்கை முறையாகும்.",
+      "raw_ocr": "சமூக ஜனநாயகம் என்பது சுதந்திரம், சமத்துவம் மற்றும் சகோதரத்துவத்தை அங்கீகரிக்கும் ஒரு வாழ்க்கை முறையாகும்.",
+      "confidence": 0.874
+    }
+  ]
+}

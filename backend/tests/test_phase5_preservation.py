@@ -13,6 +13,8 @@ import asyncio
 from pathlib import Path
 import pytest
 import httpx
+from httpx import ASGITransport, AsyncClient
+from app.main import app
 
 from app.core.config import settings
 from app.db.database import get_db_client
@@ -62,7 +64,8 @@ async def test_premis_fixity_verification():
 @pytest.mark.asyncio
 async def test_iiif_presentation_endpoints():
     """Verify IIIF Presentation 3.0 API endpoints."""
-    async with httpx.AsyncClient(base_url="http://127.0.0.1:8000/api/v1") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test/api/v1") as client:
         # 1. Collection
         col_res = await client.get("/iiif/collection/baws")
         assert col_res.status_code == 200
@@ -103,7 +106,8 @@ async def test_iiif_presentation_endpoints():
 @pytest.mark.asyncio
 async def test_alto_xml_layout():
     """Verify ALTO v4.2 XML derivative exists and conforms to Library of Congress schema."""
-    async with httpx.AsyncClient(base_url="http://127.0.0.1:8000/api/v1") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test/api/v1") as client:
         res = await client.get("/documents/AMBEDKAR-VOL-01/alto/1")
         assert res.status_code == 200
         assert "application/xml" in res.headers["content-type"]

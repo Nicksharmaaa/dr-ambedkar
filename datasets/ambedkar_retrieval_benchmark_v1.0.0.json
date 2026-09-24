@@ -1,0 +1,162 @@
+{
+  "dataset_id": "ambedkar_retrieval_benchmark",
+  "dataset_version": "1.0.0",
+  "category": "TEST_DATA",
+  "description": "Frozen test queries with positive passages, hard negatives, and document-level ground truth.",
+  "language": "multilingual",
+  "source_document_ids": [
+    "AMBEDKAR-VOL-01",
+    "AMBEDKAR-VOL-02",
+    "AMBEDKAR-VOL-13",
+    "hindi_dummy14_pdf",
+    "tamil_vol_01",
+    "gujarati_vol_01",
+    "bengali_vol_01"
+  ],
+  "source_hashes": [
+    "06db6860599fa6b0"
+  ],
+  "creation_method": "archival_curation_and_passage_mining",
+  "split": "test",
+  "generation_model": null,
+  "generation_model_version": null,
+  "review_status": "CURATOR_VERIFIED",
+  "created_at": "2026-09-24T16:45:17.232546+00:00",
+  "total_items": 12,
+  "items": [
+    {
+      "id": "q-en-01",
+      "query": "Castes in India mechanism of endogamy",
+      "lang": "en",
+      "target_doc": "AMBEDKAR-VOL-01",
+      "work_group": "group_annihilation_of_caste",
+      "positive_chunk_id": "AMBEDKAR-VOL-01-C001",
+      "hard_negative_chunk_ids": [
+        "AMBEDKAR-VOL-02-C010",
+        "AMBEDKAR-VOL-06-C005"
+      ]
+    },
+    {
+      "id": "q-en-02",
+      "query": "social democracy definition liberty equality fraternity",
+      "lang": "en",
+      "target_doc": "AMBEDKAR-VOL-13",
+      "work_group": "group_constitution_and_democracy",
+      "positive_chunk_id": "AMBEDKAR-VOL-13-C045",
+      "hard_negative_chunk_ids": [
+        "AMBEDKAR-VOL-01-C088",
+        "AMBEDKAR-VOL-08-C012"
+      ]
+    },
+    {
+      "id": "q-en-03",
+      "query": "Mahad Satyagraha declaration human rights",
+      "lang": "en",
+      "target_doc": "AMBEDKAR-VOL-01",
+      "work_group": "group_annihilation_of_caste",
+      "positive_chunk_id": "AMBEDKAR-VOL-01-C120",
+      "hard_negative_chunk_ids": [
+        "AMBEDKAR-VOL-03-C014"
+      ]
+    },
+    {
+      "id": "q-en-04",
+      "query": "division of labour versus division of labourers",
+      "lang": "en",
+      "target_doc": "AMBEDKAR-VOL-01",
+      "work_group": "group_annihilation_of_caste",
+      "positive_chunk_id": "AMBEDKAR-VOL-01-C014",
+      "hard_negative_chunk_ids": [
+        "AMBEDKAR-VOL-06-C022"
+      ]
+    },
+    {
+      "id": "q-hi-01",
+      "query": "जाति प्रथा में श्रम का विभाजन और श्रमजीवियों का विभाजन",
+      "lang": "hi",
+      "target_doc": "AMBEDKAR-VOL-01",
+      "work_group": "group_annihilation_of_caste",
+      "positive_chunk_id": "AMBEDKAR-VOL-01-C014",
+      "hard_negative_chunk_ids": [
+        "AMBEDKAR-VOL-02-C030"
+      ]
+    },
+    {
+      "id": "q-hi-02",
+      "query": "संविधान सभा में सामाजिक लोकतंत्र और तीन स्तम्भ",
+      "lang": "hi",
+      "target_doc": "AMBEDKAR-VOL-13",
+      "work_group": "group_constitution_and_democracy",
+      "positive_chunk_id": "AMBEDKAR-VOL-13-C045",
+      "hard_negative_chunk_ids": [
+        "AMBEDKAR-VOL-01-C050"
+      ]
+    },
+    {
+      "id": "q-ta-01",
+      "query": "சாதி ஒழிப்பு மற்றும் தொழிலாளர் பிரிவு",
+      "lang": "ta",
+      "target_doc": "AMBEDKAR-VOL-01",
+      "work_group": "group_annihilation_of_caste",
+      "positive_chunk_id": "AMBEDKAR-VOL-01-C014",
+      "hard_negative_chunk_ids": [
+        "AMBEDKAR-VOL-07-C004"
+      ]
+    },
+    {
+      "id": "q-ta-02",
+      "query": "அரசியலமைப்பு சபையில் சமத்துவம் சகோதரத்துவம்",
+      "lang": "ta",
+      "target_doc": "AMBEDKAR-VOL-13",
+      "work_group": "group_constitution_and_democracy",
+      "positive_chunk_id": "AMBEDKAR-VOL-13-C045",
+      "hard_negative_chunk_ids": [
+        "AMBEDKAR-VOL-02-C012"
+      ]
+    },
+    {
+      "id": "q-bn-01",
+      "query": "সংবিধান এবং সামাজিক গণতন্ত্রের মূল নীতি",
+      "lang": "bn",
+      "target_doc": "AMBEDKAR-VOL-13",
+      "work_group": "group_constitution_and_democracy",
+      "positive_chunk_id": "AMBEDKAR-VOL-13-C045",
+      "hard_negative_chunk_ids": [
+        "AMBEDKAR-VOL-08-C005"
+      ]
+    },
+    {
+      "id": "q-bn-02",
+      "query": "শ্রমের বিভাজন বনাম শ্রমিকদের বিভাজন জাতিভেদ প্রথা",
+      "lang": "bn",
+      "target_doc": "AMBEDKAR-VOL-01",
+      "work_group": "group_annihilation_of_caste",
+      "positive_chunk_id": "AMBEDKAR-VOL-01-C014",
+      "hard_negative_chunk_ids": [
+        "AMBEDKAR-VOL-02-C008"
+      ]
+    },
+    {
+      "id": "q-gu-01",
+      "query": "બંધારણ સભામાં સ્વતંત્રતા સમાનતા અને બંધુતા",
+      "lang": "gu",
+      "target_doc": "AMBEDKAR-VOL-13",
+      "work_group": "group_constitution_and_democracy",
+      "positive_chunk_id": "AMBEDKAR-VOL-13-C045",
+      "hard_negative_chunk_ids": [
+        "AMBEDKAR-VOL-06-C018"
+      ]
+    },
+    {
+      "id": "q-gu-02",
+      "query": "જાતિ પ્રથા અને શ્રમનું વિભાજન",
+      "lang": "gu",
+      "target_doc": "AMBEDKAR-VOL-01",
+      "work_group": "group_annihilation_of_caste",
+      "positive_chunk_id": "AMBEDKAR-VOL-01-C014",
+      "hard_negative_chunk_ids": [
+        "AMBEDKAR-VOL-03-C021"
+      ]
+    }
+  ]
+}

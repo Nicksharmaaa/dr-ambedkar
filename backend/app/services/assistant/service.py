@@ -16,6 +16,7 @@ Coordinates the full scholarly research pipeline:
 from __future__ import annotations
 
 import logging
+import re
 import time
 import uuid
 from typing import Any
@@ -155,8 +156,9 @@ class ResearchAssistantService:
     ) -> list[dict[str, Any]]:
         """Retrieve evidence chunks via Phase 6 four-component hybrid search with reranking."""
         try:
+            search_query = re.sub(r'^(explain\s+(simply\s+)?(why|how|what|the)?|summarize|tell\s+me\s+about|what\s+(is|are|were))\s+', '', query, flags=re.IGNORECASE).strip() or query
             res = await self.search_service.search(
-                query=query,
+                query=search_query,
                 mode="hybrid",
                 limit=limit,
                 object_id=object_id,
@@ -205,8 +207,12 @@ class ResearchAssistantService:
         top_k_per_doc: int = 4,
     ) -> list[dict[str, Any]]:
         """Retrieve targeted evidence from two separate volumes for comparison."""
-        res_a = await self._retrieve_hybrid_evidence(query, object_id=doc_a, limit=top_k_per_doc)
-        res_b = await self._retrieve_hybrid_evidence(query, object_id=doc_b, limit=top_k_per_doc)
+        # Clean comparative meta-syntax from retrieval query so lexical/vector search focuses on subject matter
+        cleaned_query = re.sub(rf"\b({re.escape(doc_a)}|{re.escape(doc_b)}|compare|contrast|perspectives|between|differences|similarities)\b", " ", query, flags=re.IGNORECASE)
+        cleaned_query = " ".join(cleaned_query.split()) or query
+
+        res_a = await self._retrieve_hybrid_evidence(cleaned_query, object_id=doc_a, limit=top_k_per_doc)
+        res_b = await self._retrieve_hybrid_evidence(cleaned_query, object_id=doc_b, limit=top_k_per_doc)
         # Interleave sources
         combined = []
         for a, b in zip(res_a, res_b):

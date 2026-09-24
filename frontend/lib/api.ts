@@ -434,5 +434,51 @@ export const api = {
         target_language: targetLanguage,
       }),
     }),
+
+  // Phase 9.5 Multilingual Books & Writings Corpus & OCR
+  getMultilingualCorpusDashboard: () =>
+    fetchJson<any>("/multilingual-corpus/dashboard"),
+
+  getMultilingualWorks: () =>
+    fetchJson<any[]>("/multilingual-corpus/works"),
+
+  getMultilingualWorkRelationships: () =>
+    fetchJson<any[]>("/multilingual-corpus/relationships"),
+
+  getMultilingualWorkAlignments: (workId?: string) =>
+    fetchJson<any[]>(`/multilingual-corpus/alignments${workId ? `?work_id=${encodeURIComponent(workId)}` : ""}`),
+
+  getMultilingualDocuments: (language?: string) =>
+    fetchJson<any[]>(`/multilingual-corpus/documents${language ? `?language=${language}` : ""}`),
+
+  getOCRBaseline: () =>
+    fetchJson<any>("/ocr/baseline"),
+
+  reviewOCRPage: (docId: string, pageNum: number, reviewedText: string, reviewerNotes?: string) =>
+    fetchJson<any>("/ocr/review", {
+      method: "POST",
+      body: JSON.stringify({
+        document_id: docId,
+        page_number: pageNum,
+        reviewed_text: reviewedText,
+        reviewer_notes: reviewerNotes,
+      }),
+    }),
+
+  // Phase 12 Hardware Integration, Diagnostics & Kiosk Sync
+  getHardwareProfile: () =>
+    fetchJson<{ profile: string; peripherals: Record<string, any> }>("/hardware/profile"),
+
+  getHardwareEnvironment: () =>
+    fetchJson<any>("/hardware/environment/current"),
+
+  getHardwareDiagnostics: () =>
+    fetchJson<any>("/hardware/diagnostics"),
+
+  getKioskManifest: () =>
+    fetchJson<any>("/kiosk/manifest"),
+
+  getOfflinePackage: () =>
+    fetchJson<any>("/kiosk/offline-package"),
 };
 

@@ -1,0 +1,47 @@
+{
+  "dataset_id": "ambedkar_claim_entailment_benchmark",
+  "dataset_version": "1.0.0",
+  "category": "TEST_DATA",
+  "description": "Atomic historical claims paired with supporting archival passages to test claim validation accuracy.",
+  "language": "en",
+  "source_document_ids": [
+    "AMBEDKAR-VOL-01",
+    "AMBEDKAR-VOL-13"
+  ],
+  "source_hashes": [
+    "4d274cfd9a31e33e"
+  ],
+  "creation_method": "atomic_claim_extraction",
+  "split": "test",
+  "generation_model": null,
+  "generation_model_version": null,
+  "review_status": "CURATOR_VERIFIED",
+  "created_at": "2026-09-24T16:45:17.234098+00:00",
+  "total_items": 4,
+  "items": [
+    {
+      "id": "cl-01",
+      "claim": "Political democracy cannot last unless there lies at the base of it social democracy.",
+      "status": "SUPPORTED",
+      "evidence_doc": "AMBEDKAR-VOL-13"
+    },
+    {
+      "id": "cl-02",
+      "claim": "Caste is not just a division of labour, it is also a division of labourers.",
+      "status": "SUPPORTED",
+      "evidence_doc": "AMBEDKAR-VOL-01"
+    },
+    {
+      "id": "cl-03",
+      "claim": "Dr. Ambedkar was the prime minister of India in 1947.",
+      "status": "UNSUPPORTED",
+      "evidence_doc": null
+    },
+    {
+      "id": "cl-04",
+      "claim": "The Constitution of India was drafted in 1891 in Mhow.",
+      "status": "CONFLICTING",
+      "evidence_doc": null
+    }
+  ]
+}

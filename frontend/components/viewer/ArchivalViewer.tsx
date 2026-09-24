@@ -58,7 +58,7 @@ export function ArchivalViewer({
 
   // Phase 9 Multilingual & Multimodal State
   const [activeTab, setActiveTab] = useState<ViewerTab>("ORIGINAL");
-  const [selectedLanguage, setSelectedLanguage] = useState<"en" | "hi" | "mr">("en");
+  const [selectedLanguage, setSelectedLanguage] = useState<"en" | "hi" | "mr" | "bn" | "gu" | "ta">("en");
   const [translatedText, setTranslatedText] = useState<string>("");
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
   const [ttsAudioUrl, setTtsAudioUrl] = useState<string | null>(null);
@@ -302,7 +302,7 @@ export function ArchivalViewer({
         {/* Language Selector (Maintains Page Position!) */}
         <div className="flex items-center gap-1 bg-slate-950 px-2 py-1 rounded-lg border border-slate-800 text-[11px]">
           <Languages className="w-3.5 h-3.5 text-blue-400" />
-          {(["en", "hi", "mr"] as const).map((lang) => (
+          {(["en", "hi", "mr", "bn", "gu", "ta"] as const).map((lang) => (
             <button
               key={lang}
               onClick={() => setSelectedLanguage(lang)}
@@ -512,6 +512,12 @@ export function ArchivalViewer({
                   ? `हिंदी अनुवाद (पृष्ठ ${currentPage})`
                   : selectedLanguage === "mr"
                   ? `मराठी भाषांतर (पान ${currentPage})`
+                  : selectedLanguage === "bn"
+                  ? `বাংলা অনুবাদ (পৃষ্ঠা ${currentPage})`
+                  : selectedLanguage === "gu"
+                  ? `ગુજરાતી અનુવાદ (પાનું ${currentPage})`
+                  : selectedLanguage === "ta"
+                  ? `தமிழ் மொழிபெயர்ப்பு (பக்கம் ${currentPage})`
                   : `English Translation (Page ${currentPage})`}
               </h2>
               <span className="px-2.5 py-1 rounded bg-blue-950 border border-blue-800 font-mono text-xs text-blue-300 uppercase">
@@ -561,7 +567,14 @@ export function ArchivalViewer({
               <div className="w-full max-w-md p-4 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-3">
                 <audio controls autoPlay src={ttsAudioUrl} className="w-full" />
                 <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono">
-                  <span>Voice: {selectedLanguage === "mr" ? "Aarohi (Marathi)" : selectedLanguage === "hi" ? "Swara (Hindi)" : "Neerja (Indian English)"}</span>
+                  <span>Voice: {
+                    selectedLanguage === "mr" ? "Aarohi (Marathi)" :
+                    selectedLanguage === "hi" ? "Swara (Hindi)" :
+                    selectedLanguage === "bn" ? "Tanushree (Bengali)" :
+                    selectedLanguage === "gu" ? "Nirav (Gujarati)" :
+                    selectedLanguage === "ta" ? "Valluvar (Tamil)" :
+                    "Neerja (Indian English)"
+                  }</span>
                   <span>Format: MP3 48kHz</span>
                 </div>
               </div>

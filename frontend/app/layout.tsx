@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { UserModeProvider } from "@/lib/UserModeContext";
+import PersistentAssistantLauncher from "@/components/assistant/PersistentAssistantLauncher";
 
 export const metadata: Metadata = {
   title: "Ambedkar Heritage Intelligence & Digital Preservation System",
@@ -27,9 +29,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="min-h-screen flex flex-col bg-slate-950 text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <UserModeProvider>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <PersistentAssistantLauncher />
+        </UserModeProvider>
       </body>
     </html>
   );
