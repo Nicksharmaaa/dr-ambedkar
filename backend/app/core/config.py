@@ -91,10 +91,24 @@ class Settings(BaseSettings):
     jwt_refresh_expire_days: int = 30
 
     # ── CORS ──────────────────────────────────────────────────
-    cors_origins: list[str] = ["http://localhost:3000", "http://localhost:3001"]
+    cors_origins: str | list[str] = ["http://localhost:3000", "http://localhost:3001"]
 
     # ── Logging ───────────────────────────────────────────────
     log_level: str = "INFO"
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def _parse_cors(cls, v: object) -> list[str]:
+        if isinstance(v, str):
+            v_str = v.strip()
+            if v_str.startswith("[") and v_str.endswith("]"):
+                import json
+                try:
+                    return json.loads(v_str)
+                except Exception:
+                    pass
+            return [x.strip() for x in v_str.split(",") if x.strip()]
+        return list(v) if isinstance(v, (list, tuple, set)) else ["*"]
 
     @field_validator("storage_local_root", mode="before")
     @classmethod

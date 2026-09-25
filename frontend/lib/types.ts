@@ -491,3 +491,6 @@ export interface AskPageActionResponse {
   took_ms: number;
 }
 
+// ── Re-export museum exhibition domain types ──
+export * from "../types/museum";
+
