@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import logging
 import re
+import time
 from typing import Any
 
 from app.core.config import settings
@@ -212,7 +213,7 @@ class GroundedGenerator:
         if not settings.gemini_api_key:
             return None
 
-        candidates = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-flash-latest"]
+        candidates = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro"]
 
         # 1. Try modern google.genai SDK
         try:
