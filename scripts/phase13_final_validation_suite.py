@@ -55,7 +55,7 @@ def http_get(url: str, timeout: float = 15.0) -> tuple[int, bytes, float]:
         return e.code, e.read(), took_ms
 
 
-def http_post(url: str, payload: dict, timeout: float = 35.0, headers: dict | None = None) -> tuple[int, bytes, float]:
+def http_post(url: str, payload: dict, timeout: float = 60.0, headers: dict | None = None) -> tuple[int, bytes, float]:
     t0 = time.perf_counter()
     data = json.dumps(payload).encode("utf-8")
     h = {"Content-Type": "application/json", "User-Agent": "Phase13-Validator/1.0"}

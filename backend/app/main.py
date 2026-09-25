@@ -103,6 +103,13 @@ app.include_router(multilingual_corpus.router, prefix=PREFIX)
 app.include_router(hardware.router,            prefix=PREFIX)
 app.include_router(kiosk.router,               prefix=PREFIX)
 
+# Mount local storage for direct media streaming
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
+_storage_dir = Path(__file__).resolve().parent.parent / "storage" / "local"
+if _storage_dir.exists():
+    app.mount("/storage/local", StaticFiles(directory=str(_storage_dir)), name="storage_local")
+
 
 # ── Global exception handler ──────────────────────────────────────────────────
 @app.exception_handler(Exception)
