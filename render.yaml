@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: ambedkar-heritage-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: starter
+    region: singapore # Closest to Mumbai (ap-south-1) for lowest Turso latency
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: TURSO_DB_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: STORAGE_BACKEND
+        value: LOCAL
+      - key: STORAGE_LOCAL_ROOT
+        value: storage/local
+      - key: CORS_ORIGINS
+        value: "*"

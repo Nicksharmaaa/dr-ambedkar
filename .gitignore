@@ -105,8 +105,8 @@ models/
 *.parquet
 *.arrow
 *.feather
-vector_cache.npz
-**/vector_cache.npz
+# vector_cache.npz is tracked specifically for production deployments (<50MB)
+!backend/storage/local/vector_cache.npz
 wandb/
 **/wandb/
 mlruns/
@@ -114,16 +114,14 @@ mlruns/
 lightning_logs/
 
 # ── Local Storage & Archival Heavy Derivatives ────────────────
-storage/
-**/storage/
-!**/storage/**/.gitkeep
+/storage/
+**/originals/
 **/derivatives/
 **/iiif-tiles/
 **/uploads-staging/
 **/exports/
 **/alto/
-**/audio/
-**/video/
+**/storage/turso/
 
 # ── Databases & Vector Stores ─────────────────────────────────
 *.db

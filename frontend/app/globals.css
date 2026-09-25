@@ -350,3 +350,174 @@ body {
 .ingestion-toggle-off .ingestion-toggle-knob {
   transform: translateX(3px);
 }
+
+/* ==========================================================================
+   Museum Heritage Curatorial Design System
+   Palette: #FAF7F0 (warm ivory), #0A2947 (midnight navy), #F3E4C9 (cream),
+            #D3D4C0 (sage stone), #8B5E3C (earth brown), #C89D56 (gold foil)
+   ========================================================================== */
+
+:root {
+  --font-serif-editorial: 'Playfair Display', Georgia, serif;
+  --font-cinzel: 'Cinzel', serif;
+  --font-heading: 'Montserrat', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-display: 'Archivo Black', sans-serif;
+
+  --color-bg-canvas: #FAF7F0;
+  --color-surface-cream: #F3E4C9;
+  --color-surface-white: #FFFFFF;
+  --color-text-navy: #0A2947;
+  --color-text-muted: #3D5A80;
+  --color-border-sage: #D3D4C0;
+  --color-accent-brown: #8B5E3C;
+  --color-accent-gold: #C89D56;
+  --color-tricolor-saffron: #E76F51;
+  --color-tricolor-green: #2A9D8F;
+}
+
+/* Typography Utility Classes */
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+.font-playfair, .font-serif-editorial {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+.font-archivo {
+  font-family: 'Archivo Black', sans-serif;
+}
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif;
+}
+.font-dmsans {
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Archival document paper texture & clean light styling */
+.parchment-surface {
+  background-color: #FAF7F0;
+  color: #0A2947;
+  background-image: radial-gradient(#D3D4C0 0.75px, transparent 0.75px);
+  background-size: 20px 20px;
+}
+
+/* Subtle museum archival dark surface */
+.museum-dark-surface {
+  background-color: #08192A;
+  color: #FAF7F0;
+  background-image: radial-gradient(rgba(243, 228, 201, 0.08) 0.75px, transparent 0.75px);
+  background-size: 24px 24px;
+}
+
+/* Museum archival paper lift effect */
+.museum-card {
+  background-color: #FFFFFF;
+  border: 1px solid #D3D4C0;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+.museum-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px -8px rgba(10, 41, 71, 0.09), 0 4px 8px -2px rgba(10, 41, 71, 0.04);
+  border-color: #8B5E3C;
+}
+
+/* Museum Curatorial Label */
+.museum-label {
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  color: #8B5E3C;
+  font-weight: 700;
+}
+
+/* Archival metadata caption */
+.museum-meta {
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  color: #3D5A80;
+}
+
+/* Museum gallery photo frame */
+.museum-photo-frame {
+  position: relative;
+  background-color: #F3E4C9;
+  padding: 10px;
+  border: 1px solid #D3D4C0;
+  box-shadow: 0 10px 25px -5px rgba(10, 41, 71, 0.1), 0 8px 10px -6px rgba(10, 41, 71, 0.05);
+}
+
+@keyframes museumKenBurns {
+  0% {
+    transform: scale(1.0);
+  }
+  100% {
+    transform: scale(1.12) translate(-1%, -1%);
+  }
+}
+
+.animate-kenburns {
+  animation: museumKenBurns 6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.kiosk-touch-target {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+/* Clean Archival Print-to-PDF Media Styles */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm 16mm 16mm 16mm;
+  }
+
+  html, body {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 100% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .fixed, .overflow-hidden, .overflow-y-auto {
+    position: static !important;
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #archival-print-container,
+  #archival-print-container * {
+    visibility: visible;
+  }
+
+  #archival-print-container {
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #F3E4C9 !important;
+    color: #0A2947 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .page-break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
