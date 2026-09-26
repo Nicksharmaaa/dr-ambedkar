@@ -79,8 +79,8 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
           soundEffects.playClick();
           setIsOpen(!isOpen);
         }}
-        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#FAF7F0] hover:bg-[#F3E4C9]/50 border border-[#D3D4C0] hover:border-[#C59A45]/60 text-xs font-mono font-bold text-[#0A2947] transition-all cursor-pointer shadow-xs select-none ${
-          isOpen ? 'ring-2 ring-[#C59A45]/40 border-[#C59A45]' : ''
+        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#FAF7F0] hover:bg-[#F3E4C9]/60 border border-[#D3D4C0] hover:border-[#C59A45] text-xs font-mono font-bold text-[#0A2947] transition-all cursor-pointer shadow-xs select-none ${
+          isOpen ? 'ring-2 ring-[#C59A45] border-[#C59A45] bg-[#F3E4C9]/40' : ''
         } ${buttonClassName}`}
       >
         <Globe className="w-3.5 h-3.5 text-[#8B5E3C] shrink-0" />
@@ -92,28 +92,30 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
         />
       </button>
 
-      {/* Dropdown Menu */}
+      {/* 100% Solid Opaque Dropdown Popover */}
       {isOpen && (
         <div
           role="listbox"
           aria-label="Language options"
-          className="absolute top-full right-0 mt-2 w-48 bg-white/98 backdrop-blur-md border-2 border-[#D3D4C0] rounded-2xl shadow-2xl p-1.5 z-[9999] animate-in fade-in slide-in-from-top-2 duration-150"
+          className="absolute top-full right-0 mt-2 w-56 border-2 border-[#C59A45] rounded-2xl shadow-2xl p-1.5 z-[99999] animate-in fade-in slide-in-from-top-2 duration-150"
           style={{
-            boxShadow: '0 12px 32px rgba(10, 41, 71, 0.15), 0 2px 8px rgba(0, 0, 0, 0.05)',
+            backgroundColor: '#FFFFFF',
+            opacity: 1,
+            boxShadow: '0 20px 45px rgba(10, 41, 71, 0.28), 0 4px 14px rgba(0, 0, 0, 0.12)',
           }}
         >
-          {/* Header */}
-          <div className="px-2.5 py-1.5 flex items-center justify-between border-b border-[#FAF7F0] mb-1">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[#8B5E3C] font-bold">
+          {/* Header Bar */}
+          <div className="px-3 py-1.5 flex items-center justify-between bg-[#FAF7F0] border-b border-[#D3D4C0] rounded-xl mb-1.5">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-[#0A2947] font-bold">
               Language
             </span>
-            <span className="text-[10px] text-[#0A2947]/50 font-sans font-medium">
+            <span className="text-[11px] font-bold text-[#8B5E3C]">
               भाषा
             </span>
           </div>
 
-          {/* Options */}
-          <div className="space-y-0.5">
+          {/* Options with High Contrast & Solid Backgrounds */}
+          <div className="space-y-1.5">
             {LANGUAGES.map((item) => {
               const isSelected = item.id === language;
               return (
@@ -127,36 +129,48 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
                     onSelectLanguage(item.id);
                     setIsOpen(false);
                   }}
-                  className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-all cursor-pointer border ${
                     isSelected
-                      ? 'bg-[#FAF7F0] text-[#0A2947] border border-[#C59A45]/40 font-semibold shadow-xs'
-                      : 'text-[#0A2947]/80 hover:bg-[#FAF7F0]/80 hover:text-[#0A2947]'
+                      ? 'bg-[#0A2947] text-white border-[#0A2947] shadow-sm'
+                      : 'bg-white hover:bg-[#FAF7F0] text-[#0A2947] border-[#E8E6DE] hover:border-[#C59A45]/60'
                   }`}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
+                    {/* Badge */}
                     <span
-                      className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${
+                      className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-md border ${
                         isSelected
-                          ? 'bg-white text-[#8B5E3C] border-[#C59A45]/40'
-                          : 'bg-gray-50 text-[#0A2947]/60 border-gray-200'
+                          ? 'bg-[#C59A45] text-[#0A2947] border-[#C59A45]'
+                          : 'bg-[#FAF7F0] text-[#0A2947] border-[#D3D4C0]'
                       }`}
                     >
                       {item.code}
                     </span>
+
+                    {/* Text Labels */}
                     <div>
-                      <div className="text-xs text-[#0A2947] font-medium leading-tight">
+                      <div
+                        className={`text-sm font-bold leading-tight ${
+                          isSelected ? 'text-white' : 'text-[#0A2947]'
+                        }`}
+                      >
                         {item.nativeName}
                       </div>
                       {item.name !== item.nativeName && (
-                        <div className="text-[10px] text-[#0A2947]/50 leading-tight">
+                        <div
+                          className={`text-[11px] font-medium leading-tight ${
+                            isSelected ? 'text-[#F3E4C9]' : 'text-[#0A2947]/70'
+                          }`}
+                        >
                           {item.name}
                         </div>
                       )}
                     </div>
                   </div>
 
+                  {/* Checkmark */}
                   {isSelected && (
-                    <Check className="w-3.5 h-3.5 text-[#8B5E3C] shrink-0 ml-2" />
+                    <Check className="w-4 h-4 text-[#C59A45] stroke-[3] shrink-0 ml-2" />
                   )}
                 </button>
               );
