@@ -114,7 +114,7 @@ const getBlueNoise = () => {
     return seed / 2147483647;
   };
   const initial = Math.round(n * 0.1);
-  for (let placed = 0; placed < initial; ) {
+  for (let placed = 0; placed < initial;) {
     const i = Math.floor(random() * n);
     if (on[i]) continue;
     on[i] = 1;
@@ -415,7 +415,7 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
   pixelSize = 2,
   levels = 2,
   palette = 'duotone',
-  inkColor = '#120f17',
+  inkColor = '#0a2947',
   paperColor = '#f4f1ea',
   contrast = 1.15,
   brightness = 0,
@@ -434,7 +434,7 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsRef = useRef<any>(null);
-  const wakeRef = useRef<() => void>(() => {});
+  const wakeRef = useRef<() => void>(() => { });
 
   useEffect(() => {
     settingsRef.current = {
@@ -466,11 +466,11 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
     if (!container) return undefined;
 
     const reducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const renderer = new Renderer({ 
-      dpr: Math.min(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, 2), 
-      alpha: true, 
+    const renderer = new Renderer({
+      dpr: Math.min(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, 2),
+      alpha: true,
       premultipliedAlpha: false,
-      antialias: true 
+      antialias: true
     });
     const gl = renderer.gl;
     const canvas = gl.canvas;
@@ -788,7 +788,7 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
           viewUniforms.uMatte.value = edge.matte;
           viewUniforms.uKey.value = edge.plain ? 1 : 0;
         }
-      } catch {}
+      } catch { }
       introStart = performance.now();
       wake();
     };
@@ -849,7 +849,7 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
 
     return () => {
       cancelAnimationFrame(raf);
-      wakeRef.current = () => {};
+      wakeRef.current = () => { };
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       img.onload = null;

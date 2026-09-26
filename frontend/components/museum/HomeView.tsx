@@ -19,6 +19,7 @@ import { LinearTimelineSection } from './LinearTimelineSection';
 import { soundEffects } from '@/utils/soundEffects';
 import DitherVeil from '@/components/ui/DitherVeil';
 import ClickSpark from '@/components/ui/ClickSpark';
+import { HomeStickySearchBar } from './navigation/HomeStickySearchBar';
 
 interface HomeViewProps {
   language: Language;
@@ -44,16 +45,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onReplayIntro
 }) => {
   const t = UI_STRINGS[language];
-  const [searchInput, setSearchInput] = useState('');
   const [heroVisualMode, setHeroVisualMode] = useState<'prism' | 'dither'>('prism');
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchInput.trim()) {
-      soundEffects.playClick();
-      onSearchSubmit(searchInput.trim());
-    }
-  };
 
   // Landmark featured document: Constituent Assembly Speech 1949
   const featuredDocument = ARCHIVE_DOCUMENTS.find(d => d.id === 'constituent-assembly-speech-1949') || ARCHIVE_DOCUMENTS[0];
@@ -108,6 +100,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   return (
     <div className="min-h-screen bg-transparent text-[#0A2947] pb-28 space-y-24 font-dmsans selection:bg-[#D3D4C0] selection:text-[#0A2947]">
+
+      {/* Clean Persistent Sticky Top-Center Search Bar */}
+      <HomeStickySearchBar onSearchSubmit={onSearchSubmit} />
 
       {/* =========================================================================
           HERO EXHIBITION: CINEMATIC MUSEUM ENTRANCE
@@ -186,28 +181,31 @@ export const HomeView: React.FC<HomeViewProps> = ({
               )}
             </div>
 
-            {/* Archival Catalog Search Bar */}
-            <form onSubmit={handleSearch} className="pt-2 max-w-lg">
-              <div className="relative flex items-center">
-                <Search className="absolute left-3.5 w-4 h-4 text-[#8B5E3C]" />
-                <input
-                  id="home-catalog-search"
-                  name="home_catalog_search"
-                  type="text"
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  placeholder="Inquire corpus (e.g. Article 32, Poona Pact, Annihilation of Caste)..."
-                  autoComplete="off"
-                  className="w-full pl-10 pr-24 py-3 bg-white text-[#0A2947] placeholder-[#0A2947]/45 text-xs sm:text-sm rounded-xl border border-[#D3D4C0] focus:border-[#0A2947] focus:outline-none transition-all shadow-xs"
-                />
+            {/* Curated Historical Inquiry Chips */}
+            <div className="pt-2 flex flex-wrap items-center gap-2">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#8B5E3C] font-bold">
+                Quick Inquiries:
+              </span>
+              {[
+                'Annihilation of Caste',
+                'Constituent Assembly',
+                'Poona Pact',
+                'Article 32',
+                'Problem of the Rupee'
+              ].map((topic) => (
                 <button
-                  type="submit"
-                  className="absolute right-1.5 px-3.5 py-1.5 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] text-xs font-montserrat font-bold uppercase rounded-lg transition-colors cursor-pointer"
+                  key={topic}
+                  type="button"
+                  onClick={() => {
+                    soundEffects.playClick();
+                    onSearchSubmit(topic);
+                  }}
+                  className="px-2.5 py-1 rounded-full bg-white/90 hover:bg-[#FAF7F0] border border-[#D3D4C0] hover:border-[#8B5E3C] text-[11px] font-dmsans text-[#0A2947] hover:text-[#8B5E3C] transition-all cursor-pointer shadow-2xs active:scale-95"
                 >
-                  Search
+                  {topic}
                 </button>
-              </div>
-            </form>
+              ))}
+            </div>
 
           </div>
 
@@ -223,11 +221,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   setHeroVisualMode('prism');
                 }}
                 className={`px-3.5 py-1 rounded-full text-[11px] font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${heroVisualMode === 'prism'
-                    ? 'bg-[#0A2947] text-[#FAF7F0] shadow-xs'
-                    : 'text-[#0A2947]/70 hover:text-[#0A2947]'
+                  ? 'bg-[#0A2947] text-[#FAF7F0] shadow-xs'
+                  : 'text-[#0A2947]/70 hover:text-[#0A2947]'
                   }`}
               >
-                <Sparkles className="w-3 h-3 text-[#C59A45]" />
                 <span>Holographic Prism</span>
               </button>
               <button
@@ -237,11 +234,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   setHeroVisualMode('dither');
                 }}
                 className={`px-3.5 py-1 rounded-full text-[11px] font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${heroVisualMode === 'dither'
-                    ? 'bg-[#0A2947] text-[#FAF7F0] shadow-xs'
-                    : 'text-[#0A2947]/70 hover:text-[#0A2947]'
+                  ? 'bg-[#0A2947] text-[#FAF7F0] shadow-xs'
+                  : 'text-[#0A2947]/70 hover:text-[#0A2947]'
                   }`}
               >
-                <span className="font-mono text-xs text-[#C59A45]">▦</span>
                 <span>Archival Dither</span>
               </button>
             </div>
@@ -253,7 +249,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   src="hero.png"
                   pattern="floyd"
                   pixelSize={2}
-                  inkColor="#120f17"
+                  inkColor="#0a2947"
                   paperColor="#f4f1ea"
                   revealRadius={200}
                   softness={0.6}
@@ -278,10 +274,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <p className="text-xs font-mono text-[#8B5E3C] tracking-wide mt-0.5">
                 1891–1956 · Chief Architect of the Constitution · Bharat Ratna
               </p>
-              <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 border border-[#D3D4C0] text-[11px] text-[#0A2947]/80 font-serif italic shadow-2xs">
-                <Quote className="w-3 h-3 text-[#C59A45]" />
-
-              </div>
             </div>
           </div>
 

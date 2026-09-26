@@ -277,30 +277,22 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
             setIsChatOpen(prev => !prev);
             setIsNotebookOpen(false);
           }}
-          className={`relative group w-12 h-12 sm:w-13 sm:h-13 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer active:scale-95 flex items-center justify-center border-2 p-0.5 overflow-visible ${
+          className={`relative group cursor-pointer active:scale-95 transition-all duration-300 flex items-center justify-center ${
             isChatOpen
-              ? 'bg-[#8B5E3C] border-[#C89D56] text-[#FAF7F0] ring-4 ring-[#8B5E3C]/20'
-              : 'bg-[#0A2947] hover:bg-[#123B60] border-[#C89D56] text-[#F3E4C9] hover:border-[#C59A45]'
+              ? 'w-12 h-12 rounded-full bg-[#8B5E3C] border-2 border-[#C89D56] text-[#FAF7F0] shadow-2xl ring-4 ring-[#8B5E3C]/20'
+              : 'w-[72px] h-[72px] sm:w-[84px] sm:h-[84px] bg-transparent border-0 p-0 focus:outline-none'
           }`}
           title={isChatOpen ? "Close AI Scholar" : "Ask Babasaheb AI Scholar"}
           aria-label={isChatOpen ? "Close AI Scholar" : "Open AI Scholar Chat"}
         >
           {isChatOpen ? (
-            <X className="w-5 h-5 text-[#FAF7F0] transition-transform duration-200" />
+            <X className="w-6 h-6 text-[#FAF7F0] transition-transform duration-200" />
           ) : (
-            <>
-              <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center border border-[#C59A45]/40 shadow-xs">
-                <img 
-                  src="/chatbot.png" 
-                  alt="Babasaheb AI Scholar" 
-                  className="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-200"
-                />
-              </div>
-              <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white"></span>
-              </span>
-            </>
+            <img 
+              src="/chatbot.png" 
+              alt="Babasaheb AI Scholar" 
+              className="w-full h-full object-contain filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.45)] group-hover:scale-108 transition-transform duration-200 select-none pointer-events-none"
+            />
           )}
 
           {/* Micro Tooltip on Hover */}
@@ -317,13 +309,13 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
           Grounded on 22 BAWS volumes - Docked snug to bottom corner
           ===================================================================== */}
       {isChatOpen && (
-        <div className="fixed bottom-[64px] right-4 sm:bottom-[70px] sm:right-5 z-50 w-[92vw] sm:w-[360px] max-h-[58vh] h-[390px] bg-[#FAF7F0] rounded-2xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div className="fixed bottom-[84px] right-4 sm:bottom-[96px] sm:right-5 z-50 w-[92vw] sm:w-[370px] max-h-[60vh] h-[410px] bg-[#FAF7F0] rounded-2xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
           
           {/* Compact Header */}
           <div className="bg-[#0A2947] text-[#F3E4C9] px-3.5 py-2.5 flex items-center justify-between border-b-2 border-[#8B5E3C]">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full overflow-hidden border border-[#C59A45] shadow-xs shrink-0 bg-[#0A2947]">
-                <img src="/chatbot.png" alt="Babasaheb AI Scholar" className="w-full h-full object-cover" />
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 shrink-0">
+                <img src="/chatbot.png" alt="Babasaheb AI Scholar" className="w-full h-full object-contain filter drop-shadow-xs" />
               </div>
               <div className="leading-tight">
                 <h3 className="font-montserrat font-bold text-xs tracking-tight text-white">
@@ -374,8 +366,8 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
               >
                 <div className={`flex items-start gap-1.5 max-w-[92%] ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                   {msg.sender === 'assistant' && (
-                    <div className="w-5 h-5 rounded-full overflow-hidden border border-[#C59A45] shrink-0 mt-0.5 shadow-2xs">
-                      <img src="/chatbot.png" alt="AI" className="w-full h-full object-cover" />
+                    <div className="w-6 h-6 shrink-0 mt-0.5">
+                      <img src="/chatbot.png" alt="AI" className="w-full h-full object-contain" />
                     </div>
                   )}
                   <div
