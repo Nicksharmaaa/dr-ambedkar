@@ -71,10 +71,14 @@ class TTSService:
 
         # 1. ElevenLabs routing (default: en, hi)
         if lang in self.elevenlabs_provider.supported_languages:
+            if getattr(self.elevenlabs_provider, "api_key", None):
+                return self.elevenlabs_provider
+            elif getattr(self.sarvam_provider, "api_key", None):
+                return self.sarvam_provider
             return self.elevenlabs_provider
 
-        # 2. Sarvam routing (default: bn, ta, gu, te, kn, ml, mr, pa, od)
-        if lang in self.sarvam_provider.supported_languages:
+        # 2. Sarvam routing (Indic languages + auto-mapped Indic codes)
+        if lang in self.sarvam_provider.supported_languages or lang in SARVAM_LANGUAGE_MAP:
             return self.sarvam_provider
 
         raise TTSProviderError(
@@ -153,14 +157,37 @@ class TTSService:
             except Exception as cache_read_err:
                 logger.warning("Cache lookup error, proceeding with synthesis: %s", cache_read_err)
 
-        # 3. Call provider synthesis
+        # 3. Call provider synthesis with fallback
         try:
-            result: TTSAudioResult = await provider.synthesize(
-                text=clean_text,
-                language=lang,
-                speaker=speaker,
-                dict_id=dict_id,
-            )
+            try:
+                result: TTSAudioResult = await provider.synthesize(
+                    text=clean_text,
+                    language=lang,
+                    speaker=speaker,
+                    dict_id=dict_id,
+                )
+            except Exception as primary_err:
+                # Automatic fallback: If ElevenLabs fails and Sarvam is available, fallback to Sarvam AI Bulbul v3
+                if provider.provider_name == "elevenlabs" and self.sarvam_provider.api_key:
+                    logger.warning("ElevenLabs synthesis failed (%s), falling back to Sarvam AI Bulbul v3...", primary_err)
+                    provider = self.sarvam_provider
+                    result = await provider.synthesize(
+                        text=clean_text,
+                        language=lang,
+                        speaker=speaker,
+                        dict_id=dict_id,
+                    )
+                elif provider.provider_name == "sarvam" and self.elevenlabs_provider.api_key and lang in self.elevenlabs_provider.supported_languages:
+                    logger.warning("Sarvam synthesis failed (%s), falling back to ElevenLabs...", primary_err)
+                    provider = self.elevenlabs_provider
+                    result = await provider.synthesize(
+                        text=clean_text,
+                        language=lang,
+                        speaker=speaker,
+                        dict_id=dict_id,
+                    )
+                else:
+                    raise primary_err
 
             # Determine actual file extension from content_type
             if "mpeg" in result.content_type or "mp3" in result.content_type:
@@ -215,3 +242,4 @@ class TTSService:
                 "error": f"TTS synthesis failed: {e}",
                 "provider": provider.provider_name,
             }
+

@@ -37,6 +37,7 @@ import {
   CitationItem,
   ClaimValidationItem,
 } from "@/lib/types";
+import { speechController } from "@/utils/speechUtils";
 
 interface ChatMessage {
   id: string;
@@ -293,29 +294,22 @@ export default function AssistantDrawer({ isOpen, onClose }: AssistantDrawerProp
     }
   };
 
-  // Text-to-Speech playback with waveform toggle
+  // Text-to-Speech playback using Sarvam AI & ElevenLabs Neural Voice Models
   const handleToggleTTS = (msgId: string, text: string) => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      return;
-    }
-
     if (activeSpeechId === msgId) {
-      window.speechSynthesis.cancel();
+      speechController.stop();
       setActiveSpeechId(null);
       return;
     }
 
-    window.speechSynthesis.cancel();
     const cleanText = text.replace(/[*_#`[\]()]/g, " ").trim();
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 0.95;
-    utterance.pitch = 1.0;
-
-    utterance.onend = () => setActiveSpeechId(null);
-    utterance.onerror = () => setActiveSpeechId(null);
+    if (!cleanText) return;
 
     setActiveSpeechId(msgId);
-    window.speechSynthesis.speak(utterance);
+    const lang = (selectedLanguage === "hi" || selectedLanguage === "mr") ? selectedLanguage : "en";
+    speechController.speak(cleanText, lang, () => {
+      setActiveSpeechId(null);
+    });
   };
 
   // Submit inquiry to real backend RAG service
