@@ -248,17 +248,20 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
 
         {/* Archival Epoch Gateways */}
-        <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-[#D3D4C0]/80">
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#8B5E3C]">
-              Historical Epochs · 1916–1956
-            </span>
-            <span className="text-[11px] font-mono text-[#0A2947]/60 hidden sm:inline">
-              Select an epoch to examine verified treatises
+        <div className="max-w-7xl mx-auto mt-12 pt-8 border-t-2 border-[#C8C9B4]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-4">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#8B5E3C] shadow-xs" />
+              <span className="font-cinzel text-xs sm:text-sm font-black uppercase tracking-widest text-[#0A2947]">
+                Historical Epochs · 1916–1956
+              </span>
+            </div>
+            <span className="text-xs font-mono font-semibold text-[#0A2947] hidden sm:inline">
+              Select an epoch to examine verified treatises &rarr;
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
             {historicalGateways.map((gate) => (
               <button
                 key={gate.period}
@@ -267,18 +270,23 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   onExploreCategory(gate.eraFilter);
                   onNavigateTab('archive');
                 }}
-                className="p-3.5 rounded-xl bg-white border border-[#D3D4C0] hover:border-[#8B5E3C] hover:bg-[#F3E4C9]/40 text-left transition-all cursor-pointer group shadow-2xs"
+                className="p-4 rounded-2xl bg-white border-2 border-[#C8C9B4] hover:border-[#0A2947] hover:shadow-lg text-left transition-all cursor-pointer group shadow-sm relative overflow-hidden"
               >
+                {/* Accent top highlight */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-[#8B5E3C] group-hover:bg-[#0A2947] transition-colors" />
+
                 <div className="flex items-center justify-between">
-                  <span className="font-serif-editorial text-lg font-bold text-[#0A2947] group-hover:text-[#8B5E3C] transition-colors">
+                  <span className="font-serif-editorial text-2xl font-black text-[#0A2947] tracking-tight">
                     {gate.period}
                   </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-[#8B5E3C] group-hover:translate-x-0.5 transition-transform" />
+                  <div className="w-6 h-6 rounded-full bg-[#FAF7F0] border border-[#D3D4C0] flex items-center justify-center text-[#0A2947] group-hover:bg-[#0A2947] group-hover:text-[#FAF7F0] group-hover:border-[#0A2947] transition-all">
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </div>
                 </div>
-                <div className="text-xs font-montserrat font-bold text-[#8B5E3C] mt-0.5">
+                <div className="text-xs sm:text-[13px] font-montserrat font-bold text-[#0A2947] mt-2 group-hover:text-[#8B5E3C] transition-colors">
                   {gate.label}
                 </div>
-                <div className="text-[11px] text-[#0A2947]/70 line-clamp-1 mt-1 leading-snug">
+                <div className="text-xs text-[#334155] font-medium line-clamp-1 mt-1 leading-snug">
                   {gate.event}
                 </div>
               </button>
@@ -427,24 +435,24 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 onExploreCategory(thm.docQuery);
                 onNavigateTab('archive');
               }}
-              className="p-5 sm:p-6 rounded-2xl bg-white border border-[#D3D4C0] hover:border-[#0A2947] text-left transition-all hover:shadow-md cursor-pointer group flex flex-col justify-between"
+              className="p-5 sm:p-6 rounded-2xl bg-white border-2 border-[#C8C9B4] hover:border-[#0A2947] text-left transition-all hover:shadow-lg cursor-pointer group flex flex-col justify-between shadow-xs"
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-[#8B5E3C] font-bold">
                     {thm.code}
                   </span>
-                  <ArrowRight className="w-4 h-4 text-[#D3D4C0] group-hover:text-[#0A2947] group-hover:translate-x-1 transition-all" />
+                  <ArrowRight className="w-4 h-4 text-[#8B5E3C] group-hover:text-[#0A2947] group-hover:translate-x-1 transition-all" />
                 </div>
                 <h3 className="font-serif-editorial text-lg font-bold text-[#0A2947] group-hover:text-[#8B5E3C] transition-colors">
                   {thm.title}
                 </h3>
-                <p className="text-xs text-[#0A2947]/70 font-dmsans leading-relaxed">
+                <p className="text-xs text-[#334155] font-normal leading-relaxed">
                   {thm.desc}
                 </p>
               </div>
 
-              <div className="pt-3.5 mt-3.5 border-t border-[#D3D4C0]/50 text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#8B5E3C] group-hover:text-[#0A2947]">
+              <div className="pt-3.5 mt-3.5 border-t-2 border-[#D3D4C0]/70 text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#0A2947] group-hover:text-[#8B5E3C]">
                 Open Gallery &rarr;
               </div>
             </button>

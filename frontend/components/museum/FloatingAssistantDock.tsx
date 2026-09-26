@@ -5,7 +5,7 @@ import {
   Sparkles, Bookmark, X, Send, Volume2, VolumeX, 
   ExternalLink, Copy, Check, Trash2, Edit3, Save, 
   BookOpen, FileText, ChevronDown, Bot, MessageSquare, Download,
-  Mic, MicOff, Radio
+  Mic, MicOff, Radio, RotateCcw
 } from 'lucide-react';
 import { Language, SavedCollectionItem, ArchivalDocument, ResearchAnswer } from '@/types/museum';
 import { RESEARCH_ANSWERS_DB, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
@@ -267,117 +267,142 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
   return (
     <>
       {/* =====================================================================
-          PERMANENT BOTTOM-RIGHT FLOATING ACTION DOCK (Babasaheb AI Scholar)
+          PERMANENT BOTTOM-RIGHT FLOATING CHATBOT FAB
           ===================================================================== */}
-      <aside aria-label="Quick Museum Actions" className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2.5 pointer-events-auto">
-        
-        {/* Ask AI Permanent Floating Trigger */}
+      <aside aria-label="AI Scholar Chatbot" className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-40 flex flex-col items-end pointer-events-auto">
         <button
           onClick={() => {
             soundEffects.playClick();
             setIsChatOpen(prev => !prev);
             setIsNotebookOpen(false);
           }}
-          className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer active:scale-95 border-2 border-[#D3D4C0] backdrop-blur-md ${
+          className={`relative group w-11 h-11 sm:w-12 sm:h-12 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer active:scale-95 flex items-center justify-center border-2 ${
             isChatOpen
-              ? 'bg-[#8B5E3C] text-[#FAF7F0] ring-4 ring-[#C89D56]/40 border-[#8B5E3C]'
-              : 'bg-white/95 hover:bg-[#FAF7F0] text-[#0A2947] hover:border-[#C89D56]'
+              ? 'bg-[#8B5E3C] border-[#C89D56] text-[#FAF7F0] ring-4 ring-[#8B5E3C]/20'
+              : 'bg-[#0A2947] hover:bg-[#123B60] border-[#D3D4C0] text-[#F3E4C9] hover:border-[#C89D56]'
           }`}
-          title="Consult Babasaheb AI Scholar"
-          aria-label="Ask AI Scholar"
+          title={isChatOpen ? "Close AI Scholar" : "Ask Babasaheb AI Scholar"}
+          aria-label={isChatOpen ? "Close AI Scholar" : "Open AI Scholar Chat"}
         >
-          <div className="w-6 h-6 rounded-lg bg-[#FAF7F0] flex items-center justify-center border border-[#D3D4C0]">
-            <Sparkles className="w-3.5 h-3.5 text-[#8B5E3C]" />
-          </div>
-          <div className="flex flex-col text-left">
-            <span className="font-cinzel font-bold text-xs uppercase tracking-wider text-[#0A2947]">
-              AI Scholar
+          {isChatOpen ? (
+            <X className="w-5 h-5 text-[#FAF7F0] transition-transform duration-200" />
+          ) : (
+            <>
+              <Bot className="w-5 h-5 sm:w-6 sm:h-6 text-[#F3E4C9] group-hover:scale-110 transition-transform duration-200" />
+              <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white"></span>
+              </span>
+            </>
+          )}
+
+          {/* Micro Tooltip on Hover */}
+          {!isChatOpen && (
+            <span className="absolute right-full mr-3 px-2.5 py-1 bg-[#0A2947] text-[#FAF7F0] text-[11px] font-montserrat font-medium rounded-xl shadow-lg border border-[#D3D4C0]/40 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+              Ask AI Scholar
             </span>
-            <span className="text-[9px] font-mono text-[#8B5E3C] tracking-tight">
-              22 Volumes Grounded
-            </span>
-          </div>
+          )}
         </button>
       </aside>
 
       {/* =====================================================================
-          AI CHATBOT POP-OPEN MODAL WINDOW
-          Grounded exclusively on the 22 BAWS volumes
+          REVAMPED COMPACT AI CHATBOT DIALOG
+          Grounded on 22 BAWS volumes - Docked snug to bottom corner
           ===================================================================== */}
       {isChatOpen && (
-        <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[94vw] sm:w-[460px] max-h-[82vh] h-[640px] bg-[#FAF7F0] rounded-3xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="fixed bottom-[64px] right-4 sm:bottom-[70px] sm:right-5 z-50 w-[92vw] sm:w-[360px] max-h-[58vh] h-[390px] bg-[#FAF7F0] rounded-2xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
           
-          {/* Header */}
-          <div className="bg-[#0A2947] text-[#F3E4C9] px-5 py-3.5 flex items-center justify-between border-b-2 border-[#8B5E3C]">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-[#F3E4C9]" />
+          {/* Compact Header */}
+          <div className="bg-[#0A2947] text-[#F3E4C9] px-3.5 py-2.5 flex items-center justify-between border-b-2 border-[#8B5E3C]">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center border border-white/15">
+                <Bot className="w-4 h-4 text-[#F3E4C9]" />
               </div>
-              <div>
-                <h3 className="font-montserrat font-bold text-sm tracking-tight text-white leading-tight">
+              <div className="leading-tight">
+                <h3 className="font-montserrat font-bold text-xs tracking-tight text-white">
                   Babasaheb AI Scholar
                 </h3>
-                <span className="text-[10px] text-[#D3D4C0] font-mono flex items-center gap-1">
+                <span className="text-[9px] text-[#D3D4C0] font-mono flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  Grounded on 22 BAWS Volumes
+                  22 Volumes Grounded
                 </span>
               </div>
             </div>
 
-            <button
-              onClick={() => setIsChatOpen(false)}
-              className="p-1 rounded-full hover:bg-white/20 text-[#F3E4C9] transition-colors cursor-pointer"
-              aria-label="Close Ask AI window"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setMessages([
+                    {
+                      id: 'welcome-msg',
+                      sender: 'assistant',
+                      text: "Jai Bhim! Ask me anything about Babasaheb's 22 BAWS volumes, writings, speeches, or constitutional debates.",
+                      timestamp: 'Now'
+                    }
+                  ]);
+                }}
+                className="p-1 rounded-md hover:bg-white/15 text-[#D3D4C0] hover:text-[#F3E4C9] transition-colors cursor-pointer"
+                title="Reset conversation"
+                aria-label="Reset conversation"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setIsChatOpen(false)}
+                className="p-1 rounded-md hover:bg-white/15 text-[#D3D4C0] hover:text-white transition-colors cursor-pointer"
+                aria-label="Close AI Chat"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Chat Messages Stream */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#F3E4C9]/70">
+          <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-[#FAF7F0]">
             {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
               >
                 <div
-                  className={`max-w-[88%] rounded-2xl p-3.5 text-xs sm:text-sm leading-relaxed ${
+                  className={`max-w-[88%] rounded-2xl p-2.5 text-xs leading-relaxed ${
                     msg.sender === 'user'
-                      ? 'bg-[#0A2947] text-[#F3E4C9] font-dmsans rounded-br-none shadow-xs'
-                      : 'bg-white text-[#0A2947] border border-[#D3D4C0] shadow-xs font-dmsans rounded-bl-none'
+                      ? 'bg-[#0A2947] text-[#FAF7F0] font-dmsans rounded-tr-xs shadow-xs'
+                      : 'bg-white text-[#0A2947] border border-[#D3D4C0] shadow-xs font-dmsans rounded-tl-xs'
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{msg.text}</p>
 
                   {/* Archival Citations Container */}
                   {msg.sources && msg.sources.length > 0 && (
-                    <div className="mt-3 pt-2.5 border-t border-[#D3D4C0] space-y-2">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#8B5E3C] font-bold block">
-                        Verified Primary Sources:
+                    <div className="mt-2 pt-2 border-t border-[#D3D4C0]/70 space-y-1.5">
+                      <span className="text-[9px] font-mono uppercase tracking-wider text-[#8B5E3C] font-bold block">
+                        Verified Sources:
                       </span>
                       {msg.sources.map((src, sIdx) => (
                         <div
                           key={sIdx}
-                          className="p-2 bg-[#F3E4C9] border border-[#D3D4C0] rounded-xl space-y-1 text-xs"
+                          className="p-1.5 bg-[#FAF7F0] border border-[#D3D4C0] rounded-lg space-y-0.5 text-[11px]"
                         >
                           <div className="flex items-center justify-between">
                             <span className="font-montserrat font-bold text-[#0A2947] truncate pr-1">
                               {src.docTitle}
                             </span>
-                            <span className="text-[10px] font-mono text-[#8B5E3C] shrink-0">
+                            <span className="text-[9px] font-mono text-[#8B5E3C] shrink-0">
                               {src.pageNo || src.volumeOrSection}
                             </span>
                           </div>
                           {src.excerpt && (
-                            <p className="text-[11px] text-[#0A2947]/80 italic font-serif">
+                            <p className="text-[10px] text-[#0A2947]/75 italic font-serif line-clamp-2">
                               "{src.excerpt}"
                             </p>
                           )}
                           <button
                             onClick={() => handleOpenDocById(src.docId)}
-                            className="text-[10px] font-montserrat font-bold text-[#8B5E3C] hover:underline flex items-center gap-1 cursor-pointer pt-0.5"
+                            className="text-[9px] font-montserrat font-bold text-[#8B5E3C] hover:underline flex items-center gap-1 cursor-pointer pt-0.5"
                           >
-                            <span>Read Verified Folio</span>
+                            <span>View Folio</span>
                             <ExternalLink className="w-2.5 h-2.5" />
                           </button>
                         </div>
@@ -387,13 +412,13 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
 
                   {/* Actions for Assistant Messages */}
                   {msg.sender === 'assistant' && (
-                    <div className="mt-2 pt-1 flex items-center justify-between text-[11px] text-[#0A2947]/60">
+                    <div className="mt-1.5 pt-1 flex items-center justify-between text-[10px] text-[#0A2947]/50">
                       <span>{msg.timestamp}</span>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => handleSpeak(msg.id, msg.text)}
-                          className="hover:text-[#8B5E3C] transition-colors p-1"
-                          title="Read out loud (TTS)"
+                          className="hover:text-[#8B5E3C] transition-colors p-0.5"
+                          title="Read out loud"
                         >
                           {speakingMsgId === msg.id ? (
                             <VolumeX className="w-3.5 h-3.5 text-[#8B5E3C]" />
@@ -403,8 +428,8 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
                         </button>
                         <button
                           onClick={() => handleCopyText(msg.id, msg.text)}
-                          className="hover:text-[#8B5E3C] transition-colors p-1"
-                          title="Copy text"
+                          className="hover:text-[#8B5E3C] transition-colors p-0.5"
+                          title="Copy"
                         >
                           {copiedMsgId === msg.id ? (
                             <Check className="w-3.5 h-3.5 text-emerald-700" />
@@ -420,9 +445,9 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
             ))}
 
             {isGenerating && (
-              <div className="flex items-center gap-2 text-xs text-[#0A2947] font-montserrat p-2 bg-white rounded-xl border border-[#D3D4C0] w-fit">
+              <div className="flex items-center gap-2 text-[11px] text-[#0A2947] font-montserrat p-2 bg-white rounded-xl border border-[#D3D4C0] w-fit">
                 <Sparkles className="w-3.5 h-3.5 text-[#8B5E3C] animate-spin" />
-                <span>Searching 22 BAWS volumes for citations...</span>
+                <span>Searching BAWS archives...</span>
               </div>
             )}
 
@@ -430,12 +455,12 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
           </div>
 
           {/* Quick Suggested Prompt Pills */}
-          <div className="px-3 py-2 bg-white border-t border-[#D3D4C0] overflow-x-auto flex items-center gap-2 scrollbar-none">
+          <div className="px-2.5 py-1.5 bg-white border-t border-[#D3D4C0] overflow-x-auto flex items-center gap-1.5 scrollbar-none">
             {samplePrompts.map((prompt, pIdx) => (
               <button
                 key={pIdx}
                 onClick={() => handleSendMessage(prompt)}
-                className="px-2.5 py-1 bg-[#D3D4C0]/40 hover:bg-[#D3D4C0] text-[#0A2947] text-[11px] font-montserrat rounded-full whitespace-nowrap transition-colors cursor-pointer shrink-0"
+                className="px-2 py-0.5 bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] text-[10px] font-montserrat rounded-full whitespace-nowrap border border-[#D3D4C0] transition-colors cursor-pointer shrink-0"
               >
                 {prompt}
               </button>
@@ -444,7 +469,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
 
           {/* Live Voice Status Indicator */}
           {voiceNotice && (
-            <div className={`px-3 py-1.5 text-xs font-mono flex items-center justify-between border-t transition-all ${
+            <div className={`px-2.5 py-1 text-[11px] font-mono flex items-center justify-between border-t transition-all ${
               isListeningVoice 
                 ? 'bg-amber-100/90 text-amber-900 border-amber-300 animate-pulse' 
                 : 'bg-emerald-50 text-emerald-800 border-emerald-200'
@@ -457,9 +482,9 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
                 <button
                   type="button"
                   onClick={handleToggleVoice}
-                  className="text-[10px] uppercase font-bold text-red-700 hover:underline cursor-pointer"
+                  className="text-[9px] uppercase font-bold text-red-700 hover:underline cursor-pointer"
                 >
-                  Done Speaking
+                  Done
                 </button>
               )}
             </div>
@@ -471,7 +496,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
               e.preventDefault();
               handleSendMessage();
             }}
-            className="p-3 bg-white border-t border-[#D3D4C0] flex items-center gap-2"
+            className="p-2 bg-white border-t border-[#D3D4C0] flex items-center gap-1.5"
           >
             <input
               id="floating-assistant-chat-input"
@@ -481,8 +506,8 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
               onChange={(e) => setInputQuery(e.target.value)}
               placeholder={isListeningVoice ? "Listening... Speak now..." : "Ask about speeches, treaties, articles..."}
               autoComplete="off"
-              className={`flex-1 bg-white border rounded-xl px-3.5 py-2 text-xs text-[#0A2947] focus:outline-none transition-all font-dmsans ${
-                isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40' : 'border-[#D3D4C0] focus:border-[#0A2947]'
+              className={`flex-1 bg-[#FAF7F0] border rounded-xl px-3 py-1.5 text-xs text-[#0A2947] focus:outline-none transition-all font-dmsans ${
+                isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40 bg-amber-50/50' : 'border-[#D3D4C0] focus:border-[#0A2947]'
               }`}
             />
             
@@ -490,26 +515,26 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
             <button
               type="button"
               onClick={handleToggleVoice}
-              className={`p-2.5 rounded-xl transition-all cursor-pointer shrink-0 shadow-xs flex items-center justify-center ${
+              className={`p-1.5 rounded-lg transition-all cursor-pointer shrink-0 ${
                 isListeningVoice
                   ? 'bg-red-600 text-white animate-pulse ring-2 ring-red-400'
                   : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#8B5E3C] border border-[#D3D4C0]'
               }`}
-              title={isListeningVoice ? "Stop voice listening" : "Click to speak your question using your voice"}
+              title={isListeningVoice ? "Stop voice listening" : "Click to speak"}
               aria-label="Voice input button"
             >
-              {isListeningVoice ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              {isListeningVoice ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
             </button>
 
             {/* Send Button */}
             <button
               type="submit"
               disabled={!inputQuery.trim() || isGenerating}
-              className="p-2.5 bg-[#0A2947] hover:bg-[#8B5E3C] disabled:opacity-50 text-[#F3E4C9] rounded-xl transition-all cursor-pointer shrink-0 shadow-sm"
+              className="p-1.5 bg-[#0A2947] hover:bg-[#8B5E3C] disabled:opacity-40 text-[#F3E4C9] rounded-lg transition-all cursor-pointer shrink-0 shadow-xs"
               aria-label="Send query"
               title="Send query"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-3.5 h-3.5" />
             </button>
           </form>
 
@@ -521,7 +546,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
           Shows saved citations, folios, personal notes, and export options
           ===================================================================== */}
       {isNotebookOpen && (
-        <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[94vw] sm:w-[460px] max-h-[82vh] h-[640px] bg-[#FAF7F0] rounded-3xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="fixed bottom-[64px] right-4 sm:bottom-[70px] sm:right-5 z-50 w-[92vw] sm:w-[360px] max-h-[58vh] h-[390px] bg-[#FAF7F0] rounded-2xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
           
           {/* Notebook Header */}
           <div className="bg-[#8B5E3C] text-[#F3E4C9] px-5 py-3.5 flex items-center justify-between border-b-2 border-[#0A2947]">

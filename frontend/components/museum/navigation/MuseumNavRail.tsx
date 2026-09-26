@@ -148,13 +148,14 @@ export const MuseumNavRail: React.FC<MuseumNavRailProps> = ({
         }`}
       >
         <div 
-          className={`relative rounded-3xl transition-all duration-300 border-2 border-[#D3D4C0] shadow-xl overflow-visible backdrop-blur-2xl ${
+          className={`relative rounded-3xl transition-all duration-300 border-2 border-[#C8C9B4] shadow-xl overflow-visible ${
             isExpanded 
-              ? 'bg-white/98 p-4 ring-1 ring-[#C89D56]/25' 
-              : 'bg-white/95 p-2 sm:p-2.5 hover:border-[#C89D56]/70'
+              ? 'bg-white p-4 ring-1 ring-[#C89D56]/25' 
+              : 'bg-white p-2 sm:p-2.5 hover:border-[#C89D56]/70'
           }`}
           style={{
-            boxShadow: '0 16px 40px rgba(10, 41, 71, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04)',
+            backgroundColor: '#FFFFFF',
+            boxShadow: '0 16px 40px rgba(10, 41, 71, 0.15), 0 2px 8px rgba(0, 0, 0, 0.06)',
           }}
         >
           {/* Header Anchor Mark ("A" Museum Seal) */}
@@ -285,7 +286,8 @@ export const MuseumNavRail: React.FC<MuseumNavRailProps> = ({
                   {/* Desktop Hover Tooltip in Collapsed State */}
                   {!isExpanded && isHovered && (
                     <div 
-                      className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 z-[9999] px-3 py-1.5 rounded-xl bg-white/98 text-[#0A2947] border border-[#D3D4C0] shadow-xl backdrop-blur-xl whitespace-nowrap pointer-events-none animate-in fade-in slide-in-from-left-1 duration-150"
+                      className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 z-[9999] px-3.5 py-2 rounded-xl bg-white text-[#0A2947] border-2 border-[#C8C9B4] shadow-2xl whitespace-nowrap pointer-events-none animate-in fade-in slide-in-from-left-1 duration-150"
+                      style={{ backgroundColor: '#FFFFFF', opacity: 1 }}
                       role="tooltip"
                     >
                       <div className="text-xs font-serif font-bold text-[#0A2947] flex items-center gap-1.5">
@@ -296,7 +298,7 @@ export const MuseumNavRail: React.FC<MuseumNavRailProps> = ({
                           </span>
                         )}
                       </div>
-                      <div className="text-[9px] font-mono text-[#8B5E3C] uppercase tracking-wider font-semibold">
+                      <div className="text-[10px] font-mono text-[#8B5E3C] uppercase tracking-wider font-bold">
                         {item.subtitle}
                       </div>
                     </div>

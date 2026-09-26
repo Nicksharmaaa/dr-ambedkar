@@ -69,13 +69,13 @@ export const LinearTimelineSection: React.FC<LinearTimelineSectionProps> = ({
           <h2 className="text-3xl sm:text-4xl font-serif-editorial font-bold text-[#0A2947] tracking-tight">
             Chronicles of a Revolutionary Life
           </h2>
-          <p className="text-xs sm:text-sm text-[#0A2947]/75 font-normal max-w-2xl">
+          <p className="text-xs sm:text-sm text-[#334155] font-normal max-w-2xl leading-relaxed">
             Walk through the decisive historical epochs of Dr. Ambedkar's journey. Select any milestone on the timeline corridor to examine primary manuscripts, photographs, and constitutional debates.
           </p>
         </div>
 
         {/* Epoch Filter Badges */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-white p-1.5 rounded-2xl border border-[#D3D4C0] shadow-xs">
+        <div className="flex flex-wrap items-center gap-1.5 bg-white p-1.5 rounded-2xl border-2 border-[#D3D4C0] shadow-xs">
           {epochs.map(epoch => (
             <button
               key={epoch.id}
@@ -85,8 +85,8 @@ export const LinearTimelineSection: React.FC<LinearTimelineSectionProps> = ({
               }}
               className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer ${
                 selectedEpoch === epoch.id
-                  ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs'
-                  : 'text-[#0A2947]/70 hover:text-[#0A2947] hover:bg-[#FAF7F0]'
+                  ? 'bg-[#0A2947] text-[#FAF7F0] shadow-xs'
+                  : 'text-[#0A2947] hover:bg-[#FAF7F0]'
               }`}
             >
               {epoch.label}
@@ -96,7 +96,7 @@ export const LinearTimelineSection: React.FC<LinearTimelineSectionProps> = ({
       </div>
 
       {/* Main Interactive Corridor Box */}
-      <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+      <div className="bg-white border-2 border-[#C8C9B4] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
         
         {/* Horizontal Scrollable Station Track */}
         <div className="relative overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-[#8B5E3C]/40 scrollbar-track-[#FAF7F0]">

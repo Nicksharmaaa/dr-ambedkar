@@ -158,7 +158,8 @@ export const TopUtilityBar: React.FC<TopUtilityBarProps> = ({
 
             {isModeOpen && (
               <div 
-                className="absolute top-full right-0 mt-2 w-56 bg-white border-2 border-[#D3D4C0] rounded-2xl shadow-2xl p-2 z-50 backdrop-blur-2xl animate-in fade-in slide-in-from-top-2 duration-150"
+                className="absolute top-full right-0 mt-2 w-56 bg-white border-2 border-[#C8C9B4] rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+                style={{ backgroundColor: '#FFFFFF', opacity: 1 }}
                 onMouseLeave={() => setIsModeOpen(false)}
               >
                 <div className="px-2 py-1 text-[10px] font-mono text-[#8B5E3C] uppercase tracking-wider font-bold">
