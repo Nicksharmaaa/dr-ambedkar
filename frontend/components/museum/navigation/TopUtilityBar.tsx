@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { Language, AccessibilitySettings, UserMode } from '@/types/museum';
 import { soundEffects } from '@/utils/soundEffects';
+import { LanguageDropdown } from './LanguageDropdown';
 
 interface TopUtilityBarProps {
   language: Language;
@@ -92,24 +93,10 @@ export const TopUtilityBar: React.FC<TopUtilityBarProps> = ({
         <div className="w-[1px] h-4 bg-[#D3D4C0] my-auto hidden sm:block" />
 
         {/* 3. Language Selector */}
-        <div className="flex items-center gap-1 px-2 py-1 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] text-xs font-mono">
-          <Globe className="w-3 h-3 text-[#8B5E3C]" />
-          <select
-            id="top-language-select"
-            name="top_language"
-            aria-label="Select interface language"
-            value={language}
-            onChange={(e) => {
-              soundEffects.playClick();
-              onSelectLanguage(e.target.value as Language);
-            }}
-            className="bg-transparent text-[#0A2947] text-xs font-mono font-bold focus:outline-none cursor-pointer"
-          >
-            <option value="en" className="bg-white text-[#0A2947]">EN</option>
-            <option value="hi" className="bg-white text-[#0A2947]">HI</option>
-            <option value="mr" className="bg-white text-[#0A2947]">MR</option>
-          </select>
-        </div>
+        <LanguageDropdown
+          language={language}
+          onSelectLanguage={onSelectLanguage}
+        />
 
         {/* 4. Audio Narration & Sound Toggle */}
         <button
