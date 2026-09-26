@@ -91,7 +91,13 @@ class Settings(BaseSettings):
     jwt_refresh_expire_days: int = 30
 
     # ── CORS ──────────────────────────────────────────────────
-    cors_origins: str | list[str] = ["http://localhost:3000", "http://localhost:3001"]
+    cors_origins: str | list[str] = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+    ]
+    cors_origin_regex: str | None = r"^https://.*\.vercel\.app$"
 
     # ── Logging ───────────────────────────────────────────────
     log_level: str = "INFO"

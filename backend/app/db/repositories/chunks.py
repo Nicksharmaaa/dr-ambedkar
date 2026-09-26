@@ -118,37 +118,69 @@ class ChunkRepository:
         if key_terms and len(key_terms) > 1 and len(clean_terms) > 2:
             queries_to_try.append(" OR ".join(key_terms))
 
+        is_postgres = hasattr(self.db, "_pool") or self.db.__class__.__name__ == "PostgresClient"
         for fts_q in queries_to_try:
             try:
-                if object_id:
-                    result = await self.db.execute(
-                        """
-                        SELECT dc.id, dc.object_id, dc.text, dc.language,
-                               dc.page_number, dc.volume_number, dc.section_title,
-                               fts.rank AS fts_rank
-                        FROM fts_chunks fts
-                        JOIN document_chunks dc ON dc.id = fts.chunk_id
-                        WHERE fts_chunks MATCH ?
-                          AND dc.object_id = ?
-                        ORDER BY fts.rank
-                        LIMIT ?
-                        """,
-                        [fts_q, object_id, limit],
-                    )
+                if is_postgres:
+                    if object_id:
+                        result = await self.db.execute(
+                            """
+                            SELECT dc.id, dc.object_id, dc.text, dc.language,
+                                   dc.page_number, dc.volume_number, dc.section_title,
+                                   ts_rank(fts.tsv, plainto_tsquery('english', %s)) AS fts_rank
+                            FROM fts_chunks fts
+                            JOIN document_chunks dc ON dc.id = fts.chunk_id
+                            WHERE fts.tsv @@ plainto_tsquery('english', %s)
+                              AND dc.object_id = %s
+                            ORDER BY fts_rank DESC
+                            LIMIT %s
+                            """,
+                            [fts_q, fts_q, object_id, limit],
+                        )
+                    else:
+                        result = await self.db.execute(
+                            """
+                            SELECT dc.id, dc.object_id, dc.text, dc.language,
+                                   dc.page_number, dc.volume_number, dc.section_title,
+                                   ts_rank(fts.tsv, plainto_tsquery('english', %s)) AS fts_rank
+                            FROM fts_chunks fts
+                            JOIN document_chunks dc ON dc.id = fts.chunk_id
+                            WHERE fts.tsv @@ plainto_tsquery('english', %s)
+                            ORDER BY fts_rank DESC
+                            LIMIT %s
+                            """,
+                            [fts_q, fts_q, limit],
+                        )
                 else:
-                    result = await self.db.execute(
-                        """
-                        SELECT dc.id, dc.object_id, dc.text, dc.language,
-                               dc.page_number, dc.volume_number, dc.section_title,
-                               fts.rank AS fts_rank
-                        FROM fts_chunks fts
-                        JOIN document_chunks dc ON dc.id = fts.chunk_id
-                        WHERE fts_chunks MATCH ?
-                        ORDER BY fts.rank
-                        LIMIT ?
-                        """,
-                        [fts_q, limit],
-                    )
+                    if object_id:
+                        result = await self.db.execute(
+                            """
+                            SELECT dc.id, dc.object_id, dc.text, dc.language,
+                                   dc.page_number, dc.volume_number, dc.section_title,
+                                   fts.rank AS fts_rank
+                            FROM fts_chunks fts
+                            JOIN document_chunks dc ON dc.id = fts.chunk_id
+                            WHERE fts_chunks MATCH ?
+                              AND dc.object_id = ?
+                            ORDER BY fts.rank
+                            LIMIT ?
+                            """,
+                            [fts_q, object_id, limit],
+                        )
+                    else:
+                        result = await self.db.execute(
+                            """
+                            SELECT dc.id, dc.object_id, dc.text, dc.language,
+                                   dc.page_number, dc.volume_number, dc.section_title,
+                                   fts.rank AS fts_rank
+                            FROM fts_chunks fts
+                            JOIN document_chunks dc ON dc.id = fts.chunk_id
+                            WHERE fts_chunks MATCH ?
+                            ORDER BY fts.rank
+                            LIMIT ?
+                            """,
+                            [fts_q, limit],
+                        )
 
                 if result.rows:
                     rows = []

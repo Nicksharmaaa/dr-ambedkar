@@ -413,7 +413,8 @@ export const api = {
 
   transcribeVoice: async (audioBlob: Blob, language?: string) => {
     const formData = new FormData();
-    formData.append("audio", audioBlob, "voice_query.wav");
+    const ext = audioBlob.type.includes("webm") ? "webm" : audioBlob.type.includes("ogg") ? "ogg" : "wav";
+    formData.append("audio", audioBlob, `voice_query.${ext}`);
     if (language) formData.append("language", language);
 
     const res = await fetch(`${API_BASE}/voice/transcribe`, {

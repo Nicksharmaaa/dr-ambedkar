@@ -67,8 +67,23 @@ class ASRProvider:
         else:
             data["prompt"] = "Dr. B.R. Ambedkar, Constitution, Mahad Satyagraha, Dhamma, Annihilation of Caste"
 
+        # Determine MIME type from magic bytes or filename
+        mime_type = "audio/wav"
+        if audio_bytes[:4] == b"\x1a\x45\xdf\xa3":
+            mime_type = "audio/webm"
+            if not filename.endswith(".webm"):
+                filename = "audio.webm"
+        elif audio_bytes[:4] == b"OggS":
+            mime_type = "audio/ogg"
+            if not filename.endswith(".ogg"):
+                filename = "audio.ogg"
+        elif filename.endswith(".webm"):
+            mime_type = "audio/webm"
+        elif filename.endswith(".mp3"):
+            mime_type = "audio/mpeg"
+
         files = {
-            "file": (filename, audio_bytes, "audio/wav"),
+            "file": (filename, audio_bytes, mime_type),
         }
 
         try:

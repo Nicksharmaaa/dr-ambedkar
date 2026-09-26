@@ -97,6 +97,7 @@ export interface VoiceRecognitionOptions {
   onStart?: () => void;
   onEnd?: () => void;
   onError?: (error: string) => void;
+  onStatusChange?: (status: string) => void;
 }
 
 class VoiceRecognitionController {
@@ -137,9 +138,16 @@ class VoiceRecognitionController {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      this.mediaRecorder = new MediaRecorder(stream);
+      const preferredMime = (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))
+        ? 'audio/webm;codecs=opus'
+        : (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported('audio/webm'))
+        ? 'audio/webm'
+        : '';
+
+      this.mediaRecorder = preferredMime ? new MediaRecorder(stream, { mimeType: preferredMime }) : new MediaRecorder(stream);
       this.audioChunks = [];
       this.isListening = true;
+      if (options.onStatusChange) options.onStatusChange('Listening...');
       if (options.onStart) options.onStart();
 
       this.mediaRecorder.ondataavailable = (event: any) => {
@@ -151,19 +159,27 @@ class VoiceRecognitionController {
       this.mediaRecorder.onstop = async () => {
         stream.getTracks().forEach((track) => track.stop());
         this.isListening = false;
-        const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
-        if (audioBlob.size > 500) {
+        if (options.onStatusChange) options.onStatusChange('Transcribing...');
+        const actualMime = this.mediaRecorder?.mimeType || 'audio/webm';
+        const audioBlob = new Blob(this.audioChunks, { type: actualMime });
+        if (audioBlob.size > 200) {
           try {
             const { api } = await import('@/lib/api');
             const res = await api.transcribeVoice(audioBlob, options.lang);
             if (res && res.text) {
               options.onResult(res.text, true);
+            } else if (options.onError) {
+              options.onError('No speech detected. Please try speaking closer to the microphone.');
             }
           } catch (transcribeErr: any) {
             console.warn('Backend voice transcription fallback error:', transcribeErr);
             if (options.onError) {
-              options.onError('Could not transcribe audio. Please type your query.');
+              options.onError('Voice transcription is currently unavailable. Please try again or type your question.');
             }
+          }
+        } else {
+          if (options.onError) {
+            options.onError('Recording too short. Please try speaking again.');
           }
         }
         if (options.onEnd) options.onEnd();
@@ -215,6 +231,7 @@ class VoiceRecognitionController {
 
       this.recognition.onstart = () => {
         this.isListening = true;
+        if (options.onStatusChange) options.onStatusChange('Listening...');
         if (options.onStart) options.onStart();
       };
 
@@ -241,6 +258,7 @@ class VoiceRecognitionController {
         console.warn('Speech recognition event:', event.error);
         if (event.error === 'network') {
           console.info('SpeechRecognition network error — falling back to backend Whisper ASR...');
+          if (options.onStatusChange) options.onStatusChange('Using server transcription...');
           try {
             this.recognition.stop();
           } catch {}
