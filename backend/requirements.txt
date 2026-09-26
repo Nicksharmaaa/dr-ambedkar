@@ -1,4 +1,4 @@
-﻿# venv-main (Python 3.14) — Main Backend Requirements
+# venv-main (Python 3.14) — Main Backend Requirements
 # Install PyTorch separately if not already installed:
 # pip install torch==2.11.0+cu128 --index-url https://download.pytorch.org/whl/cu128
 
@@ -52,3 +52,7 @@ pytest-cov>=6.0.0
 # Dev
 black>=25.1.0
 ruff>=0.9.0
+
+# TTS Provider SDKs (server-side only)
+sarvamai>=0.1.0
+elevenlabs>=1.0.0

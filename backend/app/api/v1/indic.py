@@ -40,27 +40,40 @@ async def synthesize_speech(
     text: str = Body(..., embed=True),
     language: str = Body("en", embed=True),
     gender: str = Body("female", embed=True),
+    speaker: Optional[str] = Body(None, embed=True),
+    dict_id: Optional[str] = Body(None, embed=True),
 ) -> dict:
     """
-    Synthesize high-fidelity neural speech narration in English, Hindi, or Marathi.
+    Synthesize high-fidelity neural speech narration.
+    Routes English and Hindi to ElevenLabs; Indic languages to Sarvam Bulbul v3.
     Caches audio in tts_cache and storage/local/audio/narration/.
     """
     db = get_db_client()
     service = TTSService(db)
-    result = await service.synthesize(text=text, language=language, gender=gender)
+    result = await service.synthesize(
+        text=text,
+        language=language,
+        gender=gender,
+        speaker=speaker,
+        dict_id=dict_id,
+    )
     if "error" in result and not result.get("audio_url"):
-        raise HTTPException(status_code=500, detail=result["error"])
+        raise HTTPException(
+            status_code=result.get("status_code", 500),
+            detail=result["error"],
+        )
     return result
 
 
 @router.get("/tts/audio/{filename}")
 async def stream_narration_audio(filename: str = Path(...)):
-    """Stream generated narration MP3 file."""
+    """Stream generated narration audio (WAV or MP3)."""
     safe_filename = os.path.basename(filename)
     file_path = os.path.join(NARRATION_DIR, safe_filename)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Audio file not found")
-    return FileResponse(file_path, media_type="audio/mpeg", filename=safe_filename)
+    media_type = "audio/wav" if safe_filename.endswith(".wav") else "audio/mpeg"
+    return FileResponse(file_path, media_type=media_type, filename=safe_filename)
 
 
 @router.get("/localizations/entities/{id}")

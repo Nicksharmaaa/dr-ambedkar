@@ -78,6 +78,32 @@ class Settings(BaseSettings):
     rag_rrf_k: int = 60
     rag_min_score: float = 0.05
 
+    # ── TTS Providers (server-side only — NEVER expose to frontend) ────────
+    sarvam_api_key: str = Field(default="", alias="SARVAM_API_KEY")
+    sarvam_model: str = Field(default="bulbul:v3", alias="SARVAM_MODEL")
+    sarvam_speaker: str = Field(default="shubh", alias="SARVAM_SPEAKER")
+    elevenlabs_api_key: str = Field(default="", alias="ELEVENLABS_API_KEY")
+    elevenlabs_voice_id: str = Field(
+        default="",
+        alias="ELEVENLABS_VOICE_ID",
+    )
+
+    # Routing: comma-separated BCP-47 short codes (e.g. "en,hi")
+    tts_elevenlabs_languages: str = Field(
+        default="en,hi",
+        alias="TTS_ELEVENLABS_LANGUAGES",
+    )
+    tts_sarvam_languages: str = Field(
+        default="bn,ta,gu,te,kn,ml,mr,pa,od",
+        alias="TTS_SARVAM_LANGUAGES",
+    )
+
+    # Sarvam speaker map: JSON string mapping short code → speaker name (defaults to SARVAM_SPEAKER="shubh")
+    tts_sarvam_speaker_map: str = Field(
+        default="",
+        alias="TTS_SARVAM_SPEAKER_MAP",
+    )
+
     # ── Microservices ─────────────────────────────────────────
     indic_service_url: str = "http://localhost:8001"
     ocr_service_url: str = "http://localhost:8002"

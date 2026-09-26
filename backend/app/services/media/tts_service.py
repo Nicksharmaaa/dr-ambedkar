@@ -1,7 +1,13 @@
 """
-Phase 9: Text-to-Speech (TTS) Narration Service
-Generates high-fidelity neural audio narration for archival passages and translations in English, Hindi, and Marathi.
-Maintains strict separation between original recordings and AI-generated narrations with persistent caching.
+Phase 9: Text-to-Speech (TTS) Narration & Routing Service.
+
+Routes requests between configured TTS providers based on language:
+- English & Hindi -> ElevenLabs
+- Indic Languages (bn, ta, gu, te, kn, ml, mr, pa, od) -> Sarvam Bulbul v3
+- Unknown / unconfigured -> Explicit TTSProviderError (no silent fallback)
+
+Normalizes audio outputs, persists to local disk and caches in Turso DB (tts_cache).
+Maintains strict provenance separation between original archival recordings and AI narrations.
 """
 from __future__ import annotations
 
@@ -9,96 +15,203 @@ import hashlib
 import logging
 import os
 import uuid
-from typing import Any
-import edge_tts
+from typing import Any, Optional
 
+from app.core.config import settings
 from app.db.database import DatabaseClient
+from app.services.media.tts_providers.base import (
+    BaseTTSProvider,
+    TTSAudioResult,
+    TTSProviderError,
+)
+from app.services.media.tts_providers.sarvam_provider import (
+    SARVAM_LANGUAGE_MAP,
+    SarvamTTSProvider,
+)
+from app.services.media.tts_providers.elevenlabs_provider import ElevenLabsTTSProvider
 
 logger = logging.getLogger("ambedkar.media.tts")
-
-NARRATION_VOICES = {
-    "hi": {"female": "hi-IN-SwaraNeural", "male": "hi-IN-MadhurNeural"},
-    "mr": {"female": "mr-IN-AarohiNeural", "male": "mr-IN-ManoharNeural"},
-    "en": {"female": "en-IN-NeerjaNeural", "male": "en-IN-PrabhatNeural"},
-}
 
 NARRATION_DIR = os.path.join("storage", "local", "audio", "narration")
 os.makedirs(NARRATION_DIR, exist_ok=True)
 
 
 class TTSService:
-    """Audio narration synthesizer with disk & Turso database caching."""
+    """
+    Central TTS router and synthesizer with Turso database & disk caching.
+    """
 
-    def __init__(self, db: DatabaseClient) -> None:
+    def __init__(
+        self,
+        db: DatabaseClient,
+        sarvam_provider: Optional[SarvamTTSProvider] = None,
+        elevenlabs_provider: Optional[ElevenLabsTTSProvider] = None,
+    ) -> None:
         self.db = db
+        self.sarvam_provider = sarvam_provider or SarvamTTSProvider()
+        self.elevenlabs_provider = elevenlabs_provider or ElevenLabsTTSProvider()
+
+    def normalize_language_code(self, language: str) -> str:
+        """
+        Normalize incoming language codes (e.g. 'hi-IN' -> 'hi', 'en-US' -> 'en').
+        """
+        raw = (language or "en").strip().lower()
+        if "-" in raw:
+            return raw.split("-")[0]
+        if "_" in raw:
+            return raw.split("_")[0]
+        return raw
+
+    def resolve_provider(self, language: str) -> BaseTTSProvider:
+        """
+        Determine provider for the requested language based on configuration.
+        No silent fallback — raises TTSProviderError if unsupported.
+        """
+        lang = self.normalize_language_code(language)
+
+        # 1. ElevenLabs routing (default: en, hi)
+        if lang in self.elevenlabs_provider.supported_languages:
+            return self.elevenlabs_provider
+
+        # 2. Sarvam routing (default: bn, ta, gu, te, kn, ml, mr, pa, od)
+        if lang in self.sarvam_provider.supported_languages:
+            return self.sarvam_provider
+
+        raise TTSProviderError(
+            message=f"No TTS provider configured for language '{language}'. Supported: "
+            f"ElevenLabs={self.elevenlabs_provider.supported_languages}, "
+            f"Sarvam={self.sarvam_provider.supported_languages}",
+            provider="router",
+            status_code=400,
+        )
 
     async def synthesize(
         self,
         text: str,
         language: str = "en",
         gender: str = "female",
+        speaker: Optional[str] = None,
+        dict_id: Optional[str] = None,
     ) -> dict[str, Any]:
         """
-        Synthesize speech from text.
-        Returns audio stream path, duration, and provenance metadata.
+        Synthesize speech from archival text or assistant response.
+        Returns provider-neutral dict with audio stream URL and provenance metadata.
         """
         clean_text = text.strip()
         if not clean_text:
             return {"error": "Empty text for narration"}
 
-        lang = language.lower() if language.lower() in ("hi", "mr", "en") else "en"
-        voice_dict = NARRATION_VOICES.get(lang, NARRATION_VOICES["en"])
-        voice_name = voice_dict.get(gender, voice_dict["female"])
+        lang = self.normalize_language_code(language)
 
-        # 1. Compute hash of text + voice
-        cache_key = f"{lang}:{voice_name}:{clean_text}"
+        # 1. Resolve configured provider
+        try:
+            provider = self.resolve_provider(lang)
+        except TTSProviderError as router_err:
+            logger.error("TTS routing error: %s", router_err)
+            return {"error": router_err.message, "provider": router_err.provider}
+
+        # 2. Compute canonical cache key and check DB/disk cache
+        # Cache key incorporates provider, language, chosen speaker, and exact text
+        if speaker and speaker.strip():
+            chosen_speaker = speaker.strip()
+        elif provider.provider_name == "sarvam":
+            chosen_speaker = (getattr(settings, "sarvam_speaker", None) or "shubh").strip()
+        else:
+            chosen_speaker = (gender or "default").strip()
+
+        cache_key = f"{provider.provider_name}:{lang}:{chosen_speaker}:{clean_text}"
         text_hash = hashlib.sha256(cache_key.encode("utf-8")).hexdigest()
-        file_name = f"{text_hash}.mp3"
+
+        # Audio file extension depends on provider output format (wav or mp3)
+        ext = "mp3" if provider.provider_name == "elevenlabs" else "wav"
+        file_name = f"{text_hash}.{ext}"
         audio_file_path = os.path.join(NARRATION_DIR, file_name)
 
-        # 2. Check if already exists in cache and on disk
-        if os.path.exists(audio_file_path) and os.path.getsize(audio_file_path) > 1000:
-            cached_row = await self.db.execute(
-                "SELECT * FROM tts_cache WHERE source_text_hash = ? AND language = ? LIMIT 1",
-                [text_hash, lang],
-            )
-            if cached_row.rows:
-                return {
-                    "audio_path": audio_file_path,
-                    "audio_url": f"/api/v1/indic/tts/audio/{file_name}",
-                    "language": lang,
-                    "voice": voice_name,
-                    "model": "edge-tts-neural",
-                    "is_cached": True,
-                    "generation_type": "AI_NARRATION",
-                }
+        # Check existing cache row & file
+        if os.path.exists(audio_file_path) and os.path.getsize(audio_file_path) > 500:
+            try:
+                cached_row = await self.db.execute(
+                    "SELECT * FROM tts_cache WHERE source_text_hash = ? AND language = ? LIMIT 1",
+                    [text_hash, lang],
+                )
+                if cached_row.rows:
+                    row = cached_row.rows[0]
+                    # row is dict-like or row object
+                    model_val = row["model"] if isinstance(row, dict) else row[4]
+                    return {
+                        "audio_path": audio_file_path,
+                        "audio_url": f"/api/v1/indic/tts/audio/{file_name}",
+                        "language": lang,
+                        "voice": chosen_speaker,
+                        "speaker": chosen_speaker,
+                        "provider": provider.provider_name,
+                        "model": model_val,
+                        "duration_seconds": 0.0,
+                        "is_cached": True,
+                        "generation_type": "AI_NARRATION",
+                    }
+            except Exception as cache_read_err:
+                logger.warning("Cache lookup error, proceeding with synthesis: %s", cache_read_err)
 
-        # 3. Generate audio using edge-tts
+        # 3. Call provider synthesis
         try:
-            communicate = edge_tts.Communicate(clean_text, voice_name)
-            await communicate.save(audio_file_path)
-
-            # 4. Save to tts_cache
-            tts_id = str(uuid.uuid4())
-            await self.db.execute(
-                """
-                INSERT OR REPLACE INTO tts_cache (
-                    id, source_text_hash, source_text, language, model,
-                    audio_path, generation_type, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, 'AI_NARRATION', datetime('now'))
-                """,
-                [tts_id, text_hash, clean_text[:500], lang, voice_name, audio_file_path],
+            result: TTSAudioResult = await provider.synthesize(
+                text=clean_text,
+                language=lang,
+                speaker=speaker,
+                dict_id=dict_id,
             )
 
+            # Determine actual file extension from content_type
+            if "mpeg" in result.content_type or "mp3" in result.content_type:
+                ext = "mp3"
+            else:
+                ext = "wav"
+            file_name = f"{text_hash}.{ext}"
+            audio_file_path = os.path.join(NARRATION_DIR, file_name)
+
+            # 4. Save audio bytes to disk
+            with open(audio_file_path, "wb") as f:
+                f.write(result.audio_bytes)
+
+            # 5. Persist to tts_cache in Turso DB
+            tts_id = str(uuid.uuid4())
+            stored_model_tag = f"{result.provider}:{result.model}"
+            try:
+                await self.db.execute(
+                    """
+                    INSERT OR REPLACE INTO tts_cache (
+                        id, source_text_hash, source_text, language, model,
+                        audio_path, generation_type, created_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, 'AI_NARRATION', datetime('now'))
+                    """,
+                    [
+                        tts_id,
+                        text_hash,
+                        clean_text[:500],
+                        lang,
+                        stored_model_tag,
+                        audio_file_path,
+                    ],
+                )
+            except Exception as db_err:
+                logger.warning("Failed to record audio to tts_cache: %s", db_err)
+
+            audio_url = f"/api/v1/indic/tts/audio/{file_name}"
+            response_payload = result.to_neutral_dict(audio_url=audio_url)
+            response_payload["audio_path"] = audio_file_path
+            return response_payload
+
+        except TTSProviderError as prov_err:
+            logger.error("TTS provider error (%s): %s", prov_err.provider, prov_err.message)
             return {
-                "audio_path": audio_file_path,
-                "audio_url": f"/api/v1/indic/tts/audio/{file_name}",
-                "language": lang,
-                "voice": voice_name,
-                "model": "edge-tts-neural",
-                "is_cached": False,
-                "generation_type": "AI_NARRATION",
+                "error": prov_err.message,
+                "provider": prov_err.provider,
+                "status_code": prov_err.status_code or 500,
             }
         except Exception as e:
-            logger.error("TTS generation failed: %s", e)
-            return {"error": str(e), "fallback": "Use browser Web Speech API"}
+            logger.error("TTS generation unexpected failure: %s", e)
+            return {
+                "error": f"TTS synthesis failed: {e}",
+                "provider": provider.provider_name,
+            }

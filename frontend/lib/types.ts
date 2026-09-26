@@ -376,10 +376,14 @@ export interface TranslationResponse {
 
 export interface TTSResponse {
   audio_url: string;
-  filename: string;
+  filename?: string;
   duration_seconds: number;
   language: string;
   voice: string;
+  speaker?: string;
+  provider?: string;
+  model?: string;
+  request_id?: string;
   is_cached: boolean;
   generation_type: "ORIGINAL_RECORDING" | "AI_NARRATION";
 }

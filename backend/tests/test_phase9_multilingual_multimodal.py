@@ -139,10 +139,39 @@ async def test_06_neural_tts_narration():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         t0 = time.perf_counter()
-        res = await client.post(
-            "/api/v1/indic/tts/synthesize",
-            json={"text": "बाबासाहेब आंबेडकर यांचे विचार", "language": "mr"},
-        )
+        
+        # If SARVAM_API_KEY is not set in test environment, mock synthesis call
+        import os
+        if not os.environ.get("SARVAM_API_KEY"):
+            from unittest.mock import patch
+            from app.services.media.tts_providers.base import TTSAudioResult
+            import io, wave
+            buf = io.BytesIO()
+            with wave.open(buf, "wb") as w:
+                w.setnchannels(1)
+                w.setsampwidth(2)
+                w.setframerate(16000)
+                w.writeframes(b"\x00\x00" * 8000)
+            mock_result = TTSAudioResult(
+                audio_bytes=buf.getvalue(),
+                content_type="audio/wav",
+                provider="sarvam",
+                model="bulbul:v3",
+                language="mr",
+                speaker="Aarohi",
+                duration_seconds=0.5,
+            )
+            with patch("app.services.media.tts_providers.sarvam_provider.SarvamTTSProvider.synthesize", return_value=mock_result):
+                res = await client.post(
+                    "/api/v1/indic/tts/synthesize",
+                    json={"text": "बाबासाहेब आंबेडकर यांचे विचार", "language": "mr"},
+                )
+        else:
+            res = await client.post(
+                "/api/v1/indic/tts/synthesize",
+                json={"text": "बाबासाहेब आंबेडकर यांचे विचार", "language": "mr"},
+            )
+
         dt = (time.perf_counter() - t0) * 1000
         assert res.status_code == 200
         data = res.json()
