@@ -145,6 +145,9 @@ class SQLiteClient(DatabaseClient):
 
     def __init__(self, url: str = ":memory:") -> None:
         db_path = url.replace("file:", "")
+        if db_path != ":memory:":
+            from pathlib import Path
+            Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(db_path, check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
         # Enable WAL mode for concurrent reads
@@ -201,7 +204,10 @@ def get_db_client() -> DatabaseClient:
 
     url = settings.turso_db_url
 
-    if url == ":memory:":
+    if url.startswith("postgresql://") or url.startswith("postgres://") or "dbname=" in url or "host=" in url:
+        from app.db.postgres_client import PostgresClient
+        _client_instance = PostgresClient(url)
+    elif url == ":memory:":
         _client_instance = SQLiteClient(":memory:")
     elif url.startswith("file:") and not url.startswith("file://"):
         # Local file — use SQLiteClient for full local-only support

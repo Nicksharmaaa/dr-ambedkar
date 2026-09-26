@@ -6,6 +6,7 @@ Phase 3: Archival Ingestion Pipeline
 """
 from __future__ import annotations
 
+import re
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
@@ -32,10 +33,12 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Startup and shutdown lifecycle."""
+    # Safe URL masking for logging
+    safe_db_url = re.sub(r"://([^:]+):([^@]+)@", r"://\1:***@", settings.turso_db_url).split("?")[0]
     logger.info(
         "Starting Ambedkar Heritage API",
         env=settings.app_env,
-        db_url=settings.turso_db_url.split("?")[0],
+        db_url=safe_db_url,
         storage=settings.storage_backend,
     )
 

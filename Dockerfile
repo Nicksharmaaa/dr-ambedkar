@@ -18,12 +18,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install PyTorch CPU first to avoid heavy CUDA bloat
 RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
 
-# Install application dependencies
-COPY requirements.txt .
+# Install application dependencies from backend requirements
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code and assets
-COPY . .
+# Copy backend source code and assets into container
+COPY backend/ .
 
 # Set up user and permissions for Hugging Face Spaces (runs as UID 1000)
 RUN useradd -m -u 1000 user || true
@@ -33,5 +33,5 @@ USER 1000
 
 EXPOSE 8000
 
-# Start Uvicorn, dynamically binding to $PORT provided by HF Spaces or Render
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 2"]
+# Start Uvicorn on port 8000 (2 workers utilize Hugging Face's 2 vCPUs and 16 GB RAM)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]

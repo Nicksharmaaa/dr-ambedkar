@@ -17,10 +17,7 @@ import logging
 import os
 from typing import Any
 
-os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
-
-import torch
-
+# torch is imported lazily to keep baseline memory under 60MB on free-tier containers
 logger = logging.getLogger(__name__)
 
 # ── Embedding Version ─────────────────────────────────────────────────────────
@@ -41,9 +38,9 @@ class EmbeddingEngine:
 
     _instance: "EmbeddingEngine | None" = None
 
-    def __init__(self, model_name: str, device: str = "cuda") -> None:
+    def __init__(self, model_name: str, device: str = "cpu") -> None:
         self.model_name = model_name
-        self.device     = device if torch.cuda.is_available() else "cpu"
+        self.device     = device
         self.dimension  = 1024
         self._tokenizer: Any = None
         self._model: Any     = None
@@ -54,9 +51,16 @@ class EmbeddingEngine:
         """Return (and lazily load) the shared embedding engine."""
         if cls._instance is None:
             from app.core.config import settings
+            cuda_available = False
+            if settings.model_provider != "cloud":
+                try:
+                    import torch
+                    cuda_available = torch.cuda.is_available()
+                except Exception:
+                    pass
             cls._instance = cls(
                 model_name=settings.ai_embedding_model,
-                device="cuda" if torch.cuda.is_available() else "cpu",
+                device="cuda" if cuda_available else "cpu",
             )
         return cls._instance
 
@@ -65,6 +69,8 @@ class EmbeddingEngine:
         if self._model is not None:
             return
 
+        global torch
+        import torch
         from transformers import AutoTokenizer, AutoModel  # type: ignore
 
         logger.info("Loading embedding model …", extra={"model": self.model_name})
@@ -107,9 +113,40 @@ class EmbeddingEngine:
         Encode a single search query (instruction-aware).
         Returns a float vector.
         """
+        from app.core.config import settings
+        if getattr(settings, "model_provider", "local") == "cloud":
+            return self._embed_query_cloud(query)
+
         self._ensure_loaded()
         results = self._encode([query], instruction=QUERY_INSTRUCTION, batch_size=1)
         return results[0]
+
+    def _embed_query_cloud(self, query: str) -> list[float]:
+        """
+        Call free Hugging Face Serverless Inference API for Qwen embedding.
+        Uses 0 MB local RAM, preventing OOM crashes on 512 MB instances.
+        """
+        import httpx
+        from app.core.config import settings
+
+        prefixed = f"{QUERY_INSTRUCTION}\n{query}"
+        hf_token = os.environ.get("HF_TOKEN") or getattr(settings, "hf_token", "")
+        headers = {"Authorization": f"Bearer {hf_token}"} if hf_token else {}
+        url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{self.model_name}"
+
+        try:
+            with httpx.Client(timeout=6.0) as client:
+                res = client.post(url, headers=headers, json={"inputs": prefixed, "parameters": {"wait_for_model": True}})
+                if res.status_code == 200:
+                    data = res.json()
+                    if isinstance(data, list) and len(data) > 0:
+                        if isinstance(data[0], list):
+                            data = data[0]
+                        return [float(x) for x in data]
+        except Exception as exc:
+            logger.warning("Cloud embedding API call failed: %s", exc)
+
+        raise RuntimeError("Cloud embedding unavailable; gracefully falling back to lexical search")
 
     # ── Internals ─────────────────────────────────────────────────────────────
 
