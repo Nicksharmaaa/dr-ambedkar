@@ -32,12 +32,13 @@ const CATEGORY_COLORS: Record<string, string> = {
   idea: '#B45309',
   article: '#B45309',
   place: '#6D28D9',         // Royal Violet / Historic Places
-  media: '#C2410C',         // Warm Copper / Media & Speeches
+  media: '#C2410C',         // Warm Copper / Speeches & Media
   figure: '#8B5E3C',
 };
 
 // Texture cache to prevent recreating textures on every render
 const textureCache = new Map<string, THREE.Texture>();
+const spriteCache = new Map<string, THREE.Sprite>();
 
 function getOrCreateCircularTexture(imageUrl: string, borderColor: string): THREE.Texture {
   if (typeof window === 'undefined') {
@@ -90,6 +91,58 @@ function getOrCreateCircularTexture(imageUrl: string, borderColor: string): THRE
   return texture;
 }
 
+// Generate crisp 3D canvas billboard text tag for landmarks
+function createBillboardSprite(text: string, color: string, isCenter = false): THREE.Sprite {
+  const cacheKey = `${text}-${color}-${isCenter}`;
+  if (spriteCache.has(cacheKey)) {
+    return spriteCache.get(cacheKey)!.clone();
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+
+  if (ctx) {
+    ctx.font = isCenter
+      ? 'bold 40px "Cinzel", "DM Sans", serif'
+      : 'bold 32px "DM Sans", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const textMetrics = ctx.measureText(text);
+    const pillWidth = Math.min(480, Math.max(160, textMetrics.width + 48));
+    const pillHeight = isCenter ? 68 : 56;
+    const x = 256 - pillWidth / 2;
+    const y = 64 - pillHeight / 2;
+
+    // Soft parchment pill with subtle shadow
+    ctx.fillStyle = isCenter ? 'rgba(243, 228, 201, 0.95)' : 'rgba(255, 255, 255, 0.92)';
+    ctx.beginPath();
+    ctx.roundRect(x, y, pillWidth, pillHeight, 18);
+    ctx.fill();
+
+    ctx.strokeStyle = isCenter ? '#C59A45' : '#D3D4C0';
+    ctx.lineWidth = isCenter ? 4 : 2;
+    ctx.stroke();
+
+    ctx.fillStyle = isCenter ? '#0A2947' : color;
+    ctx.fillText(text, 256, 64);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  const spriteMat = new THREE.SpriteMaterial({
+    map: texture,
+    depthWrite: false,
+    transparent: true,
+  });
+  const sprite = new THREE.Sprite(spriteMat);
+  sprite.scale.set(isCenter ? 38 : 30, isCenter ? 9.5 : 7.5, 1);
+  spriteCache.set(cacheKey, sprite);
+  return sprite;
+}
+
 export const Graph3DCanvas: React.FC<Graph3DCanvasProps> = ({
   data,
   selectedNodeId,
@@ -105,159 +158,163 @@ export const Graph3DCanvas: React.FC<Graph3DCanvasProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const graphInstanceRef = useRef<any>(null);
-  const auraRingsRef = useRef<THREE.Mesh[]>([]);
+  const nodeGroupsMap = useRef<Map<string, THREE.Group>>(new Map());
 
-  // Custom 3D Object Generator for each node (Archival Memory Orbs)
-  const nodeThreeObject = useCallback(
-    (node: any) => {
-      const gNode = node as Graph3DNode;
-      const isSelected = selectedNodeId === gNode.id;
-      const isHovered = hoveredNodeId === gNode.id;
-      const isConnected = highlightedNodeIds.has(gNode.id);
-      const isCenter = gNode.isCenter || gNode.id === 'person-ambedkar' || gNode.id === 'node-ambedkar';
+  // Ref tracking to avoid re-instantiating 3D scene when state changes
+  const selectedNodeIdRef = useRef(selectedNodeId);
+  const highlightedNodeIdsRef = useRef(highlightedNodeIds);
+  const highlightedLinkIdsRef = useRef(highlightedLinkIds);
 
-      const group = new THREE.Group();
+  selectedNodeIdRef.current = selectedNodeId;
+  highlightedNodeIdsRef.current = highlightedNodeIds;
+  highlightedLinkIdsRef.current = highlightedLinkIds;
 
-      // Bounded node scaling based on degree
-      const baseRadius = isCenter ? 12 : Math.min(8.5, Math.max(4.5, 4.2 + (gNode.degree || 1) * 0.38));
-      const radius = isSelected ? baseRadius * 1.25 : isHovered ? baseRadius * 1.15 : baseRadius;
+  // Single, stable Three.js Object Generator for nodes
+  const nodeThreeObject = useCallback((node: any) => {
+    const gNode = node as Graph3DNode;
+    const isCenter = gNode.isCenter || gNode.id === 'person-ambedkar' || gNode.id === 'node-ambedkar';
 
-      const nodeColor = isCenter
-        ? '#C89D56'
-        : CATEGORY_COLORS[gNode.category?.toLowerCase()] || gNode.color || '#C5A880';
+    const group = new THREE.Group();
+    group.name = `node-${gNode.id}`;
 
-      // 1. Core Archival Sphere
-      const sphereGeo = new THREE.SphereGeometry(radius, 32, 32);
+    // Bounded radius
+    const baseRadius = isCenter ? 12 : Math.min(8.5, Math.max(4.5, 4.2 + (gNode.degree || 1) * 0.38));
+    const nodeColor = isCenter
+      ? '#C59A45'
+      : CATEGORY_COLORS[gNode.category?.toLowerCase()] || gNode.color || '#C5A880';
 
-      let material: THREE.Material;
+    // 1. Core Sphere
+    const sphereGeo = new THREE.SphereGeometry(baseRadius, 32, 32);
+    let material: THREE.MeshStandardMaterial;
 
-      if (isCenter && gNode.imageUrl) {
-        // Central Ambedkar Node with circular archival portrait and brass rim
-        const portraitTexture = getOrCreateCircularTexture(gNode.imageUrl, '#C89D56');
-        material = new THREE.MeshStandardMaterial({
-          map: portraitTexture,
-          roughness: 0.35,
-          metalness: 0.3,
-          emissive: isSelected ? new THREE.Color('#C89D56') : new THREE.Color('#3A2414'),
-          emissiveIntensity: isSelected ? 0.65 : 0.25,
-        });
-      } else if (gNode.imageUrl) {
-        // High-res archival portrait or document cover texture
-        const portraitTexture = getOrCreateCircularTexture(gNode.imageUrl, nodeColor);
-        material = new THREE.MeshStandardMaterial({
-          map: portraitTexture,
-          roughness: 0.4,
-          metalness: 0.2,
-          emissive: new THREE.Color(nodeColor),
-          emissiveIntensity: isSelected ? 0.55 : isHovered ? 0.35 : 0.12,
-        });
-      } else {
-        // Refined procedural physical material with warm archival illumination
-        material = new THREE.MeshStandardMaterial({
-          color: new THREE.Color(nodeColor),
-          roughness: 0.38,
-          metalness: 0.22,
-          emissive: new THREE.Color(nodeColor),
-          emissiveIntensity: isSelected ? 0.65 : isHovered ? 0.45 : isConnected ? 0.28 : 0.1,
-          transparent: selectedNodeId !== null && !isSelected && !isConnected,
-          opacity: selectedNodeId !== null && !isSelected && !isConnected ? 0.22 : 1.0,
-        });
-      }
+    if (isCenter && gNode.imageUrl) {
+      const portraitTexture = getOrCreateCircularTexture(gNode.imageUrl, '#C59A45');
+      material = new THREE.MeshStandardMaterial({
+        map: portraitTexture,
+        roughness: 0.35,
+        metalness: 0.3,
+        emissive: new THREE.Color('#3A2414'),
+        emissiveIntensity: 0.25,
+      });
+    } else if (gNode.imageUrl) {
+      const portraitTexture = getOrCreateCircularTexture(gNode.imageUrl, nodeColor);
+      material = new THREE.MeshStandardMaterial({
+        map: portraitTexture,
+        roughness: 0.4,
+        metalness: 0.2,
+        emissive: new THREE.Color(nodeColor),
+        emissiveIntensity: 0.15,
+      });
+    } else {
+      material = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(nodeColor),
+        roughness: 0.38,
+        metalness: 0.25,
+        emissive: new THREE.Color(nodeColor),
+        emissiveIntensity: 0.15,
+      });
+    }
 
-      const sphereMesh = new THREE.Mesh(sphereGeo, material);
-      group.add(sphereMesh);
+    const sphereMesh = new THREE.Mesh(sphereGeo, material);
+    sphereMesh.userData = { isCore: true, baseRadius, nodeColor };
+    group.add(sphereMesh);
 
-      // 2. Decorative Outer Halo for Central Ambedkar
-      if (isCenter) {
-        const haloGeo = new THREE.SphereGeometry(radius * 1.35, 24, 24);
-        const haloMat = new THREE.MeshBasicMaterial({
-          color: 0xc89d56,
-          wireframe: true,
-          transparent: true,
-          opacity: isSelected ? 0.5 : 0.2,
-        });
-        const haloMesh = new THREE.Mesh(haloGeo, haloMat);
-        group.add(haloMesh);
-      }
+    // 2. Outer Rotating Halo / Armillary Ring for Selected or Central Node
+    const ringGeo = new THREE.TorusGeometry(baseRadius * 1.4, baseRadius * 0.045, 16, 64);
+    const ringMat = new THREE.MeshStandardMaterial({
+      color: 0xc59a45,
+      emissive: 0xc59a45,
+      emissiveIntensity: 0.85,
+      roughness: 0.3,
+      metalness: 0.85,
+      transparent: true,
+      opacity: 0.9,
+    });
+    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+    ringMesh.rotation.x = Math.PI / 3;
+    ringMesh.rotation.y = Math.PI / 6;
+    ringMesh.visible = isCenter; // Initially visible on central Ambedkar
+    ringMesh.userData = { isRing: true };
+    group.add(ringMesh);
 
-      // 3. Rotating Flare / Aura when Selected (Sophisticated Archival Activation)
-      if (isSelected) {
-        // Tilted primary brass armillary ring
-        const ringGeo = new THREE.TorusGeometry(radius * 1.42, radius * 0.045, 16, 64);
-        const ringMat = new THREE.MeshStandardMaterial({
-          color: 0xc89d56,
-          emissive: 0xc89d56,
-          emissiveIntensity: 0.8,
-          roughness: 0.3,
-          metalness: 0.8,
-        });
-        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-        ringMesh.rotation.x = Math.PI / 3;
-        ringMesh.rotation.y = Math.PI / 6;
-        group.add(ringMesh);
+    // 3. Crisp 3D Billboard Label for central node & major landmark entities
+    const isLandmark = isCenter || (gNode.degree && gNode.degree >= 5);
+    if (isLandmark) {
+      const sprite = createBillboardSprite(gNode.label, nodeColor, isCenter);
+      sprite.position.set(0, -(baseRadius + 7.5), 0);
+      sprite.userData = { isLabel: true, isLandmark };
+      group.add(sprite);
+    }
 
-        // Soft outer glowing disc
-        const glowGeo = new THREE.RingGeometry(radius * 1.3, radius * 1.6, 32);
-        const glowMat = new THREE.MeshBasicMaterial({
-          color: 0xc89d56,
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.35,
-        });
-        const glowMesh = new THREE.Mesh(glowGeo, glowMat);
-        group.add(glowMesh);
-      }
+    nodeGroupsMap.current.set(gNode.id, group);
+    return group;
+  }, []);
 
-      // 4. Subtle hover indicator
-      if (isHovered && !isSelected) {
-        const hoverRingGeo = new THREE.RingGeometry(radius * 1.15, radius * 1.28, 32);
-        const hoverRingMat = new THREE.MeshBasicMaterial({
-          color: 0xf3e4c9,
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.7,
-        });
-        const hoverRingMesh = new THREE.Mesh(hoverRingGeo, hoverRingMat);
-        group.add(hoverRingMesh);
-      }
+  // Update visual node properties smoothly when selection changes (Zero scene rebuild!)
+  useEffect(() => {
+    const isAnySelected = selectedNodeId !== null;
+    const hNodes = highlightedNodeIds;
 
-      return group;
-    },
-    [selectedNodeId, hoveredNodeId, highlightedNodeIds]
-  );
+    nodeGroupsMap.current.forEach((group, nodeId) => {
+      const isSelected = nodeId === selectedNodeId;
+      const isConnected = hNodes.has(nodeId);
+      const isDimmed = isAnySelected && !isSelected && !isConnected;
 
-  // Link styling rules for zero-clutter on light parchment
-  const getLinkColor = useCallback(
-    (link: any) => {
-      const gLink = link as Graph3DLink;
-      const isHighlighted = highlightedLinkIds.has(gLink.id);
+      group.children.forEach((child) => {
+        // Core Sphere updates
+        if (child.userData?.isCore && (child as THREE.Mesh).material) {
+          const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
+          mat.transparent = isDimmed;
+          mat.opacity = isDimmed ? 0.12 : 1.0;
+          mat.emissiveIntensity = isSelected ? 0.75 : isConnected ? 0.45 : isDimmed ? 0.04 : 0.15;
 
-      if (selectedNodeId !== null) {
-        return isHighlighted ? '#0A2947' : 'rgba(10, 41, 71, 0.06)';
-      }
-      return 'rgba(10, 41, 71, 0.28)';
-    },
-    [selectedNodeId, highlightedLinkIds]
-  );
+          const baseScale = isSelected ? 1.3 : isConnected ? 1.12 : isDimmed ? 0.82 : 1.0;
+          child.scale.set(baseScale, baseScale, baseScale);
+        }
 
-  const getLinkWidth = useCallback(
-    (link: any) => {
-      const gLink = link as Graph3DLink;
-      return highlightedLinkIds.has(gLink.id) ? 2.4 : 0.75;
-    },
-    [highlightedLinkIds]
-  );
+        // Ring Halo updates
+        if (child.userData?.isRing) {
+          child.visible = isSelected || (!isAnySelected && (nodeId === 'person-ambedkar' || nodeId === 'node-ambedkar'));
+          if (isSelected) {
+            child.scale.set(1.15, 1.15, 1.15);
+          }
+        }
 
-  // Directional particles only on selected relationships
-  const getLinkParticles = useCallback(
-    (link: any) => {
-      const gLink = link as Graph3DLink;
-      return highlightedLinkIds.has(gLink.id) ? 3 : 0;
-    },
-    [highlightedLinkIds]
-  );
+        // Billboard Label updates
+        if (child.userData?.isLabel) {
+          child.visible = !isDimmed;
+          const spriteMat = (child as THREE.Sprite).material;
+          if (spriteMat) {
+            spriteMat.opacity = isDimmed ? 0.05 : 1.0;
+          }
+        }
+      });
+    });
 
-  // Tooltip content on hover (clean, zero permanent clutter)
+    // Update link styling in the graph instance directly
+    if (graphInstanceRef.current) {
+      graphInstanceRef.current
+        .linkColor((link: any) => {
+          const gLink = link as Graph3DLink;
+          const isHighlighted = highlightedLinkIdsRef.current.has(gLink.id);
+          if (selectedNodeIdRef.current !== null) {
+            return isHighlighted ? '#0A2947' : 'rgba(10, 41, 71, 0.015)';
+          }
+          return 'rgba(10, 41, 71, 0.08)';
+        })
+        .linkWidth((link: any) => {
+          const gLink = link as Graph3DLink;
+          return highlightedLinkIdsRef.current.has(gLink.id) ? 2.5 : 0.6;
+        })
+        .linkDirectionalParticles((link: any) => {
+          const gLink = link as Graph3DLink;
+          return highlightedLinkIdsRef.current.has(gLink.id) ? 4 : 0;
+        })
+        .linkDirectionalParticleColor(() => '#C59A45');
+    }
+  }, [selectedNodeId, highlightedNodeIds, highlightedLinkIds]);
+
+  // Clean, zero-clutter Tooltip on hover
   const getNodeLabel = useCallback((node: any) => {
     const gNode = node as Graph3DNode;
     const catLabel = gNode.category ? gNode.category.toUpperCase() : 'ENTITY';
@@ -267,28 +324,29 @@ export const Graph3DCanvas: React.FC<Graph3DCanvasProps> = ({
       <div style="
         background: #FFFFFF;
         color: #0A2947;
-        padding: 9px 13px;
+        padding: 9px 14px;
         border-radius: 14px;
         border: 1px solid #D3D4C0;
-        box-shadow: 0 10px 25px rgba(10, 41, 71, 0.15);
+        box-shadow: 0 12px 30px rgba(10, 41, 71, 0.12);
         font-family: 'DM Sans', sans-serif;
         font-size: 12px;
         line-height: 1.4;
         pointer-events: none;
-        max-width: 250px;
+        max-width: 260px;
         backdrop-filter: blur(8px);
       ">
-        <div style="font-size: 9px; font-family: 'Cinzel', serif; letter-spacing: 0.12em; color: #8B5E3C; font-weight: bold; margin-bottom: 3px;">
+        <div style="font-size: 9px; font-family: 'Cinzel', serif; letter-spacing: 0.15em; color: #8B5E3C; font-weight: bold; margin-bottom: 2px;">
           ${catLabel}${yearStr}
         </div>
-        <div style="font-weight: 700; font-size: 13px; color: #0A2947;">
+        <div style="font-weight: 700; font-size: 13px; color: #0A2947; margin-bottom: 4px;">
           ${gNode.label}
         </div>
+        ${gNode.shortDesc ? `<div style="font-size: 11px; color: rgba(10, 41, 71, 0.7); line-height: 1.35;">${gNode.shortDesc}</div>` : ''}
       </div>
     `;
   }, []);
 
-  // Initialize and maintain 3d-force-graph instance dynamically on client
+  // Initialize 3d-force-graph ONCE
   useEffect(() => {
     if (typeof window === 'undefined' || !containerRef.current) return;
     let isCancelled = false;
@@ -312,32 +370,49 @@ export const Graph3DCanvas: React.FC<Graph3DCanvasProps> = ({
 
         const d3Force = graph.d3Force;
         if (d3Force) {
-          // Stronger repulsion and larger link distance to create organic spatial depth across 3D clusters
+          // Generous repulsion and link distance to create organic spatial depth and stop clutter
           const charge = d3Force('charge');
-          if (charge) charge.strength(-260);
+          if (charge) charge.strength(-240);
 
           const link = d3Force('link');
-          if (link) link.distance(75);
+          if (link) link.distance(90);
         }
 
         const scene = graph.scene();
         if (scene && !scene.userData.lightsConfigured) {
           scene.userData.lightsConfigured = true;
 
-          // Museum 3-point warm illumination tuned for light ivory exhibition
-          const ambient = new THREE.AmbientLight(0xffffff, 0.9);
+          // Museum warm 3-point illumination
+          const ambient = new THREE.AmbientLight(0xffffff, 0.95);
           scene.add(ambient);
 
-          const dirLight = new THREE.DirectionalLight(0xfff5ea, 1.15);
+          const dirLight = new THREE.DirectionalLight(0xfff5ea, 1.2);
           dirLight.position.set(160, 240, 200);
           scene.add(dirLight);
 
-          const fillLight = new THREE.DirectionalLight(0xe5d8ca, 0.45);
+          const fillLight = new THREE.DirectionalLight(0xe5d8ca, 0.5);
           fillLight.position.set(-160, -100, -120);
           scene.add(fillLight);
 
-          const hemiLight = new THREE.HemisphereLight(0xffffff, 0xd3d4c0, 0.6);
+          const hemiLight = new THREE.HemisphereLight(0xffffff, 0xd3d4c0, 0.65);
           scene.add(hemiLight);
+
+          // Concentric archival orbital guide rings on equatorial plane
+          const ringGroup = new THREE.Group();
+          ringGroup.rotation.x = Math.PI / 2;
+          const ringRadii = [90, 180, 270, 360];
+          ringRadii.forEach((radius, i) => {
+            const ringGeo = new THREE.RingGeometry(radius - 0.45, radius + 0.45, 128);
+            const ringMat = new THREE.MeshBasicMaterial({
+              color: 0xc59a45,
+              side: THREE.DoubleSide,
+              transparent: true,
+              opacity: 0.16 - i * 0.03,
+            });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ringGroup.add(ring);
+          });
+          scene.add(ringGroup);
         }
 
         graphInstanceRef.current = graph;
@@ -351,14 +426,14 @@ export const Graph3DCanvas: React.FC<Graph3DCanvasProps> = ({
         .nodeThreeObject(nodeThreeObject)
         .nodeLabel(getNodeLabel)
         .nodeVal((node: any) => (node as Graph3DNode).degree || 2)
-        .linkColor(getLinkColor)
-        .linkWidth(getLinkWidth)
-        .linkDirectionalParticles(getLinkParticles)
+        .linkColor(() => 'rgba(10, 41, 71, 0.08)')
+        .linkWidth(() => 0.6)
+        .linkDirectionalParticles(() => 0)
         .linkDirectionalParticleWidth(2.6)
         .linkDirectionalParticleSpeed(0.006)
-        .linkDirectionalParticleColor(() => '#0A2947')
-        .linkCurvature(0.08)
-        .linkOpacity(0.65)
+        .linkDirectionalParticleColor(() => '#C59A45')
+        .linkCurvature(0.06)
+        .linkOpacity(0.7)
         .onNodeClick((node: any) => onSelectNode(node as Graph3DNode))
         .onNodeHover((node: any) => onHoverNode(node ? (node as Graph3DNode) : null))
         .onBackgroundClick(onBackgroundClick);
@@ -366,7 +441,7 @@ export const Graph3DCanvas: React.FC<Graph3DCanvasProps> = ({
       const controls = graph.controls?.();
       if (controls && controls.autoRotate !== undefined) {
         controls.autoRotate = autoRotate;
-        controls.autoRotateSpeed = 0.5;
+        controls.autoRotateSpeed = 0.4;
       }
     };
 
@@ -375,46 +450,28 @@ export const Graph3DCanvas: React.FC<Graph3DCanvasProps> = ({
     return () => {
       isCancelled = true;
     };
-  }, [
-    data,
-    dimensions,
-    selectedNodeId,
-    hoveredNodeId,
-    highlightedNodeIds,
-    highlightedLinkIds,
-    autoRotate,
-    nodeThreeObject,
-    getLinkColor,
-    getLinkWidth,
-    getLinkParticles,
-    getNodeLabel,
-    onSelectNode,
-    onHoverNode,
-    onBackgroundClick,
-    fgRef,
-  ]);
+  }, [data, dimensions, autoRotate, nodeThreeObject, getNodeLabel, onSelectNode, onHoverNode, onBackgroundClick, fgRef]);
 
   // Clean up on component unmount
   useEffect(() => {
     return () => {
       if (graphInstanceRef.current) {
         try {
-          graphInstanceRef.current._destructor?.();
-        } catch (e) {
-          // ignore cleanup errors
+          const dom = graphInstanceRef.current._destructor?.();
+          if (dom && dom.parentNode) {
+            dom.parentNode.removeChild(dom);
+          }
+        } catch {
+          // ignore
         }
-        graphInstanceRef.current = null;
       }
     };
   }, []);
 
   return (
-    <div 
-      ref={containerRef} 
-      className="w-full h-full relative overflow-hidden select-none" 
-      style={{
-        background: 'radial-gradient(ellipse at 50% 50%, #FFFFFF 0%, #FAF7F0 60%, #ECE6D8 100%)',
-      }}
+    <div
+      ref={containerRef}
+      className="w-full h-full relative cursor-grab active:cursor-grabbing select-none"
     />
   );
 };

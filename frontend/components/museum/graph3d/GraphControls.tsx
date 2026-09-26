@@ -31,106 +31,89 @@ export const GraphControls: React.FC<GraphControlsProps> = ({
   isSoundMuted = false,
   onToggleSound,
 }) => {
+  const iconBtn = 'p-2 rounded-xl text-[#0A2947]/70 hover:text-[#0A2947] hover:bg-[#FAF7F0] transition-all cursor-pointer';
+
   return (
-    <div 
-      className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-white/95 backdrop-blur-md border-2 border-[#D3D4C0] shadow-md text-[#0A2947] select-none"
+    <div
+      className="flex items-center gap-1 p-1.5 rounded-2xl bg-white/95 backdrop-blur-md border border-[#D3D4C0] shadow-sm select-none"
       role="toolbar"
       aria-label="3D Graph Navigation Controls"
     >
-      {/* Zoom In */}
-      <button
-        onClick={onZoomIn}
-        className="p-2 rounded-xl hover:bg-[#FAF7F0] text-[#0A2947]/75 hover:text-[#0A2947] transition-colors cursor-pointer"
-        title="Zoom In (+)"
-        aria-label="Zoom in"
-      >
-        <ZoomIn className="w-4 h-4" />
+      <button onClick={onZoomIn} className={iconBtn} title="Zoom In" aria-label="Zoom in">
+        <ZoomIn className="w-3.5 h-3.5" />
+      </button>
+      <button onClick={onZoomOut} className={iconBtn} title="Zoom Out" aria-label="Zoom out">
+        <ZoomOut className="w-3.5 h-3.5" />
       </button>
 
-      {/* Zoom Out */}
-      <button
-        onClick={onZoomOut}
-        className="p-2 rounded-xl hover:bg-[#FAF7F0] text-[#0A2947]/75 hover:text-[#0A2947] transition-colors cursor-pointer"
-        title="Zoom Out (-)"
-        aria-label="Zoom out"
-      >
-        <ZoomOut className="w-4 h-4" />
+      <div className="w-px h-4 bg-[#D3D4C0] mx-0.5" />
+
+      <button onClick={onFitGraph} className={iconBtn} title="Fit All Nodes" aria-label="Fit graph">
+        <Scan className="w-3.5 h-3.5" />
+      </button>
+      <button onClick={onResetView} className={iconBtn} title="Reset Camera" aria-label="Reset view">
+        <RotateCcw className="w-3.5 h-3.5" />
       </button>
 
-      <div className="w-[1px] h-4 bg-[#D3D4C0] my-auto" />
+      <div className="w-px h-4 bg-[#D3D4C0] mx-0.5" />
 
-      {/* Fit Graph */}
-      <button
-        onClick={onFitGraph}
-        className="p-2 rounded-xl hover:bg-[#FAF7F0] text-[#0A2947]/75 hover:text-[#0A2947] transition-colors cursor-pointer"
-        title="Fit All Nodes in View"
-        aria-label="Fit graph to view"
-      >
-        <Scan className="w-4 h-4" />
-      </button>
-
-      {/* Reset Camera / Central Ambedkar */}
-      <button
-        onClick={onResetView}
-        className="p-2 rounded-xl hover:bg-[#FAF7F0] text-[#0A2947]/75 hover:text-[#0A2947] transition-colors cursor-pointer"
-        title="Reset Camera to Dr. Ambedkar"
-        aria-label="Reset view"
-      >
-        <RotateCcw className="w-4 h-4" />
-      </button>
-
-      <div className="w-[1px] h-4 bg-[#D3D4C0] my-auto" />
-
-      {/* Auto Rotate Toggle */}
+      {/* Auto-rotate / Orbit */}
       <button
         onClick={onToggleAutoRotate}
-        className={`p-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 text-xs font-mono ${
-          autoRotate 
-            ? 'bg-[#0A2947] text-[#FAF7F0] font-bold shadow-xs' 
-            : 'hover:bg-[#FAF7F0] text-[#0A2947]/75 hover:text-[#0A2947]'
+        className={`px-2.5 py-1.5 rounded-xl text-[11px] font-mono flex items-center gap-1.5 transition-all cursor-pointer ${
+          autoRotate
+            ? 'bg-[#FAF7F0] text-[#8B5E3C] border border-[#D3D4C0] font-bold'
+            : 'text-[#0A2947]/70 hover:bg-[#FAF7F0]'
         }`}
-        title={autoRotate ? 'Pause Slow Orbit' : 'Enable Slow Cinematic Orbit'}
+        title={autoRotate ? 'Pause 3D Orbit' : 'Start 3D Orbit'}
         aria-label="Toggle auto rotation"
         aria-pressed={autoRotate}
       >
-        {autoRotate ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-        <span className="hidden sm:inline text-[11px] uppercase tracking-wider">Orbit</span>
+        {autoRotate ? <Pause className="w-3.5 h-3.5 text-[#8B5E3C]" /> : <Play className="w-3.5 h-3.5" />}
+        <span className="hidden sm:inline uppercase tracking-wider">Orbit</span>
       </button>
 
-      {/* Sound Toggle */}
+      {/* Sound */}
       {onToggleSound && (
         <button
           onClick={onToggleSound}
-          className={`p-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 text-xs font-mono ${
-            !isSoundMuted 
-              ? 'text-[#8B5E3C] hover:bg-[#FAF7F0]' 
-              : 'text-[#0A2947]/40 hover:bg-[#FAF7F0]'
+          className={`p-2 rounded-xl transition-all cursor-pointer ${
+            isSoundMuted 
+              ? 'text-red-700 bg-red-50 hover:bg-red-100' 
+              : 'text-[#0A2947]/70 hover:text-[#0A2947] hover:bg-[#FAF7F0]'
           }`}
-          title={isSoundMuted ? 'Unmute Museum Sounds' : 'Mute Museum Sounds'}
-          aria-label="Toggle museum sound effects"
+          title={isSoundMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+          aria-label="Toggle sound"
           aria-pressed={!isSoundMuted}
         >
           {isSoundMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
         </button>
       )}
 
-      <div className="w-[1px] h-4 bg-[#D3D4C0] my-auto" />
+      <div className="w-px h-4 bg-[#D3D4C0] mx-0.5" />
 
-      {/* Fullscreen / Immersive Mode */}
+      {/* Immersive Fullscreen Mode */}
       <button
         onClick={onToggleImmersive}
-        className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 text-xs font-mono ${
+        className={`px-3 py-1.5 rounded-xl text-[11px] font-mono flex items-center gap-1.5 transition-all cursor-pointer font-bold ${
           isImmersive
-            ? 'bg-[#0A2947] text-[#FAF7F0] border border-[#0A2947] font-bold shadow-xs'
-            : 'bg-[#FAF7F0] hover:bg-[#0A2947] hover:text-[#FAF7F0] text-[#0A2947] border border-[#D3D4C0]'
+            ? 'bg-[#0A2947] text-[#FAF7F0] shadow-xs'
+            : 'bg-[#FAF7F0] text-[#0A2947] hover:bg-[#F3E4C9] border border-[#D3D4C0]'
         }`}
-        title={isImmersive ? 'Exit Immersive View (Esc)' : 'Enter 3D Immersive Universe'}
+        title={isImmersive ? 'Exit Immersive Mode (Esc)' : 'Expand to Immersive 3D'}
         aria-label="Toggle immersive mode"
       >
-        {isImmersive ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-        <span className="font-semibold text-[11px] tracking-wide uppercase">
-          {isImmersive ? 'Exit 3D' : 'Immersive 3D'}
-        </span>
+        {isImmersive ? (
+          <>
+            <Minimize2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline uppercase">Exit</span>
+          </>
+        ) : (
+          <>
+            <Maximize2 className="w-3.5 h-3.5 text-[#8B5E3C]" />
+            <span className="hidden sm:inline uppercase">Full View</span>
+          </>
+        )}
       </button>
     </div>
   );

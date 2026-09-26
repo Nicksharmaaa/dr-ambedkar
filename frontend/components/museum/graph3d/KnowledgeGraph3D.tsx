@@ -27,9 +27,9 @@ const Graph3DCanvas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-full min-h-[550px] flex flex-col items-center justify-center bg-[#08192A] text-[#FAF7F0] space-y-4">
-        <div className="w-12 h-12 rounded-full border-2 border-[#C89D56] border-t-transparent animate-spin" />
-        <div className="font-mono text-xs text-[#C89D56] tracking-widest uppercase">
+      <div className="w-full h-full min-h-[550px] flex flex-col items-center justify-center bg-[#FAF7F0] text-[#0A2947] space-y-4">
+        <div className="w-12 h-12 rounded-full border-3 border-[#C59A45] border-t-transparent animate-spin" />
+        <div className="font-mono text-xs text-[#8B5E3C] tracking-widest uppercase font-bold">
           Initializing 3D Archival Universe...
         </div>
       </div>
@@ -45,6 +45,41 @@ interface KnowledgeGraph3DProps {
   isImmersive?: boolean;
   onToggleImmersive?: () => void;
 }
+
+const GUIDED_PERSPECTIVES = [
+  {
+    id: 'constitution',
+    title: 'Constitution & Law',
+    icon: '🏛️',
+    anchorId: 'node-constitution',
+    fallbackId: 'node-drafting-committee',
+    desc: 'Constituent Assembly & Constitutional Philosophy',
+  },
+  {
+    id: 'treatises',
+    title: 'Magnum Treatises',
+    icon: '📖',
+    anchorId: 'node-annihilation',
+    fallbackId: 'node-castes-in-india',
+    desc: 'Annihilation of Caste & The Problem of the Rupee',
+  },
+  {
+    id: 'movements',
+    title: 'Emancipation Epochs',
+    icon: '✊',
+    anchorId: 'node-mahad-satyagraha',
+    fallbackId: 'node-kalaram-temple',
+    desc: 'Mahad Water Satyagraha & Civil Rights',
+  },
+  {
+    id: 'education',
+    title: 'Global Roots',
+    icon: '🌐',
+    anchorId: 'node-columbia',
+    fallbackId: 'node-lse',
+    desc: 'Columbia University, John Dewey & LSE',
+  },
+];
 
 export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
   language = 'en',
@@ -199,12 +234,8 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
 
       setRawNodes(allNodes);
       setRawLinks(allLinks);
-
-      // Default select the central Ambedkar node for initial view
-      const ambedkarNode = allNodes.find((n) => n.isCenter);
-      if (ambedkarNode) {
-        setSelectedNode(ambedkarNode);
-      }
+      // Start in open celestial overview mode (uncluttered)
+      setSelectedNode(null);
     } catch (err: any) {
       console.error('Failed to load knowledge graph data:', err);
       setError(err?.message || 'Knowledge Graph data could not be initialized.');
@@ -366,7 +397,7 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
     };
   }, [selectedNode, rawLinks, rawNodes]);
 
-  // 7. Cinematic Camera Fly-to on Node Selection (Left-Side Framing)
+  // 7. Smooth Orbital Camera Fly-to on Node Selection (Preserves line-of-sight)
   const flyToNode = useCallback(
     (node: Graph3DNode, addToHistory = true) => {
       if (addToHistory && selectedNode && selectedNode.id !== node.id) {
@@ -374,30 +405,69 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
       }
 
       setSelectedNode(node);
-      setAutoRotate(false); // Stop rotation to let visitor explore
+      setAutoRotate(false); // Pause auto-rotation for focused exploration
       soundEffects.playNodeSelectSound();
 
       if (fgRef.current && node.x !== undefined && node.y !== undefined && node.z !== undefined) {
-        // Compose viewport so the selected sphere is visually framed in the LEFT 30-35%
-        const targetOffsetX = 35;
-        const camDistance = 165;
+        const currentPos = fgRef.current.cameraPosition();
+        const dx = (currentPos.x ?? 0) - node.x;
+        const dy = (currentPos.y ?? 0) - node.y;
+        const dz = (currentPos.z ?? 320) - node.z;
+        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
 
-        const lookAtTarget = {
-          x: (node.x || 0) + targetOffsetX,
-          y: node.y || 0,
-          z: node.z || 0,
-        };
-
+        // Smooth orbital zoom: stay along current line of sight
+        const targetDist = 135;
         const newPos = {
-          x: (node.x || 0) - 25,
-          y: (node.y || 0) + 12,
-          z: (node.z || 0) + camDistance,
+          x: node.x + (dx / dist) * targetDist,
+          y: node.y + (dy / dist) * targetDist * 0.75 + 10,
+          z: node.z + (dz / dist) * targetDist,
         };
 
-        fgRef.current.cameraPosition(newPos, lookAtTarget, 1400);
+        const lookAt = {
+          x: node.x,
+          y: node.y,
+          z: node.z,
+        };
+
+        fgRef.current.cameraPosition(newPos, lookAt, 850);
       }
     },
     [fgRef, selectedNode]
+  );
+
+  const handleBackgroundClick = useCallback(() => {
+    if (selectedNode) {
+      setSelectedNode(null);
+      soundEffects.playTactileChime();
+      if (fgRef.current) {
+        const currentPos = fgRef.current.cameraPosition();
+        const dist = Math.sqrt((currentPos.x || 0) ** 2 + (currentPos.y || 0) ** 2 + (currentPos.z || 320) ** 2) || 1;
+        const overviewDist = 380;
+        fgRef.current.cameraPosition(
+          {
+            x: ((currentPos.x || 0) / dist) * overviewDist,
+            y: ((currentPos.y || 0) / dist) * overviewDist,
+            z: ((currentPos.z || 320) / dist) * overviewDist,
+          },
+          { x: 0, y: 0, z: 0 },
+          800
+        );
+      }
+    }
+  }, [selectedNode, fgRef]);
+
+  const handleSelectTour = useCallback(
+    (tour: typeof GUIDED_PERSPECTIVES[0]) => {
+      soundEffects.playLineageTransition();
+      const targetNode =
+        rawNodes.find((n) => n.id === tour.anchorId) ||
+        rawNodes.find((n) => n.id === tour.fallbackId) ||
+        rawNodes.find((n) => n.label.toLowerCase().includes(tour.title.toLowerCase().split(' ')[0]));
+      if (targetNode) {
+        flyToNode(targetNode, true);
+      }
+    },
+    [rawNodes, flyToNode]
   );
 
   const handleNavigateHistoryBack = useCallback(() => {
@@ -459,33 +529,33 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full overflow-hidden transition-all duration-300 ${
+      className={`relative w-full overflow-hidden transition-all duration-500 ${
         isImmersive
-          ? 'w-full h-full bg-[#FAF7F0] m-0 rounded-none'
-          : 'h-[750px] sm:h-[820px] rounded-3xl border-2 border-[#D3D4C0] bg-[#FAF7F0] shadow-xl my-6'
+          ? 'w-full h-full m-0 rounded-none bg-[#FAF7F0]'
+          : 'h-[780px] sm:h-[860px] rounded-3xl border-2 border-[#D3D4C0] shadow-xl bg-[#FAF7F0]'
       }`}
     >
       {/* 1. Header Bar & Controls */}
-      <div className="absolute top-4 left-4 right-4 z-20 flex flex-col gap-3 pointer-events-none">
+      <div className="absolute top-4 left-4 right-4 z-20 flex flex-col gap-2.5 pointer-events-none">
         
         {/* Top Navigation Row */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          {/* Title & Brand */}
-          <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl border-2 border-[#D3D4C0] shadow-lg flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#0A2947] to-[#123B60] flex items-center justify-center text-[#F3E4C9] font-bold shadow-sm shrink-0">
-              <Compass className="w-4 h-4" />
+        <div className="flex flex-wrap items-center justify-between gap-2.5">
+          {/* Title & Brand — museum curatorial pill */}
+          <div className="pointer-events-auto flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/95 backdrop-blur-md border border-[#D3D4C0] shadow-sm">
+            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-[#0A2947] to-[#8B5E3C] flex items-center justify-center shrink-0 shadow-2xs">
+              <Compass className="w-3.5 h-3.5 text-[#F3E4C9]" />
             </div>
             <div>
-              <h1 className="text-sm sm:text-base font-serif font-bold text-[#0A2947] tracking-wide">
-                The Ambedkar Knowledge Universe
+              <h1 className="text-xs sm:text-sm font-serif font-bold text-[#0A2947] tracking-wide leading-none">
+                Ambedkar Universe
               </h1>
-              <p className="text-[10px] font-mono text-[#8B5E3C] tracking-wider uppercase font-semibold">
-                3D Archival Lineage · {rawNodes.length} Verified Entities
+              <p className="text-[10px] font-mono text-[#8B5E3C] tracking-widest uppercase mt-0.5 font-semibold">
+                {rawNodes.length} curated entities
               </p>
             </div>
           </div>
 
-          {/* Search, Accessible Directory & Controls Cluster */}
+          {/* Search, Directory & Controls */}
           <div className="pointer-events-auto flex items-center flex-wrap gap-2">
 
             <GraphSearch
@@ -496,11 +566,11 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
 
             <button
               onClick={() => setIsAccessibleListOpen(true)}
-              className="px-3 py-2 rounded-2xl bg-white/95 backdrop-blur-md border-2 border-[#D3D4C0] hover:bg-[#FAF7F0] hover:border-[#C89D56] text-[#0A2947] text-xs font-mono transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
-              title="Open Screen-Reader Accessible Directory"
+              className="px-3 py-2 rounded-2xl bg-white/95 backdrop-blur-md border border-[#D3D4C0] shadow-sm text-[#0A2947] hover:text-[#8B5E3C] hover:bg-[#FAF7F0] text-xs font-mono font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
+              title="Open Accessible Directory"
             >
               <ListFilter className="w-3.5 h-3.5 text-[#8B5E3C]" />
-              <span className="hidden md:inline font-semibold">Directory</span>
+              <span className="hidden md:inline">Directory</span>
             </button>
 
             <GraphControls
@@ -518,8 +588,8 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
           </div>
         </div>
 
-        {/* Minimal Category Filter Pills Row */}
-        <div className="flex justify-center pointer-events-none pt-1">
+        {/* Category Filter Pills */}
+        <div className="flex justify-center pointer-events-none">
           <div className="pointer-events-auto max-w-full">
             <GraphFilters
               activeCategory={activeCategory}
@@ -529,36 +599,71 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
           </div>
         </div>
 
+        {/* Active Focus Banner or Guided Invitation */}
+        {selectedNode ? (
+          <div className="flex justify-center pointer-events-none animate-in fade-in slide-in-from-top-1 duration-200">
+            <div className="pointer-events-auto flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-white/95 backdrop-blur-md border-2 border-[#C59A45]/60 shadow-lg text-xs font-mono">
+              <span className="w-2 h-2 rounded-full bg-[#C59A45] animate-pulse" />
+              <span className="text-[#8B5E3C] font-bold uppercase tracking-wider">Active Lineage:</span>
+              <span className="font-bold text-[#0A2947] font-sans text-sm">{selectedNode.label}</span>
+              <span className="text-[#0A2947]/60 font-medium">({connectedEntities.length} direct lineages)</span>
+              <button
+                onClick={handleBackgroundClick}
+                className="ml-2 px-2 py-0.5 rounded-lg bg-[#FAF7F0] hover:bg-[#F3E4C9] border border-[#D3D4C0] text-[#0A2947] font-semibold text-[10px] uppercase transition-colors cursor-pointer"
+                title="Return to Full Constellation (Esc)"
+              >
+                Clear ✕
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 pointer-events-none animate-in fade-in duration-300">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#8B5E3C] font-bold hidden lg:inline">
+              Curated Tours:
+            </span>
+            {GUIDED_PERSPECTIVES.map((tour) => (
+              <button
+                key={tour.id}
+                onClick={() => handleSelectTour(tour)}
+                className="pointer-events-auto px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md border border-[#D3D4C0] hover:border-[#C59A45] hover:bg-[#FAF7F0] text-[11px] sm:text-xs font-mono font-semibold text-[#0A2947] flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer transform hover:scale-105"
+                title={tour.desc}
+              >
+                <span>{tour.icon}</span>
+                <span>{tour.title}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
       </div>
 
-      {/* 3. Bottom-Left Information & Interaction Hint */}
+      {/* 3. Bottom-Left: Legend + Hint */}
       <div className="absolute bottom-4 left-4 z-20 flex flex-col gap-2 pointer-events-none">
         <div className="pointer-events-auto">
           <GraphLegend />
         </div>
-
-        <div className="px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-sm border border-[#D3D4C0] text-[11px] font-mono text-[#0A2947]/75 pointer-events-auto select-none shadow-sm hidden sm:block">
-          <span className="text-[#8B5E3C] font-semibold">Explore:</span> Drag to orbit · Scroll to zoom · Click artifact to inspect & navigate connections
+        <div className="px-3.5 py-2 rounded-2xl text-[11px] font-mono text-[#0A2947]/75 bg-white/95 backdrop-blur-md border border-[#D3D4C0] shadow-sm pointer-events-auto select-none hidden sm:block">
+          <span className="text-[#8B5E3C] font-bold">Interactive:</span> Drag to orbit · Scroll to zoom · Click to inspect
         </div>
       </div>
 
-      {/* 4. Bottom-Right Status Indicator */}
+      {/* 4. Bottom-Right: Verified badge */}
       <div className="absolute bottom-4 right-4 z-20 pointer-events-none">
-        <div className="px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-sm border border-[#D3D4C0] text-[10px] font-mono text-emerald-800 flex items-center gap-1.5 shadow-sm font-semibold">
+        <div className="px-3 py-1.5 rounded-2xl text-[11px] font-mono font-bold text-emerald-800 bg-white/95 backdrop-blur-md border border-[#D3D4C0] shadow-sm flex items-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-          <span>BAWS Primary Authority Verified</span>
+          <span>BAWS 100% Verified</span>
         </div>
       </div>
 
       {/* 5. 3D WebGL Canvas Layer */}
       {error ? (
-        <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-[#FAF7F0] space-y-4">
-          <AlertCircle className="w-12 h-12 text-rose-400" />
-          <h2 className="text-xl font-serif font-bold">Knowledge Graph Unavailable</h2>
-          <p className="text-xs text-white/60 max-w-md">{error}</p>
+        <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-[#0A2947] space-y-4 bg-[#FAF7F0]">
+          <AlertCircle className="w-12 h-12 text-rose-700" />
+          <h2 className="text-xl font-serif font-bold text-[#0A2947]">Knowledge Graph Unavailable</h2>
+          <p className="text-xs text-[#0A2947]/70 max-w-md">{error}</p>
           <button
             onClick={loadGraphData}
-            className="px-4 py-2 rounded-xl bg-[#C89D56] text-[#0A2947] font-bold text-xs font-mono uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-lg"
+            className="px-4 py-2 rounded-xl bg-[#0A2947] hover:bg-[#123B60] text-[#FAF7F0] font-bold text-xs font-mono uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-md transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Retry Connection</span>
@@ -571,7 +676,7 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
           hoveredNodeId={hoveredNode?.id || null}
           onSelectNode={(n) => flyToNode(n, true)}
           onHoverNode={setHoveredNode}
-          onBackgroundClick={() => setSelectedNode(null)}
+          onBackgroundClick={handleBackgroundClick}
           autoRotate={autoRotate}
           highlightedNodeIds={highlightedNodeIds}
           highlightedLinkIds={highlightedLinkIds}

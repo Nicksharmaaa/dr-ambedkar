@@ -1,14 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  Network, ShieldCheck, Sparkles, Compass, 
-  BookOpen, Maximize2, Layers, CheckCircle2, 
-  ExternalLink, FileText, ArrowRight, Landmark
-} from 'lucide-react';
 import { KnowledgeGraph3D } from './graph3d';
 import { ArchivalDocument, Language } from '@/types/museum';
 import { KNOWLEDGE_GRAPH_NODES, KNOWLEDGE_GRAPH_LINKS } from '@/data/archiveData';
+import { ShieldCheck, Sparkles, Network, BookOpen } from 'lucide-react';
 
 interface KnowledgeGraphViewProps {
   language?: Language;
@@ -24,9 +20,6 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
   onAskAI,
 }) => {
   const [isImmersive, setIsImmersive] = useState<boolean>(false);
-
-  const totalNodes = KNOWLEDGE_GRAPH_NODES.length;
-  const totalLinks = KNOWLEDGE_GRAPH_LINKS.length;
 
   if (isImmersive) {
     return (
@@ -44,70 +37,64 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF7F0] text-[#0A2947] py-6 sm:py-8 px-3 sm:px-6 lg:px-8 font-dmsans">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="relative min-h-screen bg-transparent text-[#0A2947] font-dmsans py-6 sm:py-8 px-3 sm:px-6 lg:px-8 space-y-6">
+      <div className="max-w-[1600px] mx-auto space-y-5">
         
-        {/* =========================================================================
-            1. EXHIBITION INTRO & CURATORIAL CONTEXT HEADER
-            ========================================================================= */}
-        <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-8 shadow-xs relative overflow-hidden space-y-4">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-            
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0A2947] text-[#C59A45] border border-[#C59A45]/40 text-xs font-mono font-bold uppercase tracking-wider">
-                <Compass className="w-3.5 h-3.5 text-[#C59A45]" />
-                <span>Museum Flagship Exhibition · 3D Archival Universe</span>
-              </div>
-              <h1 className="text-2xl sm:text-4xl font-serif-editorial font-bold text-[#0A2947] tracking-tight">
-                Knowledge Universe of Dr. B. R. Ambedkar
-              </h1>
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <span className="px-3 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-full text-xs font-mono font-bold flex items-center gap-1 shadow-2xs">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-                  <span>Curator Verified · BAWS Primary Provenance</span>
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-[#0A2947]/75 font-dmsans max-w-3xl leading-relaxed">
-                Interactive 3D WebGL museum exhibition mapping Dr. B. R. Ambedkar's foundational treatises, constitutional lineages, historical movements, and intellectual contemporaries.
-              </p>
+        {/* Curatorial Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#8B5E3C] via-[#C59A45] to-[#0A2947]" />
+          
+          <div className="space-y-2 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FAF7F0] border border-[#D3D4C0] rounded-full text-xs font-mono font-bold tracking-wider uppercase text-[#8B5E3C]">
+              <Sparkles className="w-3.5 h-3.5 text-[#C59A45]" />
+              <span>Archival 3D Exhibition · BAWS Verified Corpus</span>
             </div>
 
-            {/* Quick Stats Badges */}
-            <div className="flex items-center gap-2 shrink-0 font-mono text-xs">
-              <div className="px-3.5 py-2 rounded-2xl bg-[#FAF7F0] border border-[#D3D4C0] text-[#0A2947] text-center min-w-[70px]">
-                <div className="font-bold text-base text-[#8B5E3C]">{totalNodes}</div>
-                <div className="text-[10px] text-[#0A2947]/60 uppercase">Entities</div>
-              </div>
-              <div className="px-3.5 py-2 rounded-2xl bg-[#FAF7F0] border border-[#D3D4C0] text-[#0A2947] text-center min-w-[70px]">
-                <div className="font-bold text-base text-[#8B5E3C]">{totalLinks}</div>
-                <div className="text-[10px] text-[#0A2947]/60 uppercase">Lineages</div>
-              </div>
-              <div className="px-3.5 py-2 rounded-2xl bg-[#FAF7F0] border border-[#D3D4C0] text-[#0A2947] text-center min-w-[70px]">
-                <div className="font-bold text-base text-emerald-700">100%</div>
-                <div className="text-[10px] text-[#0A2947]/60 uppercase">Verified</div>
-              </div>
-            </div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#0A2947] tracking-tight">
+              Knowledge Universe of{' '}
+              <span className="text-[#8B5E3C] underline decoration-[#C59A45]/40 decoration-wavy underline-offset-4">
+                Dr. B. R. Ambedkar
+              </span>
+            </h1>
 
+            <p className="text-xs sm:text-sm text-[#0A2947]/75 font-sans leading-relaxed">
+              Explore {KNOWLEDGE_GRAPH_NODES.length} verified historical entities and {KNOWLEDGE_GRAPH_LINKS.length} intellectual lineages across seminal treatises, civic movements, institutional foundations, and constitutional philosophies.
+            </p>
           </div>
 
-          {/* Quick Context & Instruction Pills */}
-          <div className="pt-3 border-t border-[#D3D4C0]/70 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-[#0A2947]/80">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="flex items-center gap-1 text-[#8B5E3C] font-semibold">
-                <Sparkles className="w-3.5 h-3.5 text-[#C59A45]" />
-                <span>Zero Clutter Progressive Disclosure:</span>
-              </span>
-              <span>Labels and directional particle flows reveal upon node hover and artifact selection.</span>
+          {/* Quick Metrics & Curatorial Badges */}
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            <div className="px-4 py-2.5 rounded-2xl bg-[#FAF7F0] border border-[#D3D4C0] text-center min-w-[76px] shadow-2xs">
+              <div className="text-base sm:text-lg font-bold font-mono text-[#0A2947]">
+                {KNOWLEDGE_GRAPH_NODES.length}
+              </div>
+              <div className="text-[10px] text-[#8B5E3C] uppercase font-mono font-bold tracking-wider">
+                Entities
+              </div>
             </div>
-            <div className="text-[11px] text-[#0A2947]/60">
-              Click <strong className="text-[#8B5E3C]">"Immersive 3D"</strong> to expand to full viewport gallery.
+
+            <div className="px-4 py-2.5 rounded-2xl bg-[#FAF7F0] border border-[#D3D4C0] text-center min-w-[76px] shadow-2xs">
+              <div className="text-base sm:text-lg font-bold font-mono text-[#8B5E3C]">
+                {KNOWLEDGE_GRAPH_LINKS.length}
+              </div>
+              <div className="text-[10px] text-[#8B5E3C] uppercase font-mono font-bold tracking-wider">
+                Lineages
+              </div>
+            </div>
+
+            <div className="px-4 py-2.5 rounded-2xl bg-[#FAF7F0] border border-[#D3D4C0] text-center min-w-[76px] shadow-2xs">
+              <div className="text-base sm:text-lg font-bold font-mono text-emerald-800 flex items-center justify-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                <span>100%</span>
+              </div>
+              <div className="text-[10px] text-emerald-800 uppercase font-mono font-bold tracking-wider">
+                Verified
+              </div>
             </div>
           </div>
         </div>
 
-        {/* =========================================================================
-            2. THE 3D KNOWLEDGE UNIVERSE CANVAS
-            ========================================================================= */}
+        {/* 3D Knowledge Universe Viewport */}
         <KnowledgeGraph3D
           language={language}
           onOpenDocument={onOpenDocument}
@@ -116,43 +103,6 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
           isImmersive={false}
           onToggleImmersive={() => setIsImmersive(true)}
         />
-
-        {/* =========================================================================
-            3. EVIDENCE-FIRST ARCHIVAL INTEGRITY FOOTER
-            ========================================================================= */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-          
-          <div className="bg-white border-2 border-[#D3D4C0] rounded-2xl p-5 space-y-2 shadow-xs">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#8B5E3C] uppercase tracking-wider">
-              <ShieldCheck className="w-4 h-4 text-emerald-700" />
-              <span>Evidence-First Principles</span>
-            </div>
-            <p className="text-xs text-[#0A2947]/75 font-sans leading-relaxed">
-              Every node and edge is grounded in authoritative historical records from <em>Babasaheb Ambedkar: Writings and Speeches</em> (Vols 1–22) and Constituent Assembly Debates. Zero hallucinated connections.
-            </p>
-          </div>
-
-          <div className="bg-white border-2 border-[#D3D4C0] rounded-2xl p-5 space-y-2 shadow-xs">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#8B5E3C] uppercase tracking-wider">
-              <Compass className="w-4 h-4 text-[#C59A45]" />
-              <span>Spatial Lineage Navigation</span>
-            </div>
-            <p className="text-xs text-[#0A2947]/75 font-sans leading-relaxed">
-              Selecting any archival sphere isolates its 1-degree intellectual neighborhood, dims distant entities, and activates real-time relationship flows with sequential connection browsing.
-            </p>
-          </div>
-
-          <div className="bg-white border-2 border-[#D3D4C0] rounded-2xl p-5 space-y-2 shadow-xs">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#8B5E3C] uppercase tracking-wider">
-              <BookOpen className="w-4 h-4 text-blue-700" />
-              <span>Primary Source Deep Linking</span>
-            </div>
-            <p className="text-xs text-[#0A2947]/75 font-sans leading-relaxed">
-              Seamlessly transition from 3D archival nodes directly into full-text primary treatises, constitutional draft transcripts, and archival audio-visual records in the digital archive.
-            </p>
-          </div>
-
-        </div>
 
       </div>
     </div>

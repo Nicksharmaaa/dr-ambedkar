@@ -431,10 +431,8 @@ export default function AssistantDrawer({ isOpen, onClose }: AssistantDrawerProp
         {/* Imperial Heritage Header */}
         <div className="px-6 py-5 bg-gradient-to-b from-slate-900 via-slate-950 to-[#0a0f1d] border-b border-amber-500/25 flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-400 p-[1px] shadow-lg shadow-amber-500/25">
-              <div className="w-full h-full rounded-2xl bg-slate-950 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-amber-400" />
-              </div>
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-amber-400/90 shadow-lg shadow-amber-500/25 shrink-0 bg-slate-950">
+              <img src="/chatbot.png" alt="Ambedkar Heritage AI" className="w-full h-full object-cover" />
             </div>
             <div>
               <div className="flex items-center gap-2.5">

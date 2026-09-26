@@ -111,7 +111,7 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF7F0] text-[#0A2947] py-10 px-4 sm:px-6 lg:px-8 font-dmsans">
+    <div className="min-h-screen bg-transparent text-[#0A2947] py-10 px-4 sm:px-6 lg:px-8 font-dmsans">
       <div className="max-w-4xl mx-auto space-y-8">
         
         {/* Top Banner / Quest Identity */}

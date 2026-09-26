@@ -5,13 +5,20 @@ import {
   Clock, Calendar, MapPin, Quote, ArrowRight, BookOpen, 
   ChevronRight, ChevronLeft, X, ExternalLink, Sparkles, 
   Layers, CheckCircle2, Maximize2, Share2, Copy, Check, Compass,
-  LayoutGrid, SlidersHorizontal, Play, Pause, Volume2, Film,
-  Eye, Award, ArrowUpRight, Search, Filter
+  LayoutGrid, SlidersHorizontal, Play, Pause, Volume2, VolumeX, Film,
+  Eye, Award, ArrowUpRight, Search, Filter, Trophy, Scale, RotateCcw
 } from 'lucide-react';
 import { Language, TimelineEvent, ArchivalDocument, UserMode } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
 import { TIMELINE_EVENTS, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
+import { speechController } from '@/utils/speechUtils';
+
+// Subcomponents for the revamped interactive kiosk experience
+import { TimelineHorizonScrubber } from './timeline/TimelineHorizonScrubber';
+import { TimelineQuizDrawer } from './timeline/TimelineQuizDrawer';
+import { TimelineEpochComparator } from './timeline/TimelineEpochComparator';
+import { TimelineGuidedTourBar } from './timeline/TimelineGuidedTourBar';
 
 interface TimelineViewProps {
   language: Language;
@@ -34,9 +41,24 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const [mediaTime, setMediaTime] = useState<number>(0);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeEventIndex, setActiveEventIndex] = useState<number>(0);
-  const [popoutEvent, setPopoutEvent] = useState<TimelineEvent | null>(null);
   const [filterType, setFilterType] = useState<'all' | 'video' | 'photo' | 'document'>('all');
   const [filmGrainEffect, setFilmGrainEffect] = useState<boolean>(true);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Interactive Kiosk Additions
+  const [isQuizOpen, setIsQuizOpen] = useState<boolean>(false);
+  const [isComparatorOpen, setIsComparatorOpen] = useState<boolean>(false);
+  const [peekDocId, setPeekDocId] = useState<string | null>(null);
+  const [activeSpeakingId, setActiveSpeakingId] = useState<string | null>(null);
+  const [voiceGuideEnabled, setVoiceGuideEnabled] = useState<boolean>(true);
+  const [activeMilestoneId, setActiveMilestoneId] = useState<string>(TIMELINE_EVENTS[0].id);
+
+  // Guided Memorial Tour State
+  const [isTourActive, setIsTourActive] = useState<boolean>(false);
+  const [isTourPaused, setIsTourPaused] = useState<boolean>(false);
+  const [tourIndex, setTourIndex] = useState<number>(0);
+  const [tourRemainingSeconds, setTourRemainingSeconds] = useState<number>(8);
+  const TOUR_DURATION = 8;
 
   const eras = [
     { id: 'all', label: 'All Eras', span: '1891–1956', desc: 'Complete Chronology', count: 13 },
@@ -48,10 +70,16 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     { id: 'Later Life & Philosophy', label: 'Dhamma & Philosophy', span: '1951–1956', desc: 'The Deeksha Revolution', count: 2 },
   ];
 
+  // Filtering events
   const filteredEvents = TIMELINE_EVENTS.filter((ev) => {
     const eraMatch = selectedEra === 'all' || ev.era === selectedEra;
     const typeMatch = filterType === 'all' || ev.mediaType === filterType;
-    return eraMatch && typeMatch;
+    const queryMatch = !searchQuery.trim() || 
+      ev.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ev.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ev.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ev.year.toString().includes(searchQuery.trim());
+    return eraMatch && typeMatch && queryMatch;
   });
 
   const getRelatedDocs = (docIds: string[]) => {
@@ -60,7 +88,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
   const handleCopyCitation = (event: TimelineEvent) => {
     soundEffects.playClick();
-    const citation = `"${event.title}" (${event.dateString}, ${event.location}). Era: ${event.era}. Dr. B. R. Ambedkar Historical Chronology (1891–1956). Digital Heritage Archive.`;
+    const citation = `"${event.title}" (${event.dateString}, ${event.location}). Era: ${event.era}. Dr. B. R. Ambedkar Historical Chronology (1891–1956). Digital Heritage Archive · DAIC.`;
     navigator.clipboard.writeText(citation);
     setCopiedId(event.id);
     setTimeout(() => setCopiedId(null), 2500);
@@ -90,32 +118,167 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     return () => clearInterval(interval);
   }, [isPlayingMedia, activeMediaEvent]);
 
+  // Voice Speech playback toggle for milestone quotes
+  const handleToggleSpeakQuote = (event: TimelineEvent) => {
+    soundEffects.playClick();
+    if (activeSpeakingId === event.id) {
+      speechController.stop();
+      setActiveSpeakingId(null);
+      return;
+    }
+
+    speechController.stop();
+    setActiveSpeakingId(event.id);
+
+    const quoteToRead = event.quote || event.title;
+    speechController.speak(quoteToRead, language === 'mr' ? 'mr' : language === 'hi' ? 'hi' : 'en', () => {
+      setActiveSpeakingId(null);
+    });
+  };
+
+  // Scroll smoothly to any milestone ID
   const scrollToMilestone = (id: string) => {
     soundEffects.playClick();
+    setActiveMilestoneId(id);
     const element = document.getElementById(`milestone-${id}`);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+    // Update slideshow index if in slideshow mode
+    const idx = filteredEvents.findIndex(e => e.id === id);
+    if (idx >= 0) setActiveEventIndex(idx);
+  };
+
+  // Guided Memorial Tour Timer
+  useEffect(() => {
+    let timer: any;
+    if (isTourActive && !isTourPaused) {
+      timer = setInterval(() => {
+        setTourRemainingSeconds(prev => {
+          if (prev <= 1) {
+            // Advance to next station
+            const nextIdx = (tourIndex + 1) % filteredEvents.length;
+            setTourIndex(nextIdx);
+            const nextEvent = filteredEvents[nextIdx];
+            if (nextEvent) {
+              setActiveMilestoneId(nextEvent.id);
+              if (timelineMode === 'alternating') {
+                const el = document.getElementById(`milestone-${nextEvent.id}`);
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              } else if (timelineMode === 'slideshow') {
+                setActiveEventIndex(nextIdx);
+              }
+
+              // Speak quote if voice guide is enabled
+              if (voiceGuideEnabled && nextEvent.quote) {
+                speechController.speak(nextEvent.quote, language === 'mr' ? 'mr' : language === 'hi' ? 'hi' : 'en');
+                setActiveSpeakingId(nextEvent.id);
+              }
+            }
+            return TOUR_DURATION;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [isTourActive, isTourPaused, tourIndex, filteredEvents, timelineMode, voiceGuideEnabled, language]);
+
+  // Start guided tour
+  const handleStartTour = () => {
+    soundEffects.playClick();
+    setIsTourActive(true);
+    setIsTourPaused(false);
+    setTourIndex(0);
+    setTourRemainingSeconds(TOUR_DURATION);
+
+    const firstEvent = filteredEvents[0];
+    if (firstEvent) {
+      setActiveMilestoneId(firstEvent.id);
+      if (timelineMode === 'alternating') {
+        const el = document.getElementById(`milestone-${firstEvent.id}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (timelineMode === 'slideshow') {
+        setActiveEventIndex(0);
+      }
+
+      if (voiceGuideEnabled && firstEvent.quote) {
+        speechController.speak(firstEvent.quote, language === 'mr' ? 'mr' : language === 'hi' ? 'hi' : 'en');
+        setActiveSpeakingId(firstEvent.id);
+      }
+    }
+  };
+
+  const handleStopTour = () => {
+    soundEffects.playClick();
+    setIsTourActive(false);
+    speechController.stop();
+    setActiveSpeakingId(null);
+  };
+
+  const handleTourPrev = () => {
+    soundEffects.playClick();
+    const prevIdx = (tourIndex - 1 + filteredEvents.length) % filteredEvents.length;
+    setTourIndex(prevIdx);
+    setTourRemainingSeconds(TOUR_DURATION);
+    const ev = filteredEvents[prevIdx];
+    if (ev) {
+      setActiveMilestoneId(ev.id);
+      if (timelineMode === 'alternating') {
+        const el = document.getElementById(`milestone-${ev.id}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (timelineMode === 'slideshow') {
+        setActiveEventIndex(prevIdx);
+      }
+      if (voiceGuideEnabled && ev.quote) {
+        speechController.speak(ev.quote, language === 'mr' ? 'mr' : language === 'hi' ? 'hi' : 'en');
+        setActiveSpeakingId(ev.id);
+      }
+    }
+  };
+
+  const handleTourNext = () => {
+    soundEffects.playClick();
+    const nextIdx = (tourIndex + 1) % filteredEvents.length;
+    setTourIndex(nextIdx);
+    setTourRemainingSeconds(TOUR_DURATION);
+    const ev = filteredEvents[nextIdx];
+    if (ev) {
+      setActiveMilestoneId(ev.id);
+      if (timelineMode === 'alternating') {
+        const el = document.getElementById(`milestone-${ev.id}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (timelineMode === 'slideshow') {
+        setActiveEventIndex(nextIdx);
+      }
+      if (voiceGuideEnabled && ev.quote) {
+        speechController.speak(ev.quote, language === 'mr' ? 'mr' : language === 'hi' ? 'hi' : 'en');
+        setActiveSpeakingId(ev.id);
+      }
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF7F0] text-[#0A2947] py-8 sm:py-12 px-3 sm:px-6 lg:px-8 space-y-10 font-dmsans">
+    <div className="min-h-screen bg-transparent text-[#0A2947] py-6 sm:py-10 px-3 sm:px-6 lg:px-8 space-y-8 font-dmsans">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* =========================================================================
-            HEADER & EDITORIAL TITLE BAR
+            INSTITUTIONAL KIOSK TITLE BAR & ACTION TERMINAL
             ========================================================================= */}
         <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#8B5E3C] via-[#C59A45] to-[#0A2947]" />
 
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div className="space-y-3 max-w-3xl">
-              <div className="flex items-center gap-2 text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-widest">
+              <div className="flex flex-wrap items-center gap-2 text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-widest">
                 <Compass className="w-4 h-4 text-[#8B5E3C]" />
-                <span>EXHIBITION TIMELINE TRACK · 1891–1956</span>
+                <span>DR. AMBEDKAR INTERNATIONAL CENTRE (DAIC) · MEMORIAL KIOSK</span>
                 <span className="text-[#0A2947]/30">·</span>
-                <span className="px-2 py-0.5 bg-[#FAF7F0] border border-[#D3D4C0] rounded-md text-[11px] text-[#0A2947] font-mono font-bold">
-                  {filteredEvents.length} Milestones
+                <span className="px-2.5 py-0.5 bg-[#FAF7F0] border border-[#D3D4C0] rounded-md text-[11px] text-[#0A2947] font-mono font-bold">
+                  1891–1956
+                </span>
+                <span className="px-2 py-0.5 bg-[#0A2947] text-[#F3E4C9] rounded-md text-[10px] font-mono font-bold">
+                  {filteredEvents.length} Stations
                 </span>
               </div>
 
@@ -124,19 +287,63 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
               </h1>
 
               <p className="text-sm sm:text-base text-[#0A2947]/75 font-normal leading-relaxed">
-                Experience the visual journey of Dr. Bhimrao Ramji Ambedkar through archival photographs, documentary newsreels, and seminal constitutional milestones.
+                Step into the epochal journey of Dr. Bhimrao Ramji Ambedkar. Touch the interactive horizon to explore historical newsreels, primary treaties, audio proclamations, and seminal constitutional milestones.
               </p>
             </div>
 
-            {/* View Mode Switcher */}
-            <div className="flex flex-wrap items-center gap-2.5">
+            {/* View Mode Switcher & Quick Kiosk Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              {/* Interactive Kiosk Buttons */}
+              <div className="flex items-center gap-2">
+                {/* Memorial Tour Button */}
+                <button
+                  onClick={isTourActive ? handleStopTour : handleStartTour}
+                  className={`px-4 py-2 rounded-2xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 shadow-sm ${
+                    isTourActive
+                      ? 'bg-rose-900 text-white ring-2 ring-rose-500 animate-pulse'
+                      : 'bg-[#C59A45] hover:bg-[#d6aa55] text-[#0A2947] hover:scale-105'
+                  }`}
+                  title="Auto-advancing memorial presentation"
+                >
+                  {isTourActive ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+                  <span>{isTourActive ? 'Stop Tour' : 'Guided Tour'}</span>
+                </button>
+
+                {/* Milestone Quiz Challenge */}
+                <button
+                  onClick={() => {
+                    soundEffects.playClick();
+                    setIsQuizOpen(true);
+                  }}
+                  className="px-3.5 py-2 bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0] hover:border-[#8B5E3C] rounded-2xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-xs"
+                  title="Test Your Knowledge in the Memorial Quiz"
+                >
+                  <Trophy className="w-3.5 h-3.5 text-[#C59A45]" />
+                  <span>Epoch Quiz</span>
+                </button>
+
+                {/* Compare Epochs Lens */}
+                <button
+                  onClick={() => {
+                    soundEffects.playClick();
+                    setIsComparatorOpen(true);
+                  }}
+                  className="px-3.5 py-2 bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0] hover:border-[#8B5E3C] rounded-2xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-xs"
+                  title="Compare Key Epochs Side-by-Side"
+                >
+                  <Scale className="w-3.5 h-3.5 text-[#8B5E3C]" />
+                  <span className="hidden sm:inline">Compare</span>
+                </button>
+              </div>
+
+              {/* View Mode Toggle Pill */}
               <div className="flex items-center bg-[#FAF7F0] p-1.5 rounded-2xl border-2 border-[#D3D4C0] shadow-xs">
                 <button
                   onClick={() => {
                     soundEffects.playClick();
                     setTimelineMode('alternating');
                   }}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
                     timelineMode === 'alternating'
                       ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#8B5E3C]'
                       : 'text-[#0A2947]/70 hover:text-[#0A2947]'
@@ -144,7 +351,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   title="Alternating Milestone Spine"
                 >
                   <Layers className="w-3.5 h-3.5" />
-                  <span>Timeline Spine</span>
+                  <span className="hidden md:inline">Spine</span>
                 </button>
 
                 <button
@@ -152,7 +359,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     soundEffects.playClick();
                     setTimelineMode('slideshow');
                   }}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
                     timelineMode === 'slideshow'
                       ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#8B5E3C]'
                       : 'text-[#0A2947]/70 hover:text-[#0A2947]'
@@ -160,7 +367,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   title="Cinematic Slide Corridor"
                 >
                   <Film className="w-3.5 h-3.5" />
-                  <span>Cinematic Reel</span>
+                  <span className="hidden md:inline">Reel</span>
                 </button>
 
                 <button
@@ -168,7 +375,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     soundEffects.playClick();
                     setTimelineMode('grid');
                   }}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
                     timelineMode === 'grid'
                       ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#8B5E3C]'
                       : 'text-[#0A2947]/70 hover:text-[#0A2947]'
@@ -176,72 +383,42 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   title="Curatorial Matrix Grid"
                 >
                   <LayoutGrid className="w-3.5 h-3.5" />
-                  <span>Gallery Grid</span>
+                  <span className="hidden md:inline">Grid</span>
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Quick-Jump Milestone Scrubber Bar */}
-          <div className="mt-8 pt-6 border-t border-[#D3D4C0] space-y-3">
-            <div className="flex items-center justify-between text-xs font-mono text-[#0A2947]/60">
-              <span className="font-cinzel uppercase font-bold text-[#8B5E3C] flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                Interactive Chronological Scrubber
-              </span>
-              <span>Click any year to jump</span>
-            </div>
-
-            <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-[#8B5E3C]/40 scrollbar-track-[#FAF7F0]">
-              <div className="flex items-center gap-2 min-w-[760px] py-1">
-                {TIMELINE_EVENTS.map((ev, i) => (
-                  <button
-                    key={ev.id}
-                    onClick={() => scrollToMilestone(ev.id)}
-                    className="flex-1 py-1.5 px-2 bg-[#FAF7F0] hover:bg-[#F3E4C9] border border-[#D3D4C0] hover:border-[#8B5E3C] rounded-xl text-center group cursor-pointer transition-all hover:scale-105"
-                  >
-                    <span className="block text-[11px] font-mono font-bold text-[#0A2947] group-hover:text-[#8B5E3C]">
-                      {ev.year}
-                    </span>
-                    <span className="block text-[9px] font-dmsans text-[#0A2947]/60 truncate group-hover:text-[#0A2947]">
-                      {ev.title.split(':')[0].substring(0, 14)}..
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Era Filter Badges & Media Filter */}
-          <div className="mt-4 pt-4 border-t border-[#D3D4C0]/70 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            {/* Eras */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-              {eras.map(era => (
+          {/* Quick Search & Media Filter Sub-Bar */}
+          <div className="mt-6 pt-5 border-t border-[#D3D4C0] flex flex-col md:flex-row md:items-center justify-between gap-3">
+            {/* Search Input */}
+            <div className="relative flex-1 max-w-md">
+              <Search className="w-4 h-4 text-[#8B5E3C] absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search milestones by keyword, city, or year..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-8 py-2 bg-[#FAF7F0] border border-[#D3D4C0] rounded-xl text-xs sm:text-sm font-dmsans text-[#0A2947] focus:outline-none focus:border-[#C59A45] focus:bg-white transition-all"
+              />
+              {searchQuery && (
                 <button
-                  key={era.id}
-                  onClick={() => {
-                    soundEffects.playClick();
-                    setSelectedEra(era.id);
-                  }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
-                    selectedEra === era.id
-                      ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#8B5E3C]'
-                      : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947]/80 border border-[#D3D4C0]'
-                  }`}
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#0A2947]/50 hover:text-[#0A2947] p-1 cursor-pointer"
                 >
-                  <span>{era.label}</span>
-                  <span className={`text-[10px] font-mono ${selectedEra === era.id ? 'text-[#F3E4C9]/70' : 'text-[#8B5E3C]'}`}>
-                    {era.span}
-                  </span>
+                  <X className="w-3.5 h-3.5" />
                 </button>
-              ))}
+              )}
             </div>
 
-            {/* Media Type Filter */}
+            {/* Media Filter Switch */}
             <div className="flex items-center gap-1.5 shrink-0 bg-[#FAF7F0] p-1 rounded-xl border border-[#D3D4C0]">
-              <span className="text-[10px] font-cinzel font-bold text-[#8B5E3C] uppercase px-2">Filter:</span>
+              <span className="text-[10px] font-cinzel font-bold text-[#8B5E3C] uppercase px-2">Type:</span>
               <button
-                onClick={() => setFilterType('all')}
+                onClick={() => {
+                  soundEffects.playClick();
+                  setFilterType('all');
+                }}
                 className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer ${
                   filterType === 'all' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
                 }`}
@@ -249,38 +426,67 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 All
               </button>
               <button
-                onClick={() => setFilterType('video')}
+                onClick={() => {
+                  soundEffects.playClick();
+                  setFilterType('video');
+                }}
                 className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer flex items-center gap-1 ${
                   filterType === 'video' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
                 }`}
               >
                 <Film className="w-3 h-3 text-[#C59A45]" />
-                Videos
+                Reels
               </button>
               <button
-                onClick={() => setFilterType('photo')}
+                onClick={() => {
+                  soundEffects.playClick();
+                  setFilterType('photo');
+                }}
                 className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer ${
                   filterType === 'photo' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
                 }`}
               >
-                Photos
+                Plates
+              </button>
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setFilterType('document');
+                }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer flex items-center gap-1 ${
+                  filterType === 'document' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
+                }`}
+              >
+                <BookOpen className="w-3 h-3 text-[#8B5E3C]" />
+                Treatises
               </button>
             </div>
           </div>
-
         </div>
 
         {/* =========================================================================
-            VIEW 1: ALTERNATING MILESTONE SPINE (MATCHING REQUESTED UX DESIGN)
+            TOUCH HORIZON CHRONOLOGICAL SCRUBBER & SLIDER
+            ========================================================================= */}
+        <TimelineHorizonScrubber
+          events={TIMELINE_EVENTS}
+          activeMilestoneId={activeMilestoneId}
+          onSelectMilestone={(ev) => scrollToMilestone(ev.id)}
+          selectedEra={selectedEra}
+          onSelectEra={(eraId) => setSelectedEra(eraId)}
+          eras={eras}
+        />
+
+        {/* =========================================================================
+            VIEW 1: ALTERNATING MILESTONE SPINE (INTERACTIVE STATION WALKWAY)
             ========================================================================= */}
         {timelineMode === 'alternating' && (
           <div className="relative py-8">
             
-            {/* Center Vertical Axis / Road Spine (hidden on small mobile, centered on md+) */}
-            <div className="hidden md:block absolute left-1/2 top-4 bottom-8 -translate-x-1/2 w-1 bg-gradient-to-b from-[#8B5E3C] via-[#C59A45] to-[#0A2947] rounded-full shadow-xs" />
+            {/* Center Vertical Axis / Road Spine (hidden on mobile, centered on md+) */}
+            <div className="hidden md:block absolute left-1/2 top-4 bottom-8 -translate-x-1/2 w-1.5 bg-gradient-to-b from-[#8B5E3C] via-[#C59A45] to-[#0A2947] rounded-full shadow-xs" />
             
             {/* Mobile Left Axis */}
-            <div className="md:hidden absolute left-5 top-4 bottom-8 w-1 bg-gradient-to-b from-[#8B5E3C] via-[#C59A45] to-[#0A2947] rounded-full" />
+            <div className="md:hidden absolute left-5 top-4 bottom-8 w-1.5 bg-gradient-to-b from-[#8B5E3C] via-[#C59A45] to-[#0A2947] rounded-full" />
 
             <div className="space-y-12 sm:space-y-16">
               {filteredEvents.map((event, index) => {
@@ -288,11 +494,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 const displayTitle = language !== 'en' && event.titleLocal?.[language] ? event.titleLocal[language] : event.title;
                 const displayDesc = language !== 'en' && event.descriptionLocal?.[language] ? event.descriptionLocal[language] : event.description;
                 const relatedDocs = getRelatedDocs(event.relatedDocIds || []);
+                const isStationSpeaking = activeSpeakingId === event.id;
+                const isSelected = activeMilestoneId === event.id;
 
                 return (
                   <div
                     key={event.id}
                     id={`milestone-${event.id}`}
+                    onClick={() => setActiveMilestoneId(event.id)}
                     className={`relative flex flex-col md:flex-row items-center scroll-mt-28 group ${
                       isEven ? 'md:flex-row-reverse' : ''
                     }`}
@@ -300,14 +509,18 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     
                     {/* Central Glowing Node Milestone Pin */}
                     <div className="absolute left-5 md:left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#0A2947] border-3 border-[#C59A45] text-[#F3E4C9] flex items-center justify-center font-mono font-bold text-xs sm:text-sm shadow-md group-hover:scale-110 group-hover:ring-4 group-hover:ring-[#C59A45]/30 transition-all duration-300">
+                      <div className={`w-11 h-11 sm:w-13 sm:h-13 rounded-2xl flex items-center justify-center font-mono font-bold text-xs sm:text-sm shadow-md transition-all duration-300 cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#C59A45] text-[#0A2947] ring-4 ring-[#C59A45]/40 scale-115'
+                          : 'bg-[#0A2947] border-2 border-[#C59A45] text-[#F3E4C9] group-hover:scale-110 group-hover:ring-4 group-hover:ring-[#C59A45]/30'
+                      }`}>
                         {event.mediaType === 'video' ? (
                           <Film className="w-5 h-5 text-[#C59A45] animate-pulse" />
                         ) : (
                           <span>{index + 1}</span>
                         )}
                       </div>
-                      <span className="hidden md:block text-[10px] font-mono font-bold text-[#8B5E3C] mt-1 bg-[#FAF7F0] px-1.5 py-0.5 rounded-md border border-[#D3D4C0]">
+                      <span className="hidden md:block text-[10px] font-mono font-bold text-[#8B5E3C] mt-1 bg-[#FAF7F0] px-2 py-0.5 rounded-md border border-[#D3D4C0]">
                         {event.year}
                       </span>
                     </div>
@@ -318,7 +531,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     }`}>
                       
                       {/* Interactive Visual Card */}
-                      <div className="bg-white border-2 border-[#D3D4C0] group-hover:border-[#C59A45] rounded-3xl overflow-hidden shadow-sm group-hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1">
+                      <div className={`bg-white border-2 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1 ${
+                        isSelected ? 'border-[#C59A45] ring-2 ring-[#C59A45]/20' : 'border-[#D3D4C0] hover:border-[#8B5E3C]'
+                      }`}>
                         
                         {/* Visual Image / Video Header Banner */}
                         {event.imageUrl && (
@@ -340,6 +555,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     <Film className="w-3 h-3 text-[#C59A45]" />
                                     <span>Historical Video Reel</span>
                                   </>
+                                ) : event.mediaType === 'document' ? (
+                                  <>
+                                    <BookOpen className="w-3 h-3 text-[#8B5E3C]" />
+                                    <span>Primary Treaty Folio</span>
+                                  </>
                                 ) : (
                                   <>
                                     <Compass className="w-3 h-3 text-[#C59A45]" />
@@ -349,7 +569,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                               </span>
                             </div>
 
-                            {/* Year & Era Floating Badge */}
+                            {/* Year Floating Badge */}
                             <div className="absolute top-3 right-3">
                               <span className="px-3 py-1 bg-[#8B5E3C] text-white text-xs font-mono font-black rounded-xl shadow-md border border-[#F3E4C9]/40">
                                 {event.year}
@@ -372,7 +592,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
                             {/* Bottom Caption on Image */}
                             <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white/90 text-xs font-mono">
-                              <span className="flex items-center gap-1 truncate max-w-[200px]">
+                              <span className="flex items-center gap-1 truncate max-w-[220px]">
                                 <MapPin className="w-3.5 h-3.5 text-[#C59A45]" />
                                 {event.location}
                               </span>
@@ -390,7 +610,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                               {event.era}
                             </span>
                             <span className="font-mono text-[#0A2947]/60 text-[11px]">
-                              Station #{index + 1}
+                              Station #{index + 1} of {filteredEvents.length}
                             </span>
                           </div>
 
@@ -402,7 +622,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             {displayTitle}
                           </h3>
 
-                          {/* Highlights Chips - Solves "too much text right now" */}
+                          {/* Highlights Chips */}
                           {event.highlights && event.highlights.length > 0 && (
                             <div className="space-y-1.5 pt-1">
                               {event.highlights.map((point, pIdx) => (
@@ -419,38 +639,117 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             {displayDesc}
                           </p>
 
-                          {/* Historical Proclamation Quote if present */}
+                          {/* Historical Proclamation Quote with Speech synthesis */}
                           {event.quote && (
-                            <div className="p-3.5 bg-[#FAF7F0] border-l-3 border-[#8B5E3C] rounded-r-xl space-y-1">
-                              <div className="flex items-center gap-1 text-[10px] font-cinzel font-bold text-[#8B5E3C] uppercase">
-                                <Quote className="w-3 h-3" />
-                                <span>Historical Proclamation</span>
+                            <div className="p-4 bg-[#FAF7F0] border-l-4 border-[#8B5E3C] rounded-r-2xl space-y-2">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5 text-[10px] font-cinzel font-bold text-[#8B5E3C] uppercase">
+                                  <Quote className="w-3.5 h-3.5" />
+                                  <span>Historical Proclamation</span>
+                                </div>
+
+                                {/* Audio Voice Button */}
+                                <button
+                                  onClick={() => handleToggleSpeakQuote(event)}
+                                  className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                                    isStationSpeaking
+                                      ? 'bg-[#C59A45] text-[#0A2947] ring-2 ring-[#C59A45]/40 animate-pulse'
+                                      : 'bg-white hover:bg-[#F3E4C9] text-[#8B5E3C] border border-[#D3D4C0]'
+                                  }`}
+                                  title="Listen to Babasaheb's quote read aloud"
+                                >
+                                  {isStationSpeaking ? (
+                                    <>
+                                      <div className="flex items-end gap-0.5 h-3">
+                                        <span className="w-0.5 bg-[#0A2947] animate-[bounce_0.8s_infinite] h-2" />
+                                        <span className="w-0.5 bg-[#0A2947] animate-[bounce_0.6s_infinite] h-3" />
+                                        <span className="w-0.5 bg-[#0A2947] animate-[bounce_0.9s_infinite] h-1.5" />
+                                      </div>
+                                      <span>Stop Audio</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Volume2 className="w-3.5 h-3.5" />
+                                      <span>Listen</span>
+                                    </>
+                                  )}
+                                </button>
                               </div>
-                              <p className="text-xs font-serif-editorial italic text-[#0A2947] leading-relaxed line-clamp-2">
+
+                              <p className="text-xs font-serif-editorial italic text-[#0A2947] leading-relaxed">
                                 "{event.quote}"
                               </p>
+                              {event.quoteAttribution && (
+                                <div className="text-[10px] font-mono text-[#8B5E3C] text-right">
+                                  — {event.quoteAttribution}
+                                </div>
+                              )}
                             </div>
                           )}
 
                           {/* Primary Documents Available */}
                           {relatedDocs.length > 0 && (
-                            <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                              <span className="text-[10px] font-cinzel font-bold text-[#8B5E3C] uppercase mr-1">
-                                Primary Folios:
-                              </span>
-                              {relatedDocs.map(doc => (
-                                <button
-                                  key={doc.id}
-                                  onClick={() => {
-                                    soundEffects.playClick();
-                                    onOpenDocument(doc);
-                                  }}
-                                  className="px-2.5 py-1 bg-[#FAF7F0] hover:bg-[#F3E4C9] border border-[#D3D4C0] rounded-lg text-[11px] font-mono text-[#0A2947] font-semibold transition-colors flex items-center gap-1 cursor-pointer"
-                                >
-                                  <BookOpen className="w-3 h-3 text-[#8B5E3C]" />
-                                  <span className="truncate max-w-[140px]">{doc.title}</span>
-                                </button>
-                              ))}
+                            <div className="space-y-2 pt-1">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className="text-[10px] font-cinzel font-bold text-[#8B5E3C] uppercase mr-1">
+                                  Primary Folios:
+                                </span>
+                                {relatedDocs.map(doc => (
+                                  <button
+                                    key={doc.id}
+                                    onClick={() => {
+                                      soundEffects.playClick();
+                                      setPeekDocId(peekDocId === doc.id ? null : doc.id);
+                                    }}
+                                    className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-colors flex items-center gap-1 cursor-pointer border ${
+                                      peekDocId === doc.id
+                                        ? 'bg-[#0A2947] text-[#F3E4C9] border-[#0A2947]'
+                                        : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
+                                    }`}
+                                    title="Click to peek document details"
+                                  >
+                                    <BookOpen className="w-3 h-3 text-[#8B5E3C]" />
+                                    <span className="truncate max-w-[130px]">{doc.title}</span>
+                                  </button>
+                                ))}
+                              </div>
+
+                              {/* In-Card Folio Peek Drawer */}
+                              {peekDocId && relatedDocs.some(d => d.id === peekDocId) && (
+                                (() => {
+                                  const doc = relatedDocs.find(d => d.id === peekDocId)!;
+                                  return (
+                                    <div className="p-3.5 bg-[#FAF7F0] border-2 border-[#8B5E3C]/40 rounded-2xl space-y-2 animate-in fade-in duration-200">
+                                      <div className="flex items-center justify-between text-xs">
+                                        <span className="font-serif-editorial font-bold text-[#0A2947] truncate max-w-[200px]">
+                                          {doc.title}
+                                        </span>
+                                        <span className="text-[10px] font-mono text-[#8B5E3C]">
+                                          {doc.accessionNo} · {doc.year}
+                                        </span>
+                                      </div>
+                                      <p className="text-xs text-[#0A2947]/80 line-clamp-2">
+                                        {doc.shortDescription}
+                                      </p>
+                                      <div className="flex items-center justify-between pt-1">
+                                        <button
+                                          onClick={() => onOpenDocument(doc)}
+                                          className="text-xs font-montserrat font-bold uppercase text-[#8B5E3C] hover:text-[#0A2947] flex items-center gap-1 cursor-pointer"
+                                        >
+                                          <span>Open Full Archival Reader</span>
+                                          <ArrowRight className="w-3.5 h-3.5" />
+                                        </button>
+                                        <button
+                                          onClick={() => setPeekDocId(null)}
+                                          className="text-[11px] font-mono text-[#0A2947]/50 hover:text-[#0A2947] cursor-pointer"
+                                        >
+                                          Close Peek
+                                        </button>
+                                      </div>
+                                    </div>
+                                  );
+                                })()
+                              )}
                             </div>
                           )}
 
@@ -502,7 +801,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         )}
 
         {/* =========================================================================
-            VIEW 2: CINEMATIC SLIDESHOW CORRIDOR
+            VIEW 2: CINEMATIC SLIDESHOW CORRIDOR (IMMERSIVE KIOSK THEATER)
             ========================================================================= */}
         {timelineMode === 'slideshow' && (
           <div className="space-y-6">
@@ -524,11 +823,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         soundEffects.playClick();
                         setActiveEventIndex(prev => (prev > 0 ? prev - 1 : filteredEvents.length - 1));
                       }}
-                      className="p-2 rounded-xl border border-[#D3D4C0] hover:bg-[#FAF7F0] text-[#0A2947] cursor-pointer"
+                      className="p-2.5 rounded-2xl border border-[#D3D4C0] hover:bg-[#FAF7F0] text-[#0A2947] cursor-pointer"
+                      title="Previous Milestone"
                     >
-                      <ChevronLeft className="w-4 h-4" />
+                      <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <span className="text-xs font-mono text-[#0A2947]/70">
+                    <span className="text-xs font-mono text-[#0A2947]/70 font-bold px-1">
                       {activeEventIndex + 1} / {filteredEvents.length}
                     </span>
                     <button
@@ -536,9 +836,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         soundEffects.playClick();
                         setActiveEventIndex(prev => (prev < filteredEvents.length - 1 ? prev + 1 : 0));
                       }}
-                      className="p-2 rounded-xl border border-[#D3D4C0] hover:bg-[#FAF7F0] text-[#0A2947] cursor-pointer"
+                      className="p-2.5 rounded-2xl border border-[#D3D4C0] hover:bg-[#FAF7F0] text-[#0A2947] cursor-pointer"
+                      title="Next Milestone"
                     >
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
@@ -546,15 +847,15 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 {/* Active Slide Presentation */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                   <div className="lg:col-span-7">
-                    <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-[#0A2947] shadow-md">
+                    <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-[#0A2947] shadow-md group">
                       <img 
                         src={filteredEvents[activeEventIndex]?.imageUrl} 
                         alt={filteredEvents[activeEventIndex]?.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                       />
                       <button
                         onClick={() => handleOpenMedia(filteredEvents[activeEventIndex])}
-                        className="absolute inset-0 bg-black/30 hover:bg-black/50 transition-colors flex items-center justify-center cursor-pointer group"
+                        className="absolute inset-0 bg-black/30 hover:bg-black/50 transition-colors flex items-center justify-center cursor-pointer"
                       >
                         <div className="w-16 h-16 rounded-2xl bg-[#0A2947] border-2 border-[#C59A45] text-[#F3E4C9] flex items-center justify-center group-hover:scale-115 transition-transform shadow-xl">
                           <Play className="w-7 h-7 fill-[#C59A45] text-[#C59A45] ml-1" />
@@ -588,6 +889,27 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                       {filteredEvents[activeEventIndex]?.description}
                     </p>
 
+                    {/* Historic Quote */}
+                    {filteredEvents[activeEventIndex]?.quote && (
+                      <div className="p-3.5 bg-[#FAF7F0] border-l-4 border-[#8B5E3C] rounded-r-xl space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-cinzel font-bold text-[#8B5E3C] uppercase">
+                            Proclamation
+                          </span>
+                          <button
+                            onClick={() => handleToggleSpeakQuote(filteredEvents[activeEventIndex])}
+                            className="p-1 rounded text-[#8B5E3C] hover:text-[#0A2947] cursor-pointer"
+                            title="Listen to Quote"
+                          >
+                            <Volume2 className={`w-3.5 h-3.5 ${activeSpeakingId === filteredEvents[activeEventIndex]?.id ? 'text-[#C59A45] animate-pulse' : ''}`} />
+                          </button>
+                        </div>
+                        <p className="text-xs font-serif-editorial italic text-[#0A2947]">
+                          "{filteredEvents[activeEventIndex]?.quote}"
+                        </p>
+                      </div>
+                    )}
+
                     <div className="flex flex-wrap items-center gap-2 pt-3">
                       <button
                         onClick={() => handleOpenMedia(filteredEvents[activeEventIndex])}
@@ -603,6 +925,32 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         Ask AI Scholar
                       </button>
                     </div>
+                  </div>
+                </div>
+
+                {/* Bottom Thumbnail Strip */}
+                <div className="pt-6 border-t border-[#D3D4C0]">
+                  <div className="text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-wider mb-3">
+                    Fast Kiosk Station Select:
+                  </div>
+                  <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                    {filteredEvents.map((ev, i) => (
+                      <button
+                        key={ev.id}
+                        onClick={() => {
+                          soundEffects.playClick();
+                          setActiveEventIndex(i);
+                        }}
+                        className={`min-w-[100px] p-2 rounded-xl text-left border transition-all cursor-pointer ${
+                          activeEventIndex === i
+                            ? 'bg-[#0A2947] text-white border-[#C59A45] ring-2 ring-[#C59A45]/30'
+                            : 'bg-[#FAF7F0] text-[#0A2947] border-[#D3D4C0] hover:bg-white'
+                        }`}
+                      >
+                        <span className="block text-xs font-mono font-bold">{ev.year}</span>
+                        <span className="block text-[10px] truncate">{ev.title}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
 
@@ -655,7 +1003,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 </div>
 
                 <div className="p-5 pt-0 flex items-center justify-between border-t border-[#D3D4C0]/50 mt-3">
-                  <span className="text-[11px] font-mono text-[#0A2947]/60">
+                  <span className="text-[11px] font-mono text-[#0A2947]/60 truncate max-w-[150px]">
                     {event.location}
                   </span>
                   <button
@@ -819,12 +1167,21 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     </div>
                   )}
 
-                  {/* Historical Quote */}
+                  {/* Historical Quote with Voice playback */}
                   {activeMediaEvent.quote && (
-                    <div className="p-4 bg-[#FAF7F0] border-l-4 border-[#8B5E3C] rounded-r-2xl space-y-1">
-                      <div className="flex items-center gap-1 text-[10px] font-cinzel font-bold text-[#8B5E3C] uppercase">
-                        <Quote className="w-3 h-3" />
-                        <span>Direct Historical Proclamation</span>
+                    <div className="p-4 bg-[#FAF7F0] border-l-4 border-[#8B5E3C] rounded-r-2xl space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1 text-[10px] font-cinzel font-bold text-[#8B5E3C] uppercase">
+                          <Quote className="w-3 h-3" />
+                          <span>Direct Historical Proclamation</span>
+                        </div>
+                        <button
+                          onClick={() => handleToggleSpeakQuote(activeMediaEvent)}
+                          className="px-2.5 py-1 bg-white hover:bg-[#F3E4C9] text-[#8B5E3C] border border-[#D3D4C0] rounded-lg text-xs font-mono font-bold flex items-center gap-1 cursor-pointer"
+                        >
+                          <Volume2 className="w-3.5 h-3.5" />
+                          <span>Listen</span>
+                        </button>
                       </div>
                       <blockquote className="text-sm font-serif-editorial italic text-[#0A2947]">
                         "{activeMediaEvent.quote}"
@@ -898,6 +1255,52 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             </div>
           </div>
         )}
+
+        {/* =========================================================================
+            INTERACTIVE KIOSK DRAWERS & CONTROLLERS
+            ========================================================================= */}
+        
+        {/* Milestone Chronicle Quiz Drawer */}
+        <TimelineQuizDrawer
+          isOpen={isQuizOpen}
+          onClose={() => setIsQuizOpen(false)}
+          onJumpToMilestone={(milestoneId) => scrollToMilestone(milestoneId)}
+        />
+
+        {/* Epoch Comparison Lens Drawer */}
+        <TimelineEpochComparator
+          isOpen={isComparatorOpen}
+          onClose={() => setIsComparatorOpen(false)}
+          onJumpToMilestone={(milestoneId) => scrollToMilestone(milestoneId)}
+        />
+
+        {/* Guided Memorial Tour Dock Bar */}
+        <TimelineGuidedTourBar
+          isActive={isTourActive}
+          isPaused={isTourPaused}
+          currentEvent={filteredEvents[tourIndex] || filteredEvents[0]}
+          currentIndex={tourIndex}
+          totalEvents={filteredEvents.length}
+          remainingSeconds={tourRemainingSeconds}
+          maxSeconds={TOUR_DURATION}
+          isSpeaking={activeSpeakingId !== null}
+          voiceEnabled={voiceGuideEnabled}
+          onTogglePause={() => {
+            soundEffects.playClick();
+            setIsTourPaused(!isTourPaused);
+          }}
+          onPrev={handleTourPrev}
+          onNext={handleTourNext}
+          onToggleVoice={() => {
+            soundEffects.playClick();
+            setVoiceGuideEnabled(!voiceGuideEnabled);
+            if (voiceGuideEnabled) {
+              speechController.stop();
+              setActiveSpeakingId(null);
+            }
+          }}
+          onStopTour={handleStopTour}
+        />
 
       </div>
     </div>

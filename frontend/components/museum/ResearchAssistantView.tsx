@@ -659,7 +659,7 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF7F0] text-[#0A2947] py-8 sm:py-12 px-4 sm:px-6 lg:px-8 font-dmsans">
+    <div className="min-h-screen bg-transparent text-[#0A2947] py-8 sm:py-12 px-4 sm:px-6 lg:px-8 font-dmsans">
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* =========================================================================
@@ -670,32 +670,37 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#8B5E3C]" />
 
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="space-y-3 max-w-3xl">
-              
-              {/* Verification Status Pill */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-mono font-bold tracking-wider uppercase shadow-2xs">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
-                  GROUNDED IN VERIFIED SOURCES
-                </span>
-                <span className="text-xs font-mono text-[#0A2947]/60">
-                  · 22 BAWS Volumes & Constituent Assembly Debates (CAD)
-                </span>
+            <div className="flex items-start sm:items-center gap-4 sm:gap-6 max-w-3xl">
+              <div className="w-16 h-16 sm:w-22 sm:h-22 rounded-full overflow-hidden border-2 border-[#C59A45] shadow-md shrink-0 bg-[#0A2947]">
+                <img src="/chatbot.png" alt="Babasaheb AI Scholar" className="w-full h-full object-cover" />
               </div>
 
-              {/* Museum Editorial Title */}
-              <div>
-                <h1 className="text-3xl sm:text-5xl font-serif-editorial font-bold text-[#0A2947] tracking-tight">
-                  BABASAHEB AI SCHOLAR
-                </h1>
-                <p className="text-xs sm:text-sm font-cinzel tracking-widest text-[#8B5E3C] uppercase font-bold mt-1">
-                  ARCHIVE-GROUNDED RESEARCH ASSISTANT & JURISPRUDENTIAL SYNTHESIZER
+              <div className="space-y-2">
+                {/* Verification Status Pill */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-mono font-bold tracking-wider uppercase shadow-2xs">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
+                    GROUNDED IN VERIFIED SOURCES
+                  </span>
+                  <span className="text-xs font-mono text-[#0A2947]/60">
+                    · 22 BAWS Volumes & Constituent Assembly Debates (CAD)
+                  </span>
+                </div>
+
+                {/* Museum Editorial Title */}
+                <div>
+                  <h1 className="text-3xl sm:text-5xl font-serif-editorial font-bold text-[#0A2947] tracking-tight">
+                    BABASAHEB AI SCHOLAR
+                  </h1>
+                  <p className="text-xs sm:text-sm font-cinzel tracking-widest text-[#8B5E3C] uppercase font-bold mt-1">
+                    ARCHIVE-GROUNDED RESEARCH ASSISTANT & JURISPRUDENTIAL SYNTHESIZER
+                  </p>
+                </div>
+
+                <p className="text-sm sm:text-base text-[#0A2947]/80 font-dmsans leading-relaxed">
+                  A curatorial research companion grounded strictly in the verified historical corpus of Dr. B. R. Ambedkar. Every synthesis cites primary Constituent Assembly Debates, doctoral treatises, and legislative records with accession provenance.
                 </p>
               </div>
-
-              <p className="text-sm sm:text-base text-[#0A2947]/80 font-dmsans leading-relaxed">
-                A curatorial research companion grounded strictly in the verified historical corpus of Dr. B. R. Ambedkar. Every synthesis cites primary Constituent Assembly Debates, doctoral treatises, and legislative records with accession provenance.
-              </p>
             </div>
 
             {/* Curatorial Seal */}

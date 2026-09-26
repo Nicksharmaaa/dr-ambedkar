@@ -8,7 +8,7 @@ export default function ComparePage() {
   const { language, openDocument, accessibility } = useMuseum();
 
   return (
-    <div className="bg-[#FAF7F0] min-h-screen py-6">
+    <div className="bg-transparent min-h-screen py-6">
       <DocumentComparisonView
         language={language}
         onOpenDocument={openDocument}

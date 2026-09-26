@@ -59,7 +59,7 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
 
   return (
     <div
-      className={`min-h-screen bg-[#FAF7F0] text-[#0A2947] flex flex-col font-dmsans transition-colors ${
+      className={`min-h-screen bg-transparent text-[#0A2947] flex flex-col font-dmsans transition-colors ${
         accessibility.highContrast ? 'contrast-125 saturate-125' : ''
       } ${getTextSizeClass()}`}
     >

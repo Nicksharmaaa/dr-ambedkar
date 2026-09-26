@@ -153,7 +153,7 @@ export const AIStoryModeView: React.FC<AIStoryModeViewProps> = ({
     : null;
 
   return (
-    <div className="min-h-screen bg-[#FAF7F0] text-[#0A2947] py-8 sm:py-12 px-3 sm:px-6 lg:px-8 font-dmsans">
+    <div className="min-h-screen bg-transparent text-[#0A2947] py-8 sm:py-12 px-3 sm:px-6 lg:px-8 font-dmsans">
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* =========================================================================

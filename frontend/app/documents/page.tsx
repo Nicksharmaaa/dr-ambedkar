@@ -33,7 +33,7 @@ function DocumentsContent() {
 
 export default function DocumentsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#FAF7F0] p-12 text-[#0A2947] font-mono text-sm">Loading archival corpus...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-transparent p-12 text-[#0A2947] font-mono text-sm">Loading archival corpus...</div>}>
       <DocumentsContent />
     </Suspense>
   );

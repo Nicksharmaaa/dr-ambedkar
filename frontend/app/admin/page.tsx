@@ -80,7 +80,7 @@ export default function AdminPage() {
 
 
   return (
-    <div className="min-h-screen bg-[#FAF7F0] text-[#0A2947] py-6 px-4 sm:px-6 lg:px-8 font-dmsans space-y-6">
+    <div className="min-h-screen bg-transparent text-[#0A2947] py-6 px-4 sm:px-6 lg:px-8 font-dmsans space-y-6">
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Admin Navigation Ribbon */}

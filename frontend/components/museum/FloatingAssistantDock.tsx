@@ -276,10 +276,10 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
             setIsChatOpen(prev => !prev);
             setIsNotebookOpen(false);
           }}
-          className={`relative group w-11 h-11 sm:w-12 sm:h-12 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer active:scale-95 flex items-center justify-center border-2 ${
+          className={`relative group w-12 h-12 sm:w-13 sm:h-13 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer active:scale-95 flex items-center justify-center border-2 p-0.5 overflow-visible ${
             isChatOpen
               ? 'bg-[#8B5E3C] border-[#C89D56] text-[#FAF7F0] ring-4 ring-[#8B5E3C]/20'
-              : 'bg-[#0A2947] hover:bg-[#123B60] border-[#D3D4C0] text-[#F3E4C9] hover:border-[#C89D56]'
+              : 'bg-[#0A2947] hover:bg-[#123B60] border-[#C89D56] text-[#F3E4C9] hover:border-[#C59A45]'
           }`}
           title={isChatOpen ? "Close AI Scholar" : "Ask Babasaheb AI Scholar"}
           aria-label={isChatOpen ? "Close AI Scholar" : "Open AI Scholar Chat"}
@@ -288,7 +288,13 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
             <X className="w-5 h-5 text-[#FAF7F0] transition-transform duration-200" />
           ) : (
             <>
-              <Bot className="w-5 h-5 sm:w-6 sm:h-6 text-[#F3E4C9] group-hover:scale-110 transition-transform duration-200" />
+              <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center border border-[#C59A45]/40 shadow-xs">
+                <img 
+                  src="/chatbot.png" 
+                  alt="Babasaheb AI Scholar" 
+                  className="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-200"
+                />
+              </div>
               <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white"></span>
@@ -315,8 +321,8 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
           {/* Compact Header */}
           <div className="bg-[#0A2947] text-[#F3E4C9] px-3.5 py-2.5 flex items-center justify-between border-b-2 border-[#8B5E3C]">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center border border-white/15">
-                <Bot className="w-4 h-4 text-[#F3E4C9]" />
+              <div className="w-8 h-8 rounded-full overflow-hidden border border-[#C59A45] shadow-xs shrink-0 bg-[#0A2947]">
+                <img src="/chatbot.png" alt="Babasaheb AI Scholar" className="w-full h-full object-cover" />
               </div>
               <div className="leading-tight">
                 <h3 className="font-montserrat font-bold text-xs tracking-tight text-white">
@@ -365,13 +371,19 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
                 key={msg.id}
                 className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
               >
-                <div
-                  className={`max-w-[88%] rounded-2xl p-2.5 text-xs leading-relaxed ${
-                    msg.sender === 'user'
-                      ? 'bg-[#0A2947] text-[#FAF7F0] font-dmsans rounded-tr-xs shadow-xs'
-                      : 'bg-white text-[#0A2947] border border-[#D3D4C0] shadow-xs font-dmsans rounded-tl-xs'
-                  }`}
-                >
+                <div className={`flex items-start gap-1.5 max-w-[92%] ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  {msg.sender === 'assistant' && (
+                    <div className="w-5 h-5 rounded-full overflow-hidden border border-[#C59A45] shrink-0 mt-0.5 shadow-2xs">
+                      <img src="/chatbot.png" alt="AI" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <div
+                    className={`rounded-2xl p-2.5 text-xs leading-relaxed ${
+                      msg.sender === 'user'
+                        ? 'bg-[#0A2947] text-[#FAF7F0] font-dmsans rounded-tr-xs shadow-xs'
+                        : 'bg-white text-[#0A2947] border border-[#D3D4C0] shadow-xs font-dmsans rounded-tl-xs'
+                    }`}
+                  >
                   <p className="whitespace-pre-wrap">{msg.text}</p>
 
                   {/* Archival Citations Container */}
@@ -442,6 +454,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
                   )}
                 </div>
               </div>
+            </div>
             ))}
 
             {isGenerating && (

@@ -5,7 +5,8 @@ import {
   X, ShieldCheck, Calendar, BookOpen, Sparkles, 
   ExternalLink, ChevronRight, ChevronLeft, Layers, 
   Compass, ArrowUpRight, CheckCircle2, FileText, 
-  CornerDownRight, Loader2, Award, Bookmark, ArrowRight
+  CornerDownRight, Loader2, Award, Bookmark, ArrowRight,
+  Minimize2, Maximize2
 } from 'lucide-react';
 import { Graph3DNode, ConnectedEntitySummary } from './types';
 import { ArchivalDocument } from '@/types/museum';
@@ -59,6 +60,7 @@ export const NodeDetailDrawer: React.FC<NodeDetailDrawerProps> = ({
   const [aiAnswer, setAiAnswer] = useState<string | null>(null);
   const [aiCitations, setAiCitations] = useState<any[]>([]);
   const [currentConnIndex, setCurrentConnIndex] = useState(0);
+  const [isMinimized, setIsMinimized] = useState(false);
 
   // Reset connection navigator index whenever focused node changes
   useEffect(() => {
@@ -131,6 +133,77 @@ export const NodeDetailDrawer: React.FC<NodeDetailDrawerProps> = ({
     }
   };
 
+  // Compact Floating Card Mode (keeps 3D graph 100% visible and interactive)
+  if (isMinimized) {
+    return (
+      <div 
+        className="fixed bottom-6 right-6 z-[10000] w-80 sm:w-96 bg-white/95 backdrop-blur-xl border-2 border-[#D3D4C0] rounded-2xl shadow-2xl p-4 text-[#0A2947] animate-in fade-in slide-in-from-bottom-2"
+        role="region"
+        aria-label={`Summary for ${node.label}`}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span 
+              className="w-2.5 h-2.5 rounded-full ring-2 ring-black/10 shrink-0"
+              style={{ backgroundColor: catColor }}
+            />
+            <span className="text-[10px] font-mono tracking-widest uppercase font-bold text-[#8B5E3C]">
+              {node.category.toUpperCase()}
+            </span>
+            {node.year && (
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#FAF7F0] border border-[#D3D4C0] text-[#0A2947] font-semibold">
+                {node.year}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setIsMinimized(false)}
+              className="p-1.5 rounded-lg text-[#0A2947]/60 hover:text-[#0A2947] hover:bg-[#FAF7F0] transition-colors cursor-pointer"
+              title="Expand Archival Dossier"
+              aria-label="Expand dossier"
+            >
+              <Maximize2 className="w-4 h-4 text-[#8B5E3C]" />
+            </button>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-[#0A2947]/50 hover:text-[#0A2947] hover:bg-[#FAF7F0] transition-colors cursor-pointer"
+              title="Close (Esc)"
+              aria-label="Close dossier"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-2 space-y-1">
+          <h3 className="text-base font-serif font-bold text-[#0A2947] leading-snug line-clamp-1">
+            {node.label}
+          </h3>
+          {node.shortDesc && (
+            <p className="text-xs text-[#0A2947]/70 line-clamp-2 leading-relaxed">
+              {node.shortDesc}
+            </p>
+          )}
+        </div>
+
+        <div className="mt-3 pt-2.5 border-t border-[#D3D4C0] flex items-center justify-between gap-2">
+          <span className="text-[11px] font-mono text-[#8B5E3C] font-semibold">
+            {connectedEntities.length} direct lineages
+          </span>
+          <button
+            onClick={() => setIsMinimized(false)}
+            className="px-3 py-1.5 rounded-xl bg-[#0A2947] hover:bg-[#123B60] text-[#FAF7F0] text-xs font-semibold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
+          >
+            <span>Dossier</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <aside 
       className="fixed inset-y-0 right-0 z-[10000] w-full sm:w-[460px] lg:w-[490px] bg-white/98 backdrop-blur-2xl border-l-2 border-[#D3D4C0] text-[#0A2947] shadow-2xl flex flex-col transition-transform duration-300 ease-out transform translate-x-0"
@@ -152,14 +225,24 @@ export const NodeDetailDrawer: React.FC<NodeDetailDrawerProps> = ({
           </span>
         </div>
 
-        <button
-          onClick={onClose}
-          className="p-1.5 rounded-lg text-[#0A2947]/50 hover:text-[#0A2947] hover:bg-white transition-colors cursor-pointer"
-          title="Close Dossier (Esc)"
-          aria-label="Close dossier"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setIsMinimized(true)}
+            className="p-1.5 rounded-lg text-[#0A2947]/50 hover:text-[#0A2947] hover:bg-white transition-colors cursor-pointer"
+            title="Minimize to Floating Card"
+            aria-label="Minimize dossier"
+          >
+            <Minimize2 className="w-4 h-4 text-[#8B5E3C]" />
+          </button>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-[#0A2947]/50 hover:text-[#0A2947] hover:bg-white transition-colors cursor-pointer"
+            title="Close Dossier (Esc)"
+            aria-label="Close dossier"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* 2. Scrollable Body: Progressive Disclosure */}

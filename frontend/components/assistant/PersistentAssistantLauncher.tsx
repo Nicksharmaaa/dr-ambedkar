@@ -46,8 +46,12 @@ export default function PersistentAssistantLauncher() {
             boxShadow: "0 10px 30px -5px rgba(217, 119, 6, 0.45), 0 0 20px rgba(245, 158, 11, 0.25)",
           }}
         >
-          <div className="relative flex items-center justify-center w-7 h-7 rounded-full bg-slate-950/20">
-            <Sparkles className="w-4 h-4 text-slate-950 group-hover:rotate-12 transition-transform duration-300" />
+          <div className="relative flex items-center justify-center w-8 h-8 rounded-full overflow-hidden border border-amber-200/90 shadow-xs bg-slate-950">
+            <img 
+              src="/chatbot.png" 
+              alt="Ambedkar AI" 
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            />
             {/* Status indicator dot */}
             <span
               className={`absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-slate-950 ${

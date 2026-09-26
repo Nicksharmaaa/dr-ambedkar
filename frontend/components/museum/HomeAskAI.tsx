@@ -519,25 +519,31 @@ export const HomeAskAI: React.FC<HomeAskAIProps> = ({
           Status: ● GROUNDED IN VERIFIED SOURCES
           ========================================================================= */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-[#D3D4C0]">
-        <div className="space-y-2 max-w-3xl">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-mono font-bold tracking-wider uppercase">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
-              GROUNDED IN VERIFIED SOURCES
-            </span>
+        <div className="flex items-start sm:items-center gap-4 max-w-3xl">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-[#C59A45] shadow-md shrink-0 bg-[#0A2947]">
+            <img src="/chatbot.png" alt="Babasaheb AI Scholar" className="w-full h-full object-cover" />
           </div>
 
-          <div>
-            <h2 className="text-3xl sm:text-4xl font-serif-editorial font-bold text-[#0A2947]">
-              BABASAHEB AI SCHOLAR
-            </h2>
-            <p className="text-xs sm:text-sm font-cinzel tracking-widest text-[#8B5E3C] uppercase font-bold mt-1">
-              ARCHIVE-GROUNDED RESEARCH ASSISTANT
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-mono font-bold tracking-wider uppercase">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
+                GROUNDED IN VERIFIED SOURCES
+              </span>
+            </div>
+
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-serif-editorial font-bold text-[#0A2947]">
+                BABASAHEB AI SCHOLAR
+              </h2>
+              <p className="text-xs sm:text-sm font-cinzel tracking-widest text-[#8B5E3C] uppercase font-bold mt-0.5">
+                ARCHIVE-GROUNDED RESEARCH ASSISTANT
+              </p>
+            </div>
+            <p className="text-xs sm:text-sm text-[#0A2947]/80 leading-relaxed">
+              A premium digital research companion navigating 22 BAWS volumes and Constituent Assembly Debates. Every assertion is anchored in primary source citations.
             </p>
           </div>
-          <p className="text-xs sm:text-sm text-[#0A2947]/80 leading-relaxed">
-            A premium digital research companion navigating 22 BAWS volumes and Constituent Assembly Debates. Every assertion is anchored in primary source citations.
-          </p>
         </div>
 
         <div className="shrink-0 flex items-center gap-2 bg-[#FAF7F0] p-4 rounded-2xl border border-[#D3D4C0]">

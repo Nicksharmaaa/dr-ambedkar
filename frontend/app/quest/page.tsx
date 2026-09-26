@@ -8,7 +8,7 @@ export default function QuestPage() {
   const { language, openDocById, askAssistant } = useMuseum();
 
   return (
-    <div className="bg-[#FAF7F0] min-h-screen py-8">
+    <div className="bg-transparent min-h-screen py-8">
       <ConstitutionalQuest
         language={language}
         onExploreDoc={openDocById}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Search, X, CornerDownLeft, Sparkles } from 'lucide-react';
+import { Search, X, CornerDownRight } from 'lucide-react';
 import { Graph3DNode } from './types';
 
 interface GraphSearchProps {
@@ -11,39 +11,35 @@ interface GraphSearchProps {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  person: '#C88A58',
-  work: '#C5A880',
-  book: '#C5A880',
-  document: '#C5A880',
-  organization: '#5C7873',
-  institution: '#5C7873',
-  event: '#B45339',
-  concept: '#657D5A',
-  place: '#8B5E3C',
-  media: '#D4A373',
+  person:       '#8B5E3C',
+  work:         '#0A2947',
+  book:         '#0A2947',
+  document:     '#0A2947',
+  organization: '#0D6E57',
+  institution:  '#0D6E57',
+  event:        '#B91C1C',
+  concept:      '#B45309',
+  place:        '#6D28D9',
+  media:        '#C2410C',
 };
 
-export const GraphSearch: React.FC<GraphSearchProps> = ({
-  nodes,
-  onSelectNode,
-  selectedNodeId,
-}) => {
+export const GraphSearch: React.FC<GraphSearchProps> = ({ nodes, onSelectNode, selectedNodeId }) => {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Filter matching nodes from the actual dataset (NO fake entities)
   const results = useMemo(() => {
     if (!query.trim()) return [];
     const q = query.toLowerCase().trim();
     return nodes
       .filter((n) => {
-        const matchLabel = n.label.toLowerCase().includes(q);
-        const matchDesc = n.shortDesc?.toLowerCase().includes(q);
-        const matchAlias = n.aliases?.some((a) => a.toLowerCase().includes(q));
-        return matchLabel || matchDesc || matchAlias;
+        return (
+          n.label.toLowerCase().includes(q) ||
+          n.shortDesc?.toLowerCase().includes(q) ||
+          n.aliases?.some((a) => a.toLowerCase().includes(q))
+        );
       })
       .slice(0, 8);
   }, [nodes, query]);
@@ -52,7 +48,6 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
     setSelectedIndex(0);
   }, [results]);
 
-  // Click outside listener to close search dropdown
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -71,10 +66,10 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setSelectedIndex((prev) => (prev + 1) % (results.length || 1));
+      setSelectedIndex((p) => (p + 1) % (results.length || 1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setSelectedIndex((prev) => (prev - 1 + results.length) % (results.length || 1));
+      setSelectedIndex((p) => (p - 1 + results.length) % (results.length || 1));
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (results[selectedIndex]) {
@@ -88,14 +83,12 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
     }
   };
 
-  const getCategoryColor = (cat: string) => {
-    return CATEGORY_COLORS[cat?.toLowerCase()] || '#C89D56';
-  };
+  const getColor = (cat: string) => CATEGORY_COLORS[cat?.toLowerCase()] || '#C59A45';
 
   return (
     <div className="relative w-full max-w-xs sm:max-w-sm">
       <div className="relative flex items-center">
-        <Search className="absolute left-3 w-4 h-4 text-[#8B5E3C] pointer-events-none" />
+        <Search className="absolute left-3 w-3.5 h-3.5 text-[#8B5E3C] pointer-events-none" />
         <input
           ref={inputRef}
           id="graph-entity-search-input"
@@ -109,8 +102,8 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
           autoComplete="off"
-          placeholder="Search entities, treatises, institutions..."
-          className="w-full pl-9 pr-8 py-2 rounded-2xl bg-white/95 backdrop-blur-md border-2 border-[#D3D4C0] text-xs text-[#0A2947] placeholder-[#0A2947]/50 focus:outline-none focus:ring-1 focus:ring-[#0A2947] transition-all shadow-sm"
+          placeholder="Search entities, treatises, events..."
+          className="w-full pl-9 pr-8 py-2 rounded-2xl text-xs text-[#0A2947] placeholder-[#0A2947]/45 bg-white/95 backdrop-blur-md border border-[#D3D4C0] shadow-sm focus:outline-none focus:border-[#C59A45] focus:ring-2 focus:ring-[#C59A45]/20 transition-all font-sans"
           aria-label="Search knowledge graph entities"
         />
         {query && (
@@ -119,24 +112,21 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
               setQuery('');
               setIsOpen(false);
             }}
-            className="absolute right-2.5 p-1 rounded-full text-[#0A2947]/40 hover:text-[#0A2947] cursor-pointer"
-            title="Clear search"
+            className="absolute right-2.5 p-1 rounded-lg text-[#0A2947]/40 hover:text-[#0A2947] cursor-pointer transition-colors"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
 
-      {/* Results Dropdown */}
       {isOpen && results.length > 0 && (
         <div
           ref={dropdownRef}
-          className="absolute top-full left-0 right-0 mt-2 rounded-2xl bg-white border-2 border-[#D3D4C0] shadow-xl overflow-hidden z-50 py-1.5 divide-y divide-[#D3D4C0]/50 animate-in fade-in slide-in-from-top-1"
+          className="absolute top-full left-0 right-0 mt-2 rounded-2xl overflow-hidden z-50 py-1 bg-white border-2 border-[#D3D4C0] shadow-xl animate-in fade-in slide-in-from-top-1"
         >
           {results.map((item, idx) => {
             const isHighlighted = idx === selectedIndex;
-            const catColor = getCategoryColor(item.category);
-
+            const catColor = getColor(item.category);
             return (
               <button
                 key={item.id}
@@ -145,33 +135,30 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
                   setIsOpen(false);
                   setQuery('');
                 }}
-                className={`w-full px-3.5 py-2.5 text-left flex items-center justify-between transition-colors cursor-pointer ${
-                  isHighlighted ? 'bg-[#FAF7F0] text-[#0A2947]' : 'hover:bg-[#FAF7F0] text-[#0A2947]/85'
+                className={`w-full px-3.5 py-2.5 text-left flex items-center justify-between transition-colors cursor-pointer border-b border-[#FAF7F0] last:border-b-0 ${
+                  isHighlighted ? 'bg-[#FAF7F0] border-l-4 border-l-[#C59A45]' : 'hover:bg-[#FAF7F0]/60'
                 }`}
               >
-                <div className="space-y-0.5 max-w-[85%]">
+                <div className="space-y-0.5 max-w-[80%]">
                   <div className="flex items-center gap-2">
                     <span
                       className="w-2 h-2 rounded-full shrink-0"
                       style={{ backgroundColor: catColor }}
                     />
-                    <span className="text-xs font-semibold truncate text-[#0A2947]">
+                    <span className="text-xs font-semibold text-[#0A2947] truncate block">
                       {item.label}
                     </span>
-                    {item.year && (
-                      <span className="text-[10px] font-mono text-[#8B5E3C] font-semibold">
-                        ({item.year})
-                      </span>
-                    )}
                   </div>
-                  <p className="text-[10px] text-[#0A2947]/60 truncate font-sans pl-4">
-                    {item.shortDesc}
-                  </p>
+                  {item.shortDesc && (
+                    <p className="text-[11px] text-[#0A2947]/65 line-clamp-1 pl-4">
+                      {item.shortDesc}
+                    </p>
+                  )}
                 </div>
 
-                <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#FAF7F0] text-[#8B5E3C] border border-[#D3D4C0] font-semibold">
-                  {item.category}
-                </span>
+                <div className="text-[10px] font-mono text-[#8B5E3C] uppercase text-right shrink-0">
+                  {item.year || item.category}
+                </div>
               </button>
             );
           })}

@@ -1,22 +1,24 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  Search, BookOpen, Sparkles, ArrowRight, Zap, Radio, 
-  Compass, Quote, Camera, CheckCircle2, Network, ShieldCheck, 
+import {
+  Search, BookOpen, Sparkles, ArrowRight, Zap, Radio,
+  Compass, Quote, Camera, CheckCircle2, Network, ShieldCheck,
   Star, ExternalLink, Calendar, FileText, ChevronRight, Bookmark, Film
 } from 'lucide-react';
 import { Language, ArchivalDocument } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
-import { 
-  ARCHIVE_DOCUMENTS, HERO_IMAGE, DRAFTING_CONSTITUTION_IMAGE, 
-  HISTORICAL_PHOTOS, TIMELINE_EVENTS 
+import {
+  ARCHIVE_DOCUMENTS, HERO_IMAGE, DRAFTING_CONSTITUTION_IMAGE,
+  HISTORICAL_PHOTOS, TIMELINE_EVENTS
 } from '@/data/archiveData';
 import { WisdomMachine } from './WisdomMachine';
 import { SoundboardWidget } from './SoundboardWidget';
 import { HomeAskAI } from './HomeAskAI';
 import { LinearTimelineSection } from './LinearTimelineSection';
 import { soundEffects } from '@/utils/soundEffects';
+import DitherVeil from '@/components/ui/DitherVeil';
+import ClickSpark from '@/components/ui/ClickSpark';
 
 interface HomeViewProps {
   language: Language;
@@ -43,6 +45,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 }) => {
   const t = UI_STRINGS[language];
   const [searchInput, setSearchInput] = useState('');
+  const [heroVisualMode, setHeroVisualMode] = useState<'prism' | 'dither'>('prism');
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,21 +107,18 @@ export const HomeView: React.FC<HomeViewProps> = ({
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAF7F0] text-[#0A2947] pb-28 space-y-24 font-dmsans selection:bg-[#D3D4C0] selection:text-[#0A2947]">
-      
+    <div className="min-h-screen bg-transparent text-[#0A2947] pb-28 space-y-24 font-dmsans selection:bg-[#D3D4C0] selection:text-[#0A2947]">
+
       {/* =========================================================================
           HERO EXHIBITION: CINEMATIC MUSEUM ENTRANCE
           ========================================================================= */}
-      <section className="relative overflow-hidden bg-[#FAF7F0] pt-8 sm:pt-14 pb-16 px-4 sm:px-6 lg:px-8 border-b border-[#D3D4C0]">
-        
-        {/* Archival Parchment Texture Pattern */}
-        <div className="absolute inset-0 parchment-surface opacity-70 pointer-events-none" />
+      <section className="relative overflow-hidden bg-transparent pt-8 sm:pt-14 pb-16 px-4 sm:px-6 lg:px-8 border-b border-[#D3D4C0]">
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center relative z-10">
-          
+
           {/* Left: Curatorial Identity & Exhibition Entrance */}
           <div className="lg:col-span-7 space-y-6">
-            
+
             {/* Museum Header Tags */}
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="px-3 py-1 bg-[#0A2947] text-[#FAF7F0] text-[11px] font-cinzel font-bold uppercase tracking-widest rounded-md shadow-xs">
@@ -211,36 +211,76 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
           </div>
 
-          {/* Right: Layered Archival Photographic Plate with Ken Burns movement */}
-          <div className="lg:col-span-5 relative">
-            <div className="museum-photo-frame rounded-2xl bg-white border border-[#D3D4C0] shadow-xl group">
-              
-              <div className="relative overflow-hidden rounded-xl aspect-[4/5] bg-[#07131F]">
-                <img
-                  src={HERO_IMAGE}
-                  alt="Dr. Bhimrao Ramji Ambedkar archival portrait"
-                  className="w-full h-full object-cover grayscale contrast-110 object-top transition-transform duration-700 group-hover:scale-105"
+          {/* Right: Dual-Mode Hero Visual Presentation */}
+          <div className="lg:col-span-5 relative flex flex-col items-center justify-center">
+
+            {/* Mode Switcher Pill: Holographic Prism & Archival Dither */}
+            <div className="mb-2 flex items-center gap-1.5 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#D3D4C0] shadow-xs z-20">
+              <button
+                type="button"
+                onClick={() => {
+                  soundEffects.playClick();
+                  setHeroVisualMode('prism');
+                }}
+                className={`px-3.5 py-1 rounded-full text-[11px] font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${heroVisualMode === 'prism'
+                    ? 'bg-[#0A2947] text-[#FAF7F0] shadow-xs'
+                    : 'text-[#0A2947]/70 hover:text-[#0A2947]'
+                  }`}
+              >
+                <Sparkles className="w-3 h-3 text-[#C59A45]" />
+                <span>Holographic Prism</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  soundEffects.playClick();
+                  setHeroVisualMode('dither');
+                }}
+                className={`px-3.5 py-1 rounded-full text-[11px] font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${heroVisualMode === 'dither'
+                    ? 'bg-[#0A2947] text-[#FAF7F0] shadow-xs'
+                    : 'text-[#0A2947]/70 hover:text-[#0A2947]'
+                  }`}
+              >
+                <span className="font-mono text-xs text-[#C59A45]">▦</span>
+                <span>Archival Dither</span>
+              </button>
+            </div>
+
+            {/* 600px Presentation Stage */}
+            <div style={{ width: '100%', height: '600px', position: 'relative' }}>
+              {heroVisualMode === 'dither' ? (
+                <DitherVeil
+                  src="hero.png"
+                  pattern="floyd"
+                  pixelSize={2}
+                  inkColor="#120f17"
+                  paperColor="#f4f1ea"
+                  revealRadius={200}
+                  softness={0.6}
+                  linger={1}
                 />
-                
-                {/* Vignette */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#07131F]/90 via-[#07131F]/20 to-transparent" />
-
-                {/* Brass Plate Museum Label */}
-                <div className="absolute bottom-4 left-4 right-4 text-white bg-[#07131F]/85 backdrop-blur-xs p-3.5 rounded-xl border border-white/10 space-y-1">
-                  <div className="flex items-center justify-between text-xs font-cinzel font-bold text-[#C89D56]">
-                    <span>Dr. Bhimrao Ramji Ambedkar</span>
-                    <span className="font-mono text-white/70">1891–1956</span>
-                  </div>
-                  <p className="text-[11px] text-[#D3D4C0] leading-snug font-dmsans">
-                    Chief Architect of the Constitution of India · First Minister of Law & Justice · Economist, Jurist & Social Emancipator
-                  </p>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <img
+                    src="/hero.png"
+                    alt="Dr. B. R. Ambedkar Iridescent Chrome Memorial Sculpture"
+                    className="animate-hero-float max-h-[540px] w-auto object-contain drop-shadow-[0_25px_40px_rgba(10,41,71,0.25)] select-none pointer-events-none filter brightness-105 contrast-105"
+                  />
                 </div>
-              </div>
+              )}
+            </div>
 
-              {/* Museum Accession Stamp */}
-              <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-white/95 px-2.5 py-1 rounded border border-[#D3D4C0] text-[10px] font-mono font-bold text-[#0A2947] shadow-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#8B5E3C]" />
-                <span>ARC-1891-1956</span>
+            {/* Dignified Memorial Inscription Plinth */}
+            <div className="mt-1 text-center px-4">
+              <div className="font-cinzel font-bold text-base sm:text-lg text-[#0A2947] tracking-wider uppercase">
+                Dr. Bhimrao Ramji Ambedkar
+              </div>
+              <p className="text-xs font-mono text-[#8B5E3C] tracking-wide mt-0.5">
+                1891–1956 · Chief Architect of the Constitution · Bharat Ratna
+              </p>
+              <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 border border-[#D3D4C0] text-[11px] text-[#0A2947]/80 font-serif italic shadow-2xs">
+                <Quote className="w-3 h-3 text-[#C59A45]" />
+
               </div>
             </div>
           </div>
@@ -301,11 +341,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white border border-[#D3D4C0] rounded-3xl p-6 sm:p-10 shadow-xs relative overflow-hidden">
-          
+
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8B5E3C] via-[#C89D56] to-[#0A2947]" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-            
+
             {/* Scanned Facsimile Plate */}
             <div className="lg:col-span-5 relative">
               <div className="relative rounded-2xl overflow-hidden border border-[#D3D4C0] shadow-md bg-[#0A2947]">
@@ -315,7 +355,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   className="w-full h-80 sm:h-96 object-cover object-top grayscale contrast-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A2947]/95 via-[#0A2947]/30 to-transparent" />
-                
+
                 <div className="absolute bottom-4 left-4 right-4 text-white text-xs space-y-1">
                   <span className="font-montserrat font-bold text-[#F3E4C9] block uppercase tracking-wider text-[10px]">
                     Archival Facsimile · November 25, 1949
@@ -334,7 +374,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
             {/* Curatorial Dossier */}
             <div className="lg:col-span-7 space-y-5">
-              
+
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-wider">
                   Featured Archival Artifact
@@ -400,7 +440,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           SECTION 2: EXHIBITIONS BY THEME (Curatorial Discipline Galleries)
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        
+
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-4 border-b border-[#D3D4C0]">
           <div>
             <div className="text-xs font-cinzel font-bold uppercase tracking-wider text-[#8B5E3C]">
@@ -477,7 +517,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white border border-[#D3D4C0] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
-          
+
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#D3D4C0]">
             <div>
               <div className="flex items-center gap-2 text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-widest">
@@ -552,7 +592,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           SECTION 5: PHILOSOPHICAL TENETS & WORDS THAT MOVED HISTORY
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        
+
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-4 border-b border-[#D3D4C0]">
           <div>
             <div className="flex items-center gap-2 text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-wider">
