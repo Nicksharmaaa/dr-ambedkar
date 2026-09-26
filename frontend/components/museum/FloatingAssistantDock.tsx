@@ -12,6 +12,7 @@ import { RESEARCH_ANSWERS_DB, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { voiceRecognitionController } from '@/utils/speechUtils';
 import { api } from '@/lib/api';
+import VoicePill from '@/components/ui/VoicePill';
 
 interface FloatingAssistantDockProps {
   language: Language;
@@ -524,20 +525,27 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
               }`}
             />
             
-            {/* Voice Input Button */}
-            <button
-              type="button"
-              onClick={handleToggleVoice}
-              className={`p-1.5 rounded-lg transition-all cursor-pointer shrink-0 ${
-                isListeningVoice
-                  ? 'bg-red-600 text-white animate-pulse ring-2 ring-red-400'
-                  : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#8B5E3C] border border-[#D3D4C0]'
-              }`}
-              title={isListeningVoice ? "Stop voice listening" : "Click to speak"}
-              aria-label="Voice input button"
-            >
-              {isListeningVoice ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
-            </button>
+            {/* Voice Input Pill */}
+            <VoicePill
+              accentColor="#C59A45"
+              iconColor="#8B5E3C"
+              background="#0A2947"
+              size={30}
+              shape="pill"
+              showTime
+              waveform
+              slideToCancel
+              mode="toggle"
+              reactive="mic"
+              isListening={isListeningVoice}
+              onStart={() => {
+                if (!isListeningVoice) handleToggleVoice();
+              }}
+              onStop={() => {
+                if (isListeningVoice) handleToggleVoice();
+              }}
+              ariaLabel={isListeningVoice ? "Stop voice listening" : "Click to speak"}
+            />
 
             {/* Send Button */}
             <button

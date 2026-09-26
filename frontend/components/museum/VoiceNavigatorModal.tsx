@@ -9,6 +9,7 @@ import { Language, ArchivalDocument } from '@/types/museum';
 import { voiceRecognitionController, speechController } from '@/utils/speechUtils';
 import { soundEffects } from '@/utils/soundEffects';
 import { RESEARCH_ANSWERS_DB, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
+import VoicePill from '@/components/ui/VoicePill';
 
 interface VoiceNavigatorModalProps {
   isOpen: boolean;
@@ -306,21 +307,29 @@ export const VoiceNavigatorModal: React.FC<VoiceNavigatorModalProps> = ({
               </>
             )}
 
-            <button
-              onClick={handleToggleListening}
-              className={`w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl cursor-pointer relative z-10 border-4 ${
-                isListening
-                  ? 'bg-red-600 border-white text-white animate-pulse ring-8 ring-red-500/20'
-                  : 'bg-[#0A2947] hover:bg-[#8B5E3C] border-[#C59A45] text-[#F3E4C9] hover:scale-105'
-              }`}
-              title={isListening ? "Listening... Click to finish" : "Click to speak"}
-            >
-              {isListening ? (
-                <Mic className="w-10 h-10 sm:w-12 sm:h-12 animate-bounce" />
-              ) : (
-                <Mic className="w-10 h-10 sm:w-12 sm:h-12 text-[#C59A45]" />
-              )}
-            </button>
+            {/* Dynamic Voice Recording Pill */}
+            <div className="flex items-center justify-center p-3 relative z-10">
+              <VoicePill
+                accentColor="#C59A45"
+                iconColor="#F3E4C9"
+                background="#0A2947"
+                size={72}
+                shape="pill"
+                showTime
+                waveform
+                slideToCancel
+                mode="toggle"
+                reactive="mic"
+                isListening={isListening}
+                onStart={() => {
+                  if (!isListening) handleToggleListening();
+                }}
+                onStop={() => {
+                  if (isListening) handleToggleListening();
+                }}
+                ariaLabel={isListening ? "Listening... Click to finish" : "Click to speak"}
+              />
+            </div>
           </div>
 
           <div className="text-center space-y-1">

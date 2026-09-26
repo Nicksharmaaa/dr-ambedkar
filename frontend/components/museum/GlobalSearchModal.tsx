@@ -9,6 +9,7 @@ import { Language, ArchivalDocument } from '@/types/museum';
 import { ARCHIVE_DOCUMENTS, HISTORICAL_PHOTOS, TIMELINE_EVENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { voiceRecognitionController } from '@/utils/speechUtils';
+import VoicePill from '@/components/ui/VoicePill';
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -150,20 +151,27 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             }`}
           />
           
-          {/* Voice Search Button */}
-          <button
-            type="button"
-            onClick={handleToggleVoice}
-            className={`p-2 rounded-xl transition-all cursor-pointer shrink-0 ${
-              isListeningVoice 
-                ? 'bg-red-600 text-white animate-pulse ring-2 ring-red-400' 
-                : 'text-[#8B5E3C] hover:bg-[#FAF7F0]'
-            }`}
-            title={isListeningVoice ? "Stop voice search" : "Click to speak your query"}
-            aria-label="Voice search button"
-          >
-            {isListeningVoice ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-          </button>
+          {/* Voice Search Pill */}
+          <VoicePill
+            accentColor="#C59A45"
+            iconColor="#8B5E3C"
+            background="#0A2947"
+            size={34}
+            shape="pill"
+            showTime
+            waveform
+            slideToCancel
+            mode="toggle"
+            reactive="mic"
+            isListening={isListeningVoice}
+            onStart={() => {
+              if (!isListeningVoice) handleToggleVoice();
+            }}
+            onStop={() => {
+              if (isListeningVoice) handleToggleVoice();
+            }}
+            ariaLabel={isListeningVoice ? "Stop voice search" : "Click to speak your query"}
+          />
 
           {query ? (
             <button 

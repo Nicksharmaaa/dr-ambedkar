@@ -9,6 +9,7 @@ import {
 import { Language, AccessibilitySettings, UserMode } from '@/types/museum';
 import { soundEffects } from '@/utils/soundEffects';
 import { LanguageDropdown } from './LanguageDropdown';
+import VoicePill from '@/components/ui/VoicePill';
 
 interface TopUtilityBarProps {
   language: Language;
@@ -76,18 +77,33 @@ export const TopUtilityBar: React.FC<TopUtilityBarProps> = ({
 
         {/* 2. Voice Navigator Trigger */}
         {onOpenVoiceModal && (
-          <button
-            onClick={() => {
-              soundEffects.playClick();
-              onOpenVoiceModal();
-            }}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#0A2947] hover:bg-[#123B60] border border-[#0A2947] text-[#F3E4C9] text-xs font-mono font-bold transition-all cursor-pointer shadow-xs"
-            title="Voice Navigator: English, Hindi, Marathi"
-            aria-label="Open Voice Navigator"
-          >
-            <Mic className="w-3.5 h-3.5 text-[#C89D56] animate-pulse" />
-            <span className="hidden sm:inline text-[11px] uppercase tracking-wider text-[#F3E4C9]">Voice</span>
-          </button>
+          <div className="flex items-center gap-1.5" title="Voice Navigator: English, Hindi, Marathi">
+            <VoicePill
+              accentColor="#C89D56"
+              iconColor="#F3E4C9"
+              background="#0A2947"
+              size={28}
+              shape="pill"
+              showTime={false}
+              waveform={false}
+              slideToCancel={false}
+              onClick={() => {
+                soundEffects.playClick();
+                onOpenVoiceModal();
+              }}
+              ariaLabel="Open Voice Navigator"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                soundEffects.playClick();
+                onOpenVoiceModal();
+              }}
+              className="hidden sm:inline text-[11px] font-mono font-bold uppercase tracking-wider text-[#0A2947] cursor-pointer hover:text-[#8B5E3C] transition-colors"
+            >
+              Voice
+            </button>
+          </div>
         )}
 
         <div className="w-[1px] h-4 bg-[#D3D4C0] my-auto hidden sm:block" />

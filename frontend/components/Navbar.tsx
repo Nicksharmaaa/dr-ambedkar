@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { VoiceSearchModal } from "./voice/VoiceSearchModal";
+import VoicePill from "./ui/VoicePill";
 import { useUserMode, UserMode } from "@/lib/UserModeContext";
 
 const navItems = [
@@ -163,14 +164,23 @@ export default function Navbar() {
           </div>
 
           {/* Voice Search Button */}
-          <button
-            onClick={() => setVoiceSearchOpen(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 text-xs font-medium shadow-sm transition-all"
-            title="Voice Search: Ask the Archive in English, Hindi, or Marathi"
-          >
-            <Mic className="h-3.5 w-3.5 text-blue-400 animate-pulse" />
-            <span className="hidden xl:inline">Voice</span>
-          </button>
+          <div className="flex items-center gap-1.5 px-1 py-0.5 rounded-full bg-blue-950/40 border border-blue-500/30" title="Voice Search: Ask the Archive in English, Hindi, or Marathi">
+            <VoicePill
+              accentColor="#60A5FA"
+              iconColor="#93C5FD"
+              background="#1E293B"
+              size={26}
+              shape="pill"
+              reach={6}
+              showTime={false}
+              waveform={false}
+              slideToCancel={false}
+              mode="toggle"
+              ariaLabel="Voice Search"
+              onStart={() => setVoiceSearchOpen(true)}
+            />
+            <span className="hidden xl:inline pr-2 text-xs font-medium text-blue-300">Voice</span>
+          </div>
 
           {/* Dedicated Kiosk Mode Link */}
           <Link

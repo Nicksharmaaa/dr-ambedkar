@@ -25,6 +25,7 @@ import {
 import { api } from "@/lib/api";
 import { SearchResultChunk } from "@/lib/types";
 import { VoiceSearchModal } from "@/components/voice/VoiceSearchModal";
+import VoicePill from "@/components/ui/VoicePill";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -550,14 +551,20 @@ function SearchContent() {
             className="w-full pl-12 pr-40 py-4 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-amber-500 text-sm md:text-base shadow-inner transition-colors"
           />
           <div className="absolute right-2 flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => setIsVoiceOpen(true)}
-              className="p-2 rounded-lg text-xs bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 transition-colors"
-              title="Voice Search: Ask the Archive in English, Hindi, or Marathi"
-            >
-              <Mic className="h-3.5 w-3.5 text-blue-400" />
-            </button>
+            <VoicePill
+              accentColor="#F59E0B"
+              iconColor="#60A5FA"
+              background="#1E293B"
+              size={32}
+              shape="pill"
+              reach={6}
+              showTime={false}
+              waveform={false}
+              slideToCancel={false}
+              mode="toggle"
+              ariaLabel="Voice Search: Ask the Archive in English, Hindi, or Marathi"
+              onStart={() => setIsVoiceOpen(true)}
+            />
             <button
               type="button"
               onClick={() => setShowFilters(!showFilters)}

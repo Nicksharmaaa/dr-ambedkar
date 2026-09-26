@@ -16,6 +16,7 @@ import { RESEARCH_ANSWERS_DB, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { speechController, voiceRecognitionController } from '@/utils/speechUtils';
 import { api } from '@/lib/api';
+import VoicePill from '@/components/ui/VoicePill';
 
 interface ResearchAssistantViewProps {
   language: Language;
@@ -812,19 +813,26 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
 
               {/* Action Buttons: Voice Button & Inquire Button */}
               <div className="absolute right-2.5 flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={handleToggleVoice}
-                  className={`p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center ${
-                    isListeningVoice
-                      ? 'bg-red-600 text-white animate-pulse ring-2 ring-red-400'
-                      : 'bg-white hover:bg-[#F3E4C9] text-[#8B5E3C] border border-[#D3D4C0]'
-                  }`}
-                  title={isListeningVoice ? "Stop voice listening" : "Click to speak your inquiry with your voice"}
-                  aria-label="Voice input button"
-                >
-                  {isListeningVoice ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                </button>
+                <VoicePill
+                  accentColor="#C59A45"
+                  iconColor="#8B5E3C"
+                  background="#0A2947"
+                  size={36}
+                  shape="pill"
+                  showTime
+                  waveform
+                  slideToCancel
+                  mode="toggle"
+                  reactive="mic"
+                  isListening={isListeningVoice}
+                  onStart={() => {
+                    if (!isListeningVoice) handleToggleVoice();
+                  }}
+                  onStop={() => {
+                    if (isListeningVoice) handleToggleVoice();
+                  }}
+                  ariaLabel={isListeningVoice ? "Stop voice listening" : "Click to speak inquiry with voice"}
+                />
 
                 <button
                   type="submit"

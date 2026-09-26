@@ -13,6 +13,7 @@ import { UI_STRINGS } from '@/utils/i18n';
 import { ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { speechController, voiceRecognitionController } from '@/utils/speechUtils';
+import VoicePill from '@/components/ui/VoicePill';
 
 interface ExploreArchiveViewProps {
   language: Language;
@@ -433,20 +434,27 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
             />
             
             <div className="absolute right-2.5 flex items-center gap-1.5">
-              {/* Voice Search Button */}
-              <button
-                type="button"
-                onClick={handleToggleVoiceSearch}
-                className={`p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center ${
-                  isListeningVoice
-                    ? 'bg-red-600 text-white animate-pulse ring-2 ring-red-400'
-                    : 'bg-white hover:bg-[#F3E4C9] text-[#8B5E3C] border border-[#D3D4C0]'
-                }`}
-                title={isListeningVoice ? "Stop voice listening" : "Click to speak your search query"}
-                aria-label="Voice search button"
-              >
-                {isListeningVoice ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-              </button>
+              {/* Voice Search Pill */}
+              <VoicePill
+                accentColor="#C59A45"
+                iconColor="#8B5E3C"
+                background="#0A2947"
+                size={36}
+                shape="pill"
+                showTime
+                waveform
+                slideToCancel
+                mode="toggle"
+                reactive="mic"
+                isListening={isListeningVoice}
+                onStart={() => {
+                  if (!isListeningVoice) handleToggleVoiceSearch();
+                }}
+                onStop={() => {
+                  if (isListeningVoice) handleToggleVoiceSearch();
+                }}
+                ariaLabel={isListeningVoice ? "Stop voice listening" : "Click to speak search query"}
+              />
 
               {searchQuery && (
                 <button

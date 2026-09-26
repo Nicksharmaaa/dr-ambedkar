@@ -30,6 +30,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { api } from "@/lib/api";
+import VoicePill from "@/components/ui/VoicePill";
 import {
   AssistantMode,
   AssistantRequest,
@@ -747,19 +748,29 @@ export default function AssistantDrawer({ isOpen, onClose }: AssistantDrawerProp
             }}
             className="flex items-end gap-2.5"
           >
-            {/* Microphone Button */}
-            <button
-              type="button"
-              onClick={handleToggleVoice}
-              title={isRecording ? "Stop voice recording" : "Voice input inquiry"}
-              className={`p-3 rounded-xl border transition-all shrink-0 ${
-                isRecording
-                  ? "bg-rose-600 text-white border-rose-400 shadow-lg shadow-rose-600/30 animate-pulse"
-                  : "bg-slate-900 text-slate-300 border-slate-700/80 hover:border-amber-500/50 hover:text-amber-300"
-              }`}
-            >
-              {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-            </button>
+            {/* VoicePill Microphone */}
+            <div className="shrink-0 flex items-center">
+              <VoicePill
+                accentColor="#C59A45"
+                iconColor="#D3D4C0"
+                background="#0A2947"
+                size={38}
+                shape="pill"
+                showTime
+                waveform
+                slideToCancel
+                mode="toggle"
+                reactive="mic"
+                isListening={isRecording}
+                onStart={() => {
+                  if (!isRecording) handleToggleVoice();
+                }}
+                onStop={() => {
+                  if (isRecording) handleToggleVoice();
+                }}
+                ariaLabel={isRecording ? "Stop voice recording" : "Voice input inquiry"}
+              />
+            </div>
 
             {/* Inquire Textarea Input */}
             <div className="flex-1 relative">

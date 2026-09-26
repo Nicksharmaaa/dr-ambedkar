@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { soundEffects } from '@/utils/soundEffects';
 import { LanguageDropdown } from './navigation/LanguageDropdown';
+import VoicePill from '@/components/ui/VoicePill';
 
 interface HeaderNavProps {
   currentTab: string;
@@ -346,18 +347,33 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
             />
 
             {/* Dedicated Voice Assistant & Navigator Trigger */}
-            <button
-              onClick={() => {
-                soundEffects.playClick();
-                if (onOpenVoiceModal) onOpenVoiceModal();
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-[#F3E4C9] border-2 border-[#C59A45] text-[#0A2947] text-xs font-montserrat font-bold tracking-wide uppercase transition-all cursor-pointer shadow-xs hover:scale-105"
-              title="Voice Navigator & Assistant: Speak in English, Hindi, or Marathi"
-              aria-label="Open Voice Assistant & Navigator"
-            >
-              <Mic className="w-3.5 h-3.5 text-[#C59A45] animate-pulse" />
-              <span className="hidden sm:inline">Voice</span>
-            </button>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-[#F3E4C9] border-2 border-[#C59A45] transition-all shadow-xs">
+              <VoicePill
+                accentColor="#C59A45"
+                iconColor="#8B5E3C"
+                background="#0A2947"
+                size={26}
+                shape="pill"
+                showTime={false}
+                waveform={false}
+                slideToCancel={false}
+                onClick={() => {
+                  soundEffects.playClick();
+                  if (onOpenVoiceModal) onOpenVoiceModal();
+                }}
+                ariaLabel="Open Voice Assistant & Navigator"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  soundEffects.playClick();
+                  if (onOpenVoiceModal) onOpenVoiceModal();
+                }}
+                className="hidden sm:inline text-[#0A2947] text-xs font-montserrat font-bold tracking-wide uppercase cursor-pointer"
+              >
+                Voice
+              </button>
+            </div>
 
             {/* Dedicated AI Scholar Trigger */}
             <button

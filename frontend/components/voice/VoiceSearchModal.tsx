@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
+import VoicePill from "@/components/ui/VoicePill";
 
 interface VoiceSearchModalProps {
   isOpen: boolean;
@@ -167,24 +168,33 @@ export function VoiceSearchModal({ isOpen, onClose, onSearch }: VoiceSearchModal
 
         {/* Body */}
         <div className="my-6 flex flex-col items-center justify-center text-center">
-          {/* Microphone Animation Circle */}
+          {/* VoicePill Recording Capsule */}
           <div className="relative my-4 flex items-center justify-center">
             {isRecording && (
-              <div className="absolute w-28 h-28 rounded-full bg-red-500/20 animate-ping" />
+              <div className="absolute -inset-3 rounded-full bg-amber-500/20 animate-ping pointer-events-none" />
             )}
-            <button
-              onClick={isRecording ? stopListening : startListening}
+            <VoicePill
+              isListening={isRecording}
+              accentColor="#F59E0B"
+              iconColor="#93C5FD"
+              background="#1E293B"
+              size={52}
+              shape="pill"
+              reach={10}
+              showTime
+              waveform
+              slideToCancel={false}
+              mode="toggle"
+              reactive="simulated"
               disabled={isTranscribing}
-              className={`relative z-10 w-20 h-20 rounded-full flex items-center justify-center text-3xl shadow-lg transition-all transform active:scale-95 ${
-                isRecording
-                  ? "bg-red-600 text-white ring-4 ring-red-400/40"
-                  : isTranscribing
-                  ? "bg-amber-600 text-white animate-pulse"
-                  : "bg-blue-600 hover:bg-blue-500 text-white"
-              }`}
-            >
-              {isTranscribing ? "⏳" : isRecording ? "⏹" : "🎤"}
-            </button>
+              ariaLabel="Toggle voice recording"
+              onStart={() => {
+                if (!isRecording && !isTranscribing) startListening();
+              }}
+              onStop={() => {
+                if (isRecording) stopListening();
+              }}
+            />
           </div>
 
           {/* Status Label */}
