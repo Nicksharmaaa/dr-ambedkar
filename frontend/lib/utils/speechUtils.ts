@@ -11,6 +11,7 @@ export interface TTSState {
 class SpeechController {
   private synth: SpeechSynthesis | null = null;
   private currentUtterance: SpeechSynthesisUtterance | null = null;
+  private currentAudio: HTMLAudioElement | null = null;
   private listeners: ((isPlaying: boolean) => void)[] = [];
 
   constructor() {
@@ -30,50 +31,68 @@ class SpeechController {
     this.listeners.forEach(cb => cb(isPlaying));
   }
 
-  public speak(text: string, lang: 'en' | 'hi' | 'mr' = 'en', onEnd?: () => void) {
-    if (!this.synth) {
-      console.warn('Speech synthesis not supported on this device/browser');
-      return;
-    }
-
+  public async speak(text: string, lang: 'en' | 'hi' | 'mr' = 'en', onEnd?: () => void) {
     this.stop();
 
     const cleanText = text.replace(/[*#_`]/g, '').trim();
     if (!cleanText) return;
 
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    
-    // Choose appropriate locale
-    if (lang === 'hi') {
-      utterance.lang = 'hi-IN';
-    } else if (lang === 'mr') {
-      utterance.lang = 'mr-IN';
-    } else {
-      utterance.lang = 'en-IN';
+    // 1. Try Backend Sarvam AI & ElevenLabs Voice Models
+    if (typeof window !== 'undefined') {
+      try {
+        const { api } = await import('@/lib/api');
+        const res = await api.synthesizeSpeech(cleanText.slice(0, 1000), lang);
+        if (res && res.audio_url) {
+          const audio = new Audio(res.audio_url);
+          this.currentAudio = audio;
+          this.notify(true);
+          audio.onended = () => {
+            this.notify(false);
+            if (onEnd) onEnd();
+          };
+          audio.onerror = () => {
+            this.notify(false);
+            this.speakWithBrowserSynth(cleanText, lang, onEnd);
+          };
+          await audio.play();
+          return;
+        }
+      } catch (e) {
+        console.debug('Neural TTS fallback to browser synth:', e);
+      }
     }
 
-    utterance.rate = 0.95; // Slightly steady pace for clarity
+    // 2. Fallback to Browser Speech Synthesis
+    this.speakWithBrowserSynth(cleanText, lang, onEnd);
+  }
+
+  private speakWithBrowserSynth(cleanText: string, lang: 'en' | 'hi' | 'mr', onEnd?: () => void) {
+    if (!this.synth) {
+      if (onEnd) onEnd();
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    if (lang === 'hi') utterance.lang = 'hi-IN';
+    else if (lang === 'mr') utterance.lang = 'mr-IN';
+    else utterance.lang = 'en-IN';
+    utterance.rate = 0.95;
     utterance.pitch = 1.0;
-
-    utterance.onstart = () => {
-      this.notify(true);
-    };
-
+    utterance.onstart = () => this.notify(true);
     utterance.onend = () => {
       this.notify(false);
       if (onEnd) onEnd();
     };
-
-    utterance.onerror = (e) => {
-      console.warn('Speech synthesis notice:', e);
-      this.notify(false);
-    };
-
+    utterance.onerror = () => this.notify(false);
     this.currentUtterance = utterance;
     this.synth.speak(utterance);
   }
 
   public stop() {
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio.currentTime = 0;
+      this.currentAudio = null;
+    }
     if (this.synth) {
       this.synth.cancel();
     }
@@ -81,9 +100,10 @@ class SpeechController {
   }
 
   public isAvailable(): boolean {
-    return typeof window !== 'undefined' && 'speechSynthesis' in window;
+    return typeof window !== 'undefined';
   }
 }
+
 
 export const speechController = new SpeechController();
 

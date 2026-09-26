@@ -100,7 +100,7 @@ class SarvamTTSProvider(BaseTTSProvider):
     MAX_CHUNK_CHARS = 2400  # REST API limit is 2500 characters
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None) -> None:
-        self.api_key = (api_key or settings.sarvam_api_key or "").strip()
+        self.api_key = (api_key if api_key is not None else (settings.sarvam_api_key or "")).strip()
         self.model_name = (model or getattr(settings, "sarvam_model", None) or "bulbul:v3").strip()
         # If configured model is set to "shubh", use official model bulbul:v3 with speaker shubh
         if self.model_name.lower() == "shubh":
