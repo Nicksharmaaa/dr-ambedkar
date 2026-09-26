@@ -180,3 +180,10 @@ playwright-report/
 blob-report/
 test-results/
 playwright/.cache/
+
+# ── Migration Backups & Local Duplicate Media ─────────────────
+turso_migration_backup/
+backend/storage/local/audio/
+backend/storage/local/video/
+backend/storage/local/originals/
+backend/storage/local/derivatives/
