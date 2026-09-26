@@ -145,6 +145,9 @@ class SQLiteClient(DatabaseClient):
 
     def __init__(self, url: str = ":memory:") -> None:
         db_path = url.replace("file:", "")
+        if db_path != ":memory:":
+            from pathlib import Path
+            Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(db_path, check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
         # Enable WAL mode for concurrent reads

@@ -1,4 +1,14 @@
-﻿# Ambedkar Heritage Intelligence & Digital Preservation System
+---
+title: Ambedkar Heritage Intelligence API
+emoji: 🏛️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 8000
+pinned: false
+---
+
+# Ambedkar Heritage Intelligence & Digital Preservation System
 
 AI-powered institutional archive for the digital preservation of Dr. B.R. Ambedkar's heritage.
 
