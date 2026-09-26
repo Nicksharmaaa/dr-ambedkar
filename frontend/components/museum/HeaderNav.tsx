@@ -10,6 +10,7 @@ import {
   GraduationCap, Eye, UserCheck, Key, Mic, Film
 } from 'lucide-react';
 import { soundEffects } from '@/utils/soundEffects';
+import { LanguageDropdown } from './navigation/LanguageDropdown';
 
 interface HeaderNavProps {
   currentTab: string;
@@ -339,24 +340,10 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
             </div>
 
             {/* Language Selector */}
-            <div className="flex items-center gap-1 bg-white rounded-xl px-2 py-1.5 border border-[#D3D4C0] transition-colors">
-              <Globe className="w-3.5 h-3.5 text-[#8B5E3C]" />
-              <select
-                id="header-language-select"
-                name="header_language"
-                aria-label="Language selection"
-                value={language}
-                onChange={(e) => {
-                  soundEffects.playClick();
-                  onSelectLanguage(e.target.value as Language);
-                }}
-                className="bg-transparent text-[#0A2947] text-xs font-montserrat font-semibold focus:outline-none cursor-pointer"
-              >
-                <option value="en">EN</option>
-                <option value="hi">HI</option>
-                <option value="mr">MR</option>
-              </select>
-            </div>
+            <LanguageDropdown
+              language={language}
+              onSelectLanguage={onSelectLanguage}
+            />
 
             {/* Dedicated Voice Assistant & Navigator Trigger */}
             <button
