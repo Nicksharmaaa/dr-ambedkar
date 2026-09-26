@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "Ambedkar Digital Heritage Archive & Museum",
   description:
     "An interactive digital heritage archive and knowledge lab dedicated to Dr. B. R. Ambedkar, featuring the Constitutional Quest game, speech soundboard, Wisdom Machine, 22 volumes of verified writings, multi-script OCR, and a source-grounded AI research assistant.",
+  icons: {
+    icon: "/favicon.ico",
+  },
   keywords: [
     "Ambedkar",
     "B.R. Ambedkar",
