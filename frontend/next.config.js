@@ -3,12 +3,16 @@ const nextConfig = {
   reactStrictMode: false,
   transpilePackages: ['three', '3d-force-graph', 'react-force-graph-3d', 'three-render-objects', 'three-forcegraph'],
   async rewrites() {
-    let rawUrl = (process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000").trim();
+    let rawUrl = (
+      process.env.BACKEND_INTERNAL_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      "https://tear-venture-suppliers-many.trycloudflare.com"
+    ).trim();
     rawUrl = rawUrl.replace(/^["']|["']$/g, '');
-    if (!rawUrl || rawUrl === "") {
-      rawUrl = "http://127.0.0.1:8000";
+    if (!rawUrl || rawUrl === "" || rawUrl.startsWith("/")) {
+      rawUrl = "https://tear-venture-suppliers-many.trycloudflare.com";
     }
-    if (!rawUrl.startsWith("http://") && !rawUrl.startsWith("https://") && !rawUrl.startsWith("/")) {
+    if (!rawUrl.startsWith("http://") && !rawUrl.startsWith("https://")) {
       rawUrl = `https://${rawUrl}`;
     }
     const backendBase = rawUrl.replace(/\/api\/v1\/?$/, '').replace(/\/api\/?$/, '').replace(/\/+$/, '');

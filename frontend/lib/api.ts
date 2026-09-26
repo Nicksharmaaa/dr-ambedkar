@@ -32,15 +32,12 @@ import {
 } from "./types";
 
 function getApiBase(): string {
-  let raw = (process.env.NEXT_PUBLIC_API_URL || "").trim();
+  let raw = (
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://tear-venture-suppliers-many.trycloudflare.com/api/v1"
+  ).trim();
   raw = raw.replace(/^["']|["']$/g, "").trim();
   raw = raw.replace(/\/+$/, ""); // Strip trailing slashes
-  if (!raw) {
-    if (typeof window !== "undefined") {
-      return "/api/v1";
-    }
-    return "http://127.0.0.1:8000/api/v1";
-  }
   if (!raw.startsWith("http://") && !raw.startsWith("https://") && !raw.startsWith("/")) {
     raw = `https://${raw}`;
   }
