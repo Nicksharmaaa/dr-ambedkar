@@ -7,7 +7,9 @@ import {
   Maximize2, Minimize2, Sparkles, Compass, ShieldCheck, 
   Layers, Search, Filter, Info, ListFilter, AlertCircle, RefreshCw
 } from 'lucide-react';
-import { Graph3DData, Graph3DNode, Graph3DLink, FilterCategory, ConnectedEntitySummary } from './types';
+import { 
+  Graph3DData, Graph3DNode, Graph3DLink, FilterCategory, ConnectedEntitySummary,
+} from './types';
 import { NodeDetailDrawer } from './NodeDetailDrawer';
 import { GraphControls } from './GraphControls';
 import { GraphSearch } from './GraphSearch';
@@ -17,6 +19,7 @@ import { AccessibleEntityList } from './AccessibleEntityList';
 import { KNOWLEDGE_GRAPH_NODES, KNOWLEDGE_GRAPH_LINKS } from '@/data/archiveData';
 import { ArchivalDocument, Language } from '@/types/museum';
 import { api } from '@/lib/api';
+import { soundEffects } from '@/utils/soundEffects';
 
 // Dynamic import with SSR disabled for Three.js WebGL compatibility
 const Graph3DCanvas = dynamic(
@@ -27,7 +30,7 @@ const Graph3DCanvas = dynamic(
       <div className="w-full h-full min-h-[550px] flex flex-col items-center justify-center bg-[#08192A] text-[#FAF7F0] space-y-4">
         <div className="w-12 h-12 rounded-full border-2 border-[#C89D56] border-t-transparent animate-spin" />
         <div className="font-mono text-xs text-[#C89D56] tracking-widest uppercase">
-          Initializing 3D Knowledge Universe...
+          Initializing 3D Archival Universe...
         </div>
       </div>
     ),
@@ -70,12 +73,20 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
   const [isAccessibleListOpen, setIsAccessibleListOpen] = useState<boolean>(false);
   const [is2HopExpanded, setIs2HopExpanded] = useState<boolean>(false);
+  const [historyStack, setHistoryStack] = useState<string[]>([]);
+  const [isSoundMuted, setIsSoundMuted] = useState<boolean>(false);
 
   // Data Loading State
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [rawNodes, setRawNodes] = useState<Graph3DNode[]>([]);
   const [rawLinks, setRawLinks] = useState<Graph3DLink[]>([]);
+
+
+  const handleToggleSound = useCallback(() => {
+    const muted = soundEffects.toggleSound();
+    setIsSoundMuted(muted);
+  }, []);
 
   // 1. Initial Data Fetch & Enrichment
   const loadGraphData = useCallback(async () => {
@@ -98,7 +109,11 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
           linkedDocId: n.linkedDocId,
           imageUrl: n.imageUrl,
           significance: n.significance,
-          color: n.color || '#3D5A80',
+          keyFacts: n.keyFacts,
+          historicalContext: n.historicalContext,
+          whyItMatters: n.whyItMatters,
+          cluster: n.cluster,
+          color: n.color || '#C5A880',
           aliases: n.aliases,
           bawsVolume: n.bawsVolume,
           provenanceCitation: n.provenanceCitation,
@@ -201,6 +216,7 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
   useEffect(() => {
     loadGraphData();
   }, [loadGraphData]);
+
 
   // 2. Measure Container Dimensions
   useEffect(() => {
@@ -350,30 +366,49 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
     };
   }, [selectedNode, rawLinks, rawNodes]);
 
-  // 7. Cinematic Camera Fly-to on Node Selection
+  // 7. Cinematic Camera Fly-to on Node Selection (Left-Side Framing)
   const flyToNode = useCallback(
-    (node: Graph3DNode) => {
+    (node: Graph3DNode, addToHistory = true) => {
+      if (addToHistory && selectedNode && selectedNode.id !== node.id) {
+        setHistoryStack((prev) => [...prev, selectedNode.id]);
+      }
+
       setSelectedNode(node);
       setAutoRotate(false); // Stop rotation to let visitor explore
+      soundEffects.playNodeSelectSound();
 
       if (fgRef.current && node.x !== undefined && node.y !== undefined && node.z !== undefined) {
-        const distance = 160;
-        const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
+        // Compose viewport so the selected sphere is visually framed in the LEFT 30-35%
+        const targetOffsetX = 35;
+        const camDistance = 165;
 
-        const newPos =
-          node.x || node.y || node.z
-            ? { x: node.x * distRatio, y: node.y * distRatio, z: (node.z || 0) * distRatio }
-            : { x: 0, y: 0, z: distance };
+        const lookAtTarget = {
+          x: (node.x || 0) + targetOffsetX,
+          y: node.y || 0,
+          z: node.z || 0,
+        };
 
-        fgRef.current.cameraPosition(
-          newPos, // new position
-          { x: node.x, y: node.y, z: node.z }, // lookAt target
-          1400 // transition duration in ms
-        );
+        const newPos = {
+          x: (node.x || 0) - 25,
+          y: (node.y || 0) + 12,
+          z: (node.z || 0) + camDistance,
+        };
+
+        fgRef.current.cameraPosition(newPos, lookAtTarget, 1400);
       }
     },
-    [fgRef]
+    [fgRef, selectedNode]
   );
+
+  const handleNavigateHistoryBack = useCallback(() => {
+    if (historyStack.length === 0) return;
+    const prevId = historyStack[historyStack.length - 1];
+    setHistoryStack((prev) => prev.slice(0, -1));
+    const prevNode = rawNodes.find((n) => n.id === prevId);
+    if (prevNode) {
+      flyToNode(prevNode, false);
+    }
+  }, [historyStack, rawNodes, flyToNode]);
 
   // 8. Navigation Handlers
   const handleZoomIn = () => {
@@ -401,7 +436,7 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
   const handleResetView = () => {
     const ambedkarNode = rawNodes.find((n) => n.isCenter);
     if (ambedkarNode) {
-      flyToNode(ambedkarNode);
+      flyToNode(ambedkarNode, false);
     } else if (fgRef.current) {
       fgRef.current.cameraPosition({ x: 0, y: 0, z: 420 }, { x: 0, y: 0, z: 0 }, 1400);
     }
@@ -426,8 +461,8 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
       ref={containerRef}
       className={`relative w-full overflow-hidden transition-all duration-300 ${
         isImmersive
-          ? 'w-full h-full bg-[#08192A] m-0 rounded-none'
-          : 'h-[750px] sm:h-[820px] rounded-3xl border-2 border-[#C89D56]/40 bg-[#08192A] shadow-2xl my-6'
+          ? 'w-full h-full bg-[#FAF7F0] m-0 rounded-none'
+          : 'h-[750px] sm:h-[820px] rounded-3xl border-2 border-[#D3D4C0] bg-[#FAF7F0] shadow-xl my-6'
       }`}
     >
       {/* 1. Header Bar & Controls */}
@@ -436,15 +471,15 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
         {/* Top Navigation Row */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Title & Brand */}
-          <div className="pointer-events-auto bg-[#0A2947]/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-[#C89D56]/40 shadow-xl flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#C89D56] to-[#8B5E3C] flex items-center justify-center text-[#0A2947] font-bold shadow-md">
+          <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl border-2 border-[#D3D4C0] shadow-lg flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#0A2947] to-[#123B60] flex items-center justify-center text-[#F3E4C9] font-bold shadow-sm shrink-0">
               <Compass className="w-4 h-4" />
             </div>
             <div>
-              <h1 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide">
+              <h1 className="text-sm sm:text-base font-serif font-bold text-[#0A2947] tracking-wide">
                 The Ambedkar Knowledge Universe
               </h1>
-              <p className="text-[10px] font-mono text-[#C89D56] tracking-wider uppercase">
+              <p className="text-[10px] font-mono text-[#8B5E3C] tracking-wider uppercase font-semibold">
                 3D Archival Lineage · {rawNodes.length} Verified Entities
               </p>
             </div>
@@ -452,18 +487,19 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
 
           {/* Search, Accessible Directory & Controls Cluster */}
           <div className="pointer-events-auto flex items-center flex-wrap gap-2">
+
             <GraphSearch
               nodes={rawNodes}
-              onSelectNode={flyToNode}
+              onSelectNode={(n) => flyToNode(n, true)}
               selectedNodeId={selectedNode?.id || null}
             />
 
             <button
               onClick={() => setIsAccessibleListOpen(true)}
-              className="px-3 py-2 rounded-2xl bg-[#0A2947]/90 backdrop-blur-md border border-[#C89D56]/40 hover:bg-[#C89D56] hover:text-[#0A2947] text-white/90 text-xs font-mono transition-all flex items-center gap-1.5 shadow-xl cursor-pointer"
+              className="px-3 py-2 rounded-2xl bg-white/95 backdrop-blur-md border-2 border-[#D3D4C0] hover:bg-[#FAF7F0] hover:border-[#C89D56] text-[#0A2947] text-xs font-mono transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
               title="Open Screen-Reader Accessible Directory"
             >
-              <ListFilter className="w-3.5 h-3.5 text-[#C89D56]" />
+              <ListFilter className="w-3.5 h-3.5 text-[#8B5E3C]" />
               <span className="hidden md:inline font-semibold">Directory</span>
             </button>
 
@@ -476,6 +512,8 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
               onToggleAutoRotate={() => setAutoRotate(!autoRotate)}
               isImmersive={isImmersive}
               onToggleImmersive={handleToggleImmersive}
+              isSoundMuted={isSoundMuted}
+              onToggleSound={handleToggleSound}
             />
           </div>
         </div>
@@ -499,15 +537,15 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
           <GraphLegend />
         </div>
 
-        <div className="px-3 py-1.5 rounded-xl bg-[#0A2947]/80 backdrop-blur-sm border border-white/10 text-[11px] font-mono text-white/60 pointer-events-auto select-none shadow-md hidden sm:block">
-          <span className="text-[#C89D56] font-semibold">Explore:</span> Drag to orbit · Scroll to zoom · Click sphere to focus & inspect
+        <div className="px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-sm border border-[#D3D4C0] text-[11px] font-mono text-[#0A2947]/75 pointer-events-auto select-none shadow-sm hidden sm:block">
+          <span className="text-[#8B5E3C] font-semibold">Explore:</span> Drag to orbit · Scroll to zoom · Click artifact to inspect & navigate connections
         </div>
       </div>
 
       {/* 4. Bottom-Right Status Indicator */}
       <div className="absolute bottom-4 right-4 z-20 pointer-events-none">
-        <div className="px-3 py-1.5 rounded-xl bg-[#0A2947]/80 backdrop-blur-sm border border-white/10 text-[10px] font-mono text-emerald-400 flex items-center gap-1.5 shadow-md">
-          <ShieldCheck className="w-3 h-3 text-emerald-400" />
+        <div className="px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-sm border border-[#D3D4C0] text-[10px] font-mono text-emerald-800 flex items-center gap-1.5 shadow-sm font-semibold">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
           <span>BAWS Primary Authority Verified</span>
         </div>
       </div>
@@ -531,7 +569,7 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
           data={filteredData}
           selectedNodeId={selectedNode?.id || null}
           hoveredNodeId={hoveredNode?.id || null}
-          onSelectNode={flyToNode}
+          onSelectNode={(n) => flyToNode(n, true)}
           onHoverNode={setHoveredNode}
           onBackgroundClick={() => setSelectedNode(null)}
           autoRotate={autoRotate}
@@ -542,30 +580,34 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
         />
       )}
 
-      {/* 6. Right-Side Inspector Drawer */}
+      {/* 6. Right-Side Inspector Drawer with Sequential Navigation */}
       <NodeDetailDrawer
         node={selectedNode}
         connectedEntities={connectedEntities}
         onClose={() => setSelectedNode(null)}
         onSelectConnectedNode={(nodeId) => {
           const nextNode = rawNodes.find((n) => n.id === nodeId);
-          if (nextNode) flyToNode(nextNode);
+          if (nextNode) flyToNode(nextNode, true);
         }}
         onOpenDocument={onOpenDocument}
         onAskAI={onAskAI}
         onExpandConnections={(nodeId) => setIs2HopExpanded(!is2HopExpanded)}
         isExpanded={is2HopExpanded}
+        historyStack={historyStack}
+        onNavigateHistoryBack={handleNavigateHistoryBack}
       />
 
       {/* 7. Screen-Reader / Keyboard Accessible Entity Directory */}
       {isAccessibleListOpen && (
         <AccessibleEntityList
           nodes={rawNodes}
-          onSelectNode={flyToNode}
+          onSelectNode={(n) => flyToNode(n, true)}
           onOpenDocument={onOpenDocument}
           onClose={() => setIsAccessibleListOpen(false)}
         />
       )}
+
+
     </div>
   );
 };

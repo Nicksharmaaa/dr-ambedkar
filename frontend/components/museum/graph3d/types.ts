@@ -10,6 +10,10 @@ export interface Graph3DNode {
   linkedDocId?: string;
   imageUrl?: string;
   significance: string;
+  keyFacts?: string[];
+  historicalContext?: string;
+  whyItMatters?: string;
+  cluster?: string;
   color: string;
   aliases?: string[];
   bawsVolume?: string;

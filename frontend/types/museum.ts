@@ -213,7 +213,7 @@ export interface HistoricalPhoto {
 }
 
 // Knowledge Graph Interfaces
-export type GraphCategory = 'person' | 'work' | 'concept' | 'event' | 'place' | 'organization' | 'article' | 'speech' | 'book' | 'manuscript' | 'document' | 'figure';
+export type GraphCategory = 'person' | 'work' | 'concept' | 'event' | 'place' | 'organization' | 'article' | 'speech' | 'book' | 'manuscript' | 'document' | 'figure' | 'media' | 'movement' | 'institution';
 
 export interface KnowledgeGraphNode {
   id: string;
@@ -227,6 +227,10 @@ export interface KnowledgeGraphNode {
   articleNo?: string;
   iconName?: string;
   significance: string;
+  keyFacts?: string[];
+  historicalContext?: string;
+  whyItMatters?: string;
+  cluster?: string;
   color: string;
   aliases?: string[];
   bawsVolume?: string;

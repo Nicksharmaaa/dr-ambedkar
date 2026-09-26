@@ -1127,316 +1127,991 @@ export const HISTORICAL_PHOTOS: HistoricalPhoto[] = [
 
 // 5. KNOWLEDGE GRAPH NODES & LINKS (Events, Articles, Speeches, Figures, Concepts, Orgs, Places)
 export const KNOWLEDGE_GRAPH_NODES: KnowledgeGraphNode[] = [
-  // Central Figure
+  // ── 1. CENTRAL ARCHIVAL ANCHOR ─────────────────────────────────────────────
   {
     id: 'node-ambedkar',
     label: 'Dr. B.R. Ambedkar',
     category: 'person',
-    shortDesc: 'Chief Architect of the Constitution of India, jurist, economist, scholar, and social revolutionary.',
+    shortDesc: 'Chief Architect of the Constitution of India, jurist, economist, statesman, scholar, and foremost champion of human rights.',
     year: 1891,
     date: '1891-04-14',
-    significance: 'Primary architect of Indian democracy, social emancipation champion, and Chairman of the Drafting Committee.',
-    color: '#d97706', // Imperial Gold / Amber
-    imageUrl: HERO_IMAGE,
-    aliases: [
-      'B. R. Ambedkar',
-      'B R Ambedkar',
-      'Dr. B. R. Ambedkar',
-      'Dr Bhimrao Ramji Ambedkar',
-      'Babasaheb',
-      'Babasaheb Ambedkar'
+    significance: 'Primary architect of Indian constitutional democracy, champion of social emancipation, and Chairman of the Drafting Committee.',
+    keyFacts: [
+      'Earned doctorates from both Columbia University (Ph.D.) and London School of Economics (D.Sc.).',
+      'Chaired the Drafting Committee that created the Constitution of India (1947–1950).',
+      'Served as Independent India’s first Law and Justice Minister, piloting the historic Hindu Code Bill.'
     ],
+    historicalContext: 'Late Colonial and Early Post-Independence India (1891–1956)',
+    whyItMatters: 'Synthesized global legal philosophy, Buddhist ethics, and democratic institutionalism into modern India’s egalitarian framework.',
+    cluster: 'Anchor',
+    color: '#C89D56',
+    imageUrl: HERO_IMAGE,
+    aliases: ['B. R. Ambedkar', 'Dr. B. R. Ambedkar', 'Dr Bhimrao Ramji Ambedkar', 'Babasaheb', 'Babasaheb Ambedkar'],
     bawsVolume: 'BAWS Vol. 1–22',
-    provenanceCitation: 'Government of Maharashtra / Parliamentary Archives',
-    x: 520,
-    y: 350
+    provenanceCitation: 'Government of Maharashtra / Parliamentary Archives of India'
   },
 
-  // Works / Books
+  // ── 2. EDUCATION & INTELLECTUAL INFLUENCES CLUSTER ────────────────────────
+  {
+    id: 'node-columbia',
+    label: 'Columbia University',
+    category: 'place',
+    shortDesc: 'Morningside Heights campus, New York City, where Dr. Ambedkar completed his M.A. and Ph.D. under John Dewey and Edwin Seligman (1913–1916).',
+    year: 1913,
+    significance: 'Awarded Ambedkar the Honorary LL.D. in 1952, hailing him as "The Great Drafter of the Indian Constitution".',
+    keyFacts: [
+      'Attended on a state scholarship granted by Maharaja Sayajirao Gaekwad III of Baroda.',
+      'Studied economics, sociology, history, and philosophy across 64 academic credits.',
+      'Presented his seminal anthropological treatise "Castes in India" in Alexander Goldenweiser’s seminar in May 1916.'
+    ],
+    historicalContext: 'Morningside Heights, New York (1913–1916)',
+    whyItMatters: 'Imbued Ambedkar with pragmatic democratic theory, scientific sociological methodology, and public finance principles.',
+    cluster: 'Education',
+    color: '#8B5E3C',
+    imageUrl: RAJGRUHA_LIBRARY_IMAGE,
+    aliases: ['Columbia NYC', 'Low Memorial Library', 'Morningside Heights Campus'],
+    bawsVolume: 'BAWS Vol. 1 & Columbia Oral History',
+    provenanceCitation: 'Columbia University Registrar Records (1913–1916) / Rare Book & Manuscript Library'
+  },
+  {
+    id: 'node-john-dewey',
+    label: 'Prof. John Dewey',
+    category: 'person',
+    shortDesc: 'Renowned American pragmatist philosopher, psychologist, and educator at Columbia University; mentor and professor to Dr. Ambedkar.',
+    year: 1913,
+    significance: 'Deeply shaped Ambedkar’s conception of democracy as "associated living and conjoint communicated experience".',
+    keyFacts: [
+      'Taught Ambedkar courses in moral philosophy, education, and social theory at Columbia.',
+      'Ambedkar took extensive notes on Dewey’s "Democracy and Education" (1916).',
+      'Ambedkar repeatedly cited Dewey’s formulations across "Annihilation of Caste" and his final Constituent Assembly address.'
+    ],
+    historicalContext: 'American Pragmatism and Progressive Era Philosophy (1859–1952)',
+    whyItMatters: 'Grounded Ambedkar’s lifelong conviction that political democracy is empty without reciprocal social communication.',
+    cluster: 'Education',
+    color: '#C88A58',
+    aliases: ['John Dewey', 'Prof. Dewey', 'Professor John Dewey Columbia'],
+    bawsVolume: 'BAWS Vol. 1',
+    provenanceCitation: 'Columbia University Archives / BAWS Vol. 1 (Annihilation of Caste Section XIV)'
+  },
+  {
+    id: 'node-edwin-seligman',
+    label: 'Prof. Edwin R. A. Seligman',
+    category: 'person',
+    shortDesc: 'Distinguished American institutional economist and McVickar Professor of Political Economy at Columbia University; doctoral adviser to Dr. Ambedkar.',
+    year: 1914,
+    significance: 'Supervised Ambedkar’s dissertation "The Evolution of Provincial Finance in British India", pioneering fiscal federalism analysis.',
+    keyFacts: [
+      'Wrote the influential introduction to Ambedkar’s published dissertation in 1925.',
+      'Praised Ambedkar’s original research into fiscal decentralization and provincial taxation.',
+      'Maintained enduring scholarly correspondence with Ambedkar throughout his legal and political career.'
+    ],
+    historicalContext: 'Columbia Department of Economics (1861–1939)',
+    whyItMatters: 'Provided the analytical foundation for India’s Finance Commission architecture and revenue-sharing mechanisms.',
+    cluster: 'Education',
+    color: '#C88A58',
+    aliases: ['Edwin Seligman', 'Prof. E. R. A. Seligman', 'Edwin Robert Anderson Seligman'],
+    bawsVolume: 'BAWS Vol. 6',
+    provenanceCitation: 'Columbia University Economics Faculty Papers / P. S. King & Son Edition (1925)'
+  },
+  {
+    id: 'node-lse',
+    label: 'London School of Economics',
+    category: 'organization',
+    shortDesc: 'Premier British social science institution where Dr. Ambedkar earned both M.Sc. (1921) and D.Sc. (1923) in Economics under Edwin Cannan.',
+    year: 1916,
+    significance: 'Ambedkar became the first Indian scholar to be awarded the prestigious Doctor of Science (Economics) degree by LSE.',
+    keyFacts: [
+      'Enrolled in October 1916 while concurrently reading law at Gray’s Inn.',
+      'Completed his doctoral thesis on currency standards, later published as "The Problem of the Rupee".',
+      'A bronze bust of Dr. Ambedkar is prominently enshrined in the LSE Old Building atrium.'
+    ],
+    historicalContext: 'Houghton Street, Aldwych, London (1916–1923)',
+    whyItMatters: 'Equipped Ambedkar with world-class monetary expertise that shaped the statutory founding of the Reserve Bank of India.',
+    cluster: 'Education',
+    color: '#5C7873',
+    aliases: ['LSE', 'London School of Economics and Political Science', 'Houghton Street London'],
+    bawsVolume: 'BAWS Vol. 6',
+    provenanceCitation: 'London School of Economics Archives / LSE Calendar Records (1916–1923)'
+  },
+  {
+    id: 'node-grays-inn',
+    label: 'Gray’s Inn, London',
+    category: 'organization',
+    shortDesc: 'One of the four historic Inns of Court in London where Dr. Ambedkar read law and was called to the Bar on 28 June 1923.',
+    year: 1916,
+    significance: 'Accredited Dr. Ambedkar as a qualified Barrister-at-Law, empowering his high-court litigation for civil liberties in Bombay.',
+    keyFacts: [
+      'Admitted as a student of law in November 1916.',
+      'Passed Bar examinations while researching currency reform in the British Museum Reading Room.',
+      'Formally called to the Bar on 28 June 1923, returning to Bombay to establish his independent legal chambers.'
+    ],
+    historicalContext: 'Inns of Court, London (1916–1923)',
+    whyItMatters: 'Gave Ambedkar the formal constitutional and forensic legal mastery required to draft national legislation.',
+    cluster: 'Education',
+    color: '#5C7873',
+    aliases: ['Honourable Society of Gray’s Inn', 'Gray’s Inn Barrister Chambers'],
+    bawsVolume: 'BAWS Vol. 17 (Part 1)',
+    provenanceCitation: 'Gray’s Inn Admission Registers & Council Minutes (1916–1923)'
+  },
+  {
+    id: 'node-elphinstone',
+    label: 'Elphinstone College, Bombay',
+    category: 'organization',
+    shortDesc: 'Historic premier collegiate institution in Bombay affiliated with the University of Bombay, where Dr. Ambedkar earned his B.A. in 1912.',
+    year: 1908,
+    significance: 'Ambedkar became the first student from his community in western India to matriculate and earn a university degree.',
+    keyFacts: [
+      'Passed B.A. with dual majors in English Literature and Persian in 1912.',
+      'Mentored by reformist scholar Krishnaji Arjun Keluskar, who gifted him a biography of Gautama Buddha.',
+      'Gained intellectual distinction that brought his merit to the attention of the Maharaja of Baroda.'
+    ],
+    historicalContext: 'Fort, Bombay (1908–1912)',
+    whyItMatters: 'Proved that institutional barriers could be overcome by intellectual perseverance, opening collegiate access for millions.',
+    cluster: 'Education',
+    color: '#5C7873',
+    aliases: ['Elphinstone College Bombay', 'University of Bombay Elphinstone'],
+    bawsVolume: 'BAWS Vol. 17 (Part 1)',
+    provenanceCitation: 'University of Bombay Convocation Register (1912)'
+  },
+  {
+    id: 'node-sayajirao-gaekwad',
+    label: 'Maharaja Sayajirao Gaekwad III',
+    category: 'person',
+    shortDesc: 'Visionary ruler of the progressive princely state of Baroda who financed Dr. Ambedkar’s higher education at Columbia University.',
+    year: 1913,
+    significance: 'Pioneered universal primary education in Baroda and funded scholarships for subaltern scholars without caste prejudice.',
+    keyFacts: [
+      'Granted a scholarship of £11.50 per month in June 1913 enabling Ambedkar’s study at Columbia.',
+      'Appointed Ambedkar Military Secretary to Baroda State upon his return in 1917.',
+      'A steadfast patron of progressive social welfare and anti-untouchability programs across western India.'
+    ],
+    historicalContext: 'Baroda State and Western India (1863–1939)',
+    whyItMatters: 'Demonstrated the power of affirmative state support to unlock generational subaltern leadership.',
+    cluster: 'Education',
+    color: '#C88A58',
+    aliases: ['Sayajirao Gaekwad III', 'Maharaja of Baroda', 'Sayajirao III'],
+    bawsVolume: 'BAWS Vol. 17 (Part 1)',
+    provenanceCitation: 'Baroda State Gazetteer / Baroda State Council Order (June 1913)'
+  },
+
+  // ── 3. FOUNDATIONAL WORKS & TREATISES CLUSTER ─────────────────────────────
   {
     id: 'node-annihilation',
     label: 'Annihilation of Caste',
-    category: 'book',
-    shortDesc: 'Foundational treatise diagnosing caste as an unnatural hierarchy and graded inequality.',
+    category: 'work',
+    shortDesc: '1936 magnum opus diagnosing caste hierarchy as an unnatural division of labourers, calling for shastric destruction.',
     year: 1936,
     date: '1936-05-15',
     linkedDocId: 'annihilation-of-caste',
-    significance: 'Global masterwork on social democracy, graded inequality, and moral ethics.',
-    color: '#1d4ed8', // Sapphire
-    aliases: ['Jat-Pat-Todak Mandal Address', 'Undelivered Lahore Presidential Speech', 'Annihilation of Caste (1936)'],
+    significance: 'Global masterwork on social democracy, graded inequality, and the moral prerequisites of human fraternity.',
+    keyFacts: [
+      'Written as an undelivered presidential address for the Jat-Pat-Todak Mandal annual conference in Lahore.',
+      'Declined to alter a single word when the conservative conference committee requested revisions.',
+      'Independently self-published in Bombay at his own expense in May 1936, quickly translated into multiple Indian languages.'
+    ],
+    historicalContext: 'Lahore / Bombay (1936)',
+    whyItMatters: 'Established that national political sovereignty cannot stand upon the crumbling foundation of graded inequality.',
+    cluster: 'Writings',
+    color: '#C5A880',
+    aliases: ['Jat-Pat-Todak Mandal Address', 'Undelivered Lahore Address', 'AoC (1936)'],
     bawsVolume: 'BAWS Vol. 1',
-    provenanceCitation: 'First Edition Printed at Bombay, May 1936',
-    x: 520,
-    y: 95
+    provenanceCitation: 'First Edition Printed at Bombay, May 1936 / Jat-Pat-Todak Mandal Correspondence'
   },
   {
     id: 'node-rupee-problem',
     label: 'The Problem of the Rupee',
-    category: 'book',
-    shortDesc: 'Doctoral thesis at London School of Economics analyzing exchange rates and monetary stability.',
+    category: 'work',
+    shortDesc: 'Monumental 1923 monetary treatise and D.Sc. dissertation at LSE analyzing exchange rate volatility and colonial monetary policy.',
     year: 1923,
     date: '1923-11-01',
     linkedDocId: 'the-problem-of-the-rupee-1923',
-    significance: 'Directly cited during the formation and statutory charter of the Reserve Bank of India (RBI).',
-    color: '#1d4ed8',
+    significance: 'Directly cited during the Hilton-Young Commission hearings and statutory design of the Reserve Bank of India.',
+    keyFacts: [
+      'Critiqued John Maynard Keynes’s advocacy for the gold exchange standard in colonial economies.',
+      'Argued for currency stability to protect the purchasing power of the working poor against inflationary devaluation.',
+      'Published commercially in London by P. S. King & Son in November 1923 with an introduction by Edwin Cannan.'
+    ],
+    historicalContext: 'London School of Economics / London (1923)',
+    whyItMatters: 'Laid the empirical foundation for independent central banking and stable monetary policy in India.',
+    cluster: 'Writings',
+    color: '#C5A880',
     imageUrl: ROUND_TABLE_IMAGE,
-    aliases: ['Problem of the Rupee', 'D.Sc. Economics Dissertation LSE', 'P. S. King & Son London Edition'],
+    aliases: ['Problem of the Rupee', 'D.Sc. Economics Dissertation LSE', 'P. S. King Edition 1923'],
     bawsVolume: 'BAWS Vol. 6',
-    provenanceCitation: 'London School of Economics Library / British Museum Archives',
-    x: 720,
-    y: 610
+    provenanceCitation: 'London School of Economics Library / British Museum Archives'
   },
   {
     id: 'node-castes-in-india',
     label: 'Castes in India: Genesis & Mechanism',
     category: 'work',
-    shortDesc: 'Seminal anthropological paper presented at Columbia University in Dr. Alexander Goldenweiser’s seminar.',
+    shortDesc: 'Pioneering 1916 anthropological paper delivered at Columbia University identifying endogamy as the core mechanism creating caste.',
     year: 1916,
     date: '1916-05-09',
     linkedDocId: 'castes-in-india-1916',
-    significance: 'First rigorous scholarly examination of endogamy as the defining pillar of caste preservation.',
-    color: '#2563eb',
-    aliases: ['Columbia Anthropology Paper', 'Genesis and Development of Caste'],
+    significance: 'First modern scientific explanation of how endogamy superimposed upon exogamy generates self-enclosing castes.',
+    keyFacts: [
+      'Presented in the Goldenweiser Anthropology Seminar at Columbia University on 9 May 1916.',
+      'Published in the prestigious journal "Indian Antiquary" in May 1917.',
+      'Anticipated structural anthropology by demonstrating that caste is not a biological entity but a sociological enclosure.'
+    ],
+    historicalContext: 'Columbia University, New York City (May 1916)',
+    whyItMatters: 'Demolished racial and occupational theories of caste, replacing them with institutional sociological analysis.',
+    cluster: 'Writings',
+    color: '#C5A880',
+    aliases: ['Columbia Anthropology Paper', 'Genesis and Development of Caste', 'Indian Antiquary 1917'],
     bawsVolume: 'BAWS Vol. 1',
-    provenanceCitation: 'Indian Antiquary Vol. XLI (May 1917)',
-    x: 270,
-    y: 590
-  },
-  {
-    id: 'node-baws-vol-13',
-    label: 'AMBEDKAR-VOL-13',
-    category: 'document',
-    shortDesc: 'Official archival compendium of Dr. Ambedkar’s speeches and interventions in the Constituent Assembly.',
-    year: 1949,
-    date: '1947–1950',
-    linkedDocId: 'constituent-assembly-speech-1949',
-    significance: 'Complete proceedings of the Constitution Drafting Committee and plenary debates.',
-    color: '#0284c7',
-    imageUrl: ASSEMBLY_IMAGE,
-    aliases: ['BAWS Volume 13', 'Constituent Assembly Debates Compilation', 'Govt of Maharashtra Gazette Archive'],
-    bawsVolume: 'BAWS Vol. 13',
-    provenanceCitation: 'Dr. Babasaheb Ambedkar Source Material Publication Committee',
-    x: 590,
-    y: 610
-  },
-
-  // Events
-  {
-    id: 'node-mahad',
-    label: 'Mahad Satyagraha',
-    category: 'event',
-    shortDesc: 'March 20, 1927: Civil rights assertion for human access to common water at Chavdar Tank.',
-    year: 1927,
-    date: '1927-03-20',
-    linkedDocId: 'mahad-satyagraha-1927',
-    significance: 'First mass civil rights assertion for basic civic equality in modern Indian history.',
-    color: '#059669', // Emerald
-    imageUrl: MAHAD_IMAGE,
-    aliases: ['Chavdar Tank March', 'Social Empowerment Day', 'Mahad Jal Satyagraha'],
-    bawsVolume: 'BAWS Vol. 17 (Part 1)',
-    provenanceCitation: 'Bahishkrit Bharat Field Reports / Maharashtra Gazetteers',
-    x: 690,
-    y: 110
-  },
-  {
-    id: 'node-nagpur-conversion',
-    label: 'Nagpur Buddhist Conversion',
-    category: 'event',
-    shortDesc: 'October 14, 1956: Peaceful mass renaissance embracing Buddhism with 500,000 citizens at Deekshabhoomi.',
-    year: 1956,
-    date: '1956-10-14',
-    significance: 'Spiritual emancipation asserting moral equality and the 22 rationalist vows.',
-    color: '#059669',
-    imageUrl: NAGPUR_DEEKSHA_IMAGE,
-    aliases: ['Deekshabhoomi Dhamma Deeksha', 'Historic 22 Vows Congregation', 'Ashoka Vijaya Dashami 1956'],
-    bawsVolume: 'BAWS Vol. 17 (Part 3)',
-    provenanceCitation: 'Special Documentary Press Unit Nagpur / All-India Radio Archives',
-    x: 430,
-    y: 530
-  },
-
-  // Concepts / Philosophy
-  {
-    id: 'node-liberty-equality-fraternity',
-    label: 'Liberty, Equality, Fraternity',
-    category: 'concept',
-    shortDesc: 'The inseparable trinity of social democracy ensuring that liberty does not lead to supremacy of the few.',
-    significance: 'The core philosophical bedrock of the Preamble of the Constitution of India.',
-    color: '#7c3aed', // Regal Amethyst
-    aliases: ['Union of Trinity', 'French Enlightenment & Buddhist Triad', 'Preamble Constitutional Trinity'],
-    bawsVolume: 'BAWS Vol. 11 & Vol. 1',
-    provenanceCitation: 'Constituent Assembly Closing Speech (Nov 25, 1949)',
-    x: 350,
-    y: 90
-  },
-  {
-    id: 'node-constitutional-morality',
-    label: 'Constitutional Morality',
-    category: 'concept',
-    shortDesc: 'Adherence to democratic norms, checks and balances, and institutional tolerance over majoritarianism.',
-    significance: 'Essential prerequisite preventing democratic constitutions from collapsing into authoritarianism.',
-    color: '#7c3aed',
-    aliases: ['Grote’s Concept of Constitutional Morality', 'Democratic Restraint & Rule of Law'],
-    bawsVolume: 'BAWS Vol. 13',
-    provenanceCitation: 'CAD Vol. VII (Nov 4, 1948)',
-    x: 880,
-    y: 280
-  },
-  {
-    id: 'node-state-socialism',
-    label: 'State Socialism',
-    category: 'concept',
-    shortDesc: 'Constitutional retention of key industries, insurance, and agricultural land in national stewardship.',
-    significance: 'Economic framework articulated in States and Minorities to prevent capitalist monopoly exploitation.',
-    color: '#7c3aed',
-    aliases: ['Democratic State Socialism', 'Constitutional Economics', 'States and Minorities Draft Part II'],
-    bawsVolume: 'BAWS Vol. 1',
-    provenanceCitation: 'States and Minorities (1947)',
-    x: 850,
-    y: 520
-  },
-  {
-    id: 'node-social-endosmosis',
-    label: 'Social Endosmosis',
-    category: 'concept',
-    shortDesc: 'Fluid, unobstructed communication and reciprocal exchange between all social groups without walls.',
-    significance: 'Sociological formula for dismantling caste endogamy and fostering nationwide fraternity.',
-    color: '#7c3aed',
-    aliases: ['Deweyan Social Flow', 'Fluid Associated Living', 'Caste Permeability Theory'],
-    bawsVolume: 'BAWS Vol. 1',
-    provenanceCitation: 'Annihilation of Caste Section XIV',
-    x: 150,
-    y: 500
-  },
-
-  // Persons
-  {
-    id: 'node-john-dewey',
-    label: 'Prof. John Dewey',
-    category: 'person',
-    shortDesc: 'American pragmatist philosopher and educator at Columbia University; mentor to Dr. Ambedkar.',
-    year: 1913,
-    significance: 'Deeply shaped Ambedkar’s conception of democracy as "associated living and conjoint communicated experience".',
-    color: '#ea580c', // Terracotta Orange
-    aliases: ['John Dewey Columbia', 'Pragmatism Philosopher', 'Deweyan Pedagogy'],
-    bawsVolume: 'BAWS Vol. 1 & Columbia Oral History',
-    provenanceCitation: 'Columbia University Rare Book & Manuscript Library',
-    x: 840,
-    y: 150
-  },
-  {
-    id: 'node-mahatma-gandhi',
-    label: 'Mahatma Gandhi',
-    category: 'person',
-    shortDesc: 'Counterpart in the Round Table Conferences and signatory party to the historic Poona Pact in 1932.',
-    year: 1932,
-    significance: 'Historic ideological debate on the nature of caste abolition versus caste reform.',
-    color: '#ea580c',
-    aliases: ['M. K. Gandhi', 'Yerwada Jail Fast Interlocutor', 'Harijan Movement Counterpart'],
-    bawsVolume: 'BAWS Vol. 9 (What Congress and Gandhi Have Done to the Untouchables)',
-    provenanceCitation: 'Collected Works of Mahatma Gandhi / BAWS Vol. 9',
-    x: 110,
-    y: 360
-  },
-
-  // Organizations & Places
-  {
-    id: 'node-columbia',
-    label: 'Columbia University',
-    category: 'place',
-    shortDesc: 'World-renowned university in New York City where Dr. Ambedkar completed his M.A. and Ph.D. (1913–1916).',
-    year: 1913,
-    significance: 'Awarded Ambedkar the Honorary LL.D. in 1952 hailing him as "The Great Drafter of the Indian Constitution".',
-    color: '#0d9488', // Teal
-    imageUrl: RAJGRUHA_LIBRARY_IMAGE,
-    aliases: ['Columbia NYC', 'Low Memorial Library', 'Morningside Heights Campus'],
-    bawsVolume: 'Columbia University Archives',
-    provenanceCitation: 'Columbia University Registrar Records (1913–1916)',
-    x: 140,
-    y: 230
-  },
-  {
-    id: 'node-drafting-committee',
-    label: 'Drafting Committee',
-    category: 'organization',
-    shortDesc: 'Seven-member committee appointed by the Constituent Assembly on August 29, 1947, chaired by Dr. Ambedkar.',
-    year: 1947,
-    significance: 'Piloted, drafted, and defended 395 Articles and 8 Schedules forming the Republic of India.',
-    color: '#0284c7', // Architectural Cobalt
-    imageUrl: DRAFTING_CONSTITUTION_IMAGE,
-    aliases: ['Constitution Drafting Committee', 'CAD Committee on Draft Articles', 'Assembly Drafting Body'],
-    bawsVolume: 'BAWS Vol. 13',
-    provenanceCitation: 'Constituent Assembly of India Secretariat Records',
-    x: 320,
-    y: 270
-  },
-  {
-    id: 'node-govt-maharashtra',
-    label: 'Government of Maharashtra',
-    category: 'organization',
-    shortDesc: 'Pioneering publisher of the official multi-volume series "Dr. Babasaheb Ambedkar: Writings and Speeches" (BAWS).',
-    year: 1979,
-    significance: 'State archival authority responsible for preserving and digitizing over 22 volumes of Ambedkar’s works.',
-    color: '#0284c7',
-    aliases: ['Govt of Maharashtra Higher Education Dept', 'BAWS Publication Committee', 'Dr. Ambedkar Charitra Sadhan Samiti'],
-    bawsVolume: 'BAWS Editorial Board',
-    provenanceCitation: 'Maharashtra State Archives, Mumbai',
-    x: 710,
-    y: 340
+    provenanceCitation: 'Indian Antiquary Vol. XLI (May 1917) / Columbia Seminar Records'
   },
   {
     id: 'node-states-minorities',
     label: 'States and Minorities',
     category: 'work',
-    shortDesc: '1947 constitutional memorandum proposing fundamental rights, minority safeguards, and state socialism.',
+    shortDesc: '1947 constitutional charter submitted to the Constituent Assembly establishing fundamental rights and constitutional state socialism.',
     year: 1947,
     date: '1947-03-15',
     linkedDocId: 'states-and-minorities-1947',
-    significance: 'Precursor document to Part III of the Constitution of India and economic rights charter.',
-    color: '#1d4ed8',
-    aliases: ['States and Minorities Memorandum', 'Constitution of the United States of India', 'Drafting Committee Memo'],
+    significance: 'The intellectual blueprint for Part III (Fundamental Rights) and Directive Principles of the Indian Constitution.',
+    keyFacts: [
+      'Subtitled "What are their Rights and How to Secure Them in the Constitution of Free India".',
+      'Proposed that key industries, insurance, and agricultural land be retained in national constitutional stewardship.',
+      'Advocated that fundamental rights must protect citizens against both state tyranny and private economic exploitation.'
+    ],
+    historicalContext: 'New Delhi / Bombay (March 1947)',
+    whyItMatters: 'Demonstrated how democratic socialism could be written directly into constitutional supreme law.',
+    cluster: 'Writings',
+    color: '#C5A880',
+    aliases: ['States and Minorities Charter', 'Constitution of the United States of India Memo', 'States & Minorities (1947)'],
     bawsVolume: 'BAWS Vol. 1',
-    provenanceCitation: 'All-India Scheduled Castes Federation, Bombay',
-    x: 890,
-    y: 410
+    provenanceCitation: 'All-India Scheduled Castes Federation Publication, Bombay, March 1947'
   },
+  {
+    id: 'node-who-were-shudras',
+    label: 'Who Were the Shudras?',
+    category: 'work',
+    shortDesc: '1946 historical-textual inquiry into Indo-Aryan history, dedicated to Mahatma Jyotirao Phule.',
+    year: 1946,
+    significance: 'Rigorous scholarly thesis demonstrating that Shudras originally belonged to the solar Aryan Kshatriya varna.',
+    keyFacts: [
+      'Dedicated to Mahatma Jyotirao Phule, whom Ambedkar revered as his third intellectual guru.',
+      'Critically re-examined the Rigveda, Mahabharata, and Brahmanas with philological rigor.',
+      'Showed that caste disenfranchisement was an institutional historical imposition rather than divine creation.'
+    ],
+    historicalContext: 'Bombay (1946)',
+    whyItMatters: 'Liberated subaltern history from mythological fatalism by restoring historical agency through textual evidence.',
+    cluster: 'Writings',
+    color: '#C5A880',
+    aliases: ['Who Were the Shudras', 'Shudra Origins Monograph', 'Thacker & Co. Edition 1946'],
+    bawsVolume: 'BAWS Vol. 7',
+    provenanceCitation: 'Thacker & Co. Bombay (1946) / BAWS Vol. 7'
+  },
+  {
+    id: 'node-the-untouchables',
+    label: 'The Untouchables',
+    category: 'work',
+    shortDesc: '1948 sociological treatise investigating the historical origins and institutional development of untouchability.',
+    year: 1948,
+    significance: 'Proposed the "Broken Men" thesis: that untouchables were ancient settled Buddhists who resisted Brahmanical revival.',
+    keyFacts: [
+      'Demonstrated that beef-eating taboos and religious conflict created untouchability circa 400 CE.',
+      'Contrasted Indian untouchability with classical European serfdom and Greco-Roman slavery.',
+      'Demonstrated that caste untouchability was graded inequality backed by sanctified legal sanctions.'
+    ],
+    historicalContext: 'New Delhi (1948)',
+    whyItMatters: 'Provided the historical timeline linking ancient Buddhist civilization to subaltern resistance.',
+    cluster: 'Writings',
+    color: '#C5A880',
+    aliases: ['The Untouchables: Who Were They?', 'Broken Men Thesis', 'Amrit Book Co. 1948'],
+    bawsVolume: 'BAWS Vol. 7',
+    provenanceCitation: 'Amrit Book Co. New Delhi (1948) / BAWS Vol. 7'
+  },
+  {
+    id: 'node-buddha-and-dhamma',
+    label: 'The Buddha and His Dhamma',
+    category: 'work',
+    shortDesc: 'Dr. Ambedkar’s magnum opus theological and philosophical treatise reinterpreting Buddhism as a rationalist gospel of social equality.',
+    year: 1957,
+    significance: 'The scriptural anchor for millions of Navayana Buddhist converts worldwide.',
+    keyFacts: [
+      'Completed in his final years in Delhi; published posthumously by the People’s Education Society in 1957.',
+      'Interpreted the Buddha’s enlightenment as an ethical resolution of human suffering through morality (Sila) and wisdom (Panna).',
+      'Distinguished sharply between supernatural "Religion" and human-centric "Dhamma".'
+    ],
+    historicalContext: 'New Delhi / Nagpur (1956–1957)',
+    whyItMatters: 'Transformed global Buddhism by placing human equality and moral fraternity at its philosophical core.',
+    cluster: 'Writings',
+    color: '#C5A880',
+    aliases: ['The Buddha and His Dhamma', 'Buddha and His Dhamma', 'Navayana Masterwork'],
+    bawsVolume: 'BAWS Vol. 11',
+    provenanceCitation: 'People’s Education Society, Bombay, 1957 / BAWS Vol. 11'
+  },
+  {
+    id: 'node-riddles-in-hinduism',
+    label: 'Riddles in Hinduism',
+    category: 'work',
+    shortDesc: 'Courageous critique of orthodox texts analyzing moral, social, and political contradictions across the Vedas, Epics, and Puranas.',
+    year: 1954,
+    significance: 'Formidable rationalist critique advocating intellectual emancipation from mythological dogma.',
+    keyFacts: [
+      'Drafted between 1951 and 1954 as part of a larger planned multi-volume survey of ancient Indian civilization.',
+      'Features 24 distinct "riddles" interrogating the Vedas, Smritis, and Upanishads on ethical consistency.',
+      'Published officially by the Government of Maharashtra in 1987 as BAWS Volume 4.'
+    ],
+    historicalContext: 'New Delhi (1954) / Published 1987',
+    whyItMatters: 'Set the benchmark for forensic rationalist criticism of sacrosanct religious texts.',
+    cluster: 'Writings',
+    color: '#C5A880',
+    aliases: ['Riddles in Hinduism Monograph', 'BAWS Volume 4 Riddles'],
+    bawsVolume: 'BAWS Vol. 4',
+    provenanceCitation: 'Government of Maharashtra / BAWS Vol. 4 (1987)'
+  },
+  {
+    id: 'node-baws-vol-13',
+    label: 'BAWS Volume 13',
+    category: 'work',
+    shortDesc: 'Official archival compendium of Dr. Ambedkar’s speeches, draft articles, and interventions in the Constituent Assembly of India.',
+    year: 1949,
+    date: '1947–1950',
+    linkedDocId: 'constituent-assembly-speech-1949',
+    significance: 'The definitive documentary authority on the framers’ original constitutional intent.',
+    keyFacts: [
+      'Contains 1,200+ pages of Dr. Ambedkar’s floor speeches piloting each Article of the Draft Constitution.',
+      'Covers debates on fundamental rights, federalism, judicial review, emergency powers, and social democracy.',
+      'Published by the Government of Maharashtra under the chief editorship of Vasant Moon.'
+    ],
+    historicalContext: 'Constituent Assembly Hall, New Delhi (1947–1950)',
+    whyItMatters: 'The primary source of truth cited by the Supreme Court of India in constitutional bench decisions.',
+    cluster: 'Writings',
+    color: '#C5A880',
+    imageUrl: ASSEMBLY_IMAGE,
+    aliases: ['BAWS Volume 13', 'Constituent Assembly Interventions', 'CAD Compendium BAWS'],
+    bawsVolume: 'BAWS Vol. 13',
+    provenanceCitation: 'Dr. Babasaheb Ambedkar Source Material Publication Committee, Bombay'
+  },
+
+  // ── 4. SOCIAL MOVEMENTS & HISTORIC CONVERGENCES CLUSTER ────────────────────
+  {
+    id: 'node-mahad',
+    label: 'Mahad Satyagraha',
+    category: 'event',
+    shortDesc: '20 March 1927: Historic non-violent civil rights assertion for human access to public water at Chavdar Tank, Mahad.',
+    year: 1927,
+    date: '1927-03-20',
+    linkedDocId: 'mahad-satyagraha-1927',
+    significance: 'The foundational civil rights milestone of modern India, celebrated annually as Social Empowerment Day.',
+    keyFacts: [
+      'Dr. Ambedkar led thousands of peaceful delegates to Chavdar Tank to drink water from the public reservoir.',
+      'Asserted that the struggle was not merely for water, but to establish that untouchables are human beings with dignity.',
+      'Faced violent orthodox backlash, yet maintained strict non-violent discipline.'
+    ],
+    historicalContext: 'Mahad, Kolaba District, Bombay Presidency (March 1927)',
+    whyItMatters: 'Transformed subaltern consciousness from pleading for charity to asserting universal civic equality.',
+    cluster: 'Movements',
+    color: '#B45339',
+    imageUrl: MAHAD_IMAGE,
+    aliases: ['Chavdar Tank March', 'Social Empowerment Day', 'Mahad Jal Satyagraha'],
+    bawsVolume: 'BAWS Vol. 17 (Part 1)',
+    provenanceCitation: 'Bahishkrit Bharat Reports (March–April 1927) / Bombay Legislative Council Proceedings'
+  },
+  {
+    id: 'node-manusmriti-dahan',
+    label: 'Manusmriti Dahan Din',
+    category: 'event',
+    shortDesc: '25 December 1927: Public ceremonial burning of the Manusmriti code in Mahad as a declaration of universal human equality.',
+    year: 1927,
+    date: '1927-12-25',
+    significance: 'The Indian equivalent of the storming of the Bastille, declaring ancient social hierarchy legally and morally dead.',
+    keyFacts: [
+      'Conducted during the second Mahad conference before thousands of men and women.',
+      'Sahasrabuddhe, a progressive Chitpavan Brahmin associate of Dr. Ambedkar, proposed the resolution and lit the pyre.',
+      'Framed not as an act of vandalism, but as a moral rejection of institutional inequality.'
+    ],
+    historicalContext: 'Mahad, Kolaba District (December 1927)',
+    whyItMatters: 'Symbolized the permanent rupture with the theological sanctification of human inequality.',
+    cluster: 'Movements',
+    color: '#B45339',
+    aliases: ['Manusmriti Burning', 'Manusmriti Dahan Din', 'December 25 Equality Declaration'],
+    bawsVolume: 'BAWS Vol. 17 (Part 1)',
+    provenanceCitation: 'Bahishkrit Bharat Field Chronicle (Jan 1928) / Government of Bombay Archives'
+  },
+  {
+    id: 'node-kalaram',
+    label: 'Kalaram Temple Satyagraha',
+    category: 'event',
+    shortDesc: '1930–1935: Five-year non-violent civil rights campaign for temple entry at the historic Kalaram Temple in Nashik.',
+    year: 1930,
+    date: '1930-03-02',
+    significance: 'Proved to the subaltern masses that civic and legal equality cannot be achieved through religious patronage.',
+    keyFacts: [
+      'Mobilized 15,000 satyagrahis outside Kalaram temple gates under Dr. Ambedkar and Bhaurao Gaikwad.',
+      'Met with stone-throwing and barricades from conservative orthodoxy for over five years.',
+      'Led directly to Dr. Ambedkar’s 1935 Yeola declaration: "Though I was born a Hindu, I will not die a Hindu."'
+    ],
+    historicalContext: 'Nashik, Maharashtra (1930–1935)',
+    whyItMatters: 'Catalyzed the shift from temple-entry reformism to complete political and spiritual self-determination.',
+    cluster: 'Movements',
+    color: '#B45339',
+    aliases: ['Kalaram Satyagraha', 'Nashik Temple Entry Movement', 'Kalaram Mandir Satyagraha'],
+    bawsVolume: 'BAWS Vol. 17 (Part 1)',
+    provenanceCitation: 'Nashik District Police & Magistrate Records (1930–1935) / Janata Newspaper'
+  },
+  {
+    id: 'node-poona-pact',
+    label: 'Poona Pact',
+    category: 'event',
+    shortDesc: '24 September 1932: Historic agreement negotiated at Yerwada Central Jail between Dr. Ambedkar and caste Hindu leaders.',
+    year: 1932,
+    date: '1932-09-24',
+    significance: 'Secured 148 reserved seats for the Depressed Classes in provincial legislatures—more than double the British award.',
+    keyFacts: [
+      'Negotiated while Mahatma Gandhi was on a fast unto death against separate electorates granted by the Communal Award.',
+      'Dr. Ambedkar negotiated fiercely under immense moral pressure to safeguard subaltern political representation.',
+      'Replaced separate electorates with joint electorates accompanied by guaranteed reserved constituencies.'
+    ],
+    historicalContext: 'Yerwada Central Jail, Poona (September 1932)',
+    whyItMatters: 'Established statutory legislative reservation for Scheduled Castes that continues in the Indian Constitution today.',
+    cluster: 'Movements',
+    color: '#B45339',
+    aliases: ['Poona Pact (1932)', 'Yerwada Agreement', 'Ambedkar-Gandhi Pact'],
+    bawsVolume: 'BAWS Vol. 9',
+    provenanceCitation: 'Collected Works of Mahatma Gandhi / BAWS Vol. 9 (What Congress and Gandhi Have Done)'
+  },
+  {
+    id: 'node-round-table',
+    label: 'Round Table Conferences',
+    category: 'event',
+    shortDesc: '1930–1932: Landmark constitutional conferences at St. James’s Palace, London, where Dr. Ambedkar represented the Depressed Classes.',
+    year: 1930,
+    date: '1930–1932',
+    significance: 'Elevated the Indian untouchables from a domestic social question into an international constitutional reality.',
+    keyFacts: [
+      'Dr. Ambedkar attended all three plenary sessions (1930, 1931, 1932) in London.',
+      'Submitted the historic "Declaration of Fundamental Rights" and demanded universal adult franchise.',
+      'Debated Mahatma Gandhi forcefully in the Federal Structure and Minorities Committees.'
+    ],
+    historicalContext: 'St. James’s Palace, London (1930–1932)',
+    whyItMatters: 'Secured independent political recognition for the Depressed Classes in all future Indian constitutional reforms.',
+    cluster: 'Movements',
+    color: '#B45339',
+    imageUrl: ROUND_TABLE_IMAGE,
+    aliases: ['Round Table Conferences London', 'RTC London Sessions', 'First & Second Round Table Conference'],
+    bawsVolume: 'BAWS Vol. 2',
+    provenanceCitation: 'British Parliamentary Command Papers (Cmd. 3778, 3997, 4238) / BAWS Vol. 2'
+  },
+  {
+    id: 'node-nagpur-conversion',
+    label: 'Nagpur Buddhist Conversion',
+    category: 'event',
+    shortDesc: '14 October 1956: Peaceful mass renaissance at Deekshabhoomi, Nagpur, where Dr. Ambedkar and 500,000 citizens embraced Buddhism.',
+    year: 1956,
+    date: '1956-10-14',
+    significance: 'The largest peaceful religious mass conversion in recorded human history, establishing the Navayana Buddhist tradition.',
+    keyFacts: [
+      'Took the Three Refuges (Trisaran) and Five Precepts (Pancasila) from venerable monk Mahasthavir Chandramani.',
+      'Administered the famous 22 Vows (Bais Pratigya) establishing complete rationalism and ethical equality.',
+      'Fulfilled his 1935 pledge at Yeola that he would not die a Hindu.'
+    ],
+    historicalContext: 'Deekshabhoomi, Nagpur, Maharashtra (October 1956)',
+    whyItMatters: 'Restored the Buddhist ethos of equality, compassion, and enlightenment to modern Indian soil.',
+    cluster: 'Movements',
+    color: '#B45339',
+    imageUrl: NAGPUR_DEEKSHA_IMAGE,
+    aliases: ['Deekshabhoomi Dhamma Deeksha', 'Historic 22 Vows Ceremony', 'Ashoka Vijaya Dashami 1956'],
+    bawsVolume: 'BAWS Vol. 17 (Part 3)',
+    provenanceCitation: 'All-India Radio Special Coverage Archive / Prabuddha Bharat Records (Oct 1956)'
+  },
+
+  // ── 5. CONSTITUTIONAL & GOVERNANCE CLUSTER ─────────────────────────────────
+  {
+    id: 'node-constituent-assembly',
+    label: 'Constituent Assembly of India',
+    category: 'organization',
+    shortDesc: 'Sovereign legislative body convened on 9 December 1946 in Constitution Hall, New Delhi, to draft the Constitution of India.',
+    year: 1946,
+    date: '1946–1950',
+    significance: 'Framed the supreme democratic charter transforming a colonial empire into a sovereign socialist secular democratic republic.',
+    keyFacts: [
+      'Dr. Ambedkar was initially elected from the Bengal Assembly, delivering his famous conciliatory first speech on 17 Dec 1946.',
+      'Following partition, re-elected from the Bombay Presidency at the initiative of national leadership.',
+      'Met across 11 plenary sessions spanning 2 years, 11 months, and 17 days.'
+    ],
+    historicalContext: 'Constitution Hall, New Delhi (1946–1950)',
+    whyItMatters: 'Provided the democratic crucible that forged universal adult franchise, fundamental rights, and independent institutions.',
+    cluster: 'Constitution',
+    color: '#5C7873',
+    imageUrl: ASSEMBLY_IMAGE,
+    aliases: ['Constituent Assembly', 'Constitution Hall Assembly', 'CAD Secretariat'],
+    bawsVolume: 'BAWS Vol. 13',
+    provenanceCitation: 'Constituent Assembly Debates Official Report / Parliament Library, New Delhi'
+  },
+  {
+    id: 'node-drafting-committee',
+    label: 'Drafting Committee',
+    category: 'organization',
+    shortDesc: 'Seven-member committee appointed by the Constituent Assembly on 29 August 1947, chaired by Dr. B.R. Ambedkar.',
+    year: 1947,
+    date: '1947-08-29',
+    significance: 'Piloted, drafted, and defended all 395 Articles and 8 Schedules that founded the constitutional Republic of India.',
+    keyFacts: [
+      'Dr. Ambedkar was unanimously elected Chairman at the committee’s first meeting on 30 August 1947.',
+      'Colleague T. T. Krishnamachari reported to the Assembly that the entire burden of drafting fell solely on Dr. Ambedkar.',
+      'Submitted the complete Draft Constitution to Assembly President Dr. Rajendra Prasad on 21 February 1948.'
+    ],
+    historicalContext: 'New Delhi (1947–1950)',
+    whyItMatters: 'Engineered the institutional balance between strong union governance, judicial review, and individual liberties.',
+    cluster: 'Constitution',
+    color: '#5C7873',
+    imageUrl: DRAFTING_CONSTITUTION_IMAGE,
+    aliases: ['Constitution Drafting Committee', 'Drafting Committee of the Constituent Assembly', 'Assembly Drafting Body'],
+    bawsVolume: 'BAWS Vol. 13',
+    provenanceCitation: 'Constituent Assembly Secretariat Records / National Archives of India'
+  },
+  {
+    id: 'node-bn-rau',
+    label: 'Sir B. N. Rau',
+    category: 'person',
+    shortDesc: 'Distinguished jurist and civil servant appointed Constitutional Adviser to the Constituent Assembly of India.',
+    year: 1946,
+    significance: 'Prepared the initial working draft of the Constitution and conducted comparative constitutional study tours across USA, UK, Canada, and Ireland.',
+    keyFacts: [
+      'Prepared an initial draft consisting of 243 Articles and 13 Schedules in October 1947.',
+      'Consulted Felix Frankfurter, Justice of the US Supreme Court, who advised on the "due process of law" clause.',
+      'Worked in close collegial harmony with Dr. Ambedkar and the Drafting Committee throughout the framing process.'
+    ],
+    historicalContext: 'New Delhi (1887–1953)',
+    whyItMatters: 'Brought extensive comparative constitutional research into direct dialogue with Ambedkar’s drafting vision.',
+    cluster: 'Constitution',
+    color: '#C88A58',
+    aliases: ['B. N. Rau', 'Sir Benegal Narsing Rau', 'Constitutional Adviser B. N. Rau'],
+    bawsVolume: 'BAWS Vol. 13',
+    provenanceCitation: 'B. Shiva Rao, "The Framing of India’s Constitution: Select Documents"'
+  },
+  {
+    id: 'node-law-minister',
+    label: 'First Law Minister Period',
+    category: 'organization',
+    shortDesc: '1947–1951: Dr. Ambedkar’s cabinet tenure as Independent India’s first Minister of Law and Justice in Jawaharlal Nehru’s government.',
+    year: 1947,
+    date: '1947–1951',
+    significance: 'Pioneered landmark labour welfare reforms, water basin planning, and the progressive Hindu Code Bill for women’s equality.',
+    keyFacts: [
+      'Drafted and introduced the comprehensive Hindu Code Bill conferring property inheritance and divorce rights on women.',
+      'Resigned on principle from the Union Cabinet in September 1951 when the Hindu Code Bill was stalled by conservative opposition.',
+      'Established the legal statutory foundation for independent judicial review and election administration.'
+    ],
+    historicalContext: 'Cabinet Secretariat, New Delhi (1947–1951)',
+    whyItMatters: 'Demonstrated an uncompromising ethical standard by resigning high office to defend gender equality and social justice.',
+    cluster: 'Constitution',
+    color: '#5C7873',
+    imageUrl: LAW_MINISTER_IMAGE,
+    aliases: ['Ministry of Law and Justice', 'First Law Minister Cabinet', 'Law Minister Resignation 1951'],
+    bawsVolume: 'BAWS Vol. 14',
+    provenanceCitation: 'Parliamentary Debates (Sept 1951) / Cabinet Secretariat Archives, New Delhi'
+  },
+
+  // ── 6. ORGANIZATIONS, INSTITUTIONS & MEDIA CLUSTER ─────────────────────────
   {
     id: 'node-bahishkrit-sabha',
     label: 'Bahishkrit Hitakarini Sabha',
     category: 'organization',
-    shortDesc: 'Founded on July 20, 1924, in Bombay to promote education and socio-economic upliftment of marginalized classes.',
+    shortDesc: 'Founded on 20 July 1924 at Damodar Hall, Bombay, to promote education and socio-economic upliftment of marginalized classes.',
     year: 1924,
     date: '1924-07-20',
     significance: 'Coined the immortal foundational mantra: "Educate, Agitate, Organise" (शिकवा, चेतवा, संघटित व्हा).',
-    color: '#0284c7',
-    aliases: ['Hitakarini Sabha Parel', 'Depressed Classes Welfare Association', 'Educate Agitate Organise Society'],
+    keyFacts: [
+      'Established hostels, free libraries, and night schools for working-class youth in Bombay.',
+      'Ambedkar served as Chairman of the Managing Committee; Sir Chimanlal Setalvad was its first President.',
+      'Served as the organizing platform that later launched the Mahad Satyagraha and civil rights campaigns.'
+    ],
+    historicalContext: 'Damodar Hall, Parel, Bombay (July 1924)',
+    whyItMatters: 'Institutionalized modern organized civic agitation and educational self-help for subaltern India.',
+    cluster: 'Organizations',
+    color: '#5C7873',
+    aliases: ['Hitakarini Sabha Parel', 'Depressed Classes Welfare Association', 'Bahishkrit Hitakarini Sabha Bombay'],
     bawsVolume: 'BAWS Vol. 17 (Part 1)',
-    provenanceCitation: 'Damodar Hall Bombay Founding Records',
-    x: 210,
-    y: 130
+    provenanceCitation: 'Damodar Hall Bombay Founding Records / Charity Commissioner Bombay'
+  },
+  {
+    id: 'node-mooknayak',
+    label: 'Mooknayak Newspaper',
+    category: 'media',
+    shortDesc: 'Founded on 31 January 1920 in Bombay: Dr. Ambedkar’s first historic fortnightly newspaper, "Leader of the Silent".',
+    year: 1920,
+    date: '1920-01-31',
+    significance: 'The historic starting point of Dr. Ambedkar’s independent journalistic crusade for human emancipation.',
+    keyFacts: [
+      'Financed with a contribution of ₹2,500 from Chhatrapati Shahu Maharaj of Kolhapur.',
+      'Featured the Sant Tukaram epigraph on its masthead: "What cause has a mute person to feel ashamed?"',
+      'Exposed the contradictions of mainstream nationalist journalism that ignored subaltern oppression.'
+    ],
+    historicalContext: 'Parel, Bombay (January 1920)',
+    whyItMatters: 'Gave a fearless, independent media voice to millions who had been silenced for centuries.',
+    cluster: 'Organizations',
+    color: '#C89D56',
+    aliases: ['Mooknayak', 'Leader of the Silent', 'Mooknayak Fortnightly (1920)'],
+    bawsVolume: 'BAWS Vol. 17 (Part 1)',
+    provenanceCitation: 'Mooknayak Archives / Bombay Native Newspaper Reports (1920)'
+  },
+  {
+    id: 'node-bahishkrit-bharat',
+    label: 'Bahishkrit Bharat Journal',
+    category: 'media',
+    shortDesc: 'Founded on 3 April 1927 in Bombay: Dr. Ambedkar’s second fortnightly Marathi journal, "Excluded India".',
+    year: 1927,
+    date: '1927-04-03',
+    significance: 'Served as the ideological mouthpiece documenting the Mahad Satyagraha and civil rights philosophy.',
+    keyFacts: [
+      'Ambedkar wrote 31 historic, scholarly editorials analyzing social inequality and colonial politics.',
+      'Featured Sant Dnyaneshwar’s verses advocating universal moral justice on its front page.',
+      'Refused commercial advertisements that compromised journalistic independence.'
+    ],
+    historicalContext: 'Bombay (1927–1929)',
+    whyItMatters: 'Masterpiece of regional political journalism that shaped the ideological contours of modern Dalit literature.',
+    cluster: 'Organizations',
+    color: '#C89D56',
+    aliases: ['Bahishkrit Bharat', 'Excluded India Fortnightly', 'Bahishkrit Bharat 1927'],
+    bawsVolume: 'BAWS Vol. 17 (Part 1)',
+    provenanceCitation: 'Bahishkrit Bharat Collection, Mumbai / Maharashtra State Archives'
+  },
+  {
+    id: 'node-independent-labour-party',
+    label: 'Independent Labour Party',
+    category: 'organization',
+    shortDesc: 'Political party founded by Dr. Ambedkar in August 1936 advocating workers’ rights, peasant land reform, and anti-caste unity.',
+    year: 1936,
+    date: '1936-08-15',
+    significance: 'Swept 14 of 17 contested seats in the 1937 Bombay Legislative Assembly elections, becoming the official opposition.',
+    keyFacts: [
+      'Crafted a progressive manifesto uniting industrial mill workers, agricultural tenants, and subaltern masses.',
+      'Organized the historic 1938 peasant march of 20,000 farmers to the Bombay Council against the Khoti landlord system.',
+      'Vehemently opposed the anti-worker Industrial Disputes Bill in the Bombay legislature.'
+    ],
+    historicalContext: 'Bombay Legislative Assembly (1936–1942)',
+    whyItMatters: 'Pioneered an intersectional political coalition bridging the socialist labour movement and anti-caste liberation.',
+    cluster: 'Organizations',
+    color: '#5C7873',
+    aliases: ['ILP', 'Independent Labour Party Bombay', 'ILP 1936'],
+    bawsVolume: 'BAWS Vol. 17 (Part 2)',
+    provenanceCitation: 'Election Results Report, Bombay Legislative Assembly (1937) / BAWS Vol. 17 (Part 2)'
+  },
+  {
+    id: 'node-peoples-education-society',
+    label: 'People’s Education Society',
+    category: 'organization',
+    shortDesc: 'Educational trust established by Dr. Ambedkar in Bombay on 8 July 1945 to provide collegiate higher education to underprivileged youth.',
+    year: 1945,
+    date: '1945-07-08',
+    significance: 'Founded Siddharth College of Arts & Science (1946) in Bombay and Milind College (1950) in Aurangabad.',
+    keyFacts: [
+      'Built upon the democratic conviction that higher education is the most potent instrument for socio-economic mobility.',
+      'Dr. Ambedkar donated his personal earnings and library resources to establish Siddharth College.',
+      'Created non-sectarian academic environments where merit and character superseded caste origins.'
+    ],
+    historicalContext: 'Fort, Bombay / Aurangabad (1945–1956)',
+    whyItMatters: 'Nurtured first-generation graduates who went on to become jurists, civil servants, writers, and national leaders.',
+    cluster: 'Organizations',
+    color: '#5C7873',
+    aliases: ['PES Bombay', 'People’s Education Trust', 'Siddharth College Society'],
+    bawsVolume: 'BAWS Vol. 17 (Part 1)',
+    provenanceCitation: 'Trust Deed of People’s Education Society, Bombay, 1945 / Charity Commissioner Mumbai'
+  },
+  {
+    id: 'node-rbi',
+    label: 'Reserve Bank of India',
+    category: 'organization',
+    shortDesc: 'Central banking institution formed in 1935 following the Hilton-Young Royal Commission on Indian Currency and Finance.',
+    year: 1935,
+    date: '1935-04-01',
+    significance: 'Statutorily designed using Dr. Ambedkar’s guidelines on currency stability presented in "The Problem of the Rupee".',
+    keyFacts: [
+      'The Hilton-Young Commission (1926) closely interrogated Dr. Ambedkar’s testimony and books on currency mechanics.',
+      'Ambedkar advocated an independent central bank shielded from political interference by the executive.',
+      'Established under the Reserve Bank of India Act, 1934, beginning operations on 1 April 1935.'
+    ],
+    historicalContext: 'Calcutta / Bombay (1934–1935)',
+    whyItMatters: 'Demonstrated Dr. Ambedkar’s foundational impact on the macroeconomic architecture of independent India.',
+    cluster: 'Organizations',
+    color: '#5C7873',
+    aliases: ['RBI', 'Reserve Bank of India', 'Hilton-Young Central Bank'],
+    bawsVolume: 'BAWS Vol. 6',
+    provenanceCitation: 'Report of the Royal Commission on Indian Currency and Finance (1926) / RBI History Vol. 1'
+  },
+  {
+    id: 'node-govt-maharashtra',
+    label: 'Government of Maharashtra',
+    category: 'organization',
+    shortDesc: 'State archival authority and publisher of the monumental 22-volume series "Dr. Babasaheb Ambedkar: Writings and Speeches" (BAWS).',
+    year: 1979,
+    significance: 'The official custodian responsible for preserving, authenticating, and publishing Dr. Ambedkar’s complete archival corpus.',
+    keyFacts: [
+      'Formed the Dr. Babasaheb Ambedkar Source Material Publication Committee in 1979.',
+      'Vasant Moon served as officer on special duty, compiling thousands of unpublished archival pages.',
+      'Serves as the primary source of truth for all verified documents in this digital heritage archive.'
+    ],
+    historicalContext: 'Higher Education Department, Mumbai (1979–Present)',
+    whyItMatters: 'Rescued Ambedkar’s primary manuscripts from obscurity, establishing an immutable public scholarly record.',
+    cluster: 'Organizations',
+    color: '#5C7873',
+    aliases: ['Govt of Maharashtra Higher Education', 'BAWS Publication Committee', 'Dr. Ambedkar Charitra Sadhan Samiti'],
+    bawsVolume: 'BAWS Editorial Board',
+    provenanceCitation: 'Maharashtra State Archives, Elphinstone College Building, Mumbai'
+  },
+
+  // ── 7. PHILOSOPHICAL & CONSTITUTIONAL CONCEPTS CLUSTER ────────────────────
+  {
+    id: 'node-liberty-equality-fraternity',
+    label: 'Liberty, Equality, Fraternity',
+    category: 'concept',
+    shortDesc: 'The inseparable "Union of Trinity" defining social democracy: to divorce one from the other is to defeat democracy itself.',
+    significance: 'The core philosophical bedrock enshrined in the Preamble of the Constitution of India.',
+    keyFacts: [
+      'Articulated in Dr. Ambedkar’s farewell address to the Constituent Assembly on 25 November 1949.',
+      'Clarified that he derived these principles not from the French Revolution, but from the teachings of Gautama Buddha.',
+      'Warned that liberty without equality permits the supremacy of the few, while equality without liberty smothers individual initiative.'
+    ],
+    historicalContext: 'Constituent Assembly of India (25 November 1949)',
+    whyItMatters: 'Guarantees that Indian constitutional jurisprudence treats liberty and social justice as mutually reinforcing values.',
+    cluster: 'Concepts',
+    color: '#657D5A',
+    aliases: ['Union of Trinity', 'Preamble Constitutional Trinity', 'Trikona Principle'],
+    bawsVolume: 'BAWS Vol. 13 & Vol. 1',
+    provenanceCitation: 'Constituent Assembly Closing Speech (Nov 25, 1949) / CAD Vol. XI'
+  },
+  {
+    id: 'node-constitutional-morality',
+    label: 'Constitutional Morality',
+    category: 'concept',
+    shortDesc: 'Supreme adherence to democratic norms, checks and balances, and institutional restraint over populist majoritarian impulses.',
+    significance: 'Essential prerequisite preventing democratic constitutions from decaying into elected authoritarianism.',
+    keyFacts: [
+      'Introduced on 4 November 1948 in the Constituent Assembly, quoting historian George Grote.',
+      'Declared: "Constitutional morality is not a natural sentiment. It has to be cultivated. We must realize that our people have yet to learn it."',
+      'Argued that democratic governance requires deep respect for institutional norms, fair play, and minority rights.'
+    ],
+    historicalContext: 'CAD Vol. VII (4 November 1948)',
+    whyItMatters: 'Invoked by modern constitutional courts to strike down arbitrary executive overreach and protect citizen dignity.',
+    cluster: 'Concepts',
+    color: '#657D5A',
+    aliases: ['Doctrine of Constitutional Morality', 'Grote’s Constitutional Morality', 'Democratic Restraint'],
+    bawsVolume: 'BAWS Vol. 13',
+    provenanceCitation: 'Constituent Assembly Debates (Nov 4, 1948) / CAD Vol. VII'
+  },
+  {
+    id: 'node-state-socialism',
+    label: 'State Socialism',
+    category: 'concept',
+    shortDesc: 'Constitutional retention of key industries, insurance, and agricultural land in national stewardship to prevent monopoly exploitation.',
+    significance: 'Economic framework articulated in "States and Minorities" to guarantee that political freedom is grounded in economic security.',
+    keyFacts: [
+      'Proposed in Part II, Section II of States and Minorities (1947).',
+      'Demanded that state socialism be written into the fundamental law so that subsequent parliamentary majorities could not dismantle it.',
+      'Sought to eliminate private landlordism while providing equitable agrarian credit and collective farming.'
+    ],
+    historicalContext: 'New Delhi (1947)',
+    whyItMatters: 'Articulated a non-totalitarian, democratic model of state-led economic justice for developing republics.',
+    cluster: 'Concepts',
+    color: '#657D5A',
+    aliases: ['Democratic State Socialism', 'Constitutional Economics', 'States & Minorities Socialism'],
+    bawsVolume: 'BAWS Vol. 1',
+    provenanceCitation: 'States and Minorities Section II, Clause 4 (1947)'
+  },
+  {
+    id: 'node-social-endosmosis',
+    label: 'Social Endosmosis',
+    category: 'concept',
+    shortDesc: 'Continuous, unobstructed communication and reciprocal exchange between all social groups without artificial barriers.',
+    significance: 'Dr. Ambedkar’s sociological formula for dismantling caste endogamy and fostering organic nationwide fraternity.',
+    keyFacts: [
+      'Derived from John Dewey’s sociological concept and refined in Annihilation of Caste (Section XIV).',
+      'Argued that an ideal society must be mobile, full of channels for conveying change from one group to another.',
+      'Showed that caste prevents endosmosis by enclosing groups in watertight compartments of mutual suspicion.'
+    ],
+    historicalContext: 'Columbia University / Bombay (1916–1936)',
+    whyItMatters: 'Provides the definitive theoretical benchmark for inclusive social cohesion and anti-segregation policy.',
+    cluster: 'Concepts',
+    color: '#657D5A',
+    aliases: ['Deweyan Social Flow', 'Associated Living Flow', 'Social Permeability'],
+    bawsVolume: 'BAWS Vol. 1',
+    provenanceCitation: 'Annihilation of Caste Section XIV / Columbia Graduate Seminar Papers'
+  },
+  {
+    id: 'node-article-32',
+    label: 'Article 32: Constitutional Remedies',
+    category: 'concept',
+    shortDesc: 'Direct right to petition the Supreme Court of India for the enforcement of Fundamental Rights via constitutional writs.',
+    significance: 'Hailed by Dr. Ambedkar as "the very soul of the Constitution and the very heart of it".',
+    keyFacts: [
+      'Defended forcefully in the Constituent Assembly on 9 December 1948.',
+      'Empowers the Supreme Court to issue writs of Habeas Corpus, Mandamus, Prohibition, Quo Warranto, and Certiorari.',
+      'Ensures that fundamental rights are not toothless paper declarations but immediately enforceable claims.'
+    ],
+    historicalContext: 'CAD Vol. VII (9 December 1948)',
+    whyItMatters: 'The cornerstone of Indian judicial independence and public interest litigation for citizen liberties.',
+    cluster: 'Concepts',
+    color: '#657D5A',
+    aliases: ['Article 32', 'Heart and Soul of the Constitution', 'Right to Constitutional Remedies'],
+    bawsVolume: 'BAWS Vol. 13',
+    provenanceCitation: 'Constituent Assembly Debates (Dec 9, 1948) / Constitution of India Article 32'
+  },
+
+  // ── 8. HISTORIC PLACES & RESIDENCES CLUSTER ────────────────────────────────
+  {
+    id: 'node-place-mhow',
+    label: 'Mhow (Dr. Ambedkar Nagar)',
+    category: 'place',
+    shortDesc: 'Military cantonment town in the Central Provinces (now Madhya Pradesh) where Dr. B.R. Ambedkar was born on 14 April 1891.',
+    year: 1891,
+    significance: 'Birthplace of Dr. Ambedkar; his father Ramji Sakpal served as Subedar-Major in the British Indian Army.',
+    keyFacts: [
+      'Fourteenth and youngest child of Ramji Maloji Sakpal and Bhimabai.',
+      'Military cantonment environment provided early schooling and English discipline.',
+      'Officially renamed Dr. Ambedkar Nagar by the Government of Madhya Pradesh in 2003.'
+    ],
+    historicalContext: 'Central Provinces, British India (1891)',
+    whyItMatters: 'National memorial sanctuary commemorating the humble origins of India’s greatest social emancipator.',
+    cluster: 'Places',
+    color: '#8B5E3C',
+    aliases: ['Mhow', 'Dr. Ambedkar Nagar', 'Mhow Cantonment'],
+    bawsVolume: 'BAWS Vol. 17 (Part 1)',
+    provenanceCitation: 'Military Cantonment Records Mhow (1891) / Maharashtra Gazetteers'
+  },
+  {
+    id: 'node-place-bombay',
+    label: 'Bombay (Rajgruha)',
+    category: 'place',
+    shortDesc: 'Historic residence in Hindu Colony, Dadar, Bombay, built by Dr. Ambedkar in the 1930s to house his personal library of 50,000+ books.',
+    year: 1930,
+    significance: 'The intellectual sanctuary and strategic nerve center where Dr. Ambedkar wrote his major treatises and drafted legislation.',
+    keyFacts: [
+      'Named "Rajgruha" after the ancient capital of King Bimbisara in Buddhist Magadha.',
+      'Specially designed with three floors: two floors for books and research, one floor for family residence.',
+      'Housed one of the largest private personal libraries in Asia, containing rare manuscripts across history, law, and economics.'
+    ],
+    historicalContext: 'Dadar, Bombay (1930–1956)',
+    whyItMatters: 'Enduring monument to Dr. Ambedkar’s lifelong passion for scholarship and bibliophilic discipline.',
+    cluster: 'Places',
+    color: '#8B5E3C',
+    imageUrl: RAJGRUHA_LIBRARY_IMAGE,
+    aliases: ['Rajgruha', 'Rajgriha Dadar', 'Hindu Colony Residence Bombay'],
+    bawsVolume: 'BAWS Vol. 17 (Part 1)',
+    provenanceCitation: 'Bombay Municipal Corporation Records / BAWS Biographical Chronicles'
+  },
+  {
+    id: 'node-place-nagpur',
+    label: 'Nagpur (Deekshabhoomi)',
+    category: 'place',
+    shortDesc: 'Historic ground in Nagpur, Maharashtra, where Dr. Ambedkar and 500,000 followers embraced Buddhism on 14 October 1956.',
+    year: 1956,
+    significance: 'The sacred world heritage sanctuary of modern Buddhist revival, surmounted by the largest hollow stupa in Asia.',
+    keyFacts: [
+      'Chosen by Dr. Ambedkar because ancient Nagpur was inhabited by the historical Nagas who championed Buddhism.',
+      'Site where Dr. Ambedkar administered the revolutionary 22 Vows (Bais Pratigya).',
+      'Visited by millions of pilgrims annually on Dhammachakra Pravartan Din.'
+    ],
+    historicalContext: 'Nagpur, Maharashtra (October 1956)',
+    whyItMatters: 'Symbol of spiritual liberation, peaceful self-respect, and moral awakening for marginalized humanity.',
+    cluster: 'Places',
+    color: '#8B5E3C',
+    imageUrl: NAGPUR_DEEKSHA_IMAGE,
+    aliases: ['Deekshabhoomi', 'Nagpur Deekshabhoomi Stupa', 'Nagpur Buddhist Center'],
+    bawsVolume: 'BAWS Vol. 11 & Vol. 17 (Part 3)',
+    provenanceCitation: 'Deekshabhoomi Smarak Samiti Records / Nagpur District Gazetteers'
+  },
+  {
+    id: 'node-place-london',
+    label: 'London',
+    category: 'place',
+    shortDesc: 'Capital of the United Kingdom; the center of Dr. Ambedkar’s European studies (LSE, Gray’s Inn) and Round Table Conference diplomacy.',
+    year: 1916,
+    significance: 'Scene of Dr. Ambedkar’s intense academic research in the British Museum and international constitutional advocacy.',
+    keyFacts: [
+      'Resided at 10 King Henry’s Road, Primrose Hill, London (now preserved as an official memorial).',
+      'Spent 14–16 hours daily researching at the British Museum Reading Room.',
+      'Challenged colonial authorities and nationalist leadership at St. James’s Palace (1930–1932).'
+    ],
+    historicalContext: 'London, United Kingdom (1916–1923, 1930–1932)',
+    whyItMatters: 'The global stage where Dr. Ambedkar established Indian subaltern rights as an international human rights imperative.',
+    cluster: 'Places',
+    color: '#8B5E3C',
+    imageUrl: ROUND_TABLE_IMAGE,
+    aliases: ['London City', 'King Henry’s Road London', 'St. James’s Palace London'],
+    bawsVolume: 'BAWS Vol. 2 & Vol. 6',
+    provenanceCitation: 'London County Council Heritage Records / British Museum Archives'
   }
 ];
 
 export const KNOWLEDGE_GRAPH_LINKS: KnowledgeGraphLink[] = [
-  { id: 'l-amb-annihilate', sourceId: 'node-ambedkar', targetId: 'node-annihilation', relation: 'authored', notes: 'Written for the 1936 Jat-Pat-Todak Mandal conference; published independently.' },
-  { id: 'l-amb-mahad', sourceId: 'node-ambedkar', targetId: 'node-mahad', relation: 'participated in', notes: 'Led 10,000+ peaceful satyagrahis to Chavdar Tank on March 20, 1927.' },
-  { id: 'l-amb-dewey', sourceId: 'node-ambedkar', targetId: 'node-john-dewey', relation: 'related to', notes: 'Studied under Prof. Dewey at Columbia University (1913–1916).' },
-  { id: 'l-amb-morality', sourceId: 'node-ambedkar', targetId: 'node-constitutional-morality', relation: 'argued', notes: 'Defended in CAD on Nov 4, 1948, as prerequisite for republican survival.' },
-  { id: 'l-amb-socialism', sourceId: 'node-ambedkar', targetId: 'node-state-socialism', relation: 'argued', notes: 'Articulated in States and Minorities as constitutional economic democracy.' },
-  { id: 'l-amb-trinity', sourceId: 'node-ambedkar', targetId: 'node-liberty-equality-fraternity', relation: 'argued', notes: 'Stressed in final Constituent Assembly address as an inseparable trinity.' },
-  { id: 'l-amb-columbia', sourceId: 'node-ambedkar', targetId: 'node-columbia', relation: 'member of', notes: 'Earned M.A. and Ph.D.; received Honorary LL.D. in 1952.' },
-  { id: 'l-amb-drafting', sourceId: 'node-ambedkar', targetId: 'node-drafting-committee', relation: 'member of', notes: 'Unanimously elected Chairman of the Drafting Committee on Aug 29, 1947.' },
-  { id: 'l-amb-govt-mah', sourceId: 'node-ambedkar', targetId: 'node-govt-maharashtra', relation: 'published by', notes: 'Official custodian and publisher of BAWS Vol. 1–22.' },
-  { id: 'l-amb-vol13', sourceId: 'node-ambedkar', targetId: 'node-baws-vol-13', relation: 'authored', notes: 'Constituent Assembly interventions documented in Volume 13.' },
-  { id: 'l-amb-gandhi', sourceId: 'node-ambedkar', targetId: 'node-mahatma-gandhi', relation: 'responded to', notes: 'Engaged in ideological debates on electorates and signed Poona Pact.' },
-  { id: 'l-amb-endosmosis', sourceId: 'node-ambedkar', targetId: 'node-social-endosmosis', relation: 'argued', notes: 'Coined in Annihilation of Caste to describe social communication.' },
-  { id: 'l-amb-nagpur', sourceId: 'node-ambedkar', targetId: 'node-nagpur-conversion', relation: 'participated in', notes: 'Administered 22 vows and converted 500,000 followers to Buddhism.' },
-  { id: 'l-amb-rupee', sourceId: 'node-ambedkar', targetId: 'node-rupee-problem', relation: 'authored', notes: 'D.Sc. dissertation published in London by P. S. King & Son.' },
-  { id: 'l-amb-castes', sourceId: 'node-ambedkar', targetId: 'node-castes-in-india', relation: 'authored', notes: 'Presented at Goldenweiser Anthropology seminar at Columbia.' },
-  { id: 'l-amb-states', sourceId: 'node-ambedkar', targetId: 'node-states-minorities', relation: 'authored', notes: 'Charter submitted to the Advisory Committee on Fundamental Rights.' },
-  { id: 'l-amb-sabha', sourceId: 'node-ambedkar', targetId: 'node-bahishkrit-sabha', relation: 'member of', notes: 'Established at Damodar Hall, Parel, Bombay on July 20, 1924.' },
-  { id: 'l-dewey-annihilate', sourceId: 'node-john-dewey', targetId: 'node-annihilation', relation: 'related to', notes: 'Deweyan pragmatism informs the democratic thesis of Annihilation of Caste.' },
-  { id: 'l-drafting-vol13', sourceId: 'node-drafting-committee', targetId: 'node-baws-vol-13', relation: 'authored', notes: 'Drafting committee debates compiled in official Volume 13.' }
+  // ── Ambedkar -> Writings ──────────────────────────────────────────────────
+  { id: 'l-amb-annihilate', sourceId: 'node-ambedkar', targetId: 'node-annihilation', relation: 'authored', notes: 'Authored in 1936 exposing the shastric foundations of graded inequality.' },
+  { id: 'l-amb-rupee', sourceId: 'node-ambedkar', targetId: 'node-rupee-problem', relation: 'authored', notes: 'Doctoral dissertation at LSE published in London by P. S. King & Son (1923).' },
+  { id: 'l-amb-castes', sourceId: 'node-ambedkar', targetId: 'node-castes-in-india', relation: 'authored', notes: 'First paper delivered at Columbia University seminar establishing endogamy as caste mechanism (1916).' },
+  { id: 'l-amb-states', sourceId: 'node-ambedkar', targetId: 'node-states-minorities', relation: 'authored', notes: 'Constitutional charter submitted to the Assembly advocating fundamental rights and state socialism (1947).' },
+  { id: 'l-amb-who-shudras', sourceId: 'node-ambedkar', targetId: 'node-who-were-shudras', relation: 'authored', notes: 'Historical inquiry into Aryan history dedicated to Mahatma Jyotirao Phule (1946).' },
+  { id: 'l-amb-the-untouchables', sourceId: 'node-ambedkar', targetId: 'node-the-untouchables', relation: 'authored', notes: 'Formulated the Broken Men thesis on the historical origins of untouchability (1948).' },
+  { id: 'l-amb-buddha-dhamma', sourceId: 'node-ambedkar', targetId: 'node-buddha-and-dhamma', relation: 'authored', notes: 'Posthumously published magnum opus reinterpreting Buddhism as social morality (1957).' },
+  { id: 'l-amb-riddles', sourceId: 'node-ambedkar', targetId: 'node-riddles-in-hinduism', relation: 'authored', notes: 'Rationalist critique investigating contradictions in ancient scriptures (1954).' },
+  { id: 'l-amb-vol13', sourceId: 'node-ambedkar', targetId: 'node-baws-vol-13', relation: 'authored', notes: 'Complete floor debates and interventions in the Constituent Assembly compiled in Volume 13.' },
+
+  // ── Ambedkar -> Education & Intellectual ──────────────────────────────────
+  { id: 'l-amb-columbia', sourceId: 'node-ambedkar', targetId: 'node-columbia', relation: 'studied at', notes: 'Earned M.A. (1915) and Ph.D. (1927); conferred Honorary LL.D. in 1952.' },
+  { id: 'l-amb-dewey', sourceId: 'node-ambedkar', targetId: 'node-john-dewey', relation: 'studied under', notes: 'Mentored in pragmatist philosophy, scientific method, and democratic ethics at Columbia.' },
+  { id: 'l-amb-seligman', sourceId: 'node-ambedkar', targetId: 'node-edwin-seligman', relation: 'studied under', notes: 'Advised on public finance and provincial fiscal decentralization at Columbia.' },
+  { id: 'l-amb-lse', sourceId: 'node-ambedkar', targetId: 'node-lse', relation: 'studied at', notes: 'Awarded M.Sc. (1921) and D.Sc. (Economics, 1923) on monetary policy.' },
+  { id: 'l-amb-grays-inn', sourceId: 'node-ambedkar', targetId: 'node-grays-inn', relation: 'called to bar at', notes: 'Admitted in 1916; called to the Bar on 28 June 1923 as Barrister-at-Law.' },
+  { id: 'l-amb-elphinstone', sourceId: 'node-ambedkar', targetId: 'node-elphinstone', relation: 'studied at', notes: 'Graduated B.A. in English and Persian in 1912 from the University of Bombay.' },
+  { id: 'l-amb-gaekwad', sourceId: 'node-ambedkar', targetId: 'node-sayajirao-gaekwad', relation: 'patronized by', notes: 'Granted state scholarship of £11.50/month in June 1913 for Columbia doctoral studies.' },
+
+  // ── Ambedkar -> Movements & Events ────────────────────────────────────────
+  { id: 'l-amb-mahad', sourceId: 'node-ambedkar', targetId: 'node-mahad', relation: 'led', notes: 'Led 10,000+ delegates to Chavdar Tank on 20 March 1927 asserting civic equality.' },
+  { id: 'l-amb-manusmriti', sourceId: 'node-ambedkar', targetId: 'node-manusmriti-dahan', relation: 'directed', notes: 'Ceremonially burned the ancient code on 25 December 1927 as a declaration of equality.' },
+  { id: 'l-amb-kalaram', sourceId: 'node-ambedkar', targetId: 'node-kalaram', relation: 'led', notes: 'Piloted the five-year non-violent temple entry civil rights campaign in Nashik (1930–1935).' },
+  { id: 'l-amb-poona-pact', sourceId: 'node-ambedkar', targetId: 'node-poona-pact', relation: 'signed', notes: 'Negotiated with caste Hindu leaders at Yerwada Jail securing 148 reserved seats (1932).' },
+  { id: 'l-amb-rtc', sourceId: 'node-ambedkar', targetId: 'node-round-table', relation: 'participated in', notes: 'Represented Depressed Classes across all three London Round Table Conferences (1930–1932).' },
+  { id: 'l-amb-nagpur', sourceId: 'node-ambedkar', targetId: 'node-nagpur-conversion', relation: 'led', notes: 'Embraced Buddhism and administered the 22 Vows to 500,000 followers on 14 October 1956.' },
+
+  // ── Ambedkar -> Constitutional Institutions ───────────────────────────────
+  { id: 'l-amb-assembly', sourceId: 'node-ambedkar', targetId: 'node-constituent-assembly', relation: 'member of', notes: 'Elected from Bengal, re-elected from Bombay; piloted national drafting debates.' },
+  { id: 'l-amb-drafting', sourceId: 'node-ambedkar', targetId: 'node-drafting-committee', relation: 'chaired', notes: 'Unanimously elected Chairman on 29 August 1947, crafting 395 Articles and 8 Schedules.' },
+  { id: 'l-amb-law-min', sourceId: 'node-ambedkar', targetId: 'node-law-minister', relation: 'served as', notes: 'First Law and Justice Minister of India (1947–1951), championing the Hindu Code Bill.' },
+  { id: 'l-drafting-bnrau', sourceId: 'node-drafting-committee', targetId: 'node-bn-rau', relation: 'collaborated with', notes: 'Sir B. N. Rau prepared the initial working draft examined by the Drafting Committee.' },
+  { id: 'l-drafting-vol13', sourceId: 'node-drafting-committee', targetId: 'node-baws-vol-13', relation: 'documented in', notes: 'Drafting committee debates and floor revisions compiled in official Volume 13.' },
+
+  // ── Ambedkar -> Organizations & Publications ──────────────────────────────
+  { id: 'l-amb-sabha', sourceId: 'node-ambedkar', targetId: 'node-bahishkrit-sabha', relation: 'founded', notes: 'Established on 20 July 1924 with the motto: "Educate, Agitate, Organise".' },
+  { id: 'l-amb-mooknayak', sourceId: 'node-ambedkar', targetId: 'node-mooknayak', relation: 'founded', notes: 'Launched historic Marathi fortnightly newspaper on 31 January 1920 in Bombay.' },
+  { id: 'l-amb-bharat', sourceId: 'node-ambedkar', targetId: 'node-bahishkrit-bharat', relation: 'founded', notes: 'Founded journal on 3 April 1927 in Bombay, writing 31 foundational editorials.' },
+  { id: 'l-amb-ilp', sourceId: 'node-ambedkar', targetId: 'node-independent-labour-party', relation: 'founded', notes: 'Formed in August 1936, winning 14 assembly seats in 1937 elections.' },
+  { id: 'l-amb-pes', sourceId: 'node-ambedkar', targetId: 'node-peoples-education-society', relation: 'founded', notes: 'Established educational trust in 1945, founding Siddharth and Milind Colleges.' },
+  { id: 'l-amb-rbi', sourceId: 'node-ambedkar', targetId: 'node-rbi', relation: 'influenced', notes: 'Hilton-Young Commission utilized Ambedkar’s currency treatise to charter the central bank.' },
+  { id: 'l-amb-mah-govt', sourceId: 'node-ambedkar', targetId: 'node-govt-maharashtra', relation: 'published by', notes: 'Official custodian and publisher of the 22-volume BAWS archival series.' },
+
+  // ── Ambedkar -> Philosophical & Constitutional Concepts ───────────────────
+  { id: 'l-amb-trinity', sourceId: 'node-ambedkar', targetId: 'node-liberty-equality-fraternity', relation: 'articulated', notes: 'Stressed in final Assembly address as an indivisible "Union of Trinity".' },
+  { id: 'l-amb-morality', sourceId: 'node-ambedkar', targetId: 'node-constitutional-morality', relation: 'formulated', notes: 'Introduced in CAD on 4 Nov 1948 as the essential prerequisite for republican survival.' },
+  { id: 'l-amb-socialism', sourceId: 'node-ambedkar', targetId: 'node-state-socialism', relation: 'advocated', notes: 'Articulated in States and Minorities as constitutional guarantee of economic democracy.' },
+  { id: 'l-amb-endosmosis', sourceId: 'node-ambedkar', targetId: 'node-social-endosmosis', relation: 'formulated', notes: 'Coined in Annihilation of Caste to describe democratic social interchange.' },
+  { id: 'l-amb-art32', sourceId: 'node-ambedkar', targetId: 'node-article-32', relation: 'piloted', notes: 'Hailed Article 32 on 9 Dec 1948 as the heart and soul of the Constitution.' },
+
+  // ── Ambedkar -> Historic Places ───────────────────────────────────────────
+  { id: 'l-amb-mhow', sourceId: 'node-ambedkar', targetId: 'node-place-mhow', relation: 'born in', notes: 'Born in the military cantonment of Mhow on 14 April 1891.' },
+  { id: 'l-amb-bombay', sourceId: 'node-ambedkar', targetId: 'node-place-bombay', relation: 'resided in', notes: 'Built Rajgruha residence in Dadar, Bombay, to house his 50,000-volume library.' },
+  { id: 'l-amb-nagpur-place', sourceId: 'node-ambedkar', targetId: 'node-place-nagpur', relation: 'converted at', notes: 'Chose Nagpur as the sanctuary for mass Buddhist conversion on 14 October 1956.' },
+  { id: 'l-amb-london-place', sourceId: 'node-ambedkar', targetId: 'node-place-london', relation: 'studied in', notes: 'Resided at King Henry’s Road while studying at LSE and reading at Gray’s Inn.' },
+
+  // ── Cross-Cluster Interconnections ────────────────────────────────────────
+  { id: 'l-dewey-annihilate', sourceId: 'node-john-dewey', targetId: 'node-annihilation', relation: 'influenced', notes: 'Deweyan pragmatism informs the democratic communication thesis of Annihilation of Caste.' },
+  { id: 'l-dewey-endosmosis', sourceId: 'node-john-dewey', targetId: 'node-social-endosmosis', relation: 'inspired', notes: 'Dewey’s associated living inspired Ambedkar’s theory of social endosmosis.' },
+  { id: 'l-columbia-castes', sourceId: 'node-columbia', targetId: 'node-castes-in-india', relation: 'presented at', notes: 'Presented in Alexander Goldenweiser’s anthropology seminar at Columbia in May 1916.' },
+  { id: 'l-lse-rupee', sourceId: 'node-lse', targetId: 'node-rupee-problem', relation: 'submitted at', notes: 'Researched under Edwin Cannan and accepted as D.Sc. dissertation by LSE in 1923.' },
+  { id: 'l-rupee-rbi', sourceId: 'node-rupee-problem', targetId: 'node-rbi', relation: 'provided basis for', notes: 'Provided the monetary principles on currency stabilization that guided the RBI charter.' },
+  { id: 'l-states-socialism', sourceId: 'node-states-minorities', targetId: 'node-state-socialism', relation: 'codified', notes: 'States and Minorities codified State Socialism as Part II of its proposed constitution.' },
+  { id: 'l-states-art32', sourceId: 'node-states-minorities', targetId: 'node-article-32', relation: 'precursor to', notes: 'Fundamental rights remedies in States and Minorities became Article 32 of the Constitution.' },
+  { id: 'l-mahad-bharat', sourceId: 'node-mahad', targetId: 'node-bahishkrit-bharat', relation: 'documented in', notes: 'Bahishkrit Bharat journal reported the Mahad civil rights proceedings in detail.' },
+  { id: 'l-sabha-mahad', sourceId: 'node-bahishkrit-sabha', targetId: 'node-mahad', relation: 'organized', notes: 'Bahishkrit Hitakarini Sabha organized the historic 1927 Mahad civil rights conference.' },
+  { id: 'l-poona-rtc', sourceId: 'node-poona-pact', targetId: 'node-round-table', relation: 'consequence of', notes: 'Poona Pact resolved the impasse created by the British Communal Award after the RTC.' },
+  { id: 'l-assembly-drafting', sourceId: 'node-constituent-assembly', targetId: 'node-drafting-committee', relation: 'appointed', notes: 'The Constituent Assembly appointed the Drafting Committee on 29 August 1947.' },
+  { id: 'l-assembly-morality', sourceId: 'node-constituent-assembly', targetId: 'node-constitutional-morality', relation: 'debated at', notes: 'Constitutional morality was articulated in Constitution Hall on 4 November 1948.' },
+  { id: 'l-assembly-trinity', sourceId: 'node-constituent-assembly', targetId: 'node-liberty-equality-fraternity', relation: 'proclaimed at', notes: 'Proclaimed in the farewell address to the Constituent Assembly on 25 November 1949.' },
+  { id: 'l-nagpur-buddha', sourceId: 'node-nagpur-conversion', targetId: 'node-buddha-and-dhamma', relation: 'celebrated with', notes: 'The Nagpur conversion ceremony embodied the moral philosophy of The Buddha and His Dhamma.' }
 ];
 
 // 6. AI STORY MODE (GUIDED HISTORICAL PATHWAYS - CHILD & STUDENT FRIENDLY)

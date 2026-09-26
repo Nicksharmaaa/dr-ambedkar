@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useMuseum } from './MuseumContext';
-import { HeaderNav } from './HeaderNav';
+import { MuseumNavRail, TopUtilityBar } from './navigation';
 import { KioskBar } from './KioskBar';
 import { AccessibilityModal } from './AccessibilityModal';
 import { DocumentViewerModal } from './DocumentViewerModal';
@@ -72,31 +72,36 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
         />
       )}
 
-      {/* Sleek, Modern, Vibrant Navigation Header */}
-      <HeaderNav
-        currentTab={currentTab}
-        onSelectTab={navigateToTab}
-        language={language}
-        onSelectLanguage={setLanguage}
-        accessibility={accessibility}
-        onToggleAccessibilityModal={() => setIsAccessibilityModalOpen(true)}
-        onToggleSoundEffects={() =>
-          setAccessibility(prev => ({ ...prev, soundEffectsEnabled: !prev.soundEffectsEnabled }))
-        }
-        onToggleKidMode={() =>
-          setAccessibility(prev => ({ ...prev, kidMode: !prev.kidMode }))
-        }
-        savedCount={savedCollection.length}
-        onOpenSearch={() => setIsSearchModalOpen(true)}
-        onOpenAIScholar={() => askAssistant('')}
-        onOpenVoiceModal={() => setIsVoiceModalOpen(true)}
-        onReplayIntro={replayIntro}
-        userMode={userMode}
-        onSelectUserMode={setUserMode}
-      />
+      {/* Floating Left-Side Museum Navigation Rail (Compact Icon + Fan Arc Reveal) */}
+      {!showIntro && (
+        <MuseumNavRail
+          currentTab={currentTab}
+          onSelectTab={navigateToTab}
+          savedCount={savedCollection.length}
+        />
+      )}
+
+      {/* Floating Top-Right Secondary Utilities Dock */}
+      {!showIntro && (
+        <TopUtilityBar
+          language={language}
+          onSelectLanguage={setLanguage}
+          accessibility={accessibility}
+          onToggleAccessibilityModal={() => setIsAccessibilityModalOpen(true)}
+          onToggleSoundEffects={() =>
+            setAccessibility(prev => ({ ...prev, soundEffectsEnabled: !prev.soundEffectsEnabled }))
+          }
+          onOpenSearch={() => setIsSearchModalOpen(true)}
+          onOpenVoiceModal={() => setIsVoiceModalOpen(true)}
+          onReplayIntro={replayIntro}
+          userMode={userMode}
+          onSelectUserMode={setUserMode}
+          onOpenAdmin={() => navigateToTab('admin')}
+        />
+      )}
 
       {/* Main Viewport */}
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pl-0 sm:pl-16">{children}</main>
 
       {/* Interactive Archival Document Viewer Modal */}
       <DocumentViewerModal

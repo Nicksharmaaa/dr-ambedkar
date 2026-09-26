@@ -10,6 +10,19 @@ interface GraphSearchProps {
   selectedNodeId: string | null;
 }
 
+const CATEGORY_COLORS: Record<string, string> = {
+  person: '#C88A58',
+  work: '#C5A880',
+  book: '#C5A880',
+  document: '#C5A880',
+  organization: '#5C7873',
+  institution: '#5C7873',
+  event: '#B45339',
+  concept: '#657D5A',
+  place: '#8B5E3C',
+  media: '#D4A373',
+};
+
 export const GraphSearch: React.FC<GraphSearchProps> = ({
   nodes,
   onSelectNode,
@@ -32,7 +45,7 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
         const matchAlias = n.aliases?.some((a) => a.toLowerCase().includes(q));
         return matchLabel || matchDesc || matchAlias;
       })
-      .slice(0, 7);
+      .slice(0, 8);
   }, [nodes, query]);
 
   useEffect(() => {
@@ -76,23 +89,13 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
   };
 
   const getCategoryColor = (cat: string) => {
-    switch (cat?.toLowerCase()) {
-      case 'person': return '#3b82f6';
-      case 'work':
-      case 'book': return '#6366f1';
-      case 'organization': return '#0284c7';
-      case 'event': return '#f97316';
-      case 'concept': return '#10b981';
-      case 'place': return '#8B5E3C';
-      case 'media': return '#f59e0b';
-      default: return '#C89D56';
-    }
+    return CATEGORY_COLORS[cat?.toLowerCase()] || '#C89D56';
   };
 
   return (
     <div className="relative w-full max-w-xs sm:max-w-sm">
       <div className="relative flex items-center">
-        <Search className="absolute left-3 w-4 h-4 text-white/50 pointer-events-none" />
+        <Search className="absolute left-3 w-4 h-4 text-[#8B5E3C] pointer-events-none" />
         <input
           ref={inputRef}
           id="graph-entity-search-input"
@@ -107,7 +110,7 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
           onKeyDown={handleKeyDown}
           autoComplete="off"
           placeholder="Search entities, treatises, institutions..."
-          className="w-full pl-9 pr-8 py-2 rounded-2xl bg-[#0A2947]/85 backdrop-blur-md border border-[#C89D56]/40 text-xs text-[#FAF7F0] placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-[#C89D56] transition-all shadow-lg"
+          className="w-full pl-9 pr-8 py-2 rounded-2xl bg-white/95 backdrop-blur-md border-2 border-[#D3D4C0] text-xs text-[#0A2947] placeholder-[#0A2947]/50 focus:outline-none focus:ring-1 focus:ring-[#0A2947] transition-all shadow-sm"
           aria-label="Search knowledge graph entities"
         />
         {query && (
@@ -116,7 +119,7 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
               setQuery('');
               setIsOpen(false);
             }}
-            className="absolute right-2.5 p-1 rounded-full text-white/40 hover:text-white"
+            className="absolute right-2.5 p-1 rounded-full text-[#0A2947]/40 hover:text-[#0A2947] cursor-pointer"
             title="Clear search"
           >
             <X className="w-3.5 h-3.5" />
@@ -128,7 +131,7 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
       {isOpen && results.length > 0 && (
         <div
           ref={dropdownRef}
-          className="absolute top-full left-0 right-0 mt-2 rounded-2xl bg-[#0A2947]/95 backdrop-blur-xl border border-[#C89D56]/40 shadow-2xl overflow-hidden z-50 py-1.5 divide-y divide-white/5 animate-in fade-in slide-in-from-top-1"
+          className="absolute top-full left-0 right-0 mt-2 rounded-2xl bg-white border-2 border-[#D3D4C0] shadow-xl overflow-hidden z-50 py-1.5 divide-y divide-[#D3D4C0]/50 animate-in fade-in slide-in-from-top-1"
         >
           {results.map((item, idx) => {
             const isHighlighted = idx === selectedIndex;
@@ -143,7 +146,7 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
                   setQuery('');
                 }}
                 className={`w-full px-3.5 py-2.5 text-left flex items-center justify-between transition-colors cursor-pointer ${
-                  isHighlighted ? 'bg-[#C89D56]/20 text-white' : 'hover:bg-white/5 text-white/80'
+                  isHighlighted ? 'bg-[#FAF7F0] text-[#0A2947]' : 'hover:bg-[#FAF7F0] text-[#0A2947]/85'
                 }`}
               >
                 <div className="space-y-0.5 max-w-[85%]">
@@ -152,21 +155,21 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
                       className="w-2 h-2 rounded-full shrink-0"
                       style={{ backgroundColor: catColor }}
                     />
-                    <span className="text-xs font-semibold truncate text-[#FAF7F0]">
+                    <span className="text-xs font-semibold truncate text-[#0A2947]">
                       {item.label}
                     </span>
                     {item.year && (
-                      <span className="text-[10px] font-mono text-[#C89D56]">
+                      <span className="text-[10px] font-mono text-[#8B5E3C] font-semibold">
                         ({item.year})
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] text-white/50 truncate font-sans pl-4">
+                  <p className="text-[10px] text-[#0A2947]/60 truncate font-sans pl-4">
                     {item.shortDesc}
                   </p>
                 </div>
 
-                <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-white/60">
+                <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#FAF7F0] text-[#8B5E3C] border border-[#D3D4C0] font-semibold">
                   {item.category}
                 </span>
               </button>

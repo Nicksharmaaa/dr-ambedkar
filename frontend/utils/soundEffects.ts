@@ -131,6 +131,82 @@ class SoundEffectManager {
       // AudioContext policy fallback
     }
   }
+
+  // Warm resonant museum chime for node selection
+  playNodeSelectSound() {
+    if (!this.enabled) return;
+    try {
+      const ctx = this.getContext();
+      if (!ctx) return;
+
+      const now = ctx.currentTime;
+      // Fundamental 440Hz warm tone
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(440, now);
+      gain1.gain.setValueAtTime(0.09, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+
+      // Overtone 880Hz subtle warmth
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(880, now);
+      gain2.gain.setValueAtTime(0.03, now);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+
+      osc1.start(now);
+      osc1.stop(now + 0.35);
+      osc2.start(now);
+      osc2.stop(now + 0.22);
+    } catch {
+      // AudioContext policy fallback
+    }
+  }
+
+  // Soft ascending interval for connected entity / lineage navigation
+  playLineageTransition() {
+    if (!this.enabled) return;
+    try {
+      const ctx = this.getContext();
+      if (!ctx) return;
+
+      const now = ctx.currentTime;
+      const notes = [554.37, 659.25]; // C#5 to E5 pleasant harmonic interval
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+        gain.gain.setValueAtTime(0.07, now + idx * 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.25);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now + idx * 0.06);
+        osc.stop(now + idx * 0.06 + 0.28);
+      });
+    } catch {
+      // AudioContext policy fallback
+    }
+  }
+
+  // Tactile museum chime for button and action clicks
+  playTactileChime() {
+    this.playClick();
+  }
+
+  toggleSound(): boolean {
+    this.enabled = !this.enabled;
+    return this.enabled;
+  }
 }
 
 export const soundEffects = new SoundEffectManager();
