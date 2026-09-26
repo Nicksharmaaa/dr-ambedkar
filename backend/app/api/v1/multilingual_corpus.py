@@ -36,7 +36,7 @@ async def get_corpus_dashboard(
     lang_stats = await db.execute(
         """
         SELECT language, COUNT(*) as doc_count, SUM(page_count) as total_pages,
-               SUM(file_size_bytes) as total_bytes, text_authority
+               SUM(file_size_bytes) as total_bytes, MAX(text_authority) as text_authority
         FROM work_manifests
         GROUP BY language
         ORDER BY language
