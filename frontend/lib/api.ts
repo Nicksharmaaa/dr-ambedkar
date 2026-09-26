@@ -31,7 +31,25 @@ import {
   AskPageActionResponse,
 } from "./types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
+function getApiBase(): string {
+  let raw = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1").trim();
+  raw = raw.replace(/^["']|["']$/g, "").trim();
+  raw = raw.replace(/\/+$/, ""); // Strip trailing slashes
+  if (!raw.startsWith("http://") && !raw.startsWith("https://") && !raw.startsWith("/")) {
+    raw = `https://${raw}`;
+  }
+  // Ensure /api/v1 is appended if not present
+  if (!raw.endsWith("/api/v1")) {
+    if (raw.endsWith("/api")) {
+      raw = `${raw}/v1`;
+    } else {
+      raw = `${raw}/api/v1`;
+    }
+  }
+  return raw;
+}
+
+const API_BASE = getApiBase();
 
 export class ApiError extends Error {
   constructor(public status: number, message: string, public detail?: any) {
@@ -41,7 +59,8 @@ export class ApiError extends Error {
 }
 
 async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const url = `${API_BASE}${endpoint}`;
+  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  const url = `${API_BASE}${cleanEndpoint}`;
   try {
     const res = await fetch(url, {
       ...options,

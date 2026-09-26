@@ -102,6 +102,8 @@ export interface VoiceRecognitionOptions {
 class VoiceRecognitionController {
   private recognition: any = null;
   private isListening: boolean = false;
+  private mediaRecorder: any = null;
+  private audioChunks: Blob[] = [];
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -113,11 +115,73 @@ class VoiceRecognitionController {
   }
 
   public isSupported(): boolean {
-    return typeof window !== 'undefined' && (('SpeechRecognition' in window) || ('webkitSpeechRecognition' in window));
+    return (
+      typeof window !== 'undefined' &&
+      (('SpeechRecognition' in window) ||
+        ('webkitSpeechRecognition' in window) ||
+        Boolean(navigator.mediaDevices?.getUserMedia))
+    );
   }
 
   public getIsListening(): boolean {
     return this.isListening;
+  }
+
+  private async startMediaRecorderFallback(options: VoiceRecognitionOptions): Promise<boolean> {
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
+      if (options.onError) {
+        options.onError('Microphone input is unavailable on this device.');
+      }
+      return false;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.mediaRecorder = new MediaRecorder(stream);
+      this.audioChunks = [];
+      this.isListening = true;
+      if (options.onStart) options.onStart();
+
+      this.mediaRecorder.ondataavailable = (event: any) => {
+        if (event.data && event.data.size > 0) {
+          this.audioChunks.push(event.data);
+        }
+      };
+
+      this.mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach((track) => track.stop());
+        this.isListening = false;
+        const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+        if (audioBlob.size > 500) {
+          try {
+            const { api } = await import('@/lib/api');
+            const res = await api.transcribeVoice(audioBlob, options.lang);
+            if (res && res.text) {
+              options.onResult(res.text, true);
+            }
+          } catch (transcribeErr: any) {
+            console.warn('Backend voice transcription fallback error:', transcribeErr);
+            if (options.onError) {
+              options.onError('Could not transcribe audio. Please type your query.');
+            }
+          }
+        }
+        if (options.onEnd) options.onEnd();
+      };
+
+      this.mediaRecorder.start(250);
+      return true;
+    } catch (err: any) {
+      this.isListening = false;
+      if (options.onError) {
+        options.onError(
+          err.name === 'NotAllowedError'
+            ? 'Microphone permission denied in browser settings.'
+            : 'Microphone recording failed.'
+        );
+      }
+      return false;
+    }
   }
 
   public startListening(options: VoiceRecognitionOptions): boolean {
@@ -128,12 +192,20 @@ class VoiceRecognitionController {
       return false;
     }
 
+    const SpeechRecognition =
+      typeof window !== 'undefined' &&
+      ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+
+    if (!SpeechRecognition) {
+      this.startMediaRecorderFallback(options);
+      return true;
+    }
+
     try {
       if (this.isListening && this.recognition) {
         this.recognition.stop();
       }
 
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       this.recognition = new SpeechRecognition();
       this.recognition.continuous = true;
       this.recognition.interimResults = true;
@@ -167,30 +239,49 @@ class VoiceRecognitionController {
 
       this.recognition.onerror = (event: any) => {
         console.warn('Speech recognition event:', event.error);
+        if (event.error === 'network') {
+          console.info('SpeechRecognition network error — falling back to backend Whisper ASR...');
+          try {
+            this.recognition.stop();
+          } catch {}
+          this.startMediaRecorderFallback(options);
+          return;
+        }
+
         this.isListening = false;
         if (options.onError) {
-          options.onError(event.error === 'not-allowed' ? 'Microphone permission denied.' : 'Voice recognition paused.');
+          options.onError(
+            event.error === 'not-allowed'
+              ? 'Microphone permission denied.'
+              : 'Voice recognition paused.'
+          );
         }
       };
 
       this.recognition.onend = () => {
-        this.isListening = false;
-        if (options.onEnd) options.onEnd();
+        if (!this.mediaRecorder || this.mediaRecorder.state === 'inactive') {
+          this.isListening = false;
+          if (options.onEnd) options.onEnd();
+        }
       };
 
       this.recognition.start();
       return true;
     } catch (err: any) {
-      console.warn('Error starting speech recognition:', err);
-      this.isListening = false;
-      if (options.onError) {
-        options.onError(err.message || 'Could not start microphone.');
-      }
-      return false;
+      console.warn('Error starting speech recognition, trying fallback:', err);
+      this.startMediaRecorderFallback(options);
+      return true;
     }
   }
 
   public stopListening() {
+    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+      try {
+        this.mediaRecorder.stop();
+      } catch (e) {
+        // Ignore
+      }
+    }
     if (this.recognition && this.isListening) {
       try {
         this.recognition.stop();
