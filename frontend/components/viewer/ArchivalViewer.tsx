@@ -613,6 +613,9 @@ export function ArchivalViewer({
           <div className="flex items-center gap-1 font-mono text-[11px]">
             <span>Page</span>
             <input
+              id="archival-viewer-page-input"
+              name="archival_viewer_page"
+              aria-label="Direct page number entry"
               type="number"
               min={1}
               max={totalPages}
@@ -635,6 +638,9 @@ export function ArchivalViewer({
         {/* Center: Page Slider Scrubber */}
         <div className="hidden sm:flex items-center gap-3 max-w-xs w-full mx-4">
           <input
+            id="archival-viewer-page-slider"
+            name="archival_viewer_slider"
+            aria-label="Document page scrubber"
             type="range"
             min={1}
             max={totalPages}

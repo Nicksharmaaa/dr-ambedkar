@@ -141,6 +141,8 @@ export function AskThisPageDrawer({
         {selectedAction === "CUSTOM_QUESTION" && (
           <div className="mt-3 space-y-2">
             <textarea
+              id="page-custom-question-textarea"
+              name="page_custom_question"
               value={customQuestion}
               onChange={(e) => setCustomQuestion(e.target.value)}
               placeholder="e.g. What does Dr. Ambedkar argue regarding caste representation on this page?"

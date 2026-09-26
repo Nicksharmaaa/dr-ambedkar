@@ -133,10 +133,12 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-montserrat font-bold uppercase text-blue-800 block mb-1">
+            <label htmlFor="doc-comparison-select-a" className="text-xs font-montserrat font-bold uppercase text-blue-800 block mb-1">
               Document A (Primary / Baseline):
             </label>
             <select
+              id="doc-comparison-select-a"
+              name="doc_comparison_a"
               value={docAId}
               onChange={(e) => {
                 setDocAId(e.target.value);
@@ -153,10 +155,12 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
           </div>
 
           <div>
-            <label className="text-xs font-montserrat font-bold uppercase text-amber-800 block mb-1">
+            <label htmlFor="doc-comparison-select-b" className="text-xs font-montserrat font-bold uppercase text-amber-800 block mb-1">
               Document B (Comparative Counterpart):
             </label>
             <select
+              id="doc-comparison-select-b"
+              name="doc_comparison_b"
               value={docBId}
               onChange={(e) => {
                 setDocBId(e.target.value);

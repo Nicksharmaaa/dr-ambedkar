@@ -177,10 +177,13 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
               <input
+                id="gallery-search-input"
+                name="gallery_search_query"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by location, year, keywords (e.g. Mahad, Rajgruha)..."
+                autoComplete="off"
                 className="w-full pl-10 pr-4 py-2 bg-stone-50 hover:bg-stone-100/70 focus:bg-white text-stone-900 text-xs sm:text-sm rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-400 transition-all placeholder:text-stone-400"
               />
               {searchQuery && (
@@ -280,6 +283,8 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
               <div className="flex items-center gap-1 bg-stone-50 border border-stone-200 px-2.5 py-1 rounded-lg">
                 <Calendar className="w-3 h-3 text-stone-400" />
                 <select
+                  id="gallery-filter-year"
+                  name="gallery_filter_year"
                   aria-label="Filter by Year"
                   value={selectedYear}
                   onChange={(e) => {
@@ -299,6 +304,8 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
               <div className="flex items-center gap-1 bg-stone-50 border border-stone-200 px-2.5 py-1 rounded-lg">
                 <MapPin className="w-3 h-3 text-stone-400" />
                 <select
+                  id="gallery-filter-location"
+                  name="gallery_filter_location"
                   aria-label="Filter by Location"
                   value={selectedLocation}
                   onChange={(e) => {
@@ -318,6 +325,8 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
               <div className="flex items-center gap-1 bg-stone-50 border border-stone-200 px-2.5 py-1 rounded-lg">
                 <BookOpen className="w-3 h-3 text-stone-400" />
                 <select
+                  id="gallery-filter-source"
+                  name="gallery_filter_source"
                   aria-label="Filter by Archival Repository"
                   value={selectedSource}
                   onChange={(e) => {

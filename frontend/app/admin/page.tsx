@@ -209,8 +209,10 @@ export default function AdminPage() {
               {/* Selector */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                 <div>
-                  <label className="block text-[#0A2947] mb-1 font-medium">Select Scanned Document:</label>
+                  <label htmlFor="admin-ocr-doc-select" className="block text-[#0A2947] mb-1 font-medium">Select Scanned Document:</label>
                   <select
+                    id="admin-ocr-doc-select"
+                    name="admin_ocr_doc_id"
                     value={ocrDocId}
                     onChange={(e) => setOcrDocId(e.target.value)}
                     className="w-full bg-[#FAF7F0] border border-[#D3D4C0] text-[#0A2947] rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#8B5E3C]"
@@ -224,8 +226,10 @@ export default function AdminPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[#0A2947] mb-1 font-medium">Page Number:</label>
+                  <label htmlFor="admin-ocr-page-input" className="block text-[#0A2947] mb-1 font-medium">Page Number:</label>
                   <input
+                    id="admin-ocr-page-input"
+                    name="admin_ocr_page_num"
                     type="number"
                     min={1}
                     max={600}
@@ -236,8 +240,10 @@ export default function AdminPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[#0A2947] mb-1 font-medium">Reviewer Signature / Notes:</label>
+                  <label htmlFor="admin-reviewer-notes-input" className="block text-[#0A2947] mb-1 font-medium">Reviewer Signature / Notes:</label>
                   <input
+                    id="admin-reviewer-notes-input"
+                    name="admin_reviewer_notes"
                     type="text"
                     value={reviewerNotes}
                     onChange={(e) => setReviewerNotes(e.target.value)}
@@ -259,6 +265,9 @@ export default function AdminPage() {
                     </span>
                   </div>
                   <textarea
+                    id="admin-raw-ocr-textarea"
+                    name="admin_raw_ocr_text"
+                    aria-label="Immutable Raw Machine OCR text"
                     readOnly
                     value={rawText}
                     rows={6}
@@ -276,6 +285,9 @@ export default function AdminPage() {
                     </span>
                   </div>
                   <textarea
+                    id="admin-reviewed-ocr-textarea"
+                    name="admin_reviewed_ocr_text"
+                    aria-label="Archivist Certified Text"
                     value={reviewedText}
                     onChange={(e) => setReviewedText(e.target.value)}
                     rows={6}

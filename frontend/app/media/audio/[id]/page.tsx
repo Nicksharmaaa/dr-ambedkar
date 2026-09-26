@@ -190,6 +190,9 @@ export default function AudioDetailPage({ params }: { params: Promise<{ id: stri
               <div className="flex items-center justify-between text-xs font-mono text-slate-400">
                 <span>{formatTime(currentTime)}</span>
                 <input
+                  id="audio-scrubber-slider"
+                  name="audio_scrubber_slider"
+                  aria-label="Audio scrubber slider"
                   type="range"
                   min={0}
                   max={duration || 100}
@@ -267,6 +270,9 @@ export default function AudioDetailPage({ params }: { params: Promise<{ id: stri
             <div className="relative">
               <Search className="h-3.5 w-3.5 absolute left-3 top-2.5 text-slate-500" />
               <input
+                id="audio-transcript-search-input"
+                name="audio_transcript_search"
+                autoComplete="off"
                 type="text"
                 value={searchTranscript}
                 onChange={(e) => setSearchTranscript(e.target.value)}

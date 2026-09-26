@@ -191,10 +191,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <div className="relative flex items-center">
                 <Search className="absolute left-3.5 w-4 h-4 text-[#8B5E3C]" />
                 <input
+                  id="home-catalog-search"
+                  name="home_catalog_search"
                   type="text"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   placeholder="Inquire corpus (e.g. Article 32, Poona Pact, Annihilation of Caste)..."
+                  autoComplete="off"
                   className="w-full pl-10 pr-24 py-3 bg-white text-[#0A2947] placeholder-[#0A2947]/45 text-xs sm:text-sm rounded-xl border border-[#D3D4C0] focus:border-[#0A2947] focus:outline-none transition-all shadow-xs"
                 />
                 <button

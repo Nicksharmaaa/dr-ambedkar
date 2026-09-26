@@ -793,10 +793,13 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
             <div className="relative flex items-center">
               <Search className="absolute left-4 w-5 h-5 text-[#8B5E3C]" />
               <input
+                id="research-assistant-inquiry-input"
+                name="research_inquiry"
                 type="text"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 placeholder={isListeningVoice ? "Listening... Speak your research inquiry now..." : "Ask the AI Scholar regarding social democracy, Article 32, caste treaties, or CAD..."}
+                autoComplete="off"
                 className={`w-full pl-12 pr-40 sm:pr-48 py-4 bg-[#FAF7F0] border-2 text-[#0A2947] placeholder-[#0A2947]/45 rounded-2xl text-sm sm:text-base focus:outline-none transition-all font-dmsans ${
                   isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40' : 'border-[#D3D4C0] focus:border-[#0A2947]'
                 }`}

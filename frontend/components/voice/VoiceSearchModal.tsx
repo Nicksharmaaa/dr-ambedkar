@@ -225,6 +225,8 @@ export function VoiceSearchModal({ isOpen, onClose, onSearch }: VoiceSearchModal
                 )}
               </div>
               <textarea
+                id="voice-search-recognized-query"
+                name="voice_search_query"
                 value={recognizedText}
                 onChange={(e) => setRecognizedText(e.target.value)}
                 rows={2}

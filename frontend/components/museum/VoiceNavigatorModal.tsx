@@ -270,6 +270,9 @@ export const VoiceNavigatorModal: React.FC<VoiceNavigatorModalProps> = ({
           <div className="flex items-center gap-2">
             {/* Language Selector */}
             <select
+              id="voice-navigator-language-select"
+              name="voice_navigator_language"
+              aria-label="Select voice interface language"
               value={selectedLang}
               onChange={(e) => {
                 soundEffects.playClick();

@@ -583,10 +583,13 @@ export const HomeAskAI: React.FC<HomeAskAIProps> = ({
         <div className="relative flex items-center">
           <Search className="absolute left-4 w-5 h-5 text-[#8B5E3C]" />
           <input
+            id="home-ai-question-input"
+            name="home_ai_question"
             type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder={isListeningVoice ? "Listening... Speak your inquiry now..." : "Ask regarding social democracy, Article 32, caste debates, or CAD proceedings..."}
+            autoComplete="off"
             className={`w-full pl-12 pr-40 sm:pr-48 py-4 bg-[#FAF7F0] border-2 text-[#0A2947] placeholder-[#0A2947]/45 rounded-2xl text-sm sm:text-base focus:outline-none transition-all font-dmsans ${
               isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40' : 'border-[#D3D4C0] focus:border-[#0A2947]'
             }`}

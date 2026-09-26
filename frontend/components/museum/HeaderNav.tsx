@@ -342,6 +342,8 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
             <div className="flex items-center gap-1 bg-white rounded-xl px-2 py-1.5 border border-[#D3D4C0] transition-colors">
               <Globe className="w-3.5 h-3.5 text-[#8B5E3C]" />
               <select
+                id="header-language-select"
+                name="header_language"
                 aria-label="Language selection"
                 value={language}
                 onChange={(e) => {

@@ -175,10 +175,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
               {/* Title */}
               <div>
-                <label className="text-xs font-cinzel uppercase font-bold text-[#8B5E3C] block mb-1.5">
+                <label htmlFor="admin-upload-title" className="text-xs font-cinzel uppercase font-bold text-[#8B5E3C] block mb-1.5">
                   Document Accession Title
                 </label>
                 <input
+                  id="admin-upload-title"
+                  name="admin_upload_title"
                   type="text"
                   placeholder="e.g. Speech on the Primary Education Bill (1930)"
                   value={uploadTitle}
@@ -190,10 +192,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               {/* Type & Year */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-cinzel uppercase font-bold text-[#8B5E3C] block mb-1.5">
+                  <label htmlFor="admin-upload-category" className="text-xs font-cinzel uppercase font-bold text-[#8B5E3C] block mb-1.5">
                     Category
                   </label>
                   <select
+                    id="admin-upload-category"
+                    name="admin_upload_category"
                     value={uploadType}
                     onChange={(e) => setUploadType(e.target.value as any)}
                     className="w-full p-2.5 bg-[#FAF7F0] border border-[#D3D4C0] rounded-xl text-xs font-montserrat font-semibold text-[#0A2947]"
@@ -206,10 +210,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-xs font-cinzel uppercase font-bold text-[#8B5E3C] block mb-1.5">
+                  <label htmlFor="admin-upload-year" className="text-xs font-cinzel uppercase font-bold text-[#8B5E3C] block mb-1.5">
                     Historical Year
                   </label>
                   <input
+                    id="admin-upload-year"
+                    name="admin_upload_year"
                     type="number"
                     value={uploadYear}
                     onChange={(e) => setUploadYear(e.target.value)}
@@ -220,10 +226,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
               {/* OCR Engine Selection */}
               <div>
-                <label className="text-xs font-cinzel uppercase font-bold text-[#8B5E3C] block mb-1.5">
+                <label htmlFor="admin-upload-ocr-engine" className="text-xs font-cinzel uppercase font-bold text-[#8B5E3C] block mb-1.5">
                   Neural OCR Engine
                 </label>
                 <select
+                  id="admin-upload-ocr-engine"
+                  name="admin_upload_ocr_engine"
                   value={uploadEngine}
                   onChange={(e) => setUploadEngine(e.target.value as any)}
                   className="w-full p-2.5 bg-[#FAF7F0] border border-[#D3D4C0] rounded-xl text-xs font-montserrat font-semibold text-[#0A2947]"
@@ -236,10 +244,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
               {/* Access Rights */}
               <div>
-                <label className="text-xs font-cinzel uppercase font-bold text-[#8B5E3C] block mb-1.5">
+                <label htmlFor="admin-upload-rights" className="text-xs font-cinzel uppercase font-bold text-[#8B5E3C] block mb-1.5">
                   Rights Classification
                 </label>
                 <select
+                  id="admin-upload-rights"
+                  name="admin_upload_rights"
                   value={uploadAccess}
                   onChange={(e) => setUploadAccess(e.target.value as any)}
                   className="w-full p-2.5 bg-[#FAF7F0] border border-[#D3D4C0] rounded-xl text-xs font-montserrat font-semibold text-[#0A2947]"

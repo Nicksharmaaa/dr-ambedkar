@@ -420,10 +420,13 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
           <div className="relative flex items-center">
             <Search className="absolute left-4 w-5 h-5 text-[#8B5E3C]" />
             <input
+              id="explore-archive-search-input"
+              name="archive_search_query"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={isListeningVoice ? "Listening... Speak your query (e.g., 'Article 32' or 'Annihilation of Caste')..." : "Search the archive by title, speech, clause, accession, year, or transcript text..."}
+              autoComplete="off"
               className={`w-full pl-12 pr-32 sm:pr-40 py-4 bg-[#FAF7F0] border-2 text-[#0A2947] placeholder-[#0A2947]/50 rounded-2xl text-sm sm:text-base focus:outline-none transition-all font-dmsans ${
                 isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40' : 'border-[#D3D4C0] focus:border-[#0A2947]'
               }`}
@@ -580,10 +583,12 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             {/* Subject Theme */}
             <div className="space-y-1">
-              <label className="text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#0A2947]/70 block">
+              <label htmlFor="explore-filter-topic" className="text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#0A2947]/70 block">
                 Thematic Subject:
               </label>
               <select
+                id="explore-filter-topic"
+                name="explore_filter_topic"
                 aria-label="Filter by thematic subject"
                 value={selectedTopic}
                 onChange={(e) => setSelectedTopic(e.target.value)}
@@ -598,10 +603,12 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
 
             {/* Source Repository */}
             <div className="space-y-1">
-              <label className="text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#0A2947]/70 block">
+              <label htmlFor="explore-filter-source" className="text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#0A2947]/70 block">
                 Source Repository:
               </label>
               <select
+                id="explore-filter-source"
+                name="explore_filter_source"
                 aria-label="Filter by source repository"
                 value={selectedSource}
                 onChange={(e) => setSelectedSource(e.target.value)}
@@ -683,8 +690,10 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
             
             {/* Sort Selector */}
             <div className="flex items-center gap-1.5 text-xs">
-              <span className="text-[#0A2947]/60 font-montserrat font-bold uppercase text-[10px]">Sort:</span>
+              <label htmlFor="explore-sort-select" className="text-[#0A2947]/60 font-montserrat font-bold uppercase text-[10px]">Sort:</label>
               <select
+                id="explore-sort-select"
+                name="explore_sort_order"
                 aria-label="Sort archival records"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}

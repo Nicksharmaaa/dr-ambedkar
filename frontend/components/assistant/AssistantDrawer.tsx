@@ -506,6 +506,9 @@ export default function AssistantDrawer({ isOpen, onClose }: AssistantDrawerProp
           {/* Language Selector */}
           <div className="shrink-0">
             <select
+              id="assistant-language-select"
+              name="assistant_language"
+              aria-label="Assistant response language"
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
               className="bg-slate-900 text-slate-300 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-[11px] font-medium focus:outline-none focus:border-amber-500/60"
@@ -763,6 +766,8 @@ export default function AssistantDrawer({ isOpen, onClose }: AssistantDrawerProp
             {/* Inquire Textarea Input */}
             <div className="flex-1 relative">
               <textarea
+                id="assistant-inquire-textarea"
+                name="assistant_query"
                 value={inputQuery}
                 onChange={(e) => setInputQuery(e.target.value)}
                 onKeyDown={(e) => {

@@ -292,8 +292,10 @@ function FilterPanel({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {/* Language */}
         <div>
-          <label className="block text-[10px] text-slate-500 mb-1">Language</label>
+          <label htmlFor="search-filter-language" className="block text-[10px] text-slate-500 mb-1">Language</label>
           <select
+            id="search-filter-language"
+            name="search_filter_language"
             value={filters.language}
             onChange={(e) => onChange("language", e.target.value)}
             className="w-full bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-md px-2 py-1.5 focus:outline-none focus:border-amber-500"
@@ -310,8 +312,10 @@ function FilterPanel({
 
         {/* Object Type */}
         <div>
-          <label className="block text-[10px] text-slate-500 mb-1">Document Type</label>
+          <label htmlFor="search-filter-doctype" className="block text-[10px] text-slate-500 mb-1">Document Type</label>
           <select
+            id="search-filter-doctype"
+            name="search_filter_doctype"
             value={filters.object_type}
             onChange={(e) => onChange("object_type", e.target.value)}
             className="w-full bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-md px-2 py-1.5 focus:outline-none focus:border-amber-500"
@@ -326,8 +330,10 @@ function FilterPanel({
 
         {/* Date From */}
         <div>
-          <label className="block text-[10px] text-slate-500 mb-1">Published After</label>
+          <label htmlFor="search-filter-date-from" className="block text-[10px] text-slate-500 mb-1">Published After</label>
           <input
+            id="search-filter-date-from"
+            name="search_filter_date_from"
             type="text"
             placeholder="e.g. 1920"
             value={filters.date_from}
@@ -338,8 +344,10 @@ function FilterPanel({
 
         {/* Date To */}
         <div>
-          <label className="block text-[10px] text-slate-500 mb-1">Published Before</label>
+          <label htmlFor="search-filter-date-to" className="block text-[10px] text-slate-500 mb-1">Published Before</label>
           <input
+            id="search-filter-date-to"
+            name="search_filter_date_to"
             type="text"
             placeholder="e.g. 1956"
             value={filters.date_to}
@@ -354,6 +362,7 @@ function FilterPanel({
         <input
           type="checkbox"
           id="rerank-toggle"
+          name="enable_rerank"
           checked={filters.enable_rerank}
           onChange={(e) => onChange("enable_rerank", e.target.checked)}
           className="h-3.5 w-3.5 accent-amber-500"
@@ -532,6 +541,8 @@ function SearchContent() {
           <Search className="absolute left-4 h-5 w-5 text-slate-400" />
           <input
             id="search-input"
+            name="q"
+            autoComplete="off"
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}

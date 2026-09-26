@@ -741,10 +741,13 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                       className="space-y-2"
                     >
                       <input
+                        id="doc-viewer-question-input"
+                        name="doc_viewer_question"
                         type="text"
                         value={docQuestion}
                         onChange={(e) => setDocQuestion(e.target.value)}
                         placeholder="e.g., What does Ambedkar argue in this section?"
+                        autoComplete="off"
                         className="w-full px-3.5 py-2.5 bg-[#FAF7F0] border border-[#D3D4C0] focus:border-[#0A2947] rounded-xl text-xs text-[#0A2947] focus:outline-none"
                       />
                       <button

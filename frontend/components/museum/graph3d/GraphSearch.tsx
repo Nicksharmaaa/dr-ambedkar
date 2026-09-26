@@ -95,6 +95,8 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
         <Search className="absolute left-3 w-4 h-4 text-white/50 pointer-events-none" />
         <input
           ref={inputRef}
+          id="graph-entity-search-input"
+          name="graph_entity_search"
           type="text"
           value={query}
           onChange={(e) => {
@@ -103,6 +105,7 @@ export const GraphSearch: React.FC<GraphSearchProps> = ({
           }}
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
+          autoComplete="off"
           placeholder="Search entities, treatises, institutions..."
           className="w-full pl-9 pr-8 py-2 rounded-2xl bg-[#0A2947]/85 backdrop-blur-md border border-[#C89D56]/40 text-xs text-[#FAF7F0] placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-[#C89D56] transition-all shadow-lg"
           aria-label="Search knowledge graph entities"

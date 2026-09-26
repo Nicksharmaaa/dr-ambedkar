@@ -68,6 +68,9 @@ export const AccessibleEntityList: React.FC<AccessibleEntityListProps> = ({
           <div className="relative flex-1">
             <Search className="absolute left-3 top-2.5 w-4 h-4 text-white/50" />
             <input
+              id="accessible-entity-filter-input"
+              name="entity_filter_query"
+              autoComplete="off"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -78,6 +81,8 @@ export const AccessibleEntityList: React.FC<AccessibleEntityListProps> = ({
           </div>
 
           <select
+            id="accessible-entity-category-select"
+            name="entity_category_filter"
             value={selectedCat}
             onChange={(e) => setSelectedCat(e.target.value)}
             className="px-3 py-2 rounded-xl bg-[#08192A] border border-white/20 text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-[#C89D56]"

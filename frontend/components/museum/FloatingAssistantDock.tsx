@@ -498,10 +498,13 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
             className="p-3 bg-white border-t border-[#D3D4C0] flex items-center gap-2"
           >
             <input
+              id="floating-assistant-chat-input"
+              name="floating_assistant_query"
               type="text"
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
               placeholder={isListeningVoice ? "Listening... Speak now..." : "Ask about speeches, treaties, articles..."}
+              autoComplete="off"
               className={`flex-1 bg-white border rounded-xl px-3.5 py-2 text-xs text-[#0A2947] focus:outline-none transition-all font-dmsans ${
                 isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40' : 'border-[#D3D4C0] focus:border-[#0A2947]'
               }`}
@@ -616,6 +619,8 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
                   {editingNoteId === item.id ? (
                     <div className="space-y-1.5 pt-1">
                       <textarea
+                        id="dock-research-note-textarea"
+                        name="dock_research_note"
                         value={tempNoteText}
                         onChange={(e) => setTempNoteText(e.target.value)}
                         placeholder="Type personal research note..."

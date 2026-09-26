@@ -192,8 +192,10 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
                   <div className="pt-3 border-t border-[#D3D4C0] text-xs">
                     {editingNoteId === item.id ? (
                       <div className="space-y-2">
-                        <label className="text-[11px] uppercase font-mono font-bold text-[#8B5E3C]">Researcher Marginalia & Notes:</label>
+                        <label htmlFor="collection-researcher-note-textarea" className="text-[11px] uppercase font-mono font-bold text-[#8B5E3C]">Researcher Marginalia & Notes:</label>
                         <textarea
+                          id="collection-researcher-note-textarea"
+                          name="collection_researcher_note"
                           value={tempNoteText}
                           onChange={(e) => setTempNoteText(e.target.value)}
                           placeholder="Add research observations, thesis references, or archival quotes..."

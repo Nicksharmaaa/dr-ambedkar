@@ -274,6 +274,9 @@ export default function KioskPage() {
         <form onSubmit={handleSearchSubmit} className="relative flex items-center shadow-2xl">
           <Search className="h-6 w-6 absolute left-5 text-slate-400" />
           <input
+            id="kiosk-touch-search-input"
+            name="kiosk_search_query"
+            autoComplete="off"
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

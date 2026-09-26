@@ -137,11 +137,14 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
         <div className="p-4 sm:p-5 bg-white border-b border-[#D3D4C0] flex items-center gap-3">
           <Search className="w-5 h-5 text-[#8B5E3C] shrink-0" />
           <input
+            id="global-search-modal-input"
+            name="global_search_query"
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={isListeningVoice ? "Listening to your voice... Speak now..." : "Search documents, people, events, themes, photographs..."}
+            autoComplete="off"
             className={`w-full text-base sm:text-lg bg-transparent border-none focus:outline-none text-[#0A2947] placeholder-[#0A2947]/40 font-dmsans ${
               isListeningVoice ? 'font-semibold text-amber-900' : ''
             }`}

@@ -161,6 +161,9 @@ export default function VideoDetailPage({ params }: { params: Promise<{ id: stri
             <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex items-center gap-3 text-xs font-mono text-white">
               <span className="text-[11px]">{formatTime(currentTime)}</span>
               <input
+                id="video-scrubber-slider"
+                name="video_scrubber_slider"
+                aria-label="Video scrubber slider"
                 type="range"
                 min={0}
                 max={duration || 100}
@@ -232,6 +235,9 @@ export default function VideoDetailPage({ params }: { params: Promise<{ id: stri
             <div className="relative">
               <Search className="h-3.5 w-3.5 absolute left-3 top-2.5 text-slate-500" />
               <input
+                id="video-transcript-search-input"
+                name="video_transcript_search"
+                autoComplete="off"
                 type="text"
                 value={searchTranscript}
                 onChange={(e) => setSearchTranscript(e.target.value)}
