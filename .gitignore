@@ -122,6 +122,10 @@ lightning_logs/
 **/exports/
 **/alto/
 **/storage/turso/
+incoming_documents/
+data/inbox/
+*.pdf
+!data/README.md
 
 # ── Databases & Vector Stores ─────────────────────────────────
 *.db

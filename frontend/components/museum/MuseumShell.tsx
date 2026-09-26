@@ -155,7 +155,7 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
         />
       )}
 
-      {/* PERMANENT FLOATING ASSISTANT DOCK: Ask AI & Notebook on Bottom Left */}
+      {/* PERMANENT FLOATING ASSISTANT DOCK: Ask AI Scholar on Bottom Right */}
       <FloatingAssistantDock
         language={language}
         savedCollection={savedCollection}

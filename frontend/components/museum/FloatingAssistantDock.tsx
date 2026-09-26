@@ -267,9 +267,9 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
   return (
     <>
       {/* =====================================================================
-          PERMANENT BOTTOM-LEFT FLOATING ACTION DOCK (Museum Docent & Notebook)
+          PERMANENT BOTTOM-RIGHT FLOATING ACTION DOCK (Babasaheb AI Scholar)
           ===================================================================== */}
-      <aside aria-label="Quick Museum Actions" className="fixed bottom-6 left-6 z-40 flex flex-col items-start gap-2.5 pointer-events-auto">
+      <aside aria-label="Quick Museum Actions" className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2.5 pointer-events-auto">
         
         {/* Ask AI Permanent Floating Trigger */}
         <button
@@ -278,49 +278,25 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
             setIsChatOpen(prev => !prev);
             setIsNotebookOpen(false);
           }}
-          className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer active:scale-95 border border-[#D3D4C0] backdrop-blur-md ${
+          className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer active:scale-95 border-2 border-[#D3D4C0] backdrop-blur-md ${
             isChatOpen
-              ? 'bg-[#8B5E3C] text-[#FAF7F0] ring-4 ring-[#C89D56]/40'
-              : 'bg-[#0A2947]/95 hover:bg-[#0A2947] text-[#FAF7F0] hover:border-[#C89D56]'
+              ? 'bg-[#8B5E3C] text-[#FAF7F0] ring-4 ring-[#C89D56]/40 border-[#8B5E3C]'
+              : 'bg-white/95 hover:bg-[#FAF7F0] text-[#0A2947] hover:border-[#C89D56]'
           }`}
           title="Consult Babasaheb AI Scholar"
           aria-label="Ask AI Scholar"
         >
-          <div className="w-6 h-6 rounded-lg bg-[#C89D56]/20 flex items-center justify-center border border-[#C89D56]/40">
-            <Sparkles className="w-3.5 h-3.5 text-[#C89D56]" />
+          <div className="w-6 h-6 rounded-lg bg-[#FAF7F0] flex items-center justify-center border border-[#D3D4C0]">
+            <Sparkles className="w-3.5 h-3.5 text-[#8B5E3C]" />
           </div>
           <div className="flex flex-col text-left">
-            <span className="font-cinzel font-bold text-xs uppercase tracking-wider text-[#FAF7F0]">
+            <span className="font-cinzel font-bold text-xs uppercase tracking-wider text-[#0A2947]">
               AI Scholar
             </span>
-            <span className="text-[9px] font-mono text-[#D3D4C0] tracking-tight">
+            <span className="text-[9px] font-mono text-[#8B5E3C] tracking-tight">
               22 Volumes Grounded
             </span>
           </div>
-        </button>
-
-        {/* Notebook Permanent Floating Trigger */}
-        <button
-          onClick={() => {
-            soundEffects.playClick();
-            setIsNotebookOpen(prev => !prev);
-            setIsChatOpen(false);
-          }}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-95 border ${
-            isNotebookOpen 
-              ? 'bg-[#8B5E3C] text-[#FAF7F0] border-[#F3E4C9]' 
-              : 'bg-[#FFFFFF]/95 hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
-          }`}
-          title="Open Archival Research Notebook"
-          aria-label="Open Notebook"
-        >
-          <Bookmark className="w-3.5 h-3.5 text-[#8B5E3C]" />
-          <span className="font-montserrat font-bold text-[11px] uppercase tracking-wider">Notebook</span>
-          {savedCollection.length > 0 && (
-            <span className="w-4 h-4 rounded-full bg-[#0A2947] text-[#F3E4C9] text-[9px] flex items-center justify-center font-bold font-mono">
-              {savedCollection.length}
-            </span>
-          )}
         </button>
       </aside>
 
@@ -329,7 +305,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
           Grounded exclusively on the 22 BAWS volumes
           ===================================================================== */}
       {isChatOpen && (
-        <div className="fixed bottom-24 left-4 sm:left-6 z-50 w-[94vw] sm:w-[460px] max-h-[82vh] h-[640px] bg-[#FAF7F0] rounded-3xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[94vw] sm:w-[460px] max-h-[82vh] h-[640px] bg-[#FAF7F0] rounded-3xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
           
           {/* Header */}
           <div className="bg-[#0A2947] text-[#F3E4C9] px-5 py-3.5 flex items-center justify-between border-b-2 border-[#8B5E3C]">
@@ -545,7 +521,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
           Shows saved citations, folios, personal notes, and export options
           ===================================================================== */}
       {isNotebookOpen && (
-        <div className="fixed bottom-24 left-4 sm:left-6 z-50 w-[94vw] sm:w-[460px] max-h-[82vh] h-[640px] bg-[#FAF7F0] rounded-3xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[94vw] sm:w-[460px] max-h-[82vh] h-[640px] bg-[#FAF7F0] rounded-3xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
           
           {/* Notebook Header */}
           <div className="bg-[#8B5E3C] text-[#F3E4C9] px-5 py-3.5 flex items-center justify-between border-b-2 border-[#0A2947]">
