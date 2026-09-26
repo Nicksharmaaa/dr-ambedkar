@@ -1,0 +1,26 @@
+[
+  {
+    "id": "role_admin",
+    "name": "admin",
+    "description": "Full system access",
+    "created_at": "2026-09-26 09:05:31"
+  },
+  {
+    "id": "role_archivist",
+    "name": "archivist",
+    "description": "Can ingest, review, and publish archival objects",
+    "created_at": "2026-09-26 09:05:31"
+  },
+  {
+    "id": "role_researcher",
+    "name": "researcher",
+    "description": "Read access + search + export",
+    "created_at": "2026-09-26 09:05:31"
+  },
+  {
+    "id": "role_public",
+    "name": "public",
+    "description": "Public read-only access to published objects",
+    "created_at": "2026-09-26 09:05:31"
+  }
+]

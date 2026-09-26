@@ -1,0 +1,240 @@
+{
+  "migrated": {
+    "roles": {
+      "source_rows": 4,
+      "target_rows": 4,
+      "status": "PASS"
+    },
+    "schema_migrations": {
+      "source_rows": 3,
+      "target_rows": 3,
+      "status": "PASS"
+    },
+    "collections": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "archival_objects": {
+      "source_rows": 19,
+      "target_rows": 19,
+      "status": "PASS"
+    },
+    "files": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "pages": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "media_assets": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "sources": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "persons": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "organizations": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "events": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "places": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "topics": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "concepts": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "document_sections": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "document_chunks": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "embeddings": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "fts_chunks": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "search_index_meta": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "entities": {
+      "source_rows": 30,
+      "target_rows": 30,
+      "status": "PASS"
+    },
+    "entity_aliases": {
+      "source_rows": 71,
+      "target_rows": 71,
+      "status": "PASS"
+    },
+    "entity_reviews": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "relationships": {
+      "source_rows": 20,
+      "target_rows": 20,
+      "status": "PASS"
+    },
+    "relationship_evidence": {
+      "source_rows": 20,
+      "target_rows": 20,
+      "status": "PASS"
+    },
+    "timeline_events": {
+      "source_rows": 15,
+      "target_rows": 15,
+      "status": "PASS"
+    },
+    "story_collections": {
+      "source_rows": 3,
+      "target_rows": 3,
+      "status": "PASS"
+    },
+    "story_items": {
+      "source_rows": 9,
+      "target_rows": 9,
+      "status": "PASS"
+    },
+    "multilingual_works": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "work_manifests": {
+      "source_rows": 112,
+      "target_rows": 112,
+      "status": "PASS"
+    },
+    "work_relationships": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "work_alignments": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "translations_cache": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "tts_cache": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "transcript_segments": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "multimodal_page_analyses": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "entity_localizations": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "timeline_localizations": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "preservation_events": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "audit_events": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "users": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "permissions": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "processing_jobs": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "digital_files": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "ocr_pages": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "eval_dataset_items": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "translations": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    },
+    "transcripts": {
+      "source_rows": 0,
+      "target_rows": 0,
+      "status": "EMPTY"
+    }
+  },
+  "errors": {}
+}

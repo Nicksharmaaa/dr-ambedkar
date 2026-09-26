@@ -204,7 +204,10 @@ def get_db_client() -> DatabaseClient:
 
     url = settings.turso_db_url
 
-    if url == ":memory:":
+    if url.startswith("postgresql://") or url.startswith("postgres://") or "dbname=" in url or "host=" in url:
+        from app.db.postgres_client import PostgresClient
+        _client_instance = PostgresClient(url)
+    elif url == ":memory:":
         _client_instance = SQLiteClient(":memory:")
     elif url.startswith("file:") and not url.startswith("file://"):
         # Local file — use SQLiteClient for full local-only support
