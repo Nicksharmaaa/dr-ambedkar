@@ -254,6 +254,7 @@ CREATE TABLE IF NOT EXISTS embeddings (
     id          TEXT PRIMARY KEY,
     chunk_id    TEXT NOT NULL REFERENCES document_chunks(id) ON DELETE CASCADE,
     model_name  TEXT NOT NULL,
+    embedding_version TEXT NOT NULL DEFAULT 'v1',
     dimension   INTEGER NOT NULL DEFAULT 1024,
     embedding_json TEXT,
     created_at  TEXT NOT NULL DEFAULT (datetime('now'))
