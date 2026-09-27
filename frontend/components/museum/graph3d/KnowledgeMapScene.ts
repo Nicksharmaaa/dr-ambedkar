@@ -369,8 +369,8 @@ export class KnowledgeMapScene {
     const nodePos = this.entityAnchors.getNodePosition(node.id);
     if (!nodePos) return;
 
-    // 1. Activate large glass artifact orb
-    this.selectedArtifact.activate(nodePos, node.imageUrl);
+    // 1. Activate large glass artifact orb with clear title plaque
+    this.selectedArtifact.activate(nodePos, node.imageUrl, node.label, node.category);
 
     // 2. Highlight 1-hop relationship lines
     this.relationshipSystem.highlightActiveConnections(node.id);

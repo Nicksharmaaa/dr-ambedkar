@@ -39,11 +39,11 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
   return (
     <div className="relative min-h-screen bg-transparent text-[#0A2947] font-dmsans py-6 sm:py-8 px-3 sm:px-6 lg:px-8 space-y-6">
       <div className="max-w-[1600px] mx-auto space-y-5">
-        
+
         {/* Curatorial Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#8B5E3C] via-[#C59A45] to-[#0A2947]" />
-          
+
           <div className="space-y-2 max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FAF7F0] border border-[#D3D4C0] rounded-full text-xs font-mono font-bold tracking-wider uppercase text-[#8B5E3C]">
               <Sparkles className="w-3.5 h-3.5 text-[#C59A45]" />

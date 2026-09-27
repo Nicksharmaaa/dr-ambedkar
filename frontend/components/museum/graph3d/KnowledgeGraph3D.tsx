@@ -1,19 +1,16 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { createPortal } from 'react-dom';
 import dynamic from 'next/dynamic';
 import { 
   Maximize2, Minimize2, Sparkles, Compass, ShieldCheck, 
-  Layers, Search, Filter, Info, ListFilter, AlertCircle, RefreshCw
+  Layers, Info, ListFilter, AlertCircle, RefreshCw,
+  Scale, BookOpen, Flame, Globe, X
 } from 'lucide-react';
 import { 
   Graph3DData, Graph3DNode, Graph3DLink, FilterCategory, ConnectedEntitySummary,
 } from './types';
-import { NodeDetailDrawer } from './NodeDetailDrawer';
-import { GraphControls } from './GraphControls';
 import { GraphSearch } from './GraphSearch';
-import { GraphFilters } from './GraphFilters';
 import { GraphLegend } from './GraphLegend';
 import { AccessibleEntityList } from './AccessibleEntityList';
 import { KNOWLEDGE_GRAPH_NODES, KNOWLEDGE_GRAPH_LINKS } from '@/data/archiveData';
@@ -46,38 +43,194 @@ interface KnowledgeGraph3DProps {
   onToggleImmersive?: () => void;
 }
 
+// Clean, human-understandable UI dictionary across all supported languages
+const UI_STRINGS: Record<Language, {
+  brand: string;
+  entities: string;
+  all: string;
+  categories: Record<string, string>;
+  searchPlaceholder: string;
+  directory: string;
+  zoomIn: string;
+  resetView: string;
+  orbit: string;
+  orbitStart: string;
+  orbitPause: string;
+  soundMute: string;
+  soundUnmute: string;
+  expand: string;
+  exit: string;
+  tours: string;
+  viewing: string;
+  connections: string;
+  clear: string;
+  hint: string;
+  verified: string;
+}> = {
+  en: {
+    brand: 'Ambedkar Universe',
+    entities: 'Entities',
+    all: 'All',
+    categories: {
+      person: 'People',
+      work: 'Books & Works',
+      organization: 'Institutions',
+      event: 'Movements & Events',
+      concept: 'Philosophy',
+      place: 'Historic Places',
+      media: 'Speeches',
+    },
+    searchPlaceholder: 'Search universe...',
+    directory: 'Entity Directory',
+    zoomIn: 'Zoom In',
+    resetView: 'Reset View',
+    orbit: 'Orbit',
+    orbitStart: 'Start Orbit',
+    orbitPause: 'Pause Orbit',
+    soundMute: 'Mute Ambience',
+    soundUnmute: 'Unmute Ambience',
+    expand: 'Expand',
+    exit: 'Exit',
+    tours: 'Tours →',
+    viewing: 'Viewing:',
+    connections: 'connections',
+    clear: 'Clear',
+    hint: 'Drag to rotate · Scroll to zoom · Click sphere to inspect',
+    verified: 'BAWS Verified Corpus',
+  },
+  hi: {
+    brand: 'आंबेडकर ज्ञान विश्व',
+    entities: 'प्रमाणित प्रविष्टियां',
+    all: 'सभी',
+    categories: {
+      person: 'व्यक्तित्व',
+      work: 'ग्रंथ एवं रचनाएं',
+      organization: 'संस्थाएं',
+      event: 'आंदोलन एवं घटनाएं',
+      concept: 'दर्शन एवं विचार',
+      place: 'ऐतिहासिक स्थल',
+      media: 'भाषण एवं पत्रिकाएं',
+    },
+    searchPlaceholder: 'ज्ञान विश्व में खोजें...',
+    directory: 'सूची निर्देशिका',
+    zoomIn: 'ज़ूम करें',
+    resetView: 'रीसेट करें',
+    orbit: 'भ्रमण',
+    orbitStart: 'भ्रमण प्रारंभ',
+    orbitPause: 'भ्रमण रोकें',
+    soundMute: 'ध्वनि बंद',
+    soundUnmute: 'ध्वनि चालू',
+    expand: 'विस्तार',
+    exit: 'बाहर',
+    tours: 'भ्रमण पथ →',
+    viewing: 'प्रदर्शित:',
+    connections: 'संबंध',
+    clear: 'हटाएं',
+    hint: 'घुमाने के लिए खींचें · ज़ूम करने के लिए स्क्रॉल करें · विवरण के लिए क्लिक करें',
+    verified: 'बीएडब्ल्यूएस प्रमाणित',
+  },
+  mr: {
+    brand: 'आंबेडकर ज्ञान विश्व',
+    entities: 'प्रमाणित नोंदी',
+    all: 'सर्व',
+    categories: {
+      person: 'व्यक्ती',
+      work: 'ग्रंथ आणि लेखन',
+      organization: 'संस्था',
+      event: 'चळवळी आणि घटना',
+      concept: 'तत्वज्ञान आणि विचार',
+      place: 'ऐतिहासिक ठिकाणे',
+      media: 'भाषणे आणि नियतकालिके',
+    },
+    searchPlaceholder: 'ज्ञान विश्वात शोधा...',
+    directory: 'सूची निर्देशिका',
+    zoomIn: 'झूम करा',
+    resetView: 'रीसेट करा',
+    orbit: 'भ्रमण',
+    orbitStart: 'भ्रमण सुरू',
+    orbitPause: 'भ्रमण थांबवा',
+    soundMute: 'आवाज बंद',
+    soundUnmute: 'आवाज चालू',
+    expand: 'विस्तार',
+    exit: 'बाहेर',
+    tours: 'मार्गदर्शित फेरफटका →',
+    viewing: 'पाहत आहात:',
+    connections: 'जोडण्या',
+    clear: 'हटवा',
+    hint: 'फिरवण्यासाठी ड्रॅग करा · झूम करण्यासाठी स्क्रोल करा · पाहण्यासाठी क्लिक करा',
+    verified: 'बीएडब्ल्यूएस प्रमाणित',
+  },
+};
+
+// Guided Perspectives with clean vector icons and localized titles
 const GUIDED_PERSPECTIVES = [
   {
     id: 'constitution',
-    title: 'Constitution & Law',
-    icon: '🏛️',
+    title: {
+      en: 'Constitution & Law',
+      hi: 'संविधान एवं कानून',
+      mr: 'संविधान आणि कायदा',
+    },
+    iconType: 'scale' as const,
     anchorId: 'node-constitution',
     fallbackId: 'node-drafting-committee',
-    desc: 'Constituent Assembly & Constitutional Philosophy',
+    searchKey: 'constitution',
+    desc: {
+      en: 'Constituent Assembly & Constitutional Philosophy',
+      hi: 'संविधान सभा एवं दर्शन',
+      mr: 'संविधान सभा आणि तत्त्वज्ञान',
+    },
   },
   {
     id: 'treatises',
-    title: 'Magnum Treatises',
-    icon: '📖',
+    title: {
+      en: 'Books & Writings',
+      hi: 'प्रमुख ग्रंथ एवं पुस्तकें',
+      mr: 'प्रमुख ग्रंथ आणि पुस्तके',
+    },
+    iconType: 'book' as const,
     anchorId: 'node-annihilation',
     fallbackId: 'node-castes-in-india',
-    desc: 'Annihilation of Caste & The Problem of the Rupee',
+    searchKey: 'annihilation',
+    desc: {
+      en: 'Annihilation of Caste & The Problem of the Rupee',
+      hi: 'जाति का विनाश एवं प्रमुख कृतियां',
+      mr: 'जातीचे निर्मूलन व प्रमुख ग्रंथ',
+    },
   },
   {
     id: 'movements',
-    title: 'Emancipation Epochs',
-    icon: '✊',
+    title: {
+      en: 'Historic Movements',
+      hi: 'ऐतिहासिक आंदोलन',
+      mr: 'ऐतिहासिक चळवळी',
+    },
+    iconType: 'flame' as const,
     anchorId: 'node-mahad-satyagraha',
     fallbackId: 'node-kalaram-temple',
-    desc: 'Mahad Water Satyagraha & Civil Rights',
+    searchKey: 'mahad',
+    desc: {
+      en: 'Mahad Satyagraha & Civil Rights Struggles',
+      hi: 'महाड सत्याग्रह एवं नागरिक अधिकार',
+      mr: 'महाड सत्याग्रह व नागरी हक्क',
+    },
   },
   {
     id: 'education',
-    title: 'Global Roots',
-    icon: '🌐',
+    title: {
+      en: 'Education & Global Roots',
+      hi: 'शिक्षा एवं वैश्विक यात्रा',
+      mr: 'शिक्षण आणि जागतिक वारसा',
+    },
+    iconType: 'globe' as const,
     anchorId: 'node-columbia',
     fallbackId: 'node-lse',
-    desc: 'Columbia University, John Dewey & LSE',
+    searchKey: 'columbia',
+    desc: {
+      en: 'Columbia University, John Dewey & LSE',
+      hi: 'कोलंबिया विश्वविद्यालय एवं एलएसई',
+      mr: 'कोलंबिया विद्यापीठ व एलएसई',
+    },
   },
 ];
 
@@ -429,7 +582,7 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
       const targetNode =
         rawNodes.find((n) => n.id === tour.anchorId) ||
         rawNodes.find((n) => n.id === tour.fallbackId) ||
-        rawNodes.find((n) => n.label.toLowerCase().includes(tour.title.toLowerCase().split(' ')[0]));
+        rawNodes.find((n) => n.label.toLowerCase().includes(tour.searchKey.toLowerCase()));
       if (targetNode) {
         flyToNode(targetNode, true);
       }
@@ -481,136 +634,234 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
     }
   };
 
+  const currentLang = (['en', 'hi', 'mr'].includes(language) ? language : 'en') as Language;
+  const t = UI_STRINGS[currentLang] || UI_STRINGS.en;
+
+  const getTourIcon = (type: 'scale' | 'book' | 'flame' | 'globe') => {
+    switch (type) {
+      case 'scale':
+        return <Scale className="w-3.5 h-3.5 text-[#C59A45]" />;
+      case 'book':
+        return <BookOpen className="w-3.5 h-3.5 text-[#0A2947]" />;
+      case 'flame':
+        return <Flame className="w-3.5 h-3.5 text-[#B91C1C]" />;
+      case 'globe':
+        return <Globe className="w-3.5 h-3.5 text-[#0D6E57]" />;
+    }
+  };
+
   return (
     <div
       ref={containerRef}
       className={`relative w-full overflow-hidden transition-all duration-500 ${
         isImmersive
           ? 'w-full h-full m-0 rounded-none bg-[#FAF7F0]'
-          : 'h-[780px] sm:h-[860px] rounded-3xl border-2 border-[#D3D4C0] shadow-xl bg-[#FAF7F0]'
+          : 'h-[780px] sm:h-[860px] rounded-3xl border border-[#D3D4C0]/80 shadow-2xl bg-[#FAF7F0]'
       }`}
     >
-      {/* 1. Header Bar & Controls */}
-      <div className="absolute top-4 left-4 right-4 z-20 flex flex-col gap-2.5 pointer-events-none">
-        
-        {/* Top Navigation Row */}
-        <div className="flex flex-wrap items-center justify-between gap-2.5">
-          {/* Title & Brand — museum curatorial pill */}
-          <div className="pointer-events-auto flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/95 backdrop-blur-md border border-[#D3D4C0] shadow-sm">
-            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-[#0A2947] to-[#8B5E3C] flex items-center justify-center shrink-0 shadow-2xs">
-              <Compass className="w-3.5 h-3.5 text-[#F3E4C9]" />
+      {/* Top Unified Control Bar */}
+      <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none">
+        <div
+          className="pointer-events-auto flex items-center gap-0 border-b border-[#D3D4C0]/60"
+          style={{
+            background: 'rgba(250, 247, 240, 0.92)',
+            backdropFilter: 'blur(20px)',
+          }}
+        >
+          {/* Brand pill */}
+          <div className="flex items-center gap-2.5 px-4 py-3 border-r border-[#D3D4C0]/60 shrink-0">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#0A2947] to-[#8B5E3C] flex items-center justify-center shrink-0 shadow-xs">
+              <Compass className="w-3 h-3 text-[#F3E4C9]" />
             </div>
-            <div>
-              <h1 className="text-xs sm:text-sm font-serif font-bold text-[#0A2947] tracking-wide leading-none">
-                Ambedkar Universe
-              </h1>
-              <p className="text-[10px] font-mono text-[#8B5E3C] tracking-widest uppercase mt-0.5 font-semibold">
-                {rawNodes.length} curated entities
-              </p>
+            <div className="hidden sm:block">
+              <h1 className="text-xs font-serif font-bold text-[#0A2947] tracking-wide leading-none">{t.brand}</h1>
+              <p className="text-[9px] font-mono text-[#8B5E3C] tracking-widest uppercase mt-0.5">{rawNodes.length} {t.entities}</p>
             </div>
           </div>
 
-          {/* Search, Directory & Controls */}
-          <div className="pointer-events-auto flex items-center flex-wrap gap-2">
+          {/* Category Filters — scrollable tabs */}
+          <div className="flex-1 flex items-center gap-0.5 px-2 overflow-x-auto scrollbar-none">
+            {(
+              [
+                { id: 'ALL' as const,          color: '#C59A45' },
+                { id: 'person' as const,       color: '#8B5E3C' },
+                { id: 'work' as const,         color: '#0A2947' },
+                { id: 'organization' as const, color: '#0D6E57' },
+                { id: 'event' as const,        color: '#B91C1C' },
+                { id: 'concept' as const,      color: '#B45309' },
+                { id: 'place' as const,        color: '#6D28D9' },
+                { id: 'media' as const,        color: '#C2410C' },
+              ] as const
+            ).map((cat) => {
+              const count = cat.id === 'ALL'
+                ? categoryCounts.total
+                : (categoryCounts[cat.id] ?? 0);
+              const isActive = activeCategory === cat.id;
+              const catLabel = cat.id === 'ALL' ? t.all : (t.categories[cat.id] || cat.id);
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-mono font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer shrink-0 ${
+                    isActive
+                      ? 'bg-[#0A2947] text-white shadow-xs'
+                      : 'text-[#0A2947]/70 hover:text-[#0A2947] hover:bg-[#F0EDE4]'
+                  }`}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                    style={{ backgroundColor: cat.color }}
+                  />
+                  <span>{catLabel}</span>
+                  {count > 0 && (
+                    <span className={`text-[9px] px-1 rounded ${isActive ? 'text-white/80 bg-white/20' : 'text-[#0A2947]/50 bg-[#0A2947]/5'}`}>
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
+          {/* Right controls group */}
+          <div className="flex items-center gap-1 px-2 border-l border-[#D3D4C0]/60 shrink-0">
+            {/* Search */}
             <GraphSearch
               nodes={rawNodes}
               onSelectNode={(n) => flyToNode(n, true)}
               selectedNodeId={selectedNode?.id || null}
             />
 
+            {/* Divider */}
+            <div className="w-px h-5 bg-[#D3D4C0]/80 mx-1" />
+
+            {/* Directory */}
             <button
               onClick={() => setIsAccessibleListOpen(true)}
-              className="px-3 py-2 rounded-2xl bg-white/95 backdrop-blur-md border border-[#D3D4C0] shadow-sm text-[#0A2947] hover:text-[#8B5E3C] hover:bg-[#FAF7F0] text-xs font-mono font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
-              title="Open Accessible Directory"
+              className="p-2 rounded-lg text-[#0A2947]/70 hover:text-[#0A2947] hover:bg-[#F0EDE4] transition-all cursor-pointer"
+              title={t.directory}
             >
-              <ListFilter className="w-3.5 h-3.5 text-[#8B5E3C]" />
-              <span className="hidden md:inline">Directory</span>
+              <ListFilter className="w-3.5 h-3.5" />
             </button>
 
-            <GraphControls
-              onZoomIn={handleZoomIn}
-              onZoomOut={handleZoomOut}
-              onResetView={handleResetView}
-              onFitGraph={handleFitGraph}
-              autoRotate={autoRotate}
-              onToggleAutoRotate={() => setAutoRotate(!autoRotate)}
-              isImmersive={isImmersive}
-              onToggleImmersive={handleToggleImmersive}
-              isSoundMuted={isSoundMuted}
-              onToggleSound={handleToggleSound}
-            />
+            {/* Zoom In */}
+            <button onClick={handleZoomIn} className="p-2 rounded-lg text-[#0A2947]/70 hover:text-[#0A2947] hover:bg-[#F0EDE4] transition-all cursor-pointer" title={t.zoomIn}>
+              <Layers className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Reset */}
+            <button onClick={handleResetView} className="p-2 rounded-lg text-[#0A2947]/70 hover:text-[#0A2947] hover:bg-[#F0EDE4] transition-all cursor-pointer" title={t.resetView}>
+              <RefreshCw className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Orbit toggle */}
+            <button
+              onClick={() => setAutoRotate(!autoRotate)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-mono font-bold transition-all cursor-pointer ${
+                autoRotate ? 'bg-[#FAF7F0] text-[#8B5E3C] border border-[#D3D4C0]/80 shadow-2xs' : 'text-[#0A2947]/60 hover:bg-[#F0EDE4]'
+              }`}
+              title={autoRotate ? t.orbitPause : t.orbitStart}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${autoRotate ? 'bg-[#8B5E3C] animate-pulse' : 'bg-[#0A2947]/30'}`} />
+              <span className="hidden md:inline uppercase tracking-wider">{t.orbit}</span>
+            </button>
+
+            {/* Sound */}
+            <button
+              onClick={handleToggleSound}
+              className={`p-2 rounded-lg transition-all cursor-pointer ${
+                isSoundMuted ? 'text-[#0A2947]/30' : 'text-[#0A2947]/70 hover:text-[#0A2947] hover:bg-[#F0EDE4]'
+              }`}
+              title={isSoundMuted ? t.soundUnmute : t.soundMute}
+            >
+              {isSoundMuted
+                ? <Info className="w-3.5 h-3.5" />
+                : <Sparkles className="w-3.5 h-3.5" />}
+            </button>
+
+            {/* Divider */}
+            <div className="w-px h-5 bg-[#D3D4C0]/80 mx-1" />
+
+            {/* Immersive / Exit */}
+            <button
+              onClick={handleToggleImmersive}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold transition-all cursor-pointer shadow-xs ${
+                isImmersive
+                  ? 'bg-[#0A2947] text-white hover:bg-[#123B60]'
+                  : 'bg-[#0A2947] text-[#FAF7F0] hover:bg-[#123B60]'
+              }`}
+              title={isImmersive ? t.exit : t.expand}
+            >
+              {isImmersive
+                ? <><Minimize2 className="w-3.5 h-3.5" /><span className="hidden sm:inline uppercase">{t.exit}</span></>
+                : <><Maximize2 className="w-3.5 h-3.5" /><span className="hidden sm:inline uppercase">{t.expand}</span></>}
+            </button>
           </div>
         </div>
 
-        {/* Category Filter Pills */}
-        <div className="flex justify-center pointer-events-none">
-          <div className="pointer-events-auto max-w-full">
-            <GraphFilters
-              activeCategory={activeCategory}
-              onSelectCategory={setActiveCategory}
-              categoryCounts={categoryCounts}
-            />
-          </div>
-        </div>
-
-        {/* Active Focus Banner or Guided Invitation */}
-        {selectedNode ? (
-          <div className="flex justify-center pointer-events-none animate-in fade-in slide-in-from-top-1 duration-200">
-            <div className="pointer-events-auto flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-white/95 backdrop-blur-md border-2 border-[#C59A45]/60 shadow-lg text-xs font-mono">
-              <span className="w-2 h-2 rounded-full bg-[#C59A45] animate-pulse" />
-              <span className="text-[#8B5E3C] font-bold uppercase tracking-wider">Active Lineage:</span>
-              <span className="font-bold text-[#0A2947] font-sans text-sm">{selectedNode.label}</span>
-              <span className="text-[#0A2947]/60 font-medium">({connectedEntities.length} direct lineages)</span>
+        {/* Secondary Row: Curated Tours OR Active Selection Banner */}
+        <div
+          className="pointer-events-auto flex items-center justify-center px-4 py-1.5 gap-2 border-b border-[#D3D4C0]/40"
+          style={{ background: 'rgba(250, 247, 240, 0.75)', backdropFilter: 'blur(12px)' }}
+        >
+          {selectedNode ? (
+            /* Active Lineage Banner */
+            <div className="flex items-center gap-2 text-xs font-mono animate-in fade-in duration-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C59A45] animate-pulse shrink-0" />
+              <span className="text-[#8B5E3C] font-bold uppercase tracking-wider text-[10px]">{t.viewing}</span>
+              <span className="font-bold text-[#0A2947]">{selectedNode.label}</span>
+              <span className="text-[#0A2947]/60 text-[10px]">· {connectedEntities.length} {t.connections}</span>
               <button
                 onClick={handleBackgroundClick}
-                className="ml-2 px-2 py-0.5 rounded-lg bg-[#FAF7F0] hover:bg-[#F3E4C9] border border-[#D3D4C0] text-[#0A2947] font-semibold text-[10px] uppercase transition-colors cursor-pointer"
-                title="Return to Full Constellation (Esc)"
+                className="ml-1 px-2 py-0.5 rounded-md bg-[#0A2947]/8 hover:bg-[#0A2947]/15 border border-[#D3D4C0]/60 text-[#0A2947] font-semibold text-[10px] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1"
               >
-                Clear ✕
+                <X className="w-3 h-3" />
+                <span>{t.clear}</span>
               </button>
             </div>
-          </div>
-        ) : (
-          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 pointer-events-none animate-in fade-in duration-300">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[#8B5E3C] font-bold hidden lg:inline">
-              Curated Tours:
-            </span>
-            {GUIDED_PERSPECTIVES.map((tour) => (
-              <button
-                key={tour.id}
-                onClick={() => handleSelectTour(tour)}
-                className="pointer-events-auto px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md border border-[#D3D4C0] hover:border-[#C59A45] hover:bg-[#FAF7F0] text-[11px] sm:text-xs font-mono font-semibold text-[#0A2947] flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer transform hover:scale-105"
-                title={tour.desc}
-              >
-                <span>{tour.icon}</span>
-                <span>{tour.title}</span>
-              </button>
-            ))}
-          </div>
-        )}
-
-      </div>
-
-      {/* 3. Bottom-Left: Legend + Hint */}
-      <div className="absolute bottom-4 left-4 z-20 flex flex-col gap-2 pointer-events-none">
-        <div className="pointer-events-auto">
-          <GraphLegend />
-        </div>
-        <div className="px-3.5 py-2 rounded-2xl text-[11px] font-mono text-[#0A2947]/75 bg-white/95 backdrop-blur-md border border-[#D3D4C0] shadow-sm pointer-events-auto select-none hidden sm:block">
-          <span className="text-[#8B5E3C] font-bold">Interactive:</span> Drag to orbit · Scroll to zoom · Click to inspect
+          ) : (
+            /* Curated Tours */
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] font-mono uppercase tracking-widest text-[#8B5E3C]/80 font-bold hidden lg:inline shrink-0">{t.tours}</span>
+              {GUIDED_PERSPECTIVES.map((tour) => (
+                <button
+                  key={tour.id}
+                  onClick={() => handleSelectTour(tour)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/70 hover:bg-white border border-[#D3D4C0]/60 hover:border-[#C59A45]/60 text-[10px] font-mono font-semibold text-[#0A2947] transition-all cursor-pointer shadow-2xs"
+                  title={tour.desc[currentLang] || tour.desc.en}
+                >
+                  <span>{getTourIcon(tour.iconType)}</span>
+                  <span className="hidden sm:inline">{tour.title[currentLang] || tour.title.en}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* 4. Bottom-Right: Verified badge */}
-      <div className="absolute bottom-4 right-4 z-20 pointer-events-none">
-        <div className="px-3 py-1.5 rounded-2xl text-[11px] font-mono font-bold text-emerald-800 bg-white/95 backdrop-blur-md border border-[#D3D4C0] shadow-sm flex items-center gap-1.5">
+      {/* Bottom Bar */}
+      <div
+        className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-2 border-t border-[#D3D4C0]/50 pointer-events-none"
+        style={{ background: 'rgba(250, 247, 240, 0.85)', backdropFilter: 'blur(12px)' }}
+      >
+        {/* Legend + Hint */}
+        <div className="flex items-center gap-3">
+          <div className="pointer-events-auto">
+            <GraphLegend />
+          </div>
+          <span className="text-[10px] font-mono text-[#0A2947]/60 hidden sm:inline select-none">
+            {t.hint}
+          </span>
+        </div>
+
+        {/* Verified badge */}
+        <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-800">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-          <span>BAWS 100% Verified</span>
+          <span className="hidden sm:inline">{t.verified}</span>
         </div>
       </div>
 
-      {/* 5. 3D WebGL Canvas Layer */}
+      {/* 3D WebGL Canvas Layer */}
       {error ? (
         <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-[#0A2947] space-y-4 bg-[#FAF7F0]">
           <AlertCircle className="w-12 h-12 text-rose-700" />
@@ -642,7 +893,7 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
         />
       )}
 
-      {/* 7. Screen-Reader / Keyboard Accessible Entity Directory */}
+      {/* Screen-Reader Accessible Entity Directory */}
       {isAccessibleListOpen && (
         <AccessibleEntityList
           nodes={rawNodes}
@@ -651,7 +902,6 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
           onClose={() => setIsAccessibleListOpen(false)}
         />
       )}
-
 
     </div>
   );

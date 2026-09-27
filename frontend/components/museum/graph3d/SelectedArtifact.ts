@@ -18,6 +18,7 @@ export class SelectedArtifact {
   private tickMesh: THREE.LineSegments | null = null;
   private portraitMesh: THREE.Mesh | null = null;
   private interiorLight: THREE.PointLight | null = null;
+  private titleSprite: THREE.Sprite | null = null;
   private textureLoader: THREE.TextureLoader;
   private activeImageUrl: string | null = null;
   private targetScale: number = 0;
@@ -112,8 +113,8 @@ export class SelectedArtifact {
 
     this.group.add(this.ringGroup);
 
-    // 4. Portrait Plane Container (created on demand)
-    const portraitGeo = new THREE.PlaneGeometry(6.4, 6.4);
+    // 4. Portrait Plane Container (created on demand) — sized to fill orb interior
+    const portraitGeo = new THREE.PlaneGeometry(8.5, 8.5);
     const portraitMat = new THREE.MeshBasicMaterial({
       transparent: true,
       opacity: 0.0,
@@ -121,21 +122,102 @@ export class SelectedArtifact {
       side: THREE.DoubleSide,
     });
     this.portraitMesh = new THREE.Mesh(portraitGeo, portraitMat);
-    this.portraitMesh.position.z = 0.05;
+    this.portraitMesh.position.z = 0.2;
     this.group.add(this.portraitMesh);
+
+    // 5. Billboard Title Plaque below orb
+    this.titleSprite = this.createTitleSprite();
+    this.titleSprite.position.set(0, -9.6, 0);
+    this.group.add(this.titleSprite);
 
     // Start hidden
     this.group.scale.set(0.001, 0.001, 0.001);
     this.group.visible = false;
   }
 
+  private createTitleSprite(): THREE.Sprite {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 256;
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.generateMipmaps = false;
+
+    const spriteMat = new THREE.SpriteMaterial({
+      map: texture,
+      transparent: true,
+      opacity: 0.98,
+      depthTest: false,
+      depthWrite: false,
+    });
+
+    const sprite = new THREE.Sprite(spriteMat);
+    sprite.scale.set(24, 6, 1);
+    return sprite;
+  }
+
+  private updateTitlePlaque(title?: string, category?: string) {
+    if (!this.titleSprite) return;
+    const mat = this.titleSprite.material as THREE.SpriteMaterial;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.clearRect(0, 0, 1024, 256);
+
+      // Outer drop shadow
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowBlur = 20;
+      ctx.shadowOffsetY = 6;
+
+      // Dark obsidian plaque background
+      ctx.fillStyle = 'rgba(10, 41, 71, 0.96)';
+      ctx.beginPath();
+      ctx.roundRect(24, 28, 976, 200, 36);
+      ctx.fill();
+
+      // Reset shadow
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+
+      // Gold frame
+      ctx.strokeStyle = '#C59A45';
+      ctx.lineWidth = 5;
+      ctx.stroke();
+
+      // Category Pill / Tag
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillStyle = '#C59A45';
+      const catText = (category || 'SELECTED ENTITY').toUpperCase();
+      ctx.fillText(`• ${catText} •`, 512, 78);
+
+      // Main Entity Title
+      ctx.font = 'bold 50px "Playfair Display", Georgia, serif';
+      ctx.fillStyle = '#FFFFFF';
+      const entityTitle = title || 'Selected Archival Node';
+      const maxLen = 32;
+      const displayStr = entityTitle.length > maxLen ? entityTitle.slice(0, maxLen - 1) + '…' : entityTitle;
+      ctx.fillText(displayStr, 512, 146);
+    }
+
+    mat.map?.dispose();
+    const newTexture = new THREE.CanvasTexture(canvas);
+    newTexture.generateMipmaps = false;
+    mat.map = newTexture;
+    mat.needsUpdate = true;
+  }
+
   /**
    * Set or update active entity
    */
-  public activate(position: THREE.Vector3, imageUrl?: string) {
+  public activate(position: THREE.Vector3, imageUrl?: string, title?: string, category?: string) {
     this.group.position.copy(position);
     this.group.visible = true;
     this.targetScale = 1.0;
+    this.updateTitlePlaque(title, category);
 
     // Load or clear circular archival image
     if (imageUrl && imageUrl !== this.activeImageUrl) {
@@ -154,48 +236,92 @@ export class SelectedArtifact {
   private loadArchivalPortrait(url: string) {
     if (!this.portraitMesh) return;
 
-    // Create a circular masked canvas texture to prevent raw rectangle edges
+    const SIZE = 512;
     const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
+    canvas.width = SIZE;
+    canvas.height = SIZE;
     const ctx = canvas.getContext('2d');
 
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.src = url;
     img.onload = () => {
-      if (!ctx) return;
-      ctx.clearRect(0, 0, 512, 512);
+      if (!ctx || !this.portraitMesh) return;
+      ctx.clearRect(0, 0, SIZE, SIZE);
 
-      // Radial vignette / feathered circular mask
-      const gradient = ctx.createRadialGradient(256, 256, 170, 256, 256, 250);
-      gradient.addColorStop(0, 'rgba(0,0,0,1)');
-      gradient.addColorStop(0.85, 'rgba(0,0,0,0.9)');
-      gradient.addColorStop(1, 'rgba(0,0,0,0)');
-
+      // 1. Clip to circle FIRST
       ctx.save();
       ctx.beginPath();
-      ctx.arc(256, 256, 240, 0, Math.PI * 2);
+      ctx.arc(SIZE / 2, SIZE / 2, SIZE / 2 - 4, 0, Math.PI * 2);
       ctx.closePath();
       ctx.clip();
-      ctx.drawImage(img, 0, 0, 512, 512);
-      ctx.restore();
 
-      // Apply warm sepia/museum tint
+      // 2. Center-crop draw (object-fit: cover equivalent)
+      const imgW = img.naturalWidth;
+      const imgH = img.naturalHeight;
+      const scale = Math.max(SIZE / imgW, SIZE / imgH);
+      const drawW = imgW * scale;
+      const drawH = imgH * scale;
+      const offsetX = (SIZE - drawW) / 2;
+      const offsetY = (SIZE - drawH) / 2;
+      ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
+
+      // 3. Subtle warm overlay — very light sepia tint (not a wash)
       ctx.globalCompositeOperation = 'multiply';
-      ctx.fillStyle = '#FAF2E4';
-      ctx.fillRect(0, 0, 512, 512);
+      ctx.globalAlpha = 0.18;
+      ctx.fillStyle = '#D4A96A';
+      ctx.fillRect(0, 0, SIZE, SIZE);
+      ctx.globalAlpha = 1.0;
       ctx.globalCompositeOperation = 'source-over';
+
+      ctx.restore(); // end clip
+
+      // 4. Feathered vignette edge using destination-out (cuts alpha, not colour)
+      const vignette = ctx.createRadialGradient(
+        SIZE / 2, SIZE / 2, SIZE * 0.38,
+        SIZE / 2, SIZE / 2, SIZE / 2 - 2
+      );
+      vignette.addColorStop(0, 'rgba(0,0,0,0)');
+      vignette.addColorStop(0.75, 'rgba(0,0,0,0)');
+      vignette.addColorStop(1, 'rgba(0,0,0,0.55)');
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, SIZE, SIZE);
+      ctx.globalCompositeOperation = 'source-over';
+
+      // 5. Antique brass inner border ring
+      ctx.beginPath();
+      ctx.arc(SIZE / 2, SIZE / 2, SIZE / 2 - 5, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(196, 154, 69, 0.55)';
+      ctx.lineWidth = 4;
+      ctx.stroke();
 
       const texture = new THREE.CanvasTexture(canvas);
       texture.needsUpdate = true;
 
-      if (this.portraitMesh) {
-        const mat = this.portraitMesh.material as THREE.MeshBasicMaterial;
-        mat.map = texture;
-        mat.opacity = 0.84;
-        mat.needsUpdate = true;
-      }
+      const mat = this.portraitMesh.material as THREE.MeshBasicMaterial;
+      mat.map = texture;
+      mat.opacity = 0.97;
+      mat.transparent = true;
+      mat.needsUpdate = true;
+    };
+
+    img.onerror = () => {
+      // On load failure: show a placeholder brass disc
+      if (!ctx || !this.portraitMesh) return;
+      ctx.clearRect(0, 0, SIZE, SIZE);
+      ctx.beginPath();
+      ctx.arc(SIZE / 2, SIZE / 2, SIZE / 2 - 4, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(164, 119, 69, 0.25)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(196, 154, 69, 0.6)';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      const texture = new THREE.CanvasTexture(canvas);
+      const mat = this.portraitMesh.material as THREE.MeshBasicMaterial;
+      mat.map = texture;
+      mat.opacity = 0.7;
+      mat.needsUpdate = true;
     };
   }
 

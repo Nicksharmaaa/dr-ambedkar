@@ -119,8 +119,8 @@ export class EntityAnchors {
     }
 
     // Billboard Text Label (appears on hover or when central)
-    const labelSprite = this.createLabelSprite(node.label, colorHex, isCenter);
-    labelSprite.position.set(0, -(baseRadius + 2.2), 0);
+    const labelSprite = this.createLabelSprite(node.label, colorHex, isCenter, node.category);
+    labelSprite.position.set(0, -(baseRadius + (isCenter ? 4.2 : 3.0)), 0);
     labelSprite.visible = isCenter;
     mesh.add(labelSprite);
 
@@ -129,44 +129,88 @@ export class EntityAnchors {
     this.nodeMap.set(node.id, { node, mesh, labelSprite, position });
   }
 
-  private createLabelSprite(text: string, color: string, isCenter: boolean): THREE.Sprite {
+  private createLabelSprite(text: string, color: string, isCenter: boolean, category?: string): THREE.Sprite {
+    // 1024x256 high-resolution canvas for crisp retina rendering
     const canvas = document.createElement('canvas');
-    canvas.width = 384;
-    canvas.height = 96;
+    canvas.width = 1024;
+    canvas.height = 256;
     const ctx = canvas.getContext('2d');
     if (ctx) {
-      ctx.clearRect(0, 0, 384, 96);
+      ctx.clearRect(0, 0, 1024, 256);
 
-      // Soft ivory pill badge
-      ctx.fillStyle = 'rgba(255, 251, 243, 0.92)';
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
+      // Outer glow / shadow
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+      ctx.shadowBlur = 18;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 6;
+
+      // Dark, high-contrast museum pill plaque
+      ctx.fillStyle = isCenter ? 'rgba(10, 41, 71, 0.96)' : 'rgba(15, 23, 42, 0.94)';
       ctx.beginPath();
-      ctx.roundRect(12, 16, 360, 64, 18);
+      ctx.roundRect(24, 28, 976, 200, 36);
       ctx.fill();
+
+      // Reset shadow for crisp borders and text
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+
+      // Elegant gold / accent border
+      ctx.strokeStyle = isCenter ? '#C59A45' : color;
+      ctx.lineWidth = isCenter ? 5 : 4;
       ctx.stroke();
 
-      // Text
-      ctx.fillStyle = '#2F241C';
-      ctx.font = '600 24px "Playfair Display", Georgia, serif';
+      // Top Category / Heritage Tag
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
+      ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillStyle = isCenter ? '#C59A45' : color;
+      const tagText = isCenter
+        ? 'ARCHIVAL CENTERPIECE'
+        : (category || 'HISTORICAL ENTITY').toUpperCase();
+      ctx.fillText(tagText, 512, 78);
+
+      // Main Entity Name — large, ultra-clear, high-contrast
+      ctx.font = isCenter
+        ? 'bold 52px "Playfair Display", Georgia, serif'
+        : 'bold 46px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillStyle = '#FFFFFF';
       
-      const displayStr = text.length > 22 ? text.slice(0, 21) + '…' : text;
-      ctx.fillText(displayStr, 192, 48);
+      const maxLen = isCenter ? 32 : 28;
+      const displayStr = text.length > maxLen ? text.slice(0, maxLen - 1) + '…' : text;
+      ctx.fillText(displayStr, 512, 146);
+
+      // Bottom subtle ornament line for center entity
+      if (isCenter) {
+        ctx.strokeStyle = 'rgba(197, 154, 69, 0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(360, 192);
+        ctx.lineTo(664, 192);
+        ctx.stroke();
+      }
     }
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.minFilter = THREE.LinearFilter;
+    texture.generateMipmaps = false;
+
     const spriteMat = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
-      opacity: 0.95,
+      opacity: 0.98,
       depthTest: false,
+      depthWrite: false,
     });
 
     const sprite = new THREE.Sprite(spriteMat);
-    sprite.scale.set(12, 3, 1);
+    // Scaled for comfortable readability from default camera distance
+    if (isCenter) {
+      sprite.scale.set(22, 5.5, 1);
+    } else {
+      sprite.scale.set(16, 4, 1);
+    }
     return sprite;
   }
 
