@@ -40,23 +40,34 @@ export class RelationshipSystem {
       const srcId = typeof link.source === 'string' ? link.source : (link.source as any).id;
       const tgtId = typeof link.target === 'string' ? link.target : (link.target as any).id;
 
-      const p1 = this.nodePositions.get(srcId);
-      const p2 = this.nodePositions.get(tgtId);
+      // Skip self-referential links
+      if (srcId === tgtId) return;
 
-      if (p1 && p2) {
-        // Curve slightly towards sphere origin for organic museum web aesthetic
-        const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
-        const curveMid = mid.clone().multiplyScalar(0.85); // bowed inward
+      const p1raw = this.nodePositions.get(srcId);
+      const p2raw = this.nodePositions.get(tgtId);
 
-        const curve = new THREE.QuadraticBezierCurve3(p1, curveMid, p2);
-        const curvePoints = curve.getPoints(segmentsPerCurve);
+      // Guard: both positions must exist and be distinct points (not same Vector3 reference)
+      if (!p1raw || !p2raw || p1raw === p2raw) return;
 
-        for (let i = 0; i < curvePoints.length - 1; i++) {
-          points.push(
-            curvePoints[i].x, curvePoints[i].y, curvePoints[i].z,
-            curvePoints[i + 1].x, curvePoints[i + 1].y, curvePoints[i + 1].z
-          );
-        }
+      // Always clone to avoid shared-reference bugs in QuadraticBezierCurve3
+      const p1 = p1raw.clone();
+      const p2 = p2raw.clone();
+
+      // Guard: ensure the two points are not at the same location (distance > 0.01)
+      if (p1.distanceToSquared(p2) < 0.0001) return;
+
+      // Curve slightly towards sphere origin for organic museum web aesthetic
+      const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+      const curveMid = mid.clone().multiplyScalar(0.85); // bowed inward
+
+      const curve = new THREE.QuadraticBezierCurve3(p1, curveMid, p2);
+      const curvePoints = curve.getPoints(segmentsPerCurve);
+
+      for (let i = 0; i < curvePoints.length - 1; i++) {
+        points.push(
+          curvePoints[i].x, curvePoints[i].y, curvePoints[i].z,
+          curvePoints[i + 1].x, curvePoints[i + 1].y, curvePoints[i + 1].z
+        );
       }
     });
 
@@ -110,22 +121,33 @@ export class RelationshipSystem {
       const srcId = typeof link.source === 'string' ? link.source : (link.source as any).id;
       const tgtId = typeof link.target === 'string' ? link.target : (link.target as any).id;
 
-      const p1 = this.nodePositions.get(srcId);
-      const p2 = this.nodePositions.get(tgtId);
+      // Skip self-referential links
+      if (srcId === tgtId) return;
 
-      if (p1 && p2) {
-        const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
-        const curveMid = mid.clone().multiplyScalar(0.85);
+      const p1raw = this.nodePositions.get(srcId);
+      const p2raw = this.nodePositions.get(tgtId);
 
-        const curve = new THREE.QuadraticBezierCurve3(p1, curveMid, p2);
-        const curvePoints = curve.getPoints(segmentsPerCurve);
+      // Guard: both positions must exist and be distinct (not same Vector3 reference)
+      if (!p1raw || !p2raw || p1raw === p2raw) return;
 
-        for (let i = 0; i < curvePoints.length - 1; i++) {
-          highlightPoints.push(
-            curvePoints[i].x, curvePoints[i].y, curvePoints[i].z,
-            curvePoints[i + 1].x, curvePoints[i + 1].y, curvePoints[i + 1].z
-          );
-        }
+      // Always clone — never pass shared references into QuadraticBezierCurve3
+      const p1 = p1raw.clone();
+      const p2 = p2raw.clone();
+
+      // Guard: skip degenerate zero-length curves
+      if (p1.distanceToSquared(p2) < 0.0001) return;
+
+      const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+      const curveMid = mid.clone().multiplyScalar(0.85);
+
+      const curve = new THREE.QuadraticBezierCurve3(p1, curveMid, p2);
+      const curvePoints = curve.getPoints(segmentsPerCurve);
+
+      for (let i = 0; i < curvePoints.length - 1; i++) {
+        highlightPoints.push(
+          curvePoints[i].x, curvePoints[i].y, curvePoints[i].z,
+          curvePoints[i + 1].x, curvePoints[i + 1].y, curvePoints[i + 1].z
+        );
       }
     });
 

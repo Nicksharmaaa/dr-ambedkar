@@ -405,25 +405,23 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
       }
 
       setSelectedNode(node);
-      setAutoRotate(false); // Pause auto-rotation for focused exploration
+      setAutoRotate(false);
       soundEffects.playNodeSelectSound();
-
-      if (fgRef.current && fgRef.current.selectEntity) {
-        fgRef.current.selectEntity(node);
-      }
+      // NOTE: Do NOT call fgRef.current.selectEntity() here.
+      // Graph3DCanvas's useEffect watches selectedNode and calls selectEntity() automatically.
+      // Calling it here too would cause a double-trigger loop.
     },
-    [fgRef, selectedNode]
+    [selectedNode]
   );
 
   const handleBackgroundClick = useCallback(() => {
     if (selectedNode) {
       setSelectedNode(null);
       soundEffects.playTactileChime();
-      if (fgRef.current && fgRef.current.deselect) {
-        fgRef.current.deselect();
-      }
+      // NOTE: Do NOT call fgRef.current.deselect() here.
+      // Graph3DCanvas's useEffect watches selectedNode (null) and calls sceneRef.current.deselect() automatically.
     }
-  }, [selectedNode, fgRef]);
+  }, [selectedNode]);
 
   const handleSelectTour = useCallback(
     (tour: typeof GUIDED_PERSPECTIVES[0]) => {

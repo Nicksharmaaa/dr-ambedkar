@@ -42,6 +42,7 @@ export class KnowledgeMapScene {
   private isPointerDown: boolean = false;
   private pointerDownTime: number = 0;
   private pointerDownPos: { x: number; y: number } = { x: 0, y: 0 };
+  private DRAG_THRESHOLD_PX: number = 5;
 
   // Camera & Orbit state
   private defaultCameraPos: THREE.Vector3;
@@ -147,10 +148,11 @@ export class KnowledgeMapScene {
   public setData(data: Graph3DData) {
     this.entityAnchors.buildAnchors(data.nodes);
 
-    // Build position map for relationships
+    // Build position map for relationships — clone each Vector3 to prevent
+    // shared-reference bugs (p1 === p2) inside RelationshipSystem's Bezier math
     const posMap = new Map<string, THREE.Vector3>();
     this.entityAnchors.nodeMap.forEach((entry, id) => {
-      posMap.set(id, entry.position);
+      posMap.set(id, entry.position.clone());
     });
 
     this.relationshipSystem.setGraph(data.links, posMap);
@@ -183,18 +185,30 @@ export class KnowledgeMapScene {
     this.mousePos.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     this.mousePos.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
-    if (this.isDragging) {
-      const deltaX = e.clientX - this.previousMousePosition.x;
-      const deltaY = e.clientY - this.previousMousePosition.y;
+    if (this.isPointerDown) {
+      const moveDist = Math.hypot(
+        e.clientX - this.pointerDownPos.x,
+        e.clientY - this.pointerDownPos.y
+      );
 
-      // Subtle parallax drag if idle
-      if (this.state === 'IDLE' || this.state === 'HOVERED') {
-        this.orbitAngle -= deltaX * 0.005;
-        this.targetCameraPos.y = THREE.MathUtils.clamp(
-          this.targetCameraPos.y + deltaY * 0.15,
-          -40,
-          60
-        );
+      // Only enter drag mode after significant movement
+      if (moveDist > this.DRAG_THRESHOLD_PX) {
+        this.isDragging = true;
+      }
+
+      if (this.isDragging) {
+        const deltaX = e.clientX - this.previousMousePosition.x;
+        const deltaY = e.clientY - this.previousMousePosition.y;
+
+        // Subtle parallax drag if idle
+        if (this.state === 'IDLE' || this.state === 'HOVERED') {
+          this.orbitAngle -= deltaX * 0.005;
+          this.targetCameraPos.y = THREE.MathUtils.clamp(
+            this.targetCameraPos.y + deltaY * 0.15,
+            -40,
+            60
+          );
+        }
       }
     }
 
@@ -210,19 +224,33 @@ export class KnowledgeMapScene {
     this.isPointerDown = true;
     this.pointerDownTime = performance.now();
     this.pointerDownPos = { x: e.clientX, y: e.clientY };
-    this.isDragging = true;
+    this.isDragging = false; // Only set true after real drag movement
     this.previousMousePosition = { x: e.clientX, y: e.clientY };
+
+    // Update mousePos immediately so handleClick has valid coords on fast clicks
+    const rect = this.container.getBoundingClientRect();
+    this.mousePos.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    this.mousePos.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
   };
 
   private onMouseUp = (e: MouseEvent) => {
+    const wasDragging = this.isDragging;
     this.isDragging = false;
     this.isPointerDown = false;
+
+    // Always sync mousePos to the release point before raycasting
+    const rect = this.container.getBoundingClientRect();
+    this.mousePos.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    this.mousePos.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
     // Check if this was a clean click rather than a drag
     const moveDist = Math.hypot(e.clientX - this.pointerDownPos.x, e.clientY - this.pointerDownPos.y);
     const duration = performance.now() - this.pointerDownTime;
 
-    if (moveDist < 6 && duration < 350) {
+    if (!wasDragging && moveDist < this.DRAG_THRESHOLD_PX && duration < 500) {
+      this.handleClick();
+    } else if (moveDist < this.DRAG_THRESHOLD_PX && duration < 500) {
+      // Also allow click even if isDragging was set (tiny jitter)
       this.handleClick();
     }
   };
@@ -301,7 +329,11 @@ export class KnowledgeMapScene {
     if (intersects.length > 0) {
       const hitMesh = intersects[0].object as THREE.Mesh;
       const node = hitMesh.userData.node as Graph3DNode;
-      this.selectEntity(node);
+      // Fire the React callback FIRST (before visual selection)
+      // so React state updates, then the useEffect will call syncSelection() — NOT selectEntity()
+      this.callbacks.onSelectNode(node);
+      // Then do the Three.js visual work
+      this._applySelection(node);
     } else {
       // Clicked on empty space
       if (this.state === 'SELECTED') {
@@ -311,14 +343,28 @@ export class KnowledgeMapScene {
     }
   }
 
-  // ── State Transitions ─────────────────────────────────────────────────────
-
+  /**
+   * selectEntity — PUBLIC API called by React useEffect to sync state.
+   * Does NOT fire the onSelectNode callback (prevents infinite React↔Three loop).
+   * Renamed internally to syncSelection for React-driven updates.
+   */
   public selectEntity(node: Graph3DNode) {
-    if (this.selectedNode?.id === node.id && this.state === 'SELECTED') return;
+    this._applySelection(node);
+  }
+
+  /**
+   * _applySelection — Internal Three.js visual work.
+   * Never calls callbacks.onSelectNode to avoid feedback loops.
+   */
+  private _applySelection(node: Graph3DNode) {
+    // Guard: same node already selected or currently animating into selection — no-op
+    if (
+      this.selectedNode?.id === node.id &&
+      (this.state === 'SELECTED' || this.state === 'SELECTING' || this.state === 'TRANSITIONING')
+    ) return;
 
     this.selectedNode = node;
-    const isFirstSelection = this.state !== 'SELECTED';
-    this.setState(isFirstSelection ? 'SELECTING' : 'TRANSITIONING');
+    this.setState('SELECTING');
 
     const nodePos = this.entityAnchors.getNodePosition(node.id);
     if (!nodePos) return;
@@ -326,21 +372,17 @@ export class KnowledgeMapScene {
     // 1. Activate large glass artifact orb
     this.selectedArtifact.activate(nodePos, node.imageUrl);
 
-    // 2. Identify 1-hop connected neighbors
-    const connectedIds = new Set<string>();
-    // Add neighbors from relationship system
+    // 2. Highlight 1-hop relationship lines
     this.relationshipSystem.highlightActiveConnections(node.id);
 
     // 3. Highlight anchors & dim unrelated
-    this.entityAnchors.setSelectionHighlight(node.id, connectedIds);
+    this.entityAnchors.setSelectionHighlight(node.id, new Set<string>());
 
     // 4. Choreograph Camera Approach
-    // Position camera comfortably in front and slightly shifted left so the dossier on the right does not obscure it
     const offsetDirection = nodePos.clone().normalize();
     if (offsetDirection.lengthSq() < 0.001) offsetDirection.set(0, 0, 1);
 
-    const cameraDistance = 34; // Close intimate museum view
-    // Shift slightly to the left (-X in view plane) so the artifact sits on the left 55% of the screen
+    const cameraDistance = 34;
     const targetPos = nodePos.clone().add(offsetDirection.multiplyScalar(cameraDistance));
     targetPos.x -= 7.0; // Left-offset to accommodate right-side archival dossier
     targetPos.y += 2.5;
@@ -348,13 +390,12 @@ export class KnowledgeMapScene {
     this.targetCameraPos.copy(targetPos);
     this.targetLookAt.copy(nodePos);
 
-    // Inform callback
-    this.callbacks.onSelectNode(node);
-
     // Transition completion
     const duration = this.isReducedMotion ? 200 : 850;
     setTimeout(() => {
-      this.setState('SELECTED');
+      if (this.selectedNode?.id === node.id) {
+        this.setState('SELECTED');
+      }
     }, duration);
   }
 
