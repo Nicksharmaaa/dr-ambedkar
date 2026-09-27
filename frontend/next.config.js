@@ -9,6 +9,11 @@ const nextConfig = {
         destination: '/memorials',
         permanent: true,
       },
+      {
+        source: '/presevation',
+        destination: '/preservation',
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

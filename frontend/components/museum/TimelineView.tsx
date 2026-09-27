@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Clock, Calendar, MapPin, Quote, ArrowRight, BookOpen, 
-  ChevronRight, ChevronLeft, X, ExternalLink, Sparkles, 
+import {
+  Clock, Calendar, MapPin, Quote, ArrowRight, BookOpen,
+  ChevronRight, ChevronLeft, X, ExternalLink, Sparkles,
   Layers, CheckCircle2, Maximize2, Share2, Copy, Check, Compass,
   LayoutGrid, SlidersHorizontal, Play, Pause, Volume2, VolumeX, Film,
   Eye, Award, ArrowUpRight, Search, Filter, Trophy, Scale, RotateCcw
@@ -74,7 +74,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const filteredEvents = TIMELINE_EVENTS.filter((ev) => {
     const eraMatch = selectedEra === 'all' || ev.era === selectedEra;
     const typeMatch = filterType === 'all' || ev.mediaType === filterType;
-    const queryMatch = !searchQuery.trim() || 
+    const queryMatch = !searchQuery.trim() ||
       ev.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ev.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ev.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -147,6 +147,22 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     // Update slideshow index if in slideshow mode
     const idx = filteredEvents.findIndex(e => e.id === id);
     if (idx >= 0) setActiveEventIndex(idx);
+  };
+
+  // Switch timeline display mode (Spine, Reel, Grid) and automatically smooth scroll down to the view stage
+  const handleModeChange = (mode: 'alternating' | 'slideshow' | 'grid') => {
+    soundEffects.playClick();
+    setTimelineMode(mode);
+
+    // Automatically smooth scroll down to the active view stage
+    setTimeout(() => {
+      const targetElement = document.getElementById('timeline-view-stage');
+      if (targetElement) {
+        const yOffset = -24; // Comfortable breathing space from top edge
+        const targetY = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+      }
+    }, 60);
   };
 
   // Guided Memorial Tour Timer
@@ -261,7 +277,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   return (
     <div className="min-h-screen bg-transparent text-[#0A2947] py-6 sm:py-10 px-3 sm:px-6 lg:px-8 space-y-8 font-dmsans">
       <div className="max-w-7xl mx-auto space-y-8">
-        
+
         {/* =========================================================================
             INSTITUTIONAL KIOSK TITLE BAR & ACTION TERMINAL
             ========================================================================= */}
@@ -298,11 +314,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 {/* Memorial Tour Button */}
                 <button
                   onClick={isTourActive ? handleStopTour : handleStartTour}
-                  className={`px-4 py-2 rounded-2xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 shadow-sm ${
-                    isTourActive
+                  className={`px-4 py-2 rounded-2xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 shadow-sm ${isTourActive
                       ? 'bg-rose-900 text-white ring-2 ring-rose-500 animate-pulse'
                       : 'bg-[#C59A45] hover:bg-[#d6aa55] text-[#0A2947] hover:scale-105'
-                  }`}
+                    }`}
                   title="Auto-advancing memorial presentation"
                 >
                   {isTourActive ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
@@ -321,33 +336,17 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   <Trophy className="w-3.5 h-3.5 text-[#C59A45]" />
                   <span>Epoch Quiz</span>
                 </button>
-
-                {/* Compare Epochs Lens */}
-                <button
-                  onClick={() => {
-                    soundEffects.playClick();
-                    setIsComparatorOpen(true);
-                  }}
-                  className="px-3.5 py-2 bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0] hover:border-[#8B5E3C] rounded-2xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-xs"
-                  title="Compare Key Epochs Side-by-Side"
-                >
-                  <Scale className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                  <span className="hidden sm:inline">Compare</span>
-                </button>
               </div>
 
               {/* View Mode Toggle Pill */}
               <div className="flex items-center bg-[#FAF7F0] p-1.5 rounded-2xl border-2 border-[#D3D4C0] shadow-xs">
                 <button
-                  onClick={() => {
-                    soundEffects.playClick();
-                    setTimelineMode('alternating');
-                  }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                    timelineMode === 'alternating'
+                  type="button"
+                  onClick={() => handleModeChange('alternating')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${timelineMode === 'alternating'
                       ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#8B5E3C]'
                       : 'text-[#0A2947]/70 hover:text-[#0A2947]'
-                  }`}
+                    }`}
                   title="Alternating Milestone Spine"
                 >
                   <Layers className="w-3.5 h-3.5" />
@@ -355,15 +354,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 </button>
 
                 <button
-                  onClick={() => {
-                    soundEffects.playClick();
-                    setTimelineMode('slideshow');
-                  }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                    timelineMode === 'slideshow'
+                  type="button"
+                  onClick={() => handleModeChange('slideshow')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${timelineMode === 'slideshow'
                       ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#8B5E3C]'
                       : 'text-[#0A2947]/70 hover:text-[#0A2947]'
-                  }`}
+                    }`}
                   title="Cinematic Slide Corridor"
                 >
                   <Film className="w-3.5 h-3.5" />
@@ -371,15 +367,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 </button>
 
                 <button
-                  onClick={() => {
-                    soundEffects.playClick();
-                    setTimelineMode('grid');
-                  }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                    timelineMode === 'grid'
+                  type="button"
+                  onClick={() => handleModeChange('grid')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${timelineMode === 'grid'
                       ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#8B5E3C]'
                       : 'text-[#0A2947]/70 hover:text-[#0A2947]'
-                  }`}
+                    }`}
                   title="Curatorial Matrix Grid"
                 >
                   <LayoutGrid className="w-3.5 h-3.5" />
@@ -419,9 +412,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   soundEffects.playClick();
                   setFilterType('all');
                 }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer ${
-                  filterType === 'all' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
-                }`}
+                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer ${filterType === 'all' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
+                  }`}
               >
                 All
               </button>
@@ -430,9 +422,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   soundEffects.playClick();
                   setFilterType('video');
                 }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer flex items-center gap-1 ${
-                  filterType === 'video' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
-                }`}
+                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer flex items-center gap-1 ${filterType === 'video' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
+                  }`}
               >
                 <Film className="w-3 h-3 text-[#C59A45]" />
                 Reels
@@ -442,9 +433,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   soundEffects.playClick();
                   setFilterType('photo');
                 }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer ${
-                  filterType === 'photo' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
-                }`}
+                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer ${filterType === 'photo' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
+                  }`}
               >
                 Plates
               </button>
@@ -453,9 +443,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   soundEffects.playClick();
                   setFilterType('document');
                 }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer flex items-center gap-1 ${
-                  filterType === 'document' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
-                }`}
+                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer flex items-center gap-1 ${filterType === 'document' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
+                  }`}
               >
                 <BookOpen className="w-3 h-3 text-[#8B5E3C]" />
                 Treatises
@@ -477,14 +466,16 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         />
 
         {/* =========================================================================
-            VIEW 1: ALTERNATING MILESTONE SPINE (INTERACTIVE STATION WALKWAY)
+            ACTIVE TIMELINE VIEW STAGE (Spine, Reel, Grid)
             ========================================================================= */}
-        {timelineMode === 'alternating' && (
+        <div id="timeline-view-stage" className="scroll-mt-6">
+          {/* VIEW 1: ALTERNATING MILESTONE SPINE (INTERACTIVE STATION WALKWAY) */}
+          {timelineMode === 'alternating' && (
           <div className="relative py-8">
-            
+
             {/* Center Vertical Axis / Road Spine (hidden on mobile, centered on md+) */}
             <div className="hidden md:block absolute left-1/2 top-4 bottom-8 -translate-x-1/2 w-1.5 bg-gradient-to-b from-[#8B5E3C] via-[#C59A45] to-[#0A2947] rounded-full shadow-xs" />
-            
+
             {/* Mobile Left Axis */}
             <div className="md:hidden absolute left-5 top-4 bottom-8 w-1.5 bg-gradient-to-b from-[#8B5E3C] via-[#C59A45] to-[#0A2947] rounded-full" />
 
@@ -502,18 +493,16 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     key={event.id}
                     id={`milestone-${event.id}`}
                     onClick={() => setActiveMilestoneId(event.id)}
-                    className={`relative flex flex-col md:flex-row items-center scroll-mt-28 group ${
-                      isEven ? 'md:flex-row-reverse' : ''
-                    }`}
+                    className={`relative flex flex-col md:flex-row items-center scroll-mt-28 group ${isEven ? 'md:flex-row-reverse' : ''
+                      }`}
                   >
-                    
+
                     {/* Central Glowing Node Milestone Pin */}
                     <div className="absolute left-5 md:left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
-                      <div className={`w-11 h-11 sm:w-13 sm:h-13 rounded-2xl flex items-center justify-center font-mono font-bold text-xs sm:text-sm shadow-md transition-all duration-300 cursor-pointer ${
-                        isSelected
+                      <div className={`w-11 h-11 sm:w-13 sm:h-13 rounded-2xl flex items-center justify-center font-mono font-bold text-xs sm:text-sm shadow-md transition-all duration-300 cursor-pointer ${isSelected
                           ? 'bg-[#C59A45] text-[#0A2947] ring-4 ring-[#C59A45]/40 scale-115'
                           : 'bg-[#0A2947] border-2 border-[#C59A45] text-[#F3E4C9] group-hover:scale-110 group-hover:ring-4 group-hover:ring-[#C59A45]/30'
-                      }`}>
+                        }`}>
                         {event.mediaType === 'video' ? (
                           <Film className="w-5 h-5 text-[#C59A45] animate-pulse" />
                         ) : (
@@ -526,15 +515,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     </div>
 
                     {/* Content Card Side (Half-width on desktop) */}
-                    <div className={`w-full md:w-1/2 pl-14 sm:pl-16 md:pl-0 ${
-                      isEven ? 'md:pr-12' : 'md:pl-12'
-                    }`}>
-                      
-                      {/* Interactive Visual Card */}
-                      <div className={`bg-white border-2 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1 ${
-                        isSelected ? 'border-[#C59A45] ring-2 ring-[#C59A45]/20' : 'border-[#D3D4C0] hover:border-[#8B5E3C]'
+                    <div className={`w-full md:w-1/2 pl-14 sm:pl-16 md:pl-0 ${isEven ? 'md:pr-12' : 'md:pl-12'
                       }`}>
-                        
+
+                      {/* Interactive Visual Card */}
+                      <div className={`bg-white border-2 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1 ${isSelected ? 'border-[#C59A45] ring-2 ring-[#C59A45]/20' : 'border-[#D3D4C0] hover:border-[#8B5E3C]'
+                        }`}>
+
                         {/* Visual Image / Video Header Banner */}
                         {event.imageUrl && (
                           <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#0A2947]">
@@ -543,7 +530,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                               alt={event.title}
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
-                            
+
                             {/* Gradient Vignette Overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-[#0A2947]/90 via-[#0A2947]/30 to-transparent" />
 
@@ -603,7 +590,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
                         {/* Card Text & Highlights Body */}
                         <div className="p-5 sm:p-7 space-y-4">
-                          
+
                           {/* Era & Station Meta */}
                           <div className="flex items-center justify-between text-xs pb-1 border-b border-[#D3D4C0]/70">
                             <span className="font-cinzel uppercase font-bold text-[#8B5E3C] tracking-wider text-[11px]">
@@ -615,7 +602,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                           </div>
 
                           {/* Title */}
-                          <h3 
+                          <h3
                             onClick={() => handleOpenMedia(event)}
                             className="text-xl sm:text-2xl font-serif-editorial font-bold text-[#0A2947] hover:text-[#8B5E3C] transition-colors cursor-pointer leading-snug"
                           >
@@ -651,11 +638,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 {/* Audio Voice Button */}
                                 <button
                                   onClick={() => handleToggleSpeakQuote(event)}
-                                  className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                                    isStationSpeaking
+                                  className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer ${isStationSpeaking
                                       ? 'bg-[#C59A45] text-[#0A2947] ring-2 ring-[#C59A45]/40 animate-pulse'
                                       : 'bg-white hover:bg-[#F3E4C9] text-[#8B5E3C] border border-[#D3D4C0]'
-                                  }`}
+                                    }`}
                                   title="Listen to Babasaheb's quote read aloud"
                                 >
                                   {isStationSpeaking ? (
@@ -701,11 +687,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                       soundEffects.playClick();
                                       setPeekDocId(peekDocId === doc.id ? null : doc.id);
                                     }}
-                                    className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-colors flex items-center gap-1 cursor-pointer border ${
-                                      peekDocId === doc.id
+                                    className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-colors flex items-center gap-1 cursor-pointer border ${peekDocId === doc.id
                                         ? 'bg-[#0A2947] text-[#F3E4C9] border-[#0A2947]'
                                         : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
-                                    }`}
+                                      }`}
                                     title="Click to peek document details"
                                   >
                                     <BookOpen className="w-3 h-3 text-[#8B5E3C]" />
@@ -848,8 +833,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                   <div className="lg:col-span-7">
                     <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-[#0A2947] shadow-md group">
-                      <img 
-                        src={filteredEvents[activeEventIndex]?.imageUrl} 
+                      <img
+                        src={filteredEvents[activeEventIndex]?.imageUrl}
                         alt={filteredEvents[activeEventIndex]?.title}
                         className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                       />
@@ -941,11 +926,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                           soundEffects.playClick();
                           setActiveEventIndex(i);
                         }}
-                        className={`min-w-[100px] p-2 rounded-xl text-left border transition-all cursor-pointer ${
-                          activeEventIndex === i
+                        className={`min-w-[100px] p-2 rounded-xl text-left border transition-all cursor-pointer ${activeEventIndex === i
                             ? 'bg-[#0A2947] text-white border-[#C59A45] ring-2 ring-[#C59A45]/30'
                             : 'bg-[#FAF7F0] text-[#0A2947] border-[#D3D4C0] hover:bg-white'
-                        }`}
+                          }`}
                       >
                         <span className="block text-xs font-mono font-bold">{ev.year}</span>
                         <span className="block text-[10px] truncate">{ev.title}</span>
@@ -965,16 +949,16 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         {timelineMode === 'grid' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.map((event, index) => (
-              <div 
+              <div
                 key={event.id}
                 className="bg-white border-2 border-[#D3D4C0] hover:border-[#8B5E3C] rounded-3xl overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
               >
                 <div>
                   <div className="relative aspect-[16/10] bg-[#0A2947] overflow-hidden">
-                    <img 
-                      src={event.imageUrl} 
+                    <img
+                      src={event.imageUrl}
                       alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-3 left-3">
                       <span className="px-2.5 py-1 bg-[#0A2947]/90 text-[#F3E4C9] text-xs font-mono font-bold rounded-lg border border-[#C59A45]/40">
@@ -1018,20 +1002,21 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             ))}
           </div>
         )}
+        </div>
 
         {/* =========================================================================
             MULTIMEDIA REEL & SPECIMEN MODAL
             ========================================================================= */}
         {activeMediaEvent && (
-          <div 
+          <div
             className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#0A2947]/85 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={handleCloseMedia}
           >
-            <div 
+            <div
               className="bg-white rounded-3xl border-2 border-[#C59A45] shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh]"
               onClick={(e) => e.stopPropagation()}
             >
-              
+
               {/* Modal Top Bar */}
               <div className="bg-[#0A2947] text-[#FAF7F0] px-6 py-4 flex items-center justify-between border-b-2 border-[#C59A45]">
                 <div className="flex items-center gap-3">
@@ -1051,9 +1036,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setFilmGrainEffect(!filmGrainEffect)}
-                    className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold uppercase border transition-colors cursor-pointer ${
-                      filmGrainEffect ? 'bg-[#C59A45] text-[#0A2947] border-[#F3E4C9]' : 'bg-[#FAF7F0]/20 text-white border-white/30'
-                    }`}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold uppercase border transition-colors cursor-pointer ${filmGrainEffect ? 'bg-[#C59A45] text-[#0A2947] border-[#F3E4C9]' : 'bg-[#FAF7F0]/20 text-white border-white/30'
+                      }`}
                     title="Toggle Vintage Film Grain Simulation"
                   >
                     Film Grain: {filmGrainEffect ? 'ON' : 'OFF'}
@@ -1069,15 +1053,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
               {/* Modal Body */}
               <div className="overflow-y-auto p-6 sm:p-8 space-y-6">
-                
+
                 {/* Cinema Player Container */}
                 <div className="relative aspect-video rounded-2xl overflow-hidden bg-black shadow-xl border-2 border-[#D3D4C0]">
                   <img
                     src={activeMediaEvent.imageUrl}
                     alt={activeMediaEvent.title}
-                    className={`w-full h-full object-cover transition-transform duration-1000 ${
-                      isPlayingMedia ? 'scale-105 filter contrast-110 brightness-95' : ''
-                    } ${filmGrainEffect ? 'sepia-[0.25]' : ''}`}
+                    className={`w-full h-full object-cover transition-transform duration-1000 ${isPlayingMedia ? 'scale-105 filter contrast-110 brightness-95' : ''
+                      } ${filmGrainEffect ? 'sepia-[0.25]' : ''}`}
                   />
 
                   {/* Simulated Vintage Newsreel Overlay */}
@@ -1119,7 +1102,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     </div>
 
                     <div className="flex-1 max-w-md h-1.5 bg-white/30 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-[#C59A45] rounded-full transition-all duration-300"
                         style={{ width: `${Math.min(100, (mediaTime / 90) * 100)}%` }}
                       />
@@ -1259,7 +1242,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         {/* =========================================================================
             INTERACTIVE KIOSK DRAWERS & CONTROLLERS
             ========================================================================= */}
-        
+
         {/* Milestone Chronicle Quiz Drawer */}
         <TimelineQuizDrawer
           isOpen={isQuizOpen}

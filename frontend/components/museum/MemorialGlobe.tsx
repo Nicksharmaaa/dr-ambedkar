@@ -103,7 +103,7 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
 
     // 1. Photorealistic Earth Sphere with Satellite Surface & Normal Topography
     const earthGeometry = new THREE.SphereGeometry(GLOBE_RADIUS, 64, 64);
-    
+
     // Load local satellite textures
     const dayTexture = textureLoader.load('/images/globe/earth_day.jpg');
     const normalTexture = textureLoader.load('/images/globe/earth_normal.jpg');
@@ -727,9 +727,9 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
   const handleResetView = () => {
     soundEffects.playClick();
     activeBaseTargetRef.current = null;
-    targetRotationRef.current = { 
-      x: (22 * Math.PI / 180) * 0.7, 
-      y: -(78 * Math.PI / 180) - (Math.PI / 2) 
+    targetRotationRef.current = {
+      x: (22 * Math.PI / 180) * 0.7,
+      y: -(78 * Math.PI / 180) - (Math.PI / 2)
     };
     if (cameraRef.current) cameraRef.current.position.z = 13.5;
     setZoomLevel(1);
@@ -740,7 +740,7 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
 
   return (
     <div className={`relative rounded-3xl overflow-hidden border-2 border-[#D3D4C0] bg-[#030712] shadow-2xl ${className}`}>
-      
+
       {/* 3D WebGL Canvas Mount (Earth Globe in Center) */}
       <div
         ref={mountRef}
@@ -786,28 +786,6 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
           <RotateCcw className="w-4 h-4" />
         </button>
 
-        <button
-          type="button"
-          onClick={() => {
-            soundEffects.playClick();
-            if (selectedLocation) {
-              onSelectLocation(null);
-              setIsAutoRotating(true);
-            } else {
-              setIsAutoRotating(!isAutoRotating);
-            }
-          }}
-          title={selectedLocation ? "Unlock location & resume 360° spin" : (isAutoRotating ? "Pause Auto-Rotation" : "Resume Auto-Rotation")}
-          className={`px-3 py-1 rounded-xl text-[11px] font-mono font-bold transition-all cursor-pointer ${
-            selectedLocation 
-              ? 'bg-[#C89D56] text-[#0A2947] hover:bg-white shadow-xs' 
-              : (isAutoRotating 
-                  ? 'bg-[#C89D56] text-[#0A2947] shadow-xs' 
-                  : 'text-[#F3E4C9] hover:bg-[#C89D56]/20')
-          }`}
-        >
-          {selectedLocation ? '📍 Locked (Free Spin)' : (isAutoRotating ? 'Spinning' : 'Paused')}
-        </button>
       </div>
 
       {/* Spatial Overlays (Left Locations Panel & Right Descriptive Card) */}
@@ -816,7 +794,7 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
       {/* Bottom Center Indicator Tip */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 pointer-events-none hidden lg:flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#F3E4C9]/85 bg-[#061524]/85 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#C89D56]/30 shadow-lg">
         <Navigation className="w-3.5 h-3.5 text-[#C89D56]" />
-        <span>Click card to pinpoint · Drag Earth to rotate · Scroll to zoom</span>
+        <span>Click card to pinpoint · Drag Earth to rotate </span>
       </div>
 
     </div>

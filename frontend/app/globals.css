@@ -83,20 +83,97 @@ html, body {
   -webkit-text-fill-color: transparent;
 }
 
-/* Custom scrollbars */
+/* =========================================================================
+   CURATORIAL ARCHIVAL SCROLLBAR SYSTEM
+   Harmonized with website aesthetic:
+   - Track: Clean transparent / translucent warm sage-parchment tint
+   - Thumb: Warm antique bronze (#8B5E3C) with rounded floating pill shape
+   - Hover / Active: Royal navy (#0A2947)
+   - Works across Webkit (Chrome, Edge, Safari, Brave) & Gecko (Firefox)
+   ========================================================================= */
+
+/* Firefox standard specification */
+html,
+body,
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 94, 60, 0.45) transparent;
+}
+
+/* WebKit / Blink (Chrome, Safari, Edge, Opera, Brave) */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
 }
+
 ::-webkit-scrollbar-track {
-  background: hsl(var(--background));
+  background: transparent;
 }
+
+::-webkit-scrollbar-track:hover {
+  background: rgba(211, 212, 192, 0.18);
+}
+
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
-  border-radius: 4px;
+  background: rgba(139, 94, 60, 0.42);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground));
+  background: rgba(10, 41, 71, 0.72);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #0A2947;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Utility classes for inner scroll containers */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 94, 60, 0.45) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(139, 94, 60, 0.38);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(10, 41, 71, 0.75);
+}
+
+/* Hide scrollbar utility */
+.scrollbar-none,
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }
 
 /* ── Ingestion Dashboard ─────────────────────────────────────────────────── */
