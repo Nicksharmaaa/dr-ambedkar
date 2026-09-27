@@ -36,6 +36,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
   const [copiedCitationId, setCopiedCitationId] = useState<string | null>(null);
   const [isZoomed, setIsZoomed] = useState<boolean>(false);
   const [lightboxTone, setLightboxTone] = useState<'original' | 'high_contrast' | 'sepia'>('original');
+  const [displayLimit, setDisplayLimit] = useState<number>(36);
 
   // Multi-dimensional filter lists
   const availableYears = useMemo(() => {
@@ -88,9 +89,19 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
     });
   }, [activeEra, selectedYear, selectedLocation, selectedSource, searchQuery]);
 
-  // Convert filtered historical photos to React Bits Masonry items with organic heights
+  // Reset display limit when any filter changes
+  useEffect(() => {
+    setDisplayLimit(36);
+  }, [activeEra, selectedYear, selectedLocation, selectedSource, searchQuery]);
+
+  // Progressive slicing for silky performance with 500+ authentic plates
+  const visiblePhotos = useMemo(() => {
+    return filteredPhotos.slice(0, displayLimit);
+  }, [filteredPhotos, displayLimit]);
+
+  // Convert visible historical photos to React Bits Masonry items with organic heights
   const masonryItems: MasonryItem[] = useMemo(() => {
-    return filteredPhotos.map((photo, index) => {
+    return visiblePhotos.map((photo, index) => {
       let height = 540;
       if (photo.aspectRatio === 'portrait') {
         height = 740;
@@ -110,7 +121,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
         photo,
       };
     });
-  }, [filteredPhotos]);
+  }, [visiblePhotos]);
 
   // Handle keyboard navigation for Lightbox modal
   useEffect(() => {
@@ -390,7 +401,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
 
         {/* Photographic Count Indicator */}
         <div className="flex items-center justify-between text-xs text-stone-500 font-mono">
-          <span>Displaying {filteredPhotos.length} of {HISTORICAL_PHOTOS.length} photographs</span>
+          <span>Displaying {visiblePhotos.length} of {filteredPhotos.length} photographs (Total {HISTORICAL_PHOTOS.length} archival plates)</span>
           {activeEra !== 'all' && (
             <span>Filtered by Era: {activeEra}</span>
           )}
@@ -475,7 +486,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
         {/* 2. CONTACT SHEET / CURATORIAL LIST VIEW */}
         {viewMode === 'contact_sheet' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredPhotos.map((photo) => {
+            {visiblePhotos.map((photo) => {
               const displayTitle = language !== 'en' && photo.titleLocal?.[language] 
                 ? photo.titleLocal[language] 
                 : photo.title;
@@ -530,6 +541,48 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* Load More & Pagination Bar */}
+        {visiblePhotos.length < filteredPhotos.length && (
+          <div className="flex flex-col items-center justify-center pt-8 pb-12 space-y-3.5 bg-gradient-to-b from-transparent to-[#FAF7F0]/60 rounded-3xl border border-[#D3D4C0]/40 p-6 shadow-2xs">
+            <div className="text-xs font-mono text-stone-600">
+              Showing <span className="font-bold text-[#0A2947]">{visiblePhotos.length}</span> of <span className="font-bold text-[#0A2947]">{filteredPhotos.length}</span> plates
+              {filteredPhotos.length < HISTORICAL_PHOTOS.length && ` (filtered from ${HISTORICAL_PHOTOS.length} total)`}
+            </div>
+
+            <div className="w-72 sm:w-96 h-2 bg-stone-200 rounded-full overflow-hidden shadow-inner">
+              <div 
+                className="h-full bg-gradient-to-r from-[#8B5E3C] via-[#C89D56] to-[#0A2947] transition-all duration-300 rounded-full"
+                style={{ width: `${Math.round((visiblePhotos.length / filteredPhotos.length) * 100)}%` }}
+              />
+            </div>
+
+            <div className="flex items-center gap-3 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  soundEffects.playClick();
+                  setDisplayLimit(prev => Math.min(prev + 36, filteredPhotos.length));
+                }}
+                className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-[#0A2947] to-[#124273] hover:from-[#124273] hover:to-[#0A2947] text-[#FAF7F0] border border-[#C89D56]/40 font-mono text-xs font-bold tracking-wider uppercase transition-all shadow-md hover:shadow-lg cursor-pointer flex items-center gap-2"
+              >
+                <span>Load More Plates (+36)</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#C89D56]" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundEffects.playClick();
+                  setDisplayLimit(filteredPhotos.length);
+                }}
+                className="px-4 py-2.5 rounded-2xl bg-white hover:bg-stone-50 text-[#0A2947] border border-stone-300 font-mono text-xs font-bold transition-all shadow-2xs hover:shadow-xs cursor-pointer"
+              >
+                <span>View All ({filteredPhotos.length})</span>
+              </button>
+            </div>
           </div>
         )}
 
