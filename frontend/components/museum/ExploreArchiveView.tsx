@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  Search, Filter, BookOpen, Scale, Mic, MicOff, Scroll, FileText, 
+import {
+  Search, Filter, BookOpen, Scale, Mic, MicOff, Scroll, FileText,
   ArrowRight, RotateCcw, Sparkles, LayoutGrid, List, Columns3,
   Bookmark, Check, Copy, CheckCircle2, ChevronDown, SlidersHorizontal,
-  X, ExternalLink, Calendar, MapPin, Landmark, Compass, Eye, Maximize2, 
+  X, ExternalLink, Calendar, MapPin, Landmark, Compass, Eye, Maximize2,
   ShieldCheck, Volume2, VolumeX, Tag, Award, BookMarked, Shield
 } from 'lucide-react';
 import { Language, ArchivalDocument } from '@/types/museum';
@@ -93,11 +93,11 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
 
   // Archival search suggestions
   const searchSuggestions = [
-    "Article 32", 
-    "Annihilation of Caste", 
-    "Constituent Assembly", 
-    "Social Democracy", 
-    "Problem of the Rupee", 
+    "Article 32",
+    "Annihilation of Caste",
+    "Constituent Assembly",
+    "Social Democracy",
+    "Problem of the Rupee",
     "States and Minorities",
     "Mahad Satyagraha",
     "Buddha and His Dhamma",
@@ -105,7 +105,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
   ];
 
   const allTopics = [
-    'Constitution', 'Social Equality', 'Caste Abolition', 'Fundamental Rights', 
+    'Constitution', 'Social Equality', 'Caste Abolition', 'Fundamental Rights',
     'Economics', 'Democracy', 'Buddhism', 'Fraternity', 'Labour', 'Human Rights'
   ];
 
@@ -145,16 +145,16 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
       // Search Query Filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        const titleMatch = doc.title.toLowerCase().includes(q) || 
-          (doc.titleLocal?.hi?.toLowerCase().includes(q) ?? false) || 
+        const titleMatch = doc.title.toLowerCase().includes(q) ||
+          (doc.titleLocal?.hi?.toLowerCase().includes(q) ?? false) ||
           (doc.titleLocal?.mr?.toLowerCase().includes(q) ?? false);
-        const descMatch = doc.shortDescription.toLowerCase().includes(q) || 
+        const descMatch = doc.shortDescription.toLowerCase().includes(q) ||
           doc.fullText.toLowerCase().includes(q);
         const topicMatch = doc.keyTopics.some(topic => topic.toLowerCase().includes(q));
         const sourceMatch = doc.source.toLowerCase().includes(q);
         const accessionMatch = doc.accessionNo.toLowerCase().includes(q);
         const yearMatch = doc.year.toString().includes(q);
-        
+
         return titleMatch || descMatch || topicMatch || sourceMatch || accessionMatch || yearMatch;
       }
 
@@ -233,12 +233,12 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
   return (
     <div className="min-h-screen bg-transparent text-[#0A2947] py-8 sm:py-12 px-4 sm:px-6 lg:px-8 font-dmsans">
       <div className="max-w-7xl mx-auto space-y-8">
-        
+
         {/* =========================================================================
             1. MUSEUM ARCHIVAL GRAND PAVILION & LIVE STATS
             ========================================================================= */}
         <div className="bg-[#0A2947] text-[#FAF7F0] border-2 border-[#C59A45]/50 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
-          
+
           {/* Antique Brass Corner Accents */}
           <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-[#C59A45]/60 pointer-events-none" />
           <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-[#C59A45]/60 pointer-events-none" />
@@ -250,12 +250,6 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-8">
             <div className="space-y-3.5 max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#C59A45]/20 border border-[#C59A45]/40 text-[#F3E4C9] rounded-full text-xs font-cinzel font-bold uppercase tracking-wider">
-                <BookOpen className="w-3.5 h-3.5 text-[#C59A45]" />
-                <span>The National Digital Heritage Archive</span>
-                <span className="text-[#C59A45]/60">·</span>
-                <span className="text-white">Verified Historical Corpus</span>
-              </div>
 
               <h1 className="text-3xl sm:text-5xl font-serif-editorial font-bold text-white tracking-tight leading-tight">
                 Manuscripts & Primary Archival Corpus
@@ -355,18 +349,16 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                   soundEffects.playClick();
                   setSelectedTopic(isSelected ? 'all' : vault.topic);
                 }}
-                className={`p-5 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
-                  isSelected
+                className={`p-5 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${isSelected
                     ? 'bg-[#0A2947] text-[#FAF7F0] border-[#C59A45] shadow-lg ring-2 ring-[#C59A45]/30'
                     : 'bg-white hover:bg-[#FAF7F0] text-[#0A2947] border-[#D3D4C0] hover:border-[#8B5E3C]'
-                }`}
+                  }`}
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Icon className={`w-5 h-5 ${isSelected ? 'text-[#D4AF37]' : 'text-[#8B5E3C]'}`} />
-                    <span className={`text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded ${
-                      isSelected ? 'bg-white/15 text-[#F3E4C9]' : 'bg-[#FAF7F0] text-[#8B5E3C] border border-[#D3D4C0]'
-                    }`}>
+                    <span className={`text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded ${isSelected ? 'bg-white/15 text-[#F3E4C9]' : 'bg-[#FAF7F0] text-[#8B5E3C] border border-[#D3D4C0]'
+                      }`}>
                       {vault.badge}
                     </span>
                   </div>
@@ -378,9 +370,8 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                   </p>
                 </div>
 
-                <div className={`pt-3 mt-3 border-t text-[11px] font-montserrat font-bold uppercase flex items-center justify-between ${
-                  isSelected ? 'border-white/20 text-[#D4AF37]' : 'border-[#D3D4C0]/60 text-[#8B5E3C]'
-                }`}>
+                <div className={`pt-3 mt-3 border-t text-[11px] font-montserrat font-bold uppercase flex items-center justify-between ${isSelected ? 'border-white/20 text-[#D4AF37]' : 'border-[#D3D4C0]/60 text-[#8B5E3C]'
+                  }`}>
                   <span>{isSelected ? 'Vault Active' : 'Explore Vault'}</span>
                   <span>&rarr;</span>
                 </div>
@@ -393,14 +384,13 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
             3. MUSEUM SEARCH & COMMAND CONSOLE WITH VOICE SEARCH BUTTON
             ========================================================================= */}
         <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 shadow-sm space-y-4">
-          
+
           {/* Live Voice Status Indicator */}
           {voiceNotice && (
-            <div className={`px-4 py-2 rounded-xl text-xs font-mono flex items-center justify-between border transition-all ${
-              isListeningVoice 
-                ? 'bg-amber-100/90 text-amber-900 border-amber-300 animate-pulse' 
+            <div className={`px-4 py-2 rounded-xl text-xs font-mono flex items-center justify-between border transition-all ${isListeningVoice
+                ? 'bg-amber-100/90 text-amber-900 border-amber-300 animate-pulse'
                 : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-            }`}>
+              }`}>
               <div className="flex items-center gap-2">
                 <span className={`w-2.5 h-2.5 rounded-full ${isListeningVoice ? 'bg-red-600 animate-ping' : 'bg-emerald-600'}`} />
                 <span className="font-semibold">{voiceNotice}</span>
@@ -428,11 +418,10 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={isListeningVoice ? "Listening... Speak your query (e.g., 'Article 32' or 'Annihilation of Caste')..." : "Search the archive by title, speech, clause, accession, year, or transcript text..."}
               autoComplete="off"
-              className={`w-full pl-12 pr-32 sm:pr-40 py-4 bg-[#FAF7F0] border-2 text-[#0A2947] placeholder-[#0A2947]/50 rounded-2xl text-sm sm:text-base focus:outline-none transition-all font-dmsans ${
-                isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40' : 'border-[#D3D4C0] focus:border-[#0A2947]'
-              }`}
+              className={`w-full pl-12 pr-32 sm:pr-40 py-4 bg-[#FAF7F0] border-2 text-[#0A2947] placeholder-[#0A2947]/50 rounded-2xl text-sm sm:text-base focus:outline-none transition-all font-dmsans ${isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40' : 'border-[#D3D4C0] focus:border-[#0A2947]'
+                }`}
             />
-            
+
             <div className="absolute right-2.5 flex items-center gap-1.5">
               {/* Voice Search Pill */}
               <VoicePill
@@ -480,11 +469,10 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                   soundEffects.playClick();
                   setSearchQuery(sug);
                 }}
-                className={`px-3 py-1 rounded-xl text-xs font-montserrat transition-all cursor-pointer ${
-                  searchQuery.toLowerCase() === sug.toLowerCase()
+                className={`px-3 py-1 rounded-xl text-xs font-montserrat transition-all cursor-pointer ${searchQuery.toLowerCase() === sug.toLowerCase()
                     ? 'bg-[#0A2947] text-[#F3E4C9] font-bold shadow-xs'
                     : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
-                }`}
+                  }`}
               >
                 {sug}
               </button>
@@ -497,7 +485,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
             4. FACET FILTERS: ERA SELECTOR & CLASSIFICATION
             ========================================================================= */}
         <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 shadow-sm space-y-5">
-          
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D3D4C0]">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="w-4 h-4 text-[#8B5E3C]" />
@@ -541,11 +529,10 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                     soundEffects.playClick();
                     setSelectedEra(era.id);
                   }}
-                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                    selectedEra === era.id
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${selectedEra === era.id
                       ? 'bg-[#0A2947] text-[#FAF7F0] border-[#0A2947] shadow-sm font-bold'
                       : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
-                  }`}
+                    }`}
                 >
                   <div className="text-xs font-montserrat font-bold">{era.label}</div>
                   <div className={`text-[10px] font-mono truncate ${selectedEra === era.id ? 'text-[#F3E4C9]/80' : 'text-[#0A2947]/60'}`}>
@@ -575,11 +562,10 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                     soundEffects.playClick();
                     setSelectedType(btn.id);
                   }}
-                  className={`px-4 py-2 rounded-xl text-xs font-montserrat font-semibold transition-all cursor-pointer ${
-                    selectedType === btn.id
+                  className={`px-4 py-2 rounded-xl text-xs font-montserrat font-semibold transition-all cursor-pointer ${selectedType === btn.id
                       ? 'bg-[#0A2947] text-[#F3E4C9] font-bold shadow-xs'
                       : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
-                  }`}
+                    }`}
                 >
                   {btn.label}
                 </button>
@@ -635,7 +621,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
           {activeFiltersCount > 0 && (
             <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-[#D3D4C0]/60">
               <span className="text-[10px] font-mono text-[#0A2947]/60 uppercase">Applied Filters:</span>
-              
+
               {searchQuery.trim() && (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#0A2947] text-[#F3E4C9] text-xs">
                   <span>Query: "{searchQuery}"</span>
@@ -689,13 +675,13 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
             5. RESULTS CONTROL BAR: COUNTS, SORT & VIEW SWITCHER
             ========================================================================= */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2">
-          
+
           <div className="text-xs text-[#0A2947]/70 font-mono">
             Displaying <strong className="text-[#0A2947] font-bold">{filteredDocuments.length}</strong> verified archival folios
           </div>
 
           <div className="flex items-center gap-4">
-            
+
             {/* Sort Selector */}
             <div className="flex items-center gap-1.5 text-xs">
               <label htmlFor="explore-sort-select" className="text-[#0A2947]/60 font-montserrat font-bold uppercase text-[10px]">Sort:</label>
@@ -719,9 +705,8 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
             <div className="flex items-center bg-white border border-[#D3D4C0] rounded-xl p-1">
               <button
                 onClick={() => setViewMode('folio')}
-                className={`p-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-montserrat font-bold ${
-                  viewMode === 'folio' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70 hover:text-[#0A2947]'
-                }`}
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-montserrat font-bold ${viewMode === 'folio' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70 hover:text-[#0A2947]'
+                  }`}
                 title="Curatorial Folio View"
               >
                 <Columns3 className="w-4 h-4" />
@@ -730,9 +715,8 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
 
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-montserrat font-bold ${
-                  viewMode === 'grid' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70 hover:text-[#0A2947]'
-                }`}
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-montserrat font-bold ${viewMode === 'grid' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70 hover:text-[#0A2947]'
+                  }`}
                 title="Exhibition Grid View"
               >
                 <LayoutGrid className="w-4 h-4" />
@@ -741,9 +725,8 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
 
               <button
                 onClick={() => setViewMode('ledger')}
-                className={`p-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-montserrat font-bold ${
-                  viewMode === 'ledger' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70 hover:text-[#0A2947]'
-                }`}
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-montserrat font-bold ${viewMode === 'ledger' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70 hover:text-[#0A2947]'
+                  }`}
                 title="Scholarly Registry Ledger"
               >
                 <List className="w-4 h-4" />
@@ -848,7 +831,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
             </button>
           </div>
         ) : viewMode === 'folio' ? (
-          
+
           /* VIEW MODE 1: CURATORIAL ARCHIVAL FOLIOS (Prestigious Folio Specimen Cards) */
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredDocuments.map((doc) => {
@@ -866,7 +849,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                   <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#C59A45] via-[#8B5E3C] to-[#0A2947]" />
 
                   <div className="space-y-4">
-                    
+
                     {/* Archival Metadata Header */}
                     <div className="flex items-center justify-between text-xs font-mono">
                       <div className="flex items-center gap-2">
@@ -878,7 +861,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                           {doc.year}
                         </span>
                       </div>
-                      
+
                       <div className="flex items-center gap-1.5">
                         <span className="text-emerald-800 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200 text-[11px] flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
@@ -888,7 +871,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                     </div>
 
                     {/* Document Title */}
-                    <h3 
+                    <h3
                       onClick={() => onOpenDocument(doc)}
                       className="font-serif-editorial text-xl sm:text-2xl text-[#0A2947] font-bold group-hover:text-[#8B5E3C] transition-colors leading-snug cursor-pointer"
                     >
@@ -932,7 +915,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                     {/* Key Thematic Tags */}
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {doc.keyTopics.slice(0, 4).map((topic) => (
-                        <span 
+                        <span
                           key={topic}
                           onClick={() => {
                             soundEffects.playClick();
@@ -949,7 +932,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
 
                   {/* Actions Bar */}
                   <div className="pt-5 mt-5 border-t border-[#D3D4C0] flex flex-wrap items-center justify-between gap-2">
-                    
+
                     <div className="flex items-center gap-1.5">
                       {/* Ask AI Scholar Button */}
                       <button
@@ -968,11 +951,10 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                       {onToggleSaveItem && (
                         <button
                           onClick={() => onToggleSaveItem({ itemId: doc.id, itemType: 'document', title: doc.title })}
-                          className={`p-2 rounded-xl text-xs font-montserrat font-bold border transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs ${
-                            isSaved 
-                              ? 'bg-[#8B5E3C] text-white border-[#8B5E3C]' 
+                          className={`p-2 rounded-xl text-xs font-montserrat font-bold border transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs ${isSaved
+                              ? 'bg-[#8B5E3C] text-white border-[#8B5E3C]'
                               : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
-                          }`}
+                            }`}
                           title={isSaved ? "Saved in Research Notebook" : "Save to Notebook"}
                         >
                           <Bookmark className="w-3.5 h-3.5" />
@@ -1049,7 +1031,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                       </span>
                     </div>
 
-                    <h4 
+                    <h4
                       onClick={() => onOpenDocument(doc)}
                       className="font-serif-editorial font-bold text-lg text-[#0A2947] group-hover:text-[#8B5E3C] transition-colors line-clamp-2 cursor-pointer leading-snug"
                     >
