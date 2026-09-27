@@ -90,23 +90,44 @@ async def get_corpus_stats(db: DatabaseClient = Depends(get_db_client)) -> dict[
 @router.post("/search", summary="Hybrid Search (FTS5 + Vector with RRF)")
 async def hybrid_search(
     req: SearchRequest,
-    search_svc: HybridSearchService = Depends(get_search_service),
+    db: DatabaseClient = Depends(get_db_client),
 ) -> dict[str, Any]:
-    """Execute hybrid search across the Ambedkar archival corpus."""
+    """Execute hybrid search across the Ambedkar archival corpus via canonical search service."""
     try:
-        results = await search_svc.search(
+        from app.services.search.hybrid import HybridSearchService as CanonicalSearchService
+        svc = CanonicalSearchService(db)
+        vol_filter = f"AMBEDKAR-VOL-{req.vol_num:02d}" if req.vol_num is not None else None
+        res = await svc.search(
             query=req.query,
-            top_k=req.top_k,
-            vol_filter=req.vol_num,
+            mode="hybrid",
+            limit=req.top_k,
+            object_id=vol_filter,
+            enable_rerank=True,
         )
+        formatted_results = []
+        for r in res.get("results", []):
+            formatted_results.append({
+                "chunk_id": r.get("chunk_id", ""),
+                "doc_id": r.get("object_id", ""),
+                "vol_num": req.vol_num,
+                "part_num": None,
+                "chapter": r.get("section_title"),
+                "section": r.get("section_title"),
+                "page_est": r.get("page_number"),
+                "citation": f"{r.get('object_title', '')} (p. {r.get('page_number', '')})",
+                "text": r.get("text", ""),
+                "score": round(float(r.get("score", 0.0)), 4),
+                "match_sources": ["vector", "fts"],
+            })
         return {
             "query": req.query,
-            "total_found": len(results),
-            "results": [r.to_dict() for r in results],
+            "total_found": len(formatted_results),
+            "results": formatted_results,
         }
     except Exception as e:
         logger.error("Search failed for '%s': %s", req.query, e)
         raise HTTPException(status_code=500, detail=f"Search failed: {e}")
+
 
 
 @router.post("/ask", summary="Evidence-Grounded RAG Answer")

@@ -5,6 +5,7 @@ import { KnowledgeGraph3D } from './graph3d';
 import { ArchivalDocument, Language } from '@/types/museum';
 import { KNOWLEDGE_GRAPH_NODES, KNOWLEDGE_GRAPH_LINKS } from '@/data/archiveData';
 import { ShieldCheck, Sparkles, Network, BookOpen } from 'lucide-react';
+import { UI_STRINGS } from '@/utils/i18n';
 
 interface KnowledgeGraphViewProps {
   language?: Language;
@@ -19,6 +20,7 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
   kidMode = false,
   onAskAI,
 }) => {
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [isImmersive, setIsImmersive] = useState<boolean>(false);
 
   if (isImmersive) {
@@ -51,14 +53,14 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#0A2947] tracking-tight">
-              Knowledge Universe of{' '}
+              {t.wingGraphTitle || "Knowledge Universe"} —{' '}
               <span className="text-[#8B5E3C] underline decoration-[#C59A45]/40 decoration-wavy underline-offset-4">
                 Dr. B. R. Ambedkar
               </span>
             </h1>
 
             <p className="text-xs sm:text-sm text-[#0A2947]/75 font-sans leading-relaxed">
-              Explore {KNOWLEDGE_GRAPH_NODES.length} verified historical entities and {KNOWLEDGE_GRAPH_LINKS.length} intellectual lineages across seminal treatises, civic movements, institutional foundations, and constitutional philosophies.
+              {t.wingGraphSub || `Explore ${KNOWLEDGE_GRAPH_NODES.length} verified historical entities and ${KNOWLEDGE_GRAPH_LINKS.length} intellectual lineages across seminal treatises, civic movements, institutional foundations, and constitutional philosophies.`}
             </p>
           </div>
 
@@ -69,7 +71,7 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
                 {KNOWLEDGE_GRAPH_NODES.length}
               </div>
               <div className="text-[10px] text-[#8B5E3C] uppercase font-mono font-bold tracking-wider">
-                Entities
+                {language === 'hi' ? 'संस्थाएं' : language === 'mr' ? 'संकल्पना' : 'Entities'}
               </div>
             </div>
 
@@ -78,7 +80,7 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
                 {KNOWLEDGE_GRAPH_LINKS.length}
               </div>
               <div className="text-[10px] text-[#8B5E3C] uppercase font-mono font-bold tracking-wider">
-                Lineages
+                {language === 'hi' ? 'संबंध' : language === 'mr' ? 'संबंध' : 'Lineages'}
               </div>
             </div>
 
@@ -88,7 +90,7 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
                 <span>100%</span>
               </div>
               <div className="text-[10px] text-emerald-800 uppercase font-mono font-bold tracking-wider">
-                Verified
+                {language === 'hi' ? 'प्रमाणित' : language === 'mr' ? 'प्रमाणित' : 'Verified'}
               </div>
             </div>
           </div>

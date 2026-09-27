@@ -44,7 +44,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onClearAIQuery,
   onReplayIntro
 }) => {
-  const t = UI_STRINGS[language];
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [heroVisualMode, setHeroVisualMode] = useState<'prism' | 'dither'>('prism');
 
   // Landmark featured document: Constituent Assembly Speech 1949
@@ -89,66 +89,86 @@ export const HomeView: React.FC<HomeViewProps> = ({
     {
       id: 'archive',
       tab: 'archive',
-      title: 'The Archive',
-      subtitle: 'BAWS Volumes 1–22 · Full Corpus',
+      title: t.wingArchiveTitle || 'The Archive',
+      subtitle: t.wingArchiveSub || 'BAWS Volumes 1–22 · Full Corpus',
       icon: BookOpen
     },
     {
       id: 'timeline',
       tab: 'timeline',
-      title: 'Timeline Chronicle',
-      subtitle: '1891–1956 · Five Historical Epochs',
+      title: t.wingTimelineTitle || 'Timeline Chronicle',
+      subtitle: t.wingTimelineSub || '1891–1956 · Five Historical Epochs',
       icon: Clock
     },
     {
       id: 'media',
       tab: 'media',
-      title: 'Media & Voice',
-      subtitle: 'BBC Broadcasts & Historic Audio',
+      title: t.wingMediaTitle || 'Media & Voice',
+      subtitle: t.wingMediaSub || 'BBC Broadcasts & Historic Audio',
       icon: Radio
     },
     {
       id: 'assistant',
       tab: 'assistant',
-      title: 'AI Scholar',
-      subtitle: 'Grounded Archival Research & Citations',
+      title: t.wingAssistantTitle || 'AI Scholar',
+      subtitle: t.wingAssistantSub || 'Grounded Archival Research & Citations',
       icon: Sparkles
     },
     {
       id: 'gallery',
       tab: 'gallery',
-      title: 'Visual Folio',
-      subtitle: 'Rare Photographic Prints & Plates',
+      title: t.wingGalleryTitle || 'Visual Folio',
+      subtitle: t.wingGallerySub || 'Rare Photographic Prints & Plates',
       icon: Camera
     },
     {
       id: 'graph',
       tab: 'graph',
-      title: '3D Knowledge Graph',
-      subtitle: 'Interactive Semantic Lineage & Map',
+      title: t.wingGraphTitle || '3D Knowledge Graph',
+      subtitle: t.wingGraphSub || 'Interactive Semantic Lineage & Map',
       icon: Network
     },
     {
       id: 'stories',
       tab: 'stories',
-      title: 'Audio Stories',
-      subtitle: 'Guided Audiovisual Walkthroughs',
+      title: t.wingStoriesTitle || 'Audio Stories',
+      subtitle: t.wingStoriesSub || 'Guided Audiovisual Walkthroughs',
       icon: Star
     },
     {
       id: 'quest',
       tab: 'quest',
-      title: 'Interactive Quest',
-      subtitle: 'Constitutional Challenges & Quiz',
+      title: t.wingQuestTitle || 'Interactive Quest',
+      subtitle: t.wingQuestSub || 'Constitutional Challenges & Quiz',
       icon: Zap
     },
     {
       id: 'collection',
       tab: 'collection',
-      title: 'Personal Notebook',
-      subtitle: 'Saved Dossier & Scholarly Notes',
+      title: t.wingCollectionTitle || 'Personal Notebook',
+      subtitle: t.wingCollectionSub || 'Saved Dossier & Scholarly Notes',
       icon: Bookmark
     },
+  ];
+
+  const quickInquiryTopics = language === 'hi' ? [
+    'जाति का विनाश',
+    'संविधान सभा',
+    'पूना पैक्ट',
+    'अनुच्छेद 32',
+    'रुपये की समस्या'
+  ] : language === 'mr' ? [
+    'जातीचा उच्छेद',
+    'घटना समिती वादविवाद',
+    'पुणे करार',
+    'कलम 32',
+    'रुपयाचा प्रश्न'
+  ] : [
+    'Annihilation of Caste',
+    'Constituent Assembly',
+    'Poona Pact',
+    'Article 32',
+    'Problem of the Rupee'
   ];
 
   // Curatorial Timeline Gateways
@@ -201,24 +221,25 @@ export const HomeView: React.FC<HomeViewProps> = ({
             {/* Museum Header Tags */}
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="px-3 py-1 bg-[#0A2947] text-[#FAF7F0] text-[11px] font-cinzel font-bold uppercase tracking-widest rounded-md shadow-xs">
-                Dr. B. R. Ambedkar Digital Heritage Archive
+                {t.heroBadge || "Dr. B. R. Ambedkar Digital Heritage Archive"}
               </span>
             </div>
 
             {/* Display Exhibition Typography */}
             <div className="space-y-2">
               <p className="font-cinzel text-xs sm:text-sm tracking-[0.25em] text-[#8B5E3C] uppercase font-bold">
-                1891 — 1956 · Curatorial Exhibition
+                {t.heroDates || "1891 — 1956 · Curatorial Exhibition"}
               </p>
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif-editorial font-bold text-[#0A2947] tracking-tight leading-[1.04]">
-                Ideas That <br />
-                <span className="italic font-normal">Rewrote</span> a Nation.
+                {t.heroTitle1 || "Ideas That"}{' '}
+                <span className="italic font-normal">{t.heroTitleItalic || "Rewrote"}</span>{' '}
+                {t.heroTitle2 || "a Nation."}
               </h1>
             </div>
 
             {/* Concise Archival Subtitle */}
             <p className="text-sm sm:text-base text-[#0A2947]/80 leading-relaxed font-normal max-w-xl">
-              Explore primary manuscripts, constituent assembly transcripts, photographic records, and source-grounded historical intelligence.
+              {t.heroSubtitle || "Explore primary manuscripts, constituent assembly transcripts, photographic records, and source-grounded historical intelligence."}
             </p>
 
             {/* Direct Exhibition Navigation CTAs */}
@@ -231,7 +252,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 className="px-6 py-3.5 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] rounded-xl text-xs sm:text-sm font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-2.5 cursor-pointer shadow-md active:scale-98"
               >
                 <BookOpen className="w-4 h-4 text-[#C89D56]" />
-                <span>Enter The Archive</span>
+                <span>{t.enterArchive || "Enter The Archive"}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -243,22 +264,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 className="px-5 py-3.5 bg-white hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0] hover:border-[#8B5E3C] rounded-xl text-xs sm:text-sm font-montserrat font-semibold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-2xs active:scale-98"
               >
                 <Compass className="w-4 h-4 text-[#8B5E3C]" />
-                <span>Chronology</span>
+                <span>{t.chronology || "Chronology"}</span>
               </button>
             </div>
 
             {/* Curated Historical Inquiry Chips */}
             <div className="pt-2 flex flex-wrap items-center gap-2">
               <span className="text-[11px] font-mono uppercase tracking-wider text-[#8B5E3C] font-bold">
-                Quick Inquiries:
+                {t.quickInquiries || "Quick Inquiries:"}
               </span>
-              {[
-                'Annihilation of Caste',
-                'Constituent Assembly',
-                'Poona Pact',
-                'Article 32',
-                'Problem of the Rupee'
-              ].map((topic) => (
+              {quickInquiryTopics.map((topic) => (
                 <button
                   key={topic}
                   type="button"
@@ -291,7 +306,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   : 'text-[#0A2947]/70 hover:text-[#0A2947]'
                   }`}
               >
-                <span>Hologram</span>
+                <span>{t.hologram || "Hologram"}</span>
               </button>
               <button
                 type="button"
@@ -304,7 +319,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   : 'text-[#0A2947]/70 hover:text-[#0A2947]'
                   }`}
               >
-                <span>Archival Dither</span>
+                <span>{t.archivalDither || "Archival Dither"}</span>
               </button>
             </div>
 
@@ -335,10 +350,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
             {/* Dignified Memorial Inscription Plinth */}
             <div className="mt-1 text-center px-4">
               <div className="font-cinzel font-bold text-base sm:text-lg text-[#0A2947] tracking-wider uppercase">
-                Dr. Bhimrao Ramji Ambedkar
+                {t.plinthName || "Dr. Bhimrao Ramji Ambedkar"}
               </div>
               <p className="text-xs font-mono text-[#8B5E3C] tracking-wide mt-0.5">
-                1891–1956 · Chief Architect of the Constitution · Bharat Ratna
+                {t.plinthSubtitle || "1891–1956 · Chief Architect of the Constitution · Bharat Ratna"}
               </p>
             </div>
           </div>
@@ -355,16 +370,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#D3D4C0]">
           <div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif-editorial font-bold text-[#0A2947] mt-1 tracking-tight">
-              Explore the Museum
+              {t.wingsTitle || "Explore the Museum"}
             </h2>
             <p className="text-xs sm:text-sm text-[#0A2947]/75 mt-0.5 font-dmsans max-w-2xl">
-              Direct access to all dedicated research pavilions, interactive archives, audio narrations, and 3D visualizers.
+              {t.wingsSubtitle || "Direct access to all dedicated research pavilions, interactive archives, audio narrations, and 3D visualizers."}
             </p>
           </div>
 
           <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-[#8B5E3C] bg-white/80 px-3.5 py-1.5 rounded-full border border-[#D3D4C0] shadow-2xs">
             <span className="w-2 h-2 rounded-full bg-[#C89D56] animate-pulse" />
-            <span>9 Pavilions</span>
+            <span>{t.pavilionsCount || "9 Pavilions"}</span>
           </div>
         </div>
 
@@ -418,7 +433,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#D3D4C0]">
             <div>
               <h2 className="text-2xl sm:text-3xl font-serif-editorial font-bold text-[#0A2947] mt-1">
-                Gallery
+                {t.galleryTitle || "Gallery"}
               </h2>
             </div>
 
@@ -429,7 +444,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               }}
               className="px-5 py-2.5 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-xs shrink-0"
             >
-              <span>See More ({HISTORICAL_PHOTOS.length})</span>
+              <span>{t.seeMore || "See More"} ({HISTORICAL_PHOTOS.length})</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

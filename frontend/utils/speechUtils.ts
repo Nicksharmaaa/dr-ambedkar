@@ -31,39 +31,75 @@ class SpeechController {
     this.listeners.forEach(cb => cb(isPlaying));
   }
 
-  public async speak(text: string, lang: 'en' | 'hi' | 'mr' = 'en', onEnd?: () => void) {
+  public async speak(text: string, lang: 'en' | 'hi' | 'mr' | string = 'en', onEnd?: () => void) {
     this.stop();
 
-    const cleanText = text.replace(/[*#_`]/g, '').trim();
+    // Clean text of markdown formatting, bracket citations, and URLs
+    const cleanText = text
+      .replace(/\[(?:Doc|Citation|Source|BAWS|Ref):[^\]]*\]/gi, '')
+      .replace(/\(Vol\.\s*\d+[^)]*\)/gi, '')
+      .replace(/https?:\/\/\S+/gi, '')
+      .replace(/[*#_`~>]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
     if (!cleanText) return;
 
-    // 1. Try Backend Sarvam AI & ElevenLabs Voice Models
+    // 1. Primary: Server-side Neural TTS (ElevenLabs for English & Hindi, Sarvam Bulbul v3 for Indic)
     if (typeof window !== 'undefined') {
       try {
         const { api } = await import('@/lib/api');
-        const res = await api.synthesizeSpeech(cleanText.slice(0, 1000), lang);
+        const res = await api.synthesizeSpeech(cleanText.slice(0, 2500), lang);
         if (res && res.audio_url) {
-          const audio = new Audio(res.audio_url);
+          // Resolve audio URL
+          let audioSrc = res.audio_url;
+          if (audioSrc.startsWith('/')) {
+            const origin = window.location.origin;
+            audioSrc = `${origin}${audioSrc}`;
+          }
+
+          const audio = new Audio(audioSrc);
           this.currentAudio = audio;
           this.notify(true);
+
           audio.onended = () => {
+            this.currentAudio = null;
             this.notify(false);
             if (onEnd) onEnd();
           };
+
           audio.onerror = () => {
-            this.notify(false);
-            this.speakWithBrowserSynth(cleanText, lang, onEnd);
+            console.warn('[TTS] Audio playback error on primary URL:', audioSrc, 'Trying direct fallback...');
+            const directUrl = `http://127.0.0.1:8000${res.audio_url}`;
+            const directAudio = new Audio(directUrl);
+            this.currentAudio = directAudio;
+            directAudio.onended = () => {
+              this.currentAudio = null;
+              this.notify(false);
+              if (onEnd) onEnd();
+            };
+            directAudio.onerror = () => {
+              this.currentAudio = null;
+              this.notify(false);
+              this.speakWithBrowserSynth(cleanText, lang as any, onEnd);
+            };
+            directAudio.play().catch(() => {
+              this.currentAudio = null;
+              this.notify(false);
+              this.speakWithBrowserSynth(cleanText, lang as any, onEnd);
+            });
           };
+
           await audio.play();
           return;
         }
       } catch (e) {
-        console.debug('Neural TTS fallback to browser synth:', e);
+        console.warn('Neural TTS request failed, falling back to browser synthesis:', e);
       }
     }
 
     // 2. Fallback to Browser Speech Synthesis
-    this.speakWithBrowserSynth(cleanText, lang, onEnd);
+    this.speakWithBrowserSynth(cleanText, lang as any, onEnd);
   }
 
   private speakWithBrowserSynth(cleanText: string, lang: 'en' | 'hi' | 'mr', onEnd?: () => void) {

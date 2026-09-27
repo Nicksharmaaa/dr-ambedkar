@@ -385,8 +385,9 @@ const DEFAULT_FILTERS: Filters = {
   object_type: "",
   date_from: "",
   date_to: "",
-  enable_rerank: false,
+  enable_rerank: true,
 };
+
 
 function SearchContent() {
   const searchParams = useSearchParams();

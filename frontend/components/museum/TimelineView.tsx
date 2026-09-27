@@ -35,7 +35,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   onAskAIAboutEvent,
   userMode = 'visitor'
 }) => {
-  const t = UI_STRINGS[language];
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [selectedEra, setSelectedEra] = useState<string>('all');
   const [timelineMode, setTimelineMode] = useState<'alternating' | 'slideshow' | 'grid'>('alternating');
   const [activeMediaEvent, setActiveMediaEvent] = useState<TimelineEvent | null>(null);
@@ -45,8 +45,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const [activeEventIndex, setActiveEventIndex] = useState<number>(0);
   const [filterType, setFilterType] = useState<'all' | 'video' | 'photo' | 'document'>('all');
   const [filmGrainEffect, setFilmGrainEffect] = useState<boolean>(true);
+<<<<<<< HEAD
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [spineSubView, setSpineSubView] = useState<'memorial' | 'demo'>('memorial');
+=======
+>>>>>>> 350693d50ffec95ce954c29753f2ec76bce6ae69
 
   // Interactive Kiosk Additions
   const [isQuizOpen, setIsQuizOpen] = useState<boolean>(false);
@@ -77,12 +80,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const filteredEvents = TIMELINE_EVENTS.filter((ev) => {
     const eraMatch = selectedEra === 'all' || ev.era === selectedEra;
     const typeMatch = filterType === 'all' || ev.mediaType === filterType;
-    const queryMatch = !searchQuery.trim() ||
-      ev.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ev.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ev.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ev.year.toString().includes(searchQuery.trim());
-    return eraMatch && typeMatch && queryMatch;
+    return eraMatch && typeMatch;
   });
 
   const getRelatedDocs = (docIds: string[]) => {
@@ -296,11 +294,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
               </div>
 
               <h1 className="text-3xl sm:text-5xl font-serif-editorial font-bold text-[#0A2947] tracking-tight leading-tight">
-                Chronicles of a Revolutionary Life
+                {t.timelineTitle || "Chronicles of a Revolutionary Life"}
               </h1>
 
               <p className="text-sm sm:text-base text-[#0A2947]/75 font-normal leading-relaxed">
-                Step into the epochal journey of Dr. Bhimrao Ramji Ambedkar. Touch the interactive horizon to explore historical newsreels, primary treaties, audio proclamations, and seminal constitutional milestones.
+                {t.timelineSubtitle || "Step into the epochal journey of Dr. Bhimrao Ramji Ambedkar. Touch the interactive horizon to explore historical newsreels, primary treaties, audio proclamations, and seminal constitutional milestones."}
               </p>
             </div>
 
@@ -318,7 +316,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   title="Auto-advancing memorial presentation"
                 >
                   {isTourActive ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-                  <span>{isTourActive ? 'Stop Tour' : 'Guided Tour'}</span>
+                  <span>{isTourActive ? (language === 'hi' ? 'दौरा रोकें' : language === 'mr' ? 'दौरा थांबवा' : 'Stop Tour') : (language === 'hi' ? 'मार्गदर्शित यात्रा' : language === 'mr' ? 'मार्गदर्शित दौरा' : 'Guided Tour')}</span>
                 </button>
 
                 {/* Milestone Quiz Challenge */}
@@ -331,7 +329,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   title="Test Your Knowledge in the Memorial Quiz"
                 >
                   <Trophy className="w-3.5 h-3.5 text-[#C59A45]" />
-                  <span>Epoch Quiz</span>
+                  <span>{language === 'hi' ? 'क्विज़' : language === 'mr' ? 'प्रश्नावली' : 'Epoch Quiz'}</span>
                 </button>
               </div>
 
@@ -378,6 +376,64 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
               </div>
             </div>
           </div>
+<<<<<<< HEAD
+=======
+
+          {/* Media Filter Sub-Bar */}
+          <div className="mt-6 pt-5 border-t border-[#D3D4C0] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="text-xs font-mono text-[#0A2947]/70 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#C59A45]" />
+              <span>{filteredEvents.length} {language === 'hi' ? 'ऐतिहासिक पड़ाव' : language === 'mr' ? 'ऐतिहासिक टप्पे' : 'Historical Stations'}</span>
+            </div>
+
+            {/* Media Filter Switch */}
+            <div className="flex items-center gap-1.5 shrink-0 bg-[#FAF7F0] p-1 rounded-xl border border-[#D3D4C0]">
+              <span className="text-[10px] font-cinzel font-bold text-[#8B5E3C] uppercase px-2">Type:</span>
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setFilterType('all');
+                }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer ${filterType === 'all' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
+                  }`}
+              >
+                All
+              </button>
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setFilterType('video');
+                }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer flex items-center gap-1 ${filterType === 'video' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
+                  }`}
+              >
+                <Film className="w-3 h-3 text-[#C59A45]" />
+                Reels
+              </button>
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setFilterType('photo');
+                }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer ${filterType === 'photo' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
+                  }`}
+              >
+                Plates
+              </button>
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setFilterType('document');
+                }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-montserrat font-bold uppercase transition-all cursor-pointer flex items-center gap-1 ${filterType === 'document' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
+                  }`}
+              >
+                <BookOpen className="w-3 h-3 text-[#8B5E3C]" />
+                Treatises
+              </button>
+            </div>
+          </div>
+>>>>>>> 350693d50ffec95ce954c29753f2ec76bce6ae69
         </div>
 
         {/* =========================================================================

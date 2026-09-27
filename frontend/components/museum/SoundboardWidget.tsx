@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { SOUNDBOARD_CLIPS } from '@/data/interactiveData';
 import { soundEffects } from '@/utils/soundEffects';
+import { speechController } from '@/utils/speechUtils';
 
 interface SoundboardWidgetProps {
   onOpenDocument?: (docId: string) => void;
@@ -29,7 +30,7 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
         setProgress(prev => {
           if (prev >= 100) {
             setIsPlaying(false);
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            speechController.stop();
             return 0;
           }
           return prev + 2 * playbackSpeed;
@@ -44,7 +45,7 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
     if (activeClipId === clipId && isPlaying) {
       // Pause
       setIsPlaying(false);
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      speechController.stop();
       return;
     }
 
@@ -55,17 +56,10 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
     setProgress(0);
     setIsPlaying(true);
 
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(clip.quote);
-      utterance.rate = playbackSpeed;
-      utterance.pitch = 0.9;
-      utterance.onend = () => {
-        setIsPlaying(false);
-        setProgress(100);
-      };
-      window.speechSynthesis.speak(utterance);
-    }
+    speechController.speak(clip.quote, 'en', () => {
+      setIsPlaying(false);
+      setProgress(100);
+    });
   };
 
   const handleSpeedToggle = () => {
@@ -75,13 +69,9 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
     const newSpeed = speeds[nextIdx];
     setPlaybackSpeed(newSpeed);
     
-    if (isPlaying && activeClip && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(activeClip.quote);
-      utterance.rate = newSpeed;
-      utterance.pitch = 0.9;
-      utterance.onend = () => setIsPlaying(false);
-      window.speechSynthesis.speak(utterance);
+    if (isPlaying && activeClip) {
+      speechController.stop();
+      speechController.speak(activeClip.quote, 'en', () => setIsPlaying(false));
     }
   };
 

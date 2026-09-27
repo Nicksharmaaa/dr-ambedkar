@@ -41,7 +41,7 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
         voice_id: Optional[str] = None,
     ) -> None:
         self.api_key = (api_key if api_key is not None else (settings.elevenlabs_api_key or "")).strip()
-        self.default_voice_id = (voice_id if voice_id is not None else (settings.elevenlabs_voice_id or "21m00Tcm4TlvDq8ikWAM")).strip()
+        self.default_voice_id = (voice_id if voice_id is not None else (settings.elevenlabs_voice_id or "pNInz6obpgDQGcFmaJgB")).strip()
         self._sdk_client: Any = None
         self._init_sdk_client()
 

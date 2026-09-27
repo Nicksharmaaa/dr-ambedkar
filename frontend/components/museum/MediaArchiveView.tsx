@@ -20,7 +20,7 @@ export const MediaArchiveView: React.FC<MediaArchiveViewProps> = ({
   language,
   onOpenDocument
 }) => {
-  const t = UI_STRINGS[language];
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [activeMedia, setActiveMedia] = useState<MediaItem>(MEDIA_RECORDS[0]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(24);
@@ -62,10 +62,10 @@ export const MediaArchiveView: React.FC<MediaArchiveViewProps> = ({
               <span>Audiovisual Archive · 1930–1956</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-serif-editorial font-bold text-[#0A2947] tracking-tight">
-              Voice of Dr. B. R. Ambedkar
+              {t.mediaTitle || "Voice of Dr. B. R. Ambedkar"}
             </h1>
             <p className="text-xs sm:text-sm text-[#0A2947]/75 font-normal leading-relaxed">
-              Restored radio broadcasts, Constituent Assembly orations, and BBC interviews with synchronized multi-script transcripts.
+              {t.mediaSubtitle || "Restored radio broadcasts, Constituent Assembly orations, and BBC interviews with synchronized multi-script transcripts."}
             </p>
           </div>
 
