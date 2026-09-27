@@ -144,7 +144,7 @@ export const TopUtilityBar: React.FC<TopUtilityBarProps> = ({
 
   return (
     <header
-      className="fixed top-3 sm:top-5 right-3 sm:right-6 z-[8900] select-none flex items-center gap-2 sm:gap-2.5"
+      className="fixed top-3 sm:top-5 right-3 sm:right-6 z-[8900] select-none flex items-center gap-2"
       aria-label="Universal Heritage Toolbar"
     >
       {/* 1. Global Search Quick Trigger */}
@@ -155,7 +155,7 @@ export const TopUtilityBar: React.FC<TopUtilityBarProps> = ({
             soundEffects.playClick();
             onOpenSearch();
           }}
-          className="group relative flex items-center gap-2 px-3 sm:px-3.5 h-11 sm:h-12 rounded-full bg-white/90 hover:bg-white backdrop-blur-2xl border border-[#D3D4C0] hover:border-[#C89D56] shadow-[0_4px_20px_rgba(10,41,71,0.06)] hover:shadow-[0_8px_30px_rgba(200,157,86,0.14)] transition-all duration-300 cursor-pointer active:scale-95 text-[#0A2947]"
+          className="group relative flex items-center gap-2 px-3.5 h-10 rounded-full bg-white/95 hover:bg-white backdrop-blur-xl border border-[#D3D4C0] hover:border-[#C89D56] shadow-[0_2px_10px_rgba(10,41,71,0.06)] hover:shadow-[0_4px_16px_rgba(200,157,86,0.14)] transition-all duration-200 cursor-pointer active:scale-95 text-[#0A2947]"
           title="Search Corpus (Press Cmd+K or /)"
           aria-label="Open Global Archive Search"
         >
@@ -177,11 +177,11 @@ export const TopUtilityBar: React.FC<TopUtilityBarProps> = ({
             soundEffects.playClick();
             onOpenVoiceModal();
           }}
-          className="group relative flex items-center justify-center h-11 w-11 sm:h-12 sm:w-12 rounded-full bg-white/90 hover:bg-white backdrop-blur-2xl border border-[#D3D4C0] hover:border-[#C89D56] shadow-[0_4px_20px_rgba(10,41,71,0.06)] hover:shadow-[0_8px_30px_rgba(200,157,86,0.14)] transition-all duration-300 cursor-pointer active:scale-95 text-[#8B5E3C] hover:text-[#C89D56]"
+          className="group relative flex items-center justify-center h-10 w-10 rounded-full bg-white/95 hover:bg-white backdrop-blur-xl border border-[#D3D4C0] hover:border-[#C89D56] shadow-[0_2px_10px_rgba(10,41,71,0.06)] hover:shadow-[0_4px_16px_rgba(200,157,86,0.14)] transition-all duration-200 cursor-pointer active:scale-95 text-[#8B5E3C] hover:text-[#C89D56]"
           title={t.voiceNav || "Voice Navigator & Audio Search"}
           aria-label="Open Voice Navigator"
         >
-          <Mic className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110" />
+          <Mic className="w-4 h-4 transition-transform group-hover:scale-110" />
         </button>
       )}
 
@@ -194,11 +194,11 @@ export const TopUtilityBar: React.FC<TopUtilityBarProps> = ({
               soundEffects.playClick();
               setIsModeOpen(prev => !prev);
             }}
-            className="flex items-center gap-1.5 px-3 sm:px-3.5 h-11 sm:h-12 rounded-full bg-white/90 hover:bg-white backdrop-blur-2xl border border-[#D3D4C0] hover:border-[#C89D56] shadow-[0_4px_20px_rgba(10,41,71,0.06)] hover:shadow-[0_8px_30px_rgba(200,157,86,0.14)] transition-all duration-300 cursor-pointer active:scale-95 text-[#0A2947]"
+            className="group relative flex items-center gap-1.5 px-3.5 h-10 rounded-full bg-white/95 hover:bg-white backdrop-blur-xl border border-[#D3D4C0] hover:border-[#C89D56] shadow-[0_2px_10px_rgba(10,41,71,0.06)] hover:shadow-[0_4px_16px_rgba(200,157,86,0.14)] transition-all duration-200 cursor-pointer active:scale-95 text-[#0A2947]"
             title={`Current Persona Mode: ${currentModeLoc.label}`}
             aria-label="Switch Persona Mode"
           >
-            <CurrentModeIcon className="w-4 h-4 text-[#8B5E3C]" />
+            <CurrentModeIcon className="w-4 h-4 text-[#8B5E3C] group-hover:text-[#C89D56] transition-colors" />
             <span className="hidden sm:inline text-xs font-montserrat font-bold text-[#0A2947]">
               {currentModeLoc.label}
             </span>
@@ -262,11 +262,11 @@ export const TopUtilityBar: React.FC<TopUtilityBarProps> = ({
             soundEffects.playClick();
             onOpenAdmin();
           }}
-          className="group relative flex items-center justify-center h-11 w-11 sm:h-12 sm:w-12 rounded-full bg-white/90 hover:bg-white backdrop-blur-2xl border border-[#D3D4C0] hover:border-[#8B5E3C] shadow-[0_4px_20px_rgba(10,41,71,0.06)] hover:shadow-[0_8px_30px_rgba(139,94,60,0.14)] transition-all duration-300 cursor-pointer active:scale-95 text-[#8B5E3C] hover:text-[#0A2947]"
+          className="group relative flex items-center justify-center h-10 w-10 rounded-full bg-white/95 hover:bg-white backdrop-blur-xl border border-[#D3D4C0] hover:border-[#8B5E3C] shadow-[0_2px_10px_rgba(10,41,71,0.06)] hover:shadow-[0_4px_16px_rgba(139,94,60,0.14)] transition-all duration-200 cursor-pointer active:scale-95 text-[#8B5E3C] hover:text-[#0A2947]"
           title={t.adminPortal || "Admin & Curatorial Ingestion Portal"}
           aria-label="Admin Portal"
         >
-          <Shield className="w-4 h-4 sm:w-[18px] sm:h-[18px] transition-transform group-hover:scale-110" />
+          <Shield className="w-4 h-4 transition-transform group-hover:scale-110" />
           <span className="absolute top-full mt-2 right-0 px-2.5 py-1 bg-[#0A2947] text-[#FAF7F0] text-[11px] font-montserrat font-medium rounded-xl shadow-xl border border-[#D3D4C0]/40 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
             {t.adminPortal || "Admin Portal"}
           </span>
@@ -280,18 +280,18 @@ export const TopUtilityBar: React.FC<TopUtilityBarProps> = ({
           soundEffects.playClick();
           onToggleAccessibilityModal();
         }}
-        className="group relative flex items-center justify-center h-11 w-11 sm:h-12 sm:w-12 rounded-full bg-white/90 hover:bg-white backdrop-blur-2xl border border-[#D3D4C0] hover:border-[#C89D56] shadow-[0_4px_20px_rgba(10,41,71,0.06)] hover:shadow-[0_8px_30px_rgba(200,157,86,0.14)] transition-all duration-300 cursor-pointer active:scale-95 text-[#8B5E3C] hover:text-[#C89D56]"
+        className="group relative flex items-center justify-center h-10 w-10 rounded-full bg-white/95 hover:bg-white backdrop-blur-xl border border-[#D3D4C0] hover:border-[#C89D56] shadow-[0_2px_10px_rgba(10,41,71,0.06)] hover:shadow-[0_4px_16px_rgba(200,157,86,0.14)] transition-all duration-200 cursor-pointer active:scale-95 text-[#8B5E3C] hover:text-[#C89D56]"
         title="Accessibility & Reading Modes (Font Size, Contrast, Narration)"
         aria-label="Open Accessibility & Reading Settings"
       >
         <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-108">
-          <UniversalAccessibilityIcon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
+          <UniversalAccessibilityIcon className="w-4.5 h-4.5" />
         </div>
 
         {isCustomActive && (
-          <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+          <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C89D56] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#8B5E3C] border-2 border-white" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#8B5E3C] border-2 border-white" />
           </span>
         )}
 

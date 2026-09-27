@@ -79,14 +79,14 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
           soundEffects.playClick();
           setIsOpen(!isOpen);
         }}
-        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#FAF7F0] hover:bg-[#F3E4C9]/60 border border-[#D3D4C0] hover:border-[#C59A45] text-xs font-mono font-bold text-[#0A2947] transition-all cursor-pointer shadow-xs select-none ${
-          isOpen ? 'ring-2 ring-[#C59A45] border-[#C59A45] bg-[#F3E4C9]/40' : ''
+        className={`group relative flex items-center gap-1.5 px-3.5 h-10 rounded-full bg-white/95 hover:bg-white backdrop-blur-xl border border-[#D3D4C0] hover:border-[#C89D56] shadow-[0_2px_10px_rgba(10,41,71,0.06)] hover:shadow-[0_4px_16px_rgba(200,157,86,0.14)] text-xs font-montserrat font-bold text-[#0A2947] transition-all duration-200 cursor-pointer active:scale-95 select-none ${
+          isOpen ? 'ring-2 ring-[#C89D56] border-[#C89D56]' : ''
         } ${buttonClassName}`}
       >
-        <Globe className="w-3.5 h-3.5 text-[#8B5E3C] shrink-0" />
-        <span className="tracking-wide">{currentLang.code}</span>
+        <Globe className="w-4 h-4 text-[#8B5E3C] group-hover:text-[#C89D56] transition-colors shrink-0" />
+        <span className="text-xs font-montserrat font-bold text-[#0A2947]">{currentLang.code}</span>
         <ChevronDown
-          className={`w-3 h-3 text-[#8B5E3C] transition-transform duration-200 shrink-0 ${
+          className={`w-3.5 h-3.5 text-[#8B5E3C] transition-transform duration-200 shrink-0 ${
             isOpen ? 'rotate-180' : ''
           }`}
         />

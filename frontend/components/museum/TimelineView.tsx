@@ -43,7 +43,6 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const [activeEventIndex, setActiveEventIndex] = useState<number>(0);
   const [filterType, setFilterType] = useState<'all' | 'video' | 'photo' | 'document'>('all');
   const [filmGrainEffect, setFilmGrainEffect] = useState<boolean>(true);
-  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Interactive Kiosk Additions
   const [isQuizOpen, setIsQuizOpen] = useState<boolean>(false);
@@ -74,12 +73,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const filteredEvents = TIMELINE_EVENTS.filter((ev) => {
     const eraMatch = selectedEra === 'all' || ev.era === selectedEra;
     const typeMatch = filterType === 'all' || ev.mediaType === filterType;
-    const queryMatch = !searchQuery.trim() ||
-      ev.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ev.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ev.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ev.year.toString().includes(searchQuery.trim());
-    return eraMatch && typeMatch && queryMatch;
+    return eraMatch && typeMatch;
   });
 
   const getRelatedDocs = (docIds: string[]) => {
@@ -382,26 +376,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             </div>
           </div>
 
-          {/* Quick Search & Media Filter Sub-Bar */}
-          <div className="mt-6 pt-5 border-t border-[#D3D4C0] flex flex-col md:flex-row md:items-center justify-between gap-3">
-            {/* Search Input */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="w-4 h-4 text-[#8B5E3C] absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search milestones by keyword, city, or year..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-8 py-2 bg-[#FAF7F0] border border-[#D3D4C0] rounded-xl text-xs sm:text-sm font-dmsans text-[#0A2947] focus:outline-none focus:border-[#C59A45] focus:bg-white transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#0A2947]/50 hover:text-[#0A2947] p-1 cursor-pointer"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
+          {/* Media Filter Sub-Bar */}
+          <div className="mt-6 pt-5 border-t border-[#D3D4C0] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="text-xs font-mono text-[#0A2947]/70 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#C59A45]" />
+              <span>{filteredEvents.length} {language === 'hi' ? 'ऐतिहासिक पड़ाव' : language === 'mr' ? 'ऐतिहासिक टप्पे' : 'Historical Stations'}</span>
             </div>
 
             {/* Media Filter Switch */}
