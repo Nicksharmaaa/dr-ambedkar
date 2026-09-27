@@ -2,6 +2,15 @@
 const nextConfig = {
   reactStrictMode: false,
   transpilePackages: ['three', '3d-force-graph', 'react-force-graph-3d', 'three-render-objects', 'three-forcegraph'],
+  async redirects() {
+    return [
+      {
+        source: '/memorial',
+        destination: '/memorials',
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     let rawUrl = (
       process.env.BACKEND_INTERNAL_URL ||
