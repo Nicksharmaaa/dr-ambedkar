@@ -9,8 +9,9 @@ import { soundEffects } from '@/utils/soundEffects';
 interface MemorialGlobeProps {
   locations: HeritageLocation[];
   selectedLocation: HeritageLocation | null;
-  onSelectLocation: (location: HeritageLocation) => void;
+  onSelectLocation: (location: HeritageLocation | null) => void;
   className?: string;
+  children?: React.ReactNode;
 }
 
 /**
@@ -34,7 +35,8 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
   locations,
   selectedLocation,
   onSelectLocation,
-  className = ''
+  className = '',
+  children,
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const [isAutoRotating, setIsAutoRotating] = useState(true);
@@ -48,12 +50,16 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
   const earthGroupRef = useRef<THREE.Group | null>(null);
   const earthMeshRef = useRef<THREE.Mesh | null>(null);
   const cloudsMeshRef = useRef<THREE.Mesh | null>(null);
+  const atmosphereMeshRef = useRef<THREE.Mesh | null>(null);
   const pinsGroupRef = useRef<THREE.Group | null>(null);
   const arcsGroupRef = useRef<THREE.Group | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
   // Rotation & Targeting State
   const targetRotationRef = useRef<{ x: number; y: number } | null>(null);
+  const activeBaseTargetRef = useRef<{ x: number; y: number } | null>(null);
+  const selectedLocationRef = useRef<HeritageLocation | null>(null);
+  const lastDragTimeRef = useRef<number>(0);
   const isDraggingRef = useRef(false);
   const previousMousePosRef = useRef({ x: 0, y: 0 });
   const idleSpeedRef = useRef(0.0014);
@@ -66,8 +72,8 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
   useEffect(() => {
     if (!mountRef.current) return;
     const container = mountRef.current;
-    const width = container.clientWidth || 600;
-    const height = container.clientHeight || 450;
+    const width = container.clientWidth || 800;
+    const height = container.clientHeight || 500;
 
     // Scene
     const scene = new THREE.Scene();
@@ -75,14 +81,14 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
 
     // Camera (Orbital perspective)
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 14.5);
+    camera.position.set(0, 0, 13.5);
     cameraRef.current = camera;
 
     // WebGL Renderer with physical tone mapping
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x020813, 1); // Deep cosmic black-blue
+    renderer.setClearColor(0x030712, 1); // Deep Cosmic Night Sky
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
@@ -110,9 +116,9 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
       normalScale: new THREE.Vector2(0.85, 0.85),
       specularMap: specularTexture,
       specular: new THREE.Color(0x445566),
-      shininess: 28,
-      emissive: new THREE.Color(0x030d18),
-      emissiveIntensity: 0.12,
+      shininess: 30,
+      emissive: new THREE.Color(0x040810),
+      emissiveIntensity: 0.1,
     });
 
     const earthMesh = new THREE.Mesh(earthGeometry, earthMaterial);
@@ -125,7 +131,7 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
     const cloudsMaterial = new THREE.MeshPhongMaterial({
       map: cloudsTexture,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.38, // Soft, natural cloud opacity so satellite geography remains clear
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
@@ -157,18 +163,46 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
     });
     const atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
     scene.add(atmosphereMesh);
+    atmosphereMeshRef.current = atmosphereMesh;
 
-    // 4. Subtle Cosmic Background Stars
-    const starCount = 350;
+    // 4. Multi-spectral Deep Cosmic Background Stars (Soft diamond, ice blue & subtle gold)
+    const starCount = 450;
     const starGeo = new THREE.BufferGeometry();
     const starPositions = new Float32Array(starCount * 3);
-    for (let i = 0; i < starCount * 3; i += 3) {
-      starPositions[i] = (Math.random() - 0.5) * 80;
-      starPositions[i + 1] = (Math.random() - 0.5) * 80;
-      starPositions[i + 2] = -25 - Math.random() * 40;
+    const starColors = new Float32Array(starCount * 3);
+
+    for (let i = 0; i < starCount; i++) {
+      const idx = i * 3;
+      starPositions[idx] = (Math.random() - 0.5) * 90;
+      starPositions[idx + 1] = (Math.random() - 0.5) * 90;
+      starPositions[idx + 2] = -25 - Math.random() * 45;
+
+      const roll = Math.random();
+      if (roll < 0.65) {
+        // Pure diamond white
+        starColors[idx] = 0.95;
+        starColors[idx + 1] = 0.96;
+        starColors[idx + 2] = 1.0;
+      } else if (roll < 0.85) {
+        // Ice blue
+        starColors[idx] = 0.65;
+        starColors[idx + 1] = 0.82;
+        starColors[idx + 2] = 1.0;
+      } else {
+        // Warm gold dust
+        starColors[idx] = 0.96;
+        starColors[idx + 1] = 0.85;
+        starColors[idx + 2] = 0.55;
+      }
     }
     starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-    const starMat = new THREE.PointsMaterial({ color: 0xc89d56, size: 0.45, transparent: true, opacity: 0.6 });
+    starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+    const starMat = new THREE.PointsMaterial({
+      size: 0.42,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+    });
     const starField = new THREE.Points(starGeo, starMat);
     scene.add(starField);
 
@@ -182,16 +216,20 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
     earthGroup.add(arcsGroup);
     arcsGroupRef.current = arcsGroup;
 
-    // Cinematic Sunlight & Fill Lighting
-    const sunLight = new THREE.DirectionalLight(0xffffff, 2.9);
-    sunLight.position.set(16, 9, 14);
-    scene.add(sunLight);
-
-    const ambientLight = new THREE.AmbientLight(0x1a2e48, 1.25);
+    // Balanced Cinematic Lighting: Daylight illuminating all continents naturally without blowout
+    const ambientLight = new THREE.AmbientLight(0xdde8f5, 0.95);
     scene.add(ambientLight);
 
-    const rimLight = new THREE.DirectionalLight(0x2a5298, 1.2);
-    rimLight.position.set(-18, -6, -12);
+    const sunLight = new THREE.DirectionalLight(0xfff8ee, 1.45);
+    sunLight.position.set(14, 10, 14);
+    scene.add(sunLight);
+
+    const fillLight = new THREE.DirectionalLight(0x385575, 0.55);
+    fillLight.position.set(-14, -6, 10);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xc89d56, 0.65);
+    rimLight.position.set(-16, 8, -12);
     scene.add(rimLight);
 
     // Initial View Position centered towards India (lon ~78° E, lat ~22° N)
@@ -219,40 +257,108 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
       animFrameRef.current = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
-      // Atmospheric clouds drift continuously and independently from Earth
+      // Atmospheric clouds drift continuously across the surface of Earth
       if (cloudsMeshRef.current) {
-        cloudsMeshRef.current.rotation.y += 0.0004;
+        cloudsMeshRef.current.rotation.y += 0.00042;
       }
 
-      // Smooth targeting rotation towards selected location
-      if (targetRotationRef.current && !isDraggingRef.current) {
+      // Dynamic breathing atmospheric Rayleigh halo
+      if (atmosphereMeshRef.current) {
+        const atmScale = 1.0 + Math.sin(elapsedTime * 0.8) * 0.004;
+        atmosphereMeshRef.current.scale.set(atmScale, atmScale, atmScale);
+      }
+
+      // Cinematic subtle camera breathing float for depth
+      if (cameraRef.current) {
+        cameraRef.current.position.y = Math.sin(elapsedTime * 0.4) * 0.035;
+      }
+
+      const isDragging = isDraggingRef.current;
+      const timeSinceDrag = Date.now() - lastDragTimeRef.current;
+
+      // Earth Positioning & Rotation Dynamics
+      if (!isDragging && activeBaseTargetRef.current) {
+        // --- SCENARIO 1: A MEMORIAL LOCATION IS SELECTED ---
+        // Lock globe on this location, but provide subtle living movement (orbital sway & planetary float)
+        // Allow a 1.2s inspection window if user was manually dragging
+        if (timeSinceDrag > 1200) {
+          // Living planetary hover / gentle orbital micro-sway (compound harmonic)
+          // Keeps memorial pin centered in view while Earth feels physical, alive and floating
+          const microSwayY = isAutoRotating
+            ? (Math.sin(elapsedTime * 0.7) * 0.012 + Math.cos(elapsedTime * 0.35) * 0.005)
+            : 0;
+          const microSwayX = isAutoRotating
+            ? (Math.cos(elapsedTime * 0.5) * 0.008 + Math.sin(elapsedTime * 0.25) * 0.004)
+            : 0;
+
+          const desiredTargetY = activeBaseTargetRef.current.y + microSwayY;
+          const desiredTargetX = activeBaseTargetRef.current.x + microSwayX;
+
+          // Shortest angular turn around the globe
+          let diffY = (desiredTargetY - earthGroup.rotation.y) % (Math.PI * 2);
+          if (diffY > Math.PI) diffY -= Math.PI * 2;
+          if (diffY < -Math.PI) diffY += Math.PI * 2;
+
+          // Smooth lerp: fast enough to glide into place, gentle enough to damp oscillation
+          earthGroup.rotation.y += diffY * 0.048;
+          earthGroup.rotation.x += (desiredTargetX - earthGroup.rotation.x) * 0.048;
+        }
+      } else if (!isDragging && targetRotationRef.current) {
+        // --- SCENARIO 2: ONE-OFF TARGETING (e.g. Reset View when no location is active) ---
         const { x: targetX, y: targetY } = targetRotationRef.current;
-        
-        let diffY = (targetY - earthGroup.rotation.y);
-        while (diffY > Math.PI) diffY -= Math.PI * 2;
-        while (diffY < -Math.PI) diffY += Math.PI * 2;
+        let diffY = (targetY - earthGroup.rotation.y) % (Math.PI * 2);
+        if (diffY > Math.PI) diffY -= Math.PI * 2;
+        if (diffY < -Math.PI) diffY += Math.PI * 2;
 
         earthGroup.rotation.y += diffY * 0.055;
         earthGroup.rotation.x += (targetX - earthGroup.rotation.x) * 0.055;
 
-        // When close enough, seamlessly continue auto-rotation
+        // When arrived, clear one-off target and resume normal auto-rotation
         if (Math.abs(diffY) < 0.003 && Math.abs(targetX - earthGroup.rotation.x) < 0.003) {
           targetRotationRef.current = null;
         }
-      } else if (!isDraggingRef.current && isAutoRotating) {
-        // Continuous smooth Earth auto-rotation
+      } else if (!isDragging && isAutoRotating) {
+        // --- SCENARIO 3: NO LOCATION SELECTED & AUTO-ROTATING ---
+        // Continuous smooth 360° global rotation
         earthGroup.rotation.y += idleSpeedRef.current;
       }
 
-      // Animate pulsing ground beacon rings on pins
+      // Animate Active Map Pin Location Icon (Hover bounce, camera-facing yaw, jewel pulse, and ground ripple)
       pinsGroup.children.forEach((pinObj: any) => {
-        if (pinObj.userData && pinObj.userData.beaconRing) {
-          const ring = pinObj.userData.beaconRing;
-          const isSelected = pinObj.userData.isSelected;
-          const speed = isSelected ? 3.5 : 2;
-          const pulse = (Math.sin(elapsedTime * speed) + 1) / 2;
-          ring.scale.set(1 + pulse * 0.7, 1 + pulse * 0.7, 1);
-          ring.material.opacity = isSelected ? (0.85 - pulse * 0.45) : (0.45 - pulse * 0.3);
+        const u = pinObj.userData;
+        if (!u) return;
+
+        // 1. Subtle, gentle breathing hover
+        const hover = Math.sin(elapsedTime * 2.8) * 0.015;
+        if (u.pinBodyGroup) {
+          u.pinBodyGroup.position.y = 0.06 + hover;
+
+          // 2. Rotate around normal axis so location beacon & eye face the camera directly
+          const pinWorldPos = new THREE.Vector3();
+          u.pinBodyGroup.getWorldPosition(pinWorldPos);
+          const toCamWorld = camera.position.clone().sub(pinWorldPos);
+
+          const worldQuat = pinObj.getWorldQuaternion(new THREE.Quaternion());
+          const worldUp = new THREE.Vector3(0, 1, 0).applyQuaternion(worldQuat);
+          const forward = toCamWorld.clone().projectOnPlane(worldUp).normalize();
+          const invQuat = worldQuat.clone().invert();
+          const localForward = forward.clone().applyQuaternion(invQuat);
+          const targetYaw = Math.atan2(localForward.x, localForward.z);
+
+          u.pinBodyGroup.rotation.y = targetYaw;
+        }
+
+        // 3. Glowing amber jewel eye pulse
+        if (u.jewelMesh && u.jewelMesh.material) {
+          u.jewelMesh.material.emissiveIntensity = 0.9 + Math.sin(elapsedTime * 3.5) * 0.45;
+        }
+
+        // 4. Expanding subtle radar ripple wave on Earth surface
+        if (u.radarRing) {
+          const progress = (elapsedTime * 0.75) % 1;
+          const scale = 1 + progress * 2.2;
+          u.radarRing.scale.set(scale, scale, 1);
+          u.radarRing.material.opacity = (1 - progress) * 0.65;
         }
       });
 
@@ -275,132 +381,240 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
     };
   }, []);
 
-  // Update 3D Pins & Journey Arcs whenever locations or selection changes
+  // Update 3D Pin whenever selectedLocation changes
+  // REQUIREMENT: Only the active location displays a pin; modeled as classic 3D location marker icon!
   useEffect(() => {
     if (!pinsGroupRef.current || !arcsGroupRef.current) return;
     const pinsGroup = pinsGroupRef.current;
     const arcsGroup = arcsGroupRef.current;
 
-    // Clear previous pins & arcs
+    // Helper to deeply dispose geometries and materials
+    const disposeHierarchy = (obj: any) => {
+      if (!obj) return;
+      if (obj.children && obj.children.length > 0) {
+        for (let i = obj.children.length - 1; i >= 0; i--) {
+          disposeHierarchy(obj.children[i]);
+          obj.remove(obj.children[i]);
+        }
+      }
+      if (obj.geometry) obj.geometry.dispose();
+      if (obj.material) {
+        if (Array.isArray(obj.material)) {
+          obj.material.forEach((m: any) => m.dispose());
+        } else {
+          obj.material.dispose();
+        }
+      }
+    };
+
+    // Clean up previous 3D pin & any arcs
     while (pinsGroup.children.length > 0) {
-      const child: any = pinsGroup.children[0];
-      if (child.geometry) child.geometry.dispose();
-      if (child.material) child.material.dispose();
-      pinsGroup.remove(child);
+      disposeHierarchy(pinsGroup.children[0]);
+      pinsGroup.remove(pinsGroup.children[0]);
     }
 
     while (arcsGroup.children.length > 0) {
-      const child: any = arcsGroup.children[0];
-      if (child.geometry) child.geometry.dispose();
-      if (child.material) child.material.dispose();
-      arcsGroup.remove(child);
+      disposeHierarchy(arcsGroup.children[0]);
+      arcsGroup.remove(arcsGroup.children[0]);
     }
 
-    // Add Pins for each Heritage Location with EXACT Spherical Coordinates
-    locations.forEach((loc) => {
-      const isSelected = selectedLocation?.id === loc.id;
-      const surfacePos = latLongToVector3(loc.coordinates.latitude, loc.coordinates.longitude, GLOBE_RADIUS);
-      const normal = surfacePos.clone().normalize();
+    // If no active location is selected, do NOT render any pin!
+    if (!selectedLocation) {
+      return;
+    }
 
-      // Pin Container Group (Oriented perpendicularly to Earth surface)
-      const pinContainer = new THREE.Group();
-      pinContainer.position.copy(surfacePos);
-      pinContainer.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
-      pinContainer.userData = { location: loc, isSelected };
+    // Construct the iconic 3D Location Marker Pin
+    const loc = selectedLocation;
+    const surfacePos = latLongToVector3(loc.coordinates.latitude, loc.coordinates.longitude, GLOBE_RADIUS);
+    const normal = surfacePos.clone().normalize();
 
-      // 1. Slender Needle Stem (Cylinder extending out from surface)
-      const stemHeight = isSelected ? 0.95 : 0.6;
-      const stemGeo = new THREE.CylinderGeometry(0.025, 0.04, stemHeight, 16);
-      stemGeo.translate(0, stemHeight / 2, 0);
-      const stemMat = new THREE.MeshStandardMaterial({
-        color: isSelected ? 0xffea9f : 0xf3e4c9,
-        roughness: 0.2,
-        metalness: 0.85,
-        emissive: isSelected ? 0xc89d56 : 0x000000,
-        emissiveIntensity: isSelected ? 0.6 : 0,
-      });
-      const stemMesh = new THREE.Mesh(stemGeo, stemMat);
-      pinContainer.add(stemMesh);
+    // Pin Group (Oriented perpendicularly to Earth's surface)
+    const pinContainer = new THREE.Group();
+    pinContainer.position.copy(surfacePos);
+    pinContainer.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+    pinContainer.userData = { location: loc, isSelected: true };
 
-      // 2. Glowing Beacon Sphere
-      const beadRadius = isSelected ? 0.22 : 0.15;
-      const beadGeo = new THREE.SphereGeometry(beadRadius, 16, 16);
-      const isIndia = loc.country === 'India';
-      const beadMat = new THREE.MeshStandardMaterial({
-        color: isSelected ? 0xffffff : (isIndia ? 0xffb74d : 0x4fc3f7),
-        emissive: isSelected ? 0xffd54f : (isIndia ? 0xff9800 : 0x0288d1),
-        emissiveIntensity: isSelected ? 1.0 : 0.65,
-        roughness: 0.1,
-      });
-      const beadMesh = new THREE.Mesh(beadGeo, beadMat);
-      beadMesh.position.y = stemHeight + beadRadius;
-      pinContainer.add(beadMesh);
+    // --- 1. Ground Surface Reticle & Contact Elements ---
+    // Contact Target Needle Point Dot
+    const contactGeo = new THREE.SphereGeometry(0.024, 16, 16);
+    const contactMat = new THREE.MeshBasicMaterial({ color: 0xfcd34d });
+    const contactDot = new THREE.Mesh(contactGeo, contactMat);
+    contactDot.position.y = 0.015;
+    pinContainer.add(contactDot);
 
-      // 3. Ground Pulse Ring (Flat on Earth surface)
-      const ringGeo = new THREE.RingGeometry(0.12, 0.32, 24);
-      ringGeo.rotateX(-Math.PI / 2);
-      const ringMat = new THREE.MeshBasicMaterial({
-        color: isSelected ? 0xffd54f : (isIndia ? 0xffb74d : 0x4fc3f7),
-        transparent: true,
-        opacity: isSelected ? 0.85 : 0.5,
-        side: THREE.DoubleSide,
-      });
-      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-      ringMesh.position.y = 0.02; // Slightly above sphere surface to avoid z-fighting
-      pinContainer.add(ringMesh);
-      pinContainer.userData.beaconRing = ringMesh;
+    // Inner Target Reticle Ring
+    const innerRingGeo = new THREE.RingGeometry(0.05, 0.075, 32);
+    innerRingGeo.rotateX(-Math.PI / 2);
+    const innerRingMat = new THREE.MeshBasicMaterial({
+      color: 0xf59e0b,
+      transparent: true,
+      opacity: 0.85,
+      side: THREE.DoubleSide,
+    });
+    const innerRing = new THREE.Mesh(innerRingGeo, innerRingMat);
+    innerRing.position.y = 0.012;
+    pinContainer.add(innerRing);
 
-      pinsGroup.add(pinContainer);
+    // Expanding Pulse Radar Wave
+    const radarGeo = new THREE.RingGeometry(0.08, 0.13, 32);
+    radarGeo.rotateX(-Math.PI / 2);
+    const radarMat = new THREE.MeshBasicMaterial({
+      color: 0xf59e0b,
+      transparent: true,
+      opacity: 0.7,
+      side: THREE.DoubleSide,
+    });
+    const radarRing = new THREE.Mesh(radarGeo, radarMat);
+    radarRing.position.y = 0.010;
+    pinContainer.add(radarRing);
+    pinContainer.userData.radarRing = radarRing;
+
+    // --- 2. The Sculpted 3D Map Pin Body (Clean, Aesthetic & Fully 3D) ---
+    const pinBodyGroup = new THREE.Group();
+    pinBodyGroup.position.y = 0.06;
+
+    // A. Slender Anchoring Stem Needle
+    const stemGeo = new THREE.CylinderGeometry(0.009, 0.005, 0.14, 16);
+    stemGeo.translate(0, 0.07, 0);
+    const stemMat = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b,
+      metalness: 0.85,
+      roughness: 0.2,
+      emissive: 0x78350f,
+      emissiveIntensity: 0.2,
+    });
+    const stemMesh = new THREE.Mesh(stemGeo, stemMat);
+    pinBodyGroup.add(stemMesh);
+
+    // B. Inverted Tapered Lower Cone (smooth transition to head)
+    const headRadius = 0.135;
+    const coneHeight = 0.24;
+    const coneCenterY = 0.14 + coneHeight / 2; // 0.26
+    const coneGeo = new THREE.ConeGeometry(headRadius, coneHeight, 32);
+    coneGeo.rotateX(Math.PI); // Point downwards to ground
+    coneGeo.translate(0, coneCenterY, 0);
+
+    // C. Upper Hemispherical Dome (caps the cone flawlessly)
+    const sphereCenterY = 0.14 + coneHeight; // 0.38
+    const domeGeo = new THREE.SphereGeometry(headRadius, 32, 24);
+    domeGeo.translate(0, sphereCenterY, 0);
+
+    // Pin Body Material (Royal Curatorial Satin Gold)
+    const pinBodyMat = new THREE.MeshStandardMaterial({
+      color: 0xd97706,
+      roughness: 0.22,
+      metalness: 0.8,
+      emissive: 0x451a03,
+      emissiveIntensity: 0.25,
     });
 
-    // Create Photorealistic Translucent Flight Arcs between Key Historical Milestones
-    const arcPairs = [
-      ['loc-mhow', 'loc-chaitya'],      // Mhow to Mumbai
-      ['loc-chaitya', 'loc-columbia'],  // Mumbai to Columbia (New York)
-      ['loc-columbia', 'loc-london'],   // New York to London
-      ['loc-london', 'loc-chaitya'],    // London back to Mumbai
-      ['loc-chaitya', 'loc-mahad'],     // Mumbai to Mahad
-      ['loc-chaitya', 'loc-nagpur'],    // Mumbai to Deekshabhoomi Nagpur
-      ['loc-chaitya', 'loc-delhi-ca'],  // Mumbai to Constituent Assembly New Delhi
-    ];
+    const coneMesh = new THREE.Mesh(coneGeo, pinBodyMat);
+    const domeMesh = new THREE.Mesh(domeGeo, pinBodyMat);
+    pinBodyGroup.add(coneMesh);
+    pinBodyGroup.add(domeMesh);
 
-    arcPairs.forEach(([idA, idB]) => {
-      const locA = locations.find(l => l.id === idA);
-      const locB = locations.find(l => l.id === idB);
-      if (!locA || !locB) return;
-
-      const pA = latLongToVector3(locA.coordinates.latitude, locA.coordinates.longitude, GLOBE_RADIUS);
-      const pB = latLongToVector3(locB.coordinates.latitude, locB.coordinates.longitude, GLOBE_RADIUS);
-
-      // Midpoint elevated above sphere
-      const mid = pA.clone().add(pB).multiplyScalar(0.5);
-      const dist = pA.distanceTo(pB);
-      const elevation = GLOBE_RADIUS + Math.min(dist * 0.45, 2.6);
-      mid.normalize().multiplyScalar(elevation);
-
-      // Quadratic Curve
-      const curve = new THREE.QuadraticBezierCurve3(pA, mid, pB);
-      const points = curve.getPoints(45);
-      const arcGeo = new THREE.BufferGeometry().setFromPoints(points);
-
-      const isLinkedToSelected = selectedLocation && (selectedLocation.id === idA || selectedLocation.id === idB);
-
-      const arcMat = new THREE.LineBasicMaterial({
-        color: isLinkedToSelected ? 0xffea9f : 0x64b5f6,
-        transparent: true,
-        opacity: isLinkedToSelected ? 0.9 : 0.35,
-        linewidth: isLinkedToSelected ? 2 : 1,
-      });
-
-      const arcLine = new THREE.Line(arcGeo, arcMat);
-      arcsGroup.add(arcLine);
+    // D. Inset Center Jewel Eye (through the center of the dome)
+    const eyeBoreGeo = new THREE.CylinderGeometry(0.062, 0.062, headRadius * 2.05, 32);
+    eyeBoreGeo.rotateX(Math.PI / 2);
+    eyeBoreGeo.translate(0, sphereCenterY, 0);
+    const eyeBoreMat = new THREE.MeshStandardMaterial({
+      color: 0x061524,
+      metalness: 0.5,
+      roughness: 0.5,
     });
+    const eyeBoreMesh = new THREE.Mesh(eyeBoreGeo, eyeBoreMat);
+    pinBodyGroup.add(eyeBoreMesh);
 
-  }, [locations, selectedLocation]);
+    // E. Glowing Luminous Beacon Core (radiant warm jewel lens)
+    const jewelGeo = new THREE.SphereGeometry(0.048, 24, 24);
+    jewelGeo.translate(0, sphereCenterY, 0);
+    const jewelMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      emissive: 0xfbbf24,
+      emissiveIntensity: 1.1,
+      roughness: 0.1,
+      metalness: 0.1,
+    });
+    const jewelMesh = new THREE.Mesh(jewelGeo, jewelMat);
+    pinBodyGroup.add(jewelMesh);
+    pinContainer.userData.jewelMesh = jewelMesh;
 
-  // Pivot and Auto-Rotate Globe when Selected Location changes
+    // F. Floating Curatorial Location Label Pill (Above the pin)
+    try {
+      const labelCanvas = document.createElement('canvas');
+      labelCanvas.width = 512;
+      labelCanvas.height = 120;
+      const ctx = labelCanvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, 512, 120);
+
+        // Draw glassmorphic rounded capsule
+        const padX = 24, padY = 16, w = 464, h = 88, r = 26;
+        ctx.fillStyle = 'rgba(6, 21, 36, 0.92)';
+        ctx.strokeStyle = '#C89D56';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(padX + r, padY);
+        ctx.lineTo(padX + w - r, padY);
+        ctx.arcTo(padX + w, padY, padX + w, padY + r, r);
+        ctx.lineTo(padX + w, padY + h - r);
+        ctx.arcTo(padX + w, padY + h, padX + w - r, padY + h, r);
+        ctx.lineTo(padX + r, padY + h);
+        ctx.arcTo(padX, padY + h, padX, padY + r, r);
+        ctx.lineTo(padX, padY + r);
+        ctx.arcTo(padX, padY, padX + r, padY, r);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Subtle gold glow
+        ctx.shadowColor = '#C89D56';
+        ctx.shadowBlur = 10;
+
+        // Memorial Name Text
+        const displayName = loc.name.length > 24 ? loc.name.substring(0, 22) + '...' : loc.name;
+        ctx.font = 'bold 30px "DM Sans", -apple-system, sans-serif';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`📍 ${displayName}`, 256, 50);
+
+        // City / Country subtitle
+        ctx.font = '500 18px "DM Sans", sans-serif';
+        ctx.fillStyle = '#C89D56';
+        ctx.fillText(`${loc.city}, ${loc.country}`, 256, 78);
+
+        const labelTexture = new THREE.CanvasTexture(labelCanvas);
+        labelTexture.needsUpdate = true;
+        const labelMat = new THREE.SpriteMaterial({
+          map: labelTexture,
+          transparent: true,
+          depthTest: false,
+        });
+        const labelSprite = new THREE.Sprite(labelMat);
+        labelSprite.position.set(0, sphereCenterY + 0.24, 0);
+        labelSprite.scale.set(0.72, 0.17, 1);
+        pinBodyGroup.add(labelSprite);
+      }
+    } catch (e) {
+      console.warn('Could not generate label sprite:', e);
+    }
+
+    pinContainer.add(pinBodyGroup);
+    pinContainer.userData.pinBodyGroup = pinBodyGroup;
+
+    pinsGroup.add(pinContainer);
+  }, [selectedLocation]);
+
+  // Pivot and Lock Globe when Selected Location changes
   useEffect(() => {
-    if (!selectedLocation || !earthGroupRef.current) return;
+    selectedLocationRef.current = selectedLocation;
+
+    if (!selectedLocation || !earthGroupRef.current) {
+      activeBaseTargetRef.current = null;
+      targetRotationRef.current = null;
+      return;
+    }
 
     const lat = selectedLocation.coordinates.latitude;
     const lon = selectedLocation.coordinates.longitude;
@@ -411,6 +625,7 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
     const targetY = -(lon * Math.PI / 180) - (Math.PI / 2);
     const targetX = (lat * Math.PI / 180) * 0.7; // Pleasant downward perspective tilt
 
+    activeBaseTargetRef.current = { x: targetX, y: targetY };
     targetRotationRef.current = { x: targetX, y: targetY };
     setActivePinName(`${selectedLocation.name} · ${selectedLocation.city}`);
   }, [selectedLocation]);
@@ -418,14 +633,15 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
   // Pointer Drag Orbit Interaction
   const handlePointerDown = (e: React.PointerEvent) => {
     isDraggingRef.current = true;
+    lastDragTimeRef.current = Date.now();
     previousMousePosRef.current = { x: e.clientX, y: e.clientY };
-    targetRotationRef.current = null; // Clear auto-targeting on manual drag
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!earthGroupRef.current) return;
 
     if (isDraggingRef.current) {
+      lastDragTimeRef.current = Date.now();
       const deltaX = e.clientX - previousMousePosRef.current.x;
       const deltaY = e.clientY - previousMousePosRef.current.y;
 
@@ -453,11 +669,16 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
         if (rootGroup.userData && rootGroup.userData.location) {
           setActivePinName(`${rootGroup.userData.location.name}`);
         }
+      } else {
+        setActivePinName(null);
       }
     }
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
+    isDraggingRef.current = false;
+    lastDragTimeRef.current = Date.now();
+
     // If it was a quick click without drag, raycast to select pin
     if (mountRef.current && cameraRef.current && pinsGroupRef.current) {
       const rect = mountRef.current.getBoundingClientRect();
@@ -482,8 +703,6 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
         }
       }
     }
-
-    isDraggingRef.current = false;
   };
 
   // Zoom Controls
@@ -492,76 +711,59 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
     soundEffects.playClick();
     const newZ = direction === 'in' ? Math.max(8.5, cameraRef.current.position.z - 2) : Math.min(22, cameraRef.current.position.z + 2);
     cameraRef.current.position.z = newZ;
-    setZoomLevel(Number((14.5 / newZ).toFixed(1)));
+    setZoomLevel(Number((13.5 / newZ).toFixed(1)));
+  };
+
+  // Smooth Mouse Wheel Zoom
+  const handleWheel = (e: React.WheelEvent) => {
+    if (!cameraRef.current) return;
+    const delta = e.deltaY * 0.005;
+    const newZ = Math.max(7.5, Math.min(22, cameraRef.current.position.z + delta));
+    cameraRef.current.position.z = newZ;
+    setZoomLevel(Number((13.5 / newZ).toFixed(1)));
   };
 
   // Reset to default Indian Peninsula orientation
   const handleResetView = () => {
     soundEffects.playClick();
+    activeBaseTargetRef.current = null;
     targetRotationRef.current = { 
       x: (22 * Math.PI / 180) * 0.7, 
       y: -(78 * Math.PI / 180) - (Math.PI / 2) 
     };
-    if (cameraRef.current) cameraRef.current.position.z = 14.5;
+    if (cameraRef.current) cameraRef.current.position.z = 13.5;
     setZoomLevel(1);
+    if (selectedLocation) {
+      onSelectLocation(null);
+    }
   };
 
   return (
-    <div className={`relative rounded-3xl overflow-hidden border border-[#D3D4C0] bg-[#020813] shadow-2xl ${className}`}>
+    <div className={`relative rounded-3xl overflow-hidden border-2 border-[#D3D4C0] bg-[#030712] shadow-2xl ${className}`}>
       
-      {/* 3D WebGL Canvas Mount */}
+      {/* 3D WebGL Canvas Mount (Earth Globe in Center) */}
       <div
         ref={mountRef}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        onWheel={handleWheel}
         className="w-full h-full cursor-grab active:cursor-grabbing select-none"
-        style={{ minHeight: '440px', touchAction: 'none' }}
+        style={{ width: '100%', height: '100%', minHeight: '560px', touchAction: 'none' }}
       />
 
-      {/* Top Left: Memorial Stage HUD Header */}
-      <div className="absolute top-4 left-4 z-10 pointer-events-none">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0A2947]/90 backdrop-blur-md border border-[#C89D56]/60 text-[#F3E4C9] text-xs font-mono shadow-md">
-          <Globe className="w-3.5 h-3.5 text-[#C89D56] animate-spin" style={{ animationDuration: '14s' }} />
-          <span>Photorealistic Orbital Earth</span>
+      {/* Top Center: Orbital Navigation & Zoom Controls (Curatorial Glass HUD) */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 hidden md:flex items-center gap-1.5 bg-[#061524]/90 backdrop-blur-md border border-[#C89D56]/40 p-1.5 rounded-2xl shadow-xl text-[#F3E4C9]">
+        <div className="px-2.5 py-1 text-[11px] font-mono font-bold text-[#F3E4C9] flex items-center gap-1.5 border-r border-[#C89D56]/30 pr-2.5 mr-0.5">
+          <Globe className="w-3.5 h-3.5 text-[#C89D56] animate-spin" style={{ animationDuration: '16s' }} />
+          <span>Orbital Earth</span>
         </div>
 
-        {selectedLocation && (
-          <div className="mt-2 text-left bg-[#0A2947]/95 backdrop-blur-md border border-[#C89D56]/40 p-3.5 rounded-2xl max-w-sm shadow-xl animate-in fade-in duration-300">
-            <div className="text-[10px] font-mono text-[#C89D56] font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-              <span>Target Pinpoint</span>
-            </div>
-            <div className="text-sm font-serif-editorial font-bold text-white leading-tight mt-1 truncate">
-              {selectedLocation.name}
-            </div>
-            <div className="text-xs text-[#F3E4C9]/90 font-mono mt-1 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-[#C89D56]" />
-              <span>{selectedLocation.city}</span>
-              <span>·</span>
-              <span>{selectedLocation.coordinates.latitude.toFixed(2)}°, {selectedLocation.coordinates.longitude.toFixed(2)}°</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Bottom Floating Hover Pin Tooltip */}
-      {activePinName && (
-        <div className="absolute bottom-4 left-4 z-10 pointer-events-none hidden sm:block">
-          <div className="px-3.5 py-1.5 rounded-xl bg-black/75 backdrop-blur-md border border-white/20 text-[#FAF7F0] text-xs font-dmsans shadow-lg flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3 text-[#C89D56]" />
-            <span>{activePinName}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Top Right: Globe Navigation & Zoom Controls */}
-      <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 bg-[#0A2947]/90 backdrop-blur-md border border-[#D3D4C0]/40 p-1.5 rounded-2xl shadow-xl">
         <button
           type="button"
           onClick={() => handleZoom('in')}
           title="Zoom In"
-          className="p-2 rounded-xl text-[#F3E4C9] hover:bg-[#C89D56]/20 hover:text-white transition-colors cursor-pointer"
+          className="p-1.5 rounded-xl text-[#F3E4C9] hover:bg-[#C89D56]/25 hover:text-white transition-colors cursor-pointer"
         >
           <ZoomIn className="w-4 h-4" />
         </button>
@@ -570,7 +772,7 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
           type="button"
           onClick={() => handleZoom('out')}
           title="Zoom Out"
-          className="p-2 rounded-xl text-[#F3E4C9] hover:bg-[#C89D56]/20 hover:text-white transition-colors cursor-pointer"
+          className="p-1.5 rounded-xl text-[#F3E4C9] hover:bg-[#C89D56]/25 hover:text-white transition-colors cursor-pointer"
         >
           <ZoomOut className="w-4 h-4" />
         </button>
@@ -579,7 +781,7 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
           type="button"
           onClick={handleResetView}
           title="Reset to India View"
-          className="p-2 rounded-xl text-[#F3E4C9] hover:bg-[#C89D56]/20 hover:text-white transition-colors cursor-pointer"
+          className="p-1.5 rounded-xl text-[#F3E4C9] hover:bg-[#C89D56]/25 hover:text-white transition-colors cursor-pointer"
         >
           <RotateCcw className="w-4 h-4" />
         </button>
@@ -588,23 +790,33 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
           type="button"
           onClick={() => {
             soundEffects.playClick();
-            setIsAutoRotating(!isAutoRotating);
+            if (selectedLocation) {
+              onSelectLocation(null);
+              setIsAutoRotating(true);
+            } else {
+              setIsAutoRotating(!isAutoRotating);
+            }
           }}
-          title={isAutoRotating ? "Pause Auto-Rotation" : "Resume Auto-Rotation"}
+          title={selectedLocation ? "Unlock location & resume 360° spin" : (isAutoRotating ? "Pause Auto-Rotation" : "Resume Auto-Rotation")}
           className={`px-3 py-1 rounded-xl text-[11px] font-mono font-bold transition-all cursor-pointer ${
-            isAutoRotating 
-              ? 'bg-[#C89D56] text-[#0A2947]' 
-              : 'text-[#F3E4C9] hover:bg-[#C89D56]/20'
+            selectedLocation 
+              ? 'bg-[#C89D56] text-[#0A2947] hover:bg-white shadow-xs' 
+              : (isAutoRotating 
+                  ? 'bg-[#C89D56] text-[#0A2947] shadow-xs' 
+                  : 'text-[#F3E4C9] hover:bg-[#C89D56]/20')
           }`}
         >
-          {isAutoRotating ? 'Auto-Spin' : 'Paused'}
+          {selectedLocation ? '📍 Locked (Free Spin)' : (isAutoRotating ? 'Spinning' : 'Paused')}
         </button>
       </div>
 
+      {/* Spatial Overlays (Left Locations Panel & Right Descriptive Card) */}
+      {children}
+
       {/* Bottom Center Indicator Tip */}
-      <div className="absolute bottom-3 right-4 z-10 pointer-events-none hidden md:flex items-center gap-1.5 text-[10px] font-mono text-[#F3E4C9]/70 bg-black/40 px-2.5 py-1 rounded-full backdrop-blur-xs">
-        <Navigation className="w-3 h-3 text-[#C89D56]" />
-        <span>Click card to pivot · Drag to orbit · Scroll to zoom</span>
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 pointer-events-none hidden lg:flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#F3E4C9]/85 bg-[#061524]/85 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#C89D56]/30 shadow-lg">
+        <Navigation className="w-3.5 h-3.5 text-[#C89D56]" />
+        <span>Click card to pinpoint · Drag Earth to rotate · Scroll to zoom</span>
       </div>
 
     </div>

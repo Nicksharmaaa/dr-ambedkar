@@ -45,6 +45,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
   const [copiedDocId, setCopiedDocId] = useState<string | null>(null);
   const [inspectedDoc, setInspectedDoc] = useState<ArchivalDocument | null>(null);
   const [isSpeakingDocId, setIsSpeakingDocId] = useState<string | null>(null);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState<boolean>(false);
 
   // Voice search state
   const [isListeningVoice, setIsListeningVoice] = useState(false);
@@ -189,6 +190,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
     setSelectedTopic('all');
     setSelectedSource('all');
     setSortBy('relevance');
+    setShowAdvancedFilters(false);
   };
 
   const handleCopyCitation = (doc: ArchivalDocument) => {
@@ -299,84 +301,6 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
         </div>
 
         {/* =========================================================================
-            2. FEATURED CURATORIAL COLLECTION VAULTS (FAST-JUMP)
-            ========================================================================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            {
-              id: 'vault-constitution',
-              title: 'Constitutional Architecture',
-              topic: 'Constitution',
-              badge: 'CAD Vol. I–XII · BAWS Vol. 13',
-              icon: Landmark,
-              count: 'Fundamental Rights & Assemblies'
-            },
-            {
-              id: 'vault-caste',
-              title: 'Social Emancipation & Caste',
-              topic: 'Social Equality',
-              badge: 'BAWS Vol. 1 · 1936',
-              icon: Scale,
-              count: 'Annihilation of Caste & Mahad'
-            },
-            {
-              id: 'vault-economics',
-              title: 'Monetary & Fiscal Treatises',
-              topic: 'Economics',
-              badge: 'Columbia & LSE · 1923',
-              icon: Scroll,
-              count: 'Problem of the Rupee & RBI'
-            },
-            {
-              id: 'vault-dhamma',
-              title: 'Moral Philosophy & Dhamma',
-              topic: 'Buddhism',
-              badge: 'Magnum Opus · 1956',
-              icon: Compass,
-              count: 'The Buddha & His Dhamma'
-            }
-          ].map(vault => {
-            const Icon = vault.icon;
-            const isSelected = selectedTopic === vault.topic;
-            return (
-              <button
-                key={vault.id}
-                onClick={() => {
-                  soundEffects.playClick();
-                  setSelectedTopic(isSelected ? 'all' : vault.topic);
-                }}
-                className={`p-5 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${isSelected
-                  ? 'bg-[#0A2947] text-[#FAF7F0] border-[#C59A45] shadow-lg ring-2 ring-[#C59A45]/30'
-                  : 'bg-white hover:bg-[#FAF7F0] text-[#0A2947] border-[#D3D4C0] hover:border-[#8B5E3C]'
-                  }`}
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Icon className={`w-5 h-5 ${isSelected ? 'text-[#D4AF37]' : 'text-[#8B5E3C]'}`} />
-                    <span className={`text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded ${isSelected ? 'bg-white/15 text-[#F3E4C9]' : 'bg-[#FAF7F0] text-[#8B5E3C] border border-[#D3D4C0]'
-                      }`}>
-                      {vault.badge}
-                    </span>
-                  </div>
-                  <h4 className={`font-serif-editorial font-bold text-base ${isSelected ? 'text-white' : 'text-[#0A2947]'}`}>
-                    {vault.title}
-                  </h4>
-                  <p className={`text-xs ${isSelected ? 'text-[#F3E4C9]/75' : 'text-[#0A2947]/70'}`}>
-                    {vault.count}
-                  </p>
-                </div>
-
-                <div className={`pt-3 mt-3 border-t text-[11px] font-montserrat font-bold uppercase flex items-center justify-between ${isSelected ? 'border-white/20 text-[#D4AF37]' : 'border-[#D3D4C0]/60 text-[#8B5E3C]'
-                  }`}>
-                  <span>{isSelected ? 'Vault Active' : 'Explore Vault'}</span>
-                  <span>&rarr;</span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* =========================================================================
             3. MUSEUM SEARCH & COMMAND CONSOLE WITH VOICE SEARCH BUTTON
             ========================================================================= */}
         <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 shadow-sm space-y-4">
@@ -478,140 +402,321 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
         </div>
 
         {/* =========================================================================
-            4. FACET FILTERS: ERA SELECTOR & CLASSIFICATION
+            4. INTERACTIVE CURATORIAL FILTERING HUB
             ========================================================================= */}
-        <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 shadow-sm space-y-5">
+        <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-5 sm:p-6 shadow-sm space-y-4 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8B5E3C] via-[#C89D56] to-[#0A2947]" />
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D3D4C0]">
+          {/* Top Bar: Title, Live Folio Counter & Refinements Toggle */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#D3D4C0]">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] flex items-center justify-center text-[#8B5E3C] shadow-2xs">
+                <SlidersHorizontal className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-cinzel text-xs font-bold uppercase tracking-wider text-[#0A2947]">
+                    Curatorial Facets & Lenses
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#FAF7F0] border border-[#D3D4C0] text-[10px] font-mono font-bold text-[#8B5E3C]">
+                    {filteredDocuments.length} Folios
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#0A2947]/60 font-mono">
+                  Select an epoch or format to curate the historical corpus
+                </p>
+              </div>
+            </div>
+
             <div className="flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4 text-[#8B5E3C]" />
-              <span className="font-cinzel text-xs font-bold uppercase tracking-wider text-[#0A2947]">
-                Archival Curatorial Facets
-              </span>
+              {/* Toggle Granular Themes & Sources */}
+              <button
+                type="button"
+                onClick={() => {
+                  soundEffects.playClick();
+                  setShowAdvancedFilters(!showAdvancedFilters);
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  showAdvancedFilters || (selectedTopic !== 'all' || selectedSource !== 'all')
+                    ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs'
+                    : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                }`}
+              >
+                <Filter className="w-3.5 h-3.5" />
+                <span>More Filters</span>
+                {(selectedTopic !== 'all' || selectedSource !== 'all') && (
+                  <span className="w-2 h-2 rounded-full bg-[#C89D56] animate-pulse" />
+                )}
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showAdvancedFilters ? 'rotate-180' : ''}`} />
+              </button>
+
               {activeFiltersCount > 0 && (
-                <span className="px-2.5 py-0.5 rounded-full bg-[#8B5E3C] text-white text-[10px] font-mono font-bold">
-                  {activeFiltersCount} Active
-                </span>
+                <button
+                  type="button"
+                  onClick={resetAllFilters}
+                  className="px-3 py-1.5 rounded-xl text-xs text-[#8B5E3C] hover:text-[#0A2947] bg-[#FAF7F0] hover:bg-[#F3E4C9] border border-[#D3D4C0] font-montserrat font-bold flex items-center gap-1.5 cursor-pointer transition-colors"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Reset ({activeFiltersCount})</span>
+                </button>
               )}
             </div>
-
-            {activeFiltersCount > 0 && (
-              <button
-                onClick={resetAllFilters}
-                className="text-xs text-[#8B5E3C] hover:text-[#0A2947] font-montserrat font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset All Filters</span>
-              </button>
-            )}
           </div>
 
-          {/* Historical Era Tabs (Interactive Timeline filter) */}
-          <div className="space-y-2">
-            <span className="text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#8B5E3C] block">
-              Historical Timeline Eras:
+          {/* Quick Curatorial Lenses (Fun One-Click Presets) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-montserrat">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#8B5E3C] shrink-0 mr-1 flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-[#C89D56]" />
+              <span>Lenses:</span>
             </span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+            {[
+              {
+                id: 'lens-all',
+                label: 'All Works',
+                icon: '🌐',
+                apply: () => {
+                  setSelectedEra('all');
+                  setSelectedType('all');
+                }
+              },
+              {
+                id: 'lens-constitution',
+                label: 'Constituent Assembly',
+                icon: '🏛️',
+                apply: () => {
+                  setSelectedEra('constitution');
+                  setSelectedType('debate');
+                }
+              },
+              {
+                id: 'lens-treatises',
+                label: 'Magnum Treatises',
+                icon: '📖',
+                apply: () => {
+                  setSelectedEra('all');
+                  setSelectedType('book');
+                }
+              },
+              {
+                id: 'lens-satyagraha',
+                label: 'Civil Rights & Satyagraha',
+                icon: '✊',
+                apply: () => {
+                  setSelectedEra('movements');
+                  setSelectedType('all');
+                }
+              },
+              {
+                id: 'lens-columbia',
+                label: 'Columbia & LSE Scholarly',
+                icon: '🎓',
+                apply: () => {
+                  setSelectedEra('early');
+                  setSelectedType('all');
+                }
+              },
+            ].map((lens) => (
+              <button
+                key={lens.id}
+                type="button"
+                onClick={() => {
+                  soundEffects.playClick();
+                  lens.apply();
+                }}
+                className="px-2.5 py-1 rounded-xl bg-[#FAF7F0] hover:bg-[#F3E4C9] border border-[#D3D4C0] text-[#0A2947] hover:text-[#8B5E3C] text-[11px] font-semibold shrink-0 transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>{lens.icon}</span>
+                <span>{lens.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* 1. Interactive Epoch Timeline (Lifepath Scrubber) */}
+          <div className="space-y-1.5 pt-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#8B5E3C] flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-[#8B5E3C]" />
+                <span>Historical Lifepath Epoch:</span>
+              </span>
+              <span className="text-[10px] font-mono text-[#0A2947]/60 hidden sm:inline">
+                Click an epoch to travel in time
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
               {[
-                { id: 'all', label: 'All Eras', span: '1916–1956 · Comprehensive Corpus' },
-                { id: 'early', label: '1916–1925', span: 'Columbia & LSE Scholarly Period' },
-                { id: 'movements', label: '1926–1939', span: 'Satyagrahas & Social Awakening' },
-                { id: 'constitution', label: '1940–1949', span: 'Drafting the Constitution of India' },
-                { id: 'later', label: '1950–1956', span: 'Hindu Code Bill & Deekshabhoomi' },
-              ].map((era) => (
-                <button
-                  key={era.id}
-                  onClick={() => {
-                    soundEffects.playClick();
-                    setSelectedEra(era.id);
-                  }}
-                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${selectedEra === era.id
-                    ? 'bg-[#0A2947] text-[#FAF7F0] border-[#0A2947] shadow-sm font-bold'
-                    : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
+                { id: 'all', icon: '🌐', label: 'All Eras', years: '1916–1956', desc: 'Full Corpus' },
+                { id: 'early', icon: '🎓', label: 'Scholarly Roots', years: '1916–1925', desc: 'Columbia & LSE' },
+                { id: 'movements', icon: '✊', label: 'Satyagrahas', years: '1926–1939', desc: 'Social Awakening' },
+                { id: 'constitution', icon: '🏛️', label: 'Constitution', years: '1940–1949', desc: 'Drafting Assembly' },
+                { id: 'later', icon: '🪷', label: 'Dhamma & Code', years: '1950–1956', desc: 'Deekshabhoomi' },
+              ].map((era) => {
+                const isSelected = selectedEra === era.id;
+                return (
+                  <button
+                    key={era.id}
+                    type="button"
+                    onClick={() => {
+                      soundEffects.playClick();
+                      setSelectedEra(era.id);
+                    }}
+                    className={`p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer group flex flex-col justify-between ${
+                      isSelected
+                        ? 'bg-[#0A2947] text-[#FAF7F0] border-[#0A2947] shadow-md ring-2 ring-[#C89D56]/30'
+                        : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0] hover:border-[#8B5E3C]/40'
                     }`}
-                >
-                  <div className="text-xs font-montserrat font-bold">{era.label}</div>
-                  <div className={`text-[10px] font-mono truncate ${selectedEra === era.id ? 'text-[#F3E4C9]/80' : 'text-[#0A2947]/60'}`}>
-                    {era.span}
-                  </div>
-                </button>
-              ))}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-base sm:text-lg">{era.icon}</span>
+                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                        isSelected ? 'bg-white/20 text-[#F3E4C9]' : 'bg-white/80 text-[#8B5E3C] border border-[#D3D4C0]'
+                      }`}>
+                        {era.years}
+                      </span>
+                    </div>
+                    <div>
+                      <div className="text-xs font-montserrat font-bold truncate">{era.label}</div>
+                      <div className={`text-[10px] font-mono truncate ${
+                        isSelected ? 'text-[#F3E4C9]/70' : 'text-[#0A2947]/50'
+                      }`}>
+                        {era.desc}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Document Classification Buttons */}
-          <div className="space-y-2 pt-2">
-            <span className="text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#8B5E3C] block">
-              Document Classification:
+          {/* 2. Document Classification Badges */}
+          <div className="space-y-1.5 pt-1">
+            <span className="text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#8B5E3C] flex items-center gap-1.5">
+              <BookOpen className="w-3.5 h-3.5 text-[#8B5E3C]" />
+              <span>Document Classification:</span>
             </span>
             <div className="flex flex-wrap items-center gap-2">
               {[
-                { id: 'all', label: 'All Records' },
-                { id: 'book', label: 'Books & Treatises' },
-                { id: 'debate', label: 'Constituent Assembly Debates' },
-                { id: 'speech', label: 'Speeches & Addresses' },
-                { id: 'manuscript', label: 'Manuscripts & Memoranda' }
-              ].map((btn) => (
-                <button
-                  key={btn.id}
-                  onClick={() => {
-                    soundEffects.playClick();
-                    setSelectedType(btn.id);
-                  }}
-                  className={`px-4 py-2 rounded-xl text-xs font-montserrat font-semibold transition-all cursor-pointer ${selectedType === btn.id
-                    ? 'bg-[#0A2947] text-[#F3E4C9] font-bold shadow-xs'
-                    : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                { id: 'all', icon: '📜', label: 'All Records', count: ARCHIVE_DOCUMENTS.length },
+                { id: 'book', icon: '📚', label: 'Treatises & Books', count: ARCHIVE_DOCUMENTS.filter(d => d.type === 'book').length },
+                { id: 'debate', icon: '🏛️', label: 'Assembly Debates', count: ARCHIVE_DOCUMENTS.filter(d => d.type === 'debate').length },
+                { id: 'speech', icon: '🎙️', label: 'Addresses & Speeches', count: ARCHIVE_DOCUMENTS.filter(d => d.type === 'speech').length },
+                { id: 'manuscript', icon: '✍️', label: 'Memoranda & Notes', count: ARCHIVE_DOCUMENTS.filter(d => d.type === 'manuscript').length },
+              ].map((btn) => {
+                const isSelected = selectedType === btn.id;
+                return (
+                  <button
+                    key={btn.id}
+                    type="button"
+                    onClick={() => {
+                      soundEffects.playClick();
+                      setSelectedType(btn.id);
+                    }}
+                    className={`px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-montserrat font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      isSelected
+                        ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#C89D56]/40'
+                        : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
                     }`}
-                >
-                  {btn.label}
-                </button>
-              ))}
+                  >
+                    <span>{btn.icon}</span>
+                    <span>{btn.label}</span>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                      isSelected ? 'bg-white/20 text-[#FAF7F0]' : 'bg-[#D3D4C0]/40 text-[#0A2947]/70'
+                    }`}>
+                      {btn.count}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Granular Facet Dropdowns */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-            {/* Subject Theme */}
-            <div className="space-y-1">
-              <label htmlFor="explore-filter-topic" className="text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#0A2947]/70 block">
-                Thematic Subject:
-              </label>
-              <select
-                id="explore-filter-topic"
-                name="explore_filter_topic"
-                aria-label="Filter by thematic subject"
-                value={selectedTopic}
-                onChange={(e) => setSelectedTopic(e.target.value)}
-                className="w-full bg-[#FAF7F0] border border-[#D3D4C0] rounded-xl px-3 py-2.5 text-xs text-[#0A2947] font-medium focus:outline-none focus:border-[#0A2947] cursor-pointer"
-              >
-                <option value="all">All Curatorial Themes</option>
-                {allTopics.map((topic) => (
-                  <option key={topic} value={topic}>{topic}</option>
-                ))}
-              </select>
-            </div>
+          {/* 3. Collapsible / Expandable More Filters (Thematic Subjects & Repositories) */}
+          {showAdvancedFilters && (
+            <div className="pt-4 border-t border-[#D3D4C0] space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#8B5E3C]">
+                  Granular Thematic & Repository Filters:
+                </span>
+                <span className="text-[10px] font-mono text-[#0A2947]/50">
+                  Click any pill to narrow or expand results
+                </span>
+              </div>
 
-            {/* Source Repository */}
-            <div className="space-y-1">
-              <label htmlFor="explore-filter-source" className="text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#0A2947]/70 block">
-                Source Repository:
-              </label>
-              <select
-                id="explore-filter-source"
-                name="explore_filter_source"
-                aria-label="Filter by source repository"
-                value={selectedSource}
-                onChange={(e) => setSelectedSource(e.target.value)}
-                className="w-full bg-[#FAF7F0] border border-[#D3D4C0] rounded-xl px-3 py-2.5 text-xs text-[#0A2947] font-medium focus:outline-none focus:border-[#0A2947] cursor-pointer"
-              >
-                <option value="all">All Repositories & Collections</option>
-                <option value="BAWS">BAWS (Writings & Speeches Corpus)</option>
-                <option value="Parliament">Constituent Assembly Secretariat</option>
-                <option value="Lahore">Jat-Pat-Todak Mandal Archive</option>
-                <option value="National Archives">National Archives of India</option>
-              </select>
+              {/* Subject Theme Filter Chips */}
+              <div className="space-y-1.5">
+                <div className="text-[11px] font-montserrat font-bold text-[#0A2947]/70 flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-[#8B5E3C]" />
+                  <span>Thematic Subject:</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundEffects.playClick();
+                      setSelectedTopic('all');
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
+                      selectedTopic === 'all'
+                        ? 'bg-[#0A2947] text-[#FAF7F0] font-bold'
+                        : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                    }`}
+                  >
+                    All Themes
+                  </button>
+                  {allTopics.map((topic) => (
+                    <button
+                      key={topic}
+                      type="button"
+                      onClick={() => {
+                        soundEffects.playClick();
+                        setSelectedTopic(selectedTopic === topic ? 'all' : topic);
+                      }}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
+                        selectedTopic === topic
+                          ? 'bg-[#0A2947] text-[#FAF7F0] font-bold ring-1 ring-[#C89D56]'
+                          : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                      }`}
+                    >
+                      {topic}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Source Repository Filter Chips */}
+              <div className="space-y-1.5 pt-2">
+                <div className="text-[11px] font-montserrat font-bold text-[#0A2947]/70 flex items-center gap-1.5">
+                  <Landmark className="w-3.5 h-3.5 text-[#8B5E3C]" />
+                  <span>Source Archive / Repository:</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { id: 'all', label: 'All Collections' },
+                    { id: 'BAWS', label: 'BAWS (Writings & Speeches)' },
+                    { id: 'Parliament', label: 'Constituent Assembly' },
+                    { id: 'Lahore', label: 'Jat-Pat-Todak Mandal' },
+                    { id: 'National Archives', label: 'National Archives' },
+                  ].map((src) => (
+                    <button
+                      key={src.id}
+                      type="button"
+                      onClick={() => {
+                        soundEffects.playClick();
+                        setSelectedSource(selectedSource === src.id ? 'all' : src.id);
+                      }}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
+                        selectedSource === src.id
+                          ? 'bg-[#0A2947] text-[#FAF7F0] font-bold ring-1 ring-[#C89D56]'
+                          : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                      }`}
+                    >
+                      {src.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Active Filter Removable Tags */}
           {activeFiltersCount > 0 && (
@@ -619,8 +724,8 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
               <span className="text-[10px] font-mono text-[#0A2947]/60 uppercase">Applied Filters:</span>
 
               {searchQuery.trim() && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#0A2947] text-[#F3E4C9] text-xs">
-                  <span>Query: "{searchQuery}"</span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#0A2947] text-[#F3E4C9] text-xs font-mono">
+                  <span>Query: &quot;{searchQuery}&quot;</span>
                   <button onClick={() => setSearchQuery('')} className="hover:text-red-300 cursor-pointer">
                     <X className="w-3 h-3" />
                   </button>
@@ -628,7 +733,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
               )}
 
               {selectedType !== 'all' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] text-xs text-[#0A2947]">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] text-xs font-mono text-[#0A2947]">
                   <span>Type: {selectedType}</span>
                   <button onClick={() => setSelectedType('all')} className="hover:text-red-700 cursor-pointer">
                     <X className="w-3 h-3" />
@@ -637,7 +742,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
               )}
 
               {selectedEra !== 'all' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] text-xs text-[#0A2947]">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] text-xs font-mono text-[#0A2947]">
                   <span>Era: {selectedEra}</span>
                   <button onClick={() => setSelectedEra('all')} className="hover:text-red-700 cursor-pointer">
                     <X className="w-3 h-3" />
@@ -646,7 +751,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
               )}
 
               {selectedTopic !== 'all' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] text-xs text-[#0A2947]">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] text-xs font-mono text-[#0A2947]">
                   <span>Topic: {selectedTopic}</span>
                   <button onClick={() => setSelectedTopic('all')} className="hover:text-red-700 cursor-pointer">
                     <X className="w-3 h-3" />
@@ -655,13 +760,21 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
               )}
 
               {selectedSource !== 'all' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] text-xs text-[#0A2947]">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] text-xs font-mono text-[#0A2947]">
                   <span>Source: {selectedSource}</span>
                   <button onClick={() => setSelectedSource('all')} className="hover:text-red-700 cursor-pointer">
                     <X className="w-3 h-3" />
                   </button>
                 </span>
               )}
+
+              <button
+                type="button"
+                onClick={resetAllFilters}
+                className="text-[11px] text-[#8B5E3C] hover:text-[#0A2947] underline underline-offset-2 ml-2 cursor-pointer font-mono font-bold"
+              >
+                Clear all filters
+              </button>
             </div>
           )}
 
