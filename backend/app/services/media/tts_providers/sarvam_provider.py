@@ -41,6 +41,7 @@ SARVAM_LANGUAGE_MAP: dict[str, str] = {
     "mr": "mr-IN",
     "pa": "pa-IN",
     "od": "od-IN",
+    "or": "od-IN",
     "en": "en-IN",
     "hi": "hi-IN",
 }

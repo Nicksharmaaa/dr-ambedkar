@@ -278,3 +278,108 @@ class TestNeutralOutputAndSecurity:
             assert res.get("provider") == "sarvam"
             # Ensure synthesize was NOT called on the provider
             mock_sarvam.synthesize.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_no_groq_tts_provider_exists(self):
+        """Verify that Groq is never configured or resolved as a TTS provider."""
+        mock_db = MagicMock()
+        service = TTSService(db=mock_db)
+        assert service.elevenlabs_provider.provider_name == "elevenlabs"
+        assert service.sarvam_provider.provider_name == "sarvam"
+
+        for lang in ["en", "hi", "bn", "ta", "gu", "te", "kn", "ml", "mr", "pa", "od"]:
+            provider = service.resolve_provider(lang)
+            assert provider.provider_name != "groq"
+            assert provider.provider_name in ("elevenlabs", "sarvam")
+
+    @pytest.mark.asyncio
+    async def test_synthesis_routes_en_and_hi_to_elevenlabs(self):
+        """Verify that synthesize() for English and Hindi strictly invokes ElevenLabs."""
+        mock_db = MagicMock()
+        mock_db.execute = AsyncMock(return_value=MagicMock(rows=[]))
+
+        mock_eleven = MagicMock(spec=ElevenLabsTTSProvider)
+        mock_eleven.provider_name = "elevenlabs"
+        mock_eleven.supported_languages = {"en", "hi"}
+        dummy_audio = TTSAudioResult(
+            audio_bytes=b"ID3_elevenlabs_audio_data",
+            content_type="audio/mpeg",
+            provider="elevenlabs",
+            model="eleven_multilingual_v2",
+            language="en",
+            speaker="Rachel",
+        )
+        mock_eleven.synthesize = AsyncMock(return_value=dummy_audio)
+
+        mock_sarvam = MagicMock(spec=SarvamTTSProvider)
+        mock_sarvam.provider_name = "sarvam"
+        mock_sarvam.supported_languages = {"bn", "ta", "gu", "te", "kn", "ml", "mr", "pa", "od"}
+        mock_sarvam.synthesize = AsyncMock()
+
+        service = TTSService(db=mock_db, elevenlabs_provider=mock_eleven, sarvam_provider=mock_sarvam)
+
+        with patch("os.path.exists", return_value=False), patch("builtins.open", MagicMock()):
+            # Test English
+            res_en = await service.synthesize("Constitutional Morality", language="en")
+            assert res_en["provider"] == "elevenlabs"
+            assert res_en["audio_url"].endswith(".mp3")
+            mock_eleven.synthesize.assert_called_once()
+            mock_sarvam.synthesize.assert_not_called()
+
+            # Test Hindi
+            mock_eleven.synthesize.reset_mock()
+            mock_sarvam.synthesize.reset_mock()
+            dummy_audio.language = "hi"
+            res_hi = await service.synthesize("संविधान और न्याय", language="hi-IN")
+            assert res_hi["provider"] == "elevenlabs"
+            mock_eleven.synthesize.assert_called_once()
+            mock_sarvam.synthesize.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_synthesis_routes_indic_to_sarvam(self):
+        """Verify that synthesize() for Indic languages strictly invokes Sarvam Bulbul v3."""
+        mock_db = MagicMock()
+        mock_db.execute = AsyncMock(return_value=MagicMock(rows=[]))
+
+        mock_eleven = MagicMock(spec=ElevenLabsTTSProvider)
+        mock_eleven.provider_name = "elevenlabs"
+        mock_eleven.supported_languages = {"en", "hi"}
+        mock_eleven.synthesize = AsyncMock()
+
+        mock_sarvam = MagicMock(spec=SarvamTTSProvider)
+        mock_sarvam.provider_name = "sarvam"
+        mock_sarvam.supported_languages = {"bn", "ta", "gu", "te", "kn", "ml", "mr", "pa", "od"}
+        dummy_audio = TTSAudioResult(
+            audio_bytes=create_dummy_wav(),
+            content_type="audio/wav",
+            provider="sarvam",
+            model="bulbul:v3",
+            language="mr",
+            speaker="shubh",
+        )
+        mock_sarvam.synthesize = AsyncMock(return_value=dummy_audio)
+
+        service = TTSService(db=mock_db, elevenlabs_provider=mock_eleven, sarvam_provider=mock_sarvam)
+
+        with patch("os.path.exists", return_value=False), patch("builtins.open", MagicMock()):
+            for lang in ["bn", "ta", "gu", "te", "kn", "ml", "mr", "pa", "od"]:
+                mock_sarvam.synthesize.reset_mock()
+                mock_eleven.synthesize.reset_mock()
+                dummy_audio.language = lang
+                res = await service.synthesize(f"Archival text in {lang}", language=f"{lang}-IN")
+                assert res["provider"] == "sarvam"
+                assert res["audio_url"].endswith(".wav")
+                mock_sarvam.synthesize.assert_called_once()
+                mock_eleven.synthesize.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_synthesis_unsupported_language_fails_cleanly(self):
+        """Verify unsupported language fails with status 400 and clean error dictionary."""
+        mock_db = MagicMock()
+        service = TTSService(db=mock_db)
+
+        res = await service.synthesize("Bonjour le monde", language="fr")
+        assert "error" in res
+        assert res.get("status_code") == 400
+        assert "No TTS provider configured" in res["error"]
+
