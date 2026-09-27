@@ -40,12 +40,12 @@ export interface DepthCarouselProps {
 }
 
 const DEFAULT_ITEMS: DepthCarouselItem[] = [
-  { image: '/images/ambedkar_archive_hero_1790176060286.jpg', alt: 'Portrait of Dr. B. R. Ambedkar (1947)', title: 'First Law Minister', year: 1947 },
-  { image: '/images/ambedkar_drafting_constitution_1790182039282.jpg', alt: 'Presenting the Constitution Draft', title: 'Architect of the Constitution', year: 1949 },
-  { image: '/images/ambedkar_rajgruha_library_1790182019374.jpg', alt: 'In the Rajgruha Library', title: 'Sanctuary of Knowledge', year: 1934 },
-  { image: '/images/ambedkar_round_table_1790182055124.jpg', alt: 'At the Round Table Conference London', title: 'Round Table Conference', year: 1931 },
-  { image: '/images/ambedkar_law_minister_1790182070157.jpg', alt: 'Taking Oath as Law Minister', title: 'Law & Justice Minister', year: 1947 },
-  { image: '/images/ambedkar_nagpur_deeksha_1790182086774.jpg', alt: 'The Great Conversion at Nagpur', title: 'Historic Dhamma Deeksha', year: 1956 }
+  { image: '/images/ambedkar_portrait_1950.jpg', alt: 'Portrait of Dr. B. R. Ambedkar (1950)', title: 'First Law Minister', year: 1950 },
+  { image: '/images/ambedkar_signing_constitution.jpg', alt: 'Signing the Constitution of India', title: 'Architect of the Constitution', year: 1950 },
+  { image: '/images/ambedkar_rajgruha_reading.jpg', alt: 'In the Rajgruha Library', title: 'Sanctuary of Knowledge', year: 1934 },
+  { image: '/images/ambedkar_barrister_1922.jpg', alt: 'At Gray’s Inn & London Bar', title: 'Barrister-at-Law London', year: 1922 },
+  { image: '/images/ambedkar_law_minister.jpg', alt: 'Taking Oath as Law Minister', title: 'Law & Justice Minister', year: 1947 },
+  { image: '/images/ambedkar_pm_nehrus_cabinet.png', alt: 'First Cabinet of Independent India', title: 'Union Cabinet of India', year: 1947 }
 ];
 
 const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);

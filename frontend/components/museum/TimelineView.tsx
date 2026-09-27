@@ -84,7 +84,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const carouselCards: ThreeDCarouselCard[] = React.useMemo(() => {
     return filteredEvents.map(event => ({
       id: event.id,
-      image: event.imageUrl || '/images/ambedkar_archive_hero_1790176060286.jpg',
+      image: event.imageUrl || '/images/ambedkar_portrait_1950.jpg',
       title: event.title,
       titleLocal: event.titleLocal,
       year: event.year,

@@ -20,6 +20,7 @@ export interface HeritageLocation {
   historical_significance: string;
   related_documents: string[];
   related_events: string[];
+  imageUrl?: string;
 }
 
 interface MemorialsViewProps {
@@ -50,7 +51,8 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
       description: "Birthplace of Dr. B. R. Ambedkar on 14 April 1891 in the military cantonment of Mhow. Now enshrined as the grand Bhim Janmabhoomi memorial complex.",
       historical_significance: "Cradle of the architect of modern India and leader of the subaltern emancipation movement.",
       related_documents: ["AMBEDKAR-VOL-01", "AMBEDKAR-VOL-17-01"],
-      related_events: ["1891-birth"]
+      related_events: ["1891-birth"],
+      imageUrl: "/images/ambedkar_young.gif"
     },
     {
       id: "loc-london",
@@ -62,7 +64,8 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
       description: "Residence where Dr. Ambedkar lived while studying for his D.Sc. at London School of Economics and Bar-at-Law at Gray's Inn (1921-1922). Acquired by Government of Maharashtra as an international museum.",
       historical_significance: "Site of intense scholarship where 'The Problem of the Rupee' was researched and written.",
       related_documents: ["AMBEDKAR-VOL-06"],
-      related_events: ["1923-problem-of-rupee"]
+      related_events: ["1923-problem-of-rupee"],
+      imageUrl: "/images/ambedkar_barrister_1922.jpg"
     },
     {
       id: "loc-mahad",
@@ -74,7 +77,8 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
       description: "Site of the historic Mahad Satyagraha of 20 March 1927, where Dr. Ambedkar led thousands to assert their fundamental right to public drinking water.",
       historical_significance: "Often described as the Magna Carta of Dalit human rights in modern Indian history.",
       related_documents: ["AMBEDKAR-VOL-17-01"],
-      related_events: ["1927-mahad"]
+      related_events: ["1927-mahad"],
+      imageUrl: "/images/ambedkar_public_assembly.png"
     },
     {
       id: "loc-delhi-ca",
@@ -86,7 +90,8 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
       description: "Historic Central Hall of Parliament where the Drafting Committee, chaired by Dr. Ambedkar, debated and finalized the Constitution of India between 1946 and 1949.",
       historical_significance: "Sanctum of modern constitutional democracy and universal adult franchise in India.",
       related_documents: ["AMBEDKAR-VOL-13", "AMBEDKAR-VOL-01"],
-      related_events: ["1949-constitution-passed"]
+      related_events: ["1949-constitution-passed"],
+      imageUrl: "/images/ambedkar_signing_constitution.jpg"
     },
     {
       id: "loc-delhi-alipur",
@@ -98,7 +103,8 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
       description: "Residence where Dr. Ambedkar spent his final years, completed Buddha and His Dhamma, and attained Mahaparinirvan on 6 December 1956. Designed in the architectural form of an open book.",
       historical_significance: "National shrine dedicated to Babasaheb's intellectual legacy and constitutional philosophy.",
       related_documents: ["AMBEDKAR-VOL-11", "AMBEDKAR-VOL-17-01"],
-      related_events: ["1956-mahaparinirvan"]
+      related_events: ["1956-mahaparinirvan"],
+      imageUrl: "/images/ambedkar_memorial_alipur.jpg"
     },
     {
       id: "loc-nagpur",
@@ -110,7 +116,8 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
       description: "Sacred ground where Dr. Ambedkar embraced Buddhism alongside over 500,000 followers on Ashoka Vijaya Dashami, 14 October 1956, taking the 22 historic vows.",
       historical_significance: "Greatest mass peaceful religious and philosophical emancipation movement in modern world history.",
       related_documents: ["AMBEDKAR-VOL-11"],
-      related_events: ["1956-buddhism-conversion"]
+      related_events: ["1956-buddhism-conversion"],
+      imageUrl: "/images/ambedkar_historic_seated.jpg"
     },
     {
       id: "loc-chaitya",
@@ -122,7 +129,8 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
       description: "Cremation and resting memorial of Dr. Ambedkar on the shores of Dadar Chowpatty, visited by millions annually on Mahaparinirvan Divas (6 December).",
       historical_significance: "Pilgrimage center of the democratic equality movement.",
       related_documents: ["AMBEDKAR-VOL-17-01"],
-      related_events: ["1956-mahaparinirvan"]
+      related_events: ["1956-mahaparinirvan"],
+      imageUrl: "/images/ambedkar_memorial_monument.jpg"
     },
     {
       id: "loc-columbia",
@@ -134,7 +142,8 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
       description: "Where young Bhimrao Ambedkar studied under John Dewey, Edwin Seligman, and Alexander Goldenweiser (1913-1916), writing 'Castes in India'. Awarded LL.D. in 1952 as 'Great American Alumnus'.",
       historical_significance: "Formative epicenter of pragmatist philosophy, social democracy, and constitutional thought.",
       related_documents: ["AMBEDKAR-VOL-01"],
-      related_events: ["1916-castes-in-india"]
+      related_events: ["1916-castes-in-india"],
+      imageUrl: "/images/ambedkar_columbia_study_tour.jpg"
     }
   ];
 
@@ -352,32 +361,41 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
                           : 'bg-[#0A2947]/45 hover:bg-[#0E355C]/80 border border-[#C89D56]/20 hover:border-[#C89D56]/60 text-white'
                           }`}
                       >
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <h3 className="font-serif-editorial font-bold text-sm leading-snug line-clamp-1 text-white">
-                            {loc.name}
-                          </h3>
-                          <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-mono font-bold ${isSelected
-                            ? 'bg-[#C89D56] text-[#0A2947]'
-                            : 'bg-[#0A2947]/80 text-[#C89D56] border border-[#C89D56]/30'
-                            }`}>
-                            {loc.country}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-1.5 text-xs font-mono mb-1.5 text-[#C89D56]">
-                          <MapPin className="w-3.5 h-3.5 shrink-0 text-[#C89D56]" />
-                          <span className="truncate text-[#F3E4C9]/85">{loc.city}</span>
-                          {isSelected && (
-                            <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-amber-300 font-bold font-mono">
-                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-                              Active Pin
-                            </span>
+                        <div className="flex gap-3 items-start">
+                          {loc.imageUrl && (
+                            <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-[#C89D56]/40 bg-[#061524] mt-0.5">
+                              <img src={loc.imageUrl} alt={loc.name} className="w-full h-full object-cover" />
+                            </div>
                           )}
-                        </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <h3 className="font-serif-editorial font-bold text-sm leading-snug line-clamp-1 text-white">
+                                {loc.name}
+                              </h3>
+                              <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-mono font-bold ${isSelected
+                                ? 'bg-[#C89D56] text-[#0A2947]'
+                                : 'bg-[#0A2947]/80 text-[#C89D56] border border-[#C89D56]/30'
+                                }`}>
+                                {loc.country}
+                              </span>
+                            </div>
 
-                        <p className="text-xs text-white/75 line-clamp-2 leading-relaxed font-dmsans">
-                          {loc.description}
-                        </p>
+                            <div className="flex items-center gap-1.5 text-xs font-mono mb-1.5 text-[#C89D56]">
+                              <MapPin className="w-3.5 h-3.5 shrink-0 text-[#C89D56]" />
+                              <span className="truncate text-[#F3E4C9]/85">{loc.city}</span>
+                              {isSelected && (
+                                <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-amber-300 font-bold font-mono">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                                  Active Pin
+                                </span>
+                              )}
+                            </div>
+
+                            <p className="text-xs text-white/75 line-clamp-2 leading-relaxed font-dmsans">
+                              {loc.description}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     );
                   })}
@@ -431,6 +449,22 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
                         <span className="text-[#F3E4C9]/90">{selectedLocation.city}, {selectedLocation.country}</span>
                       </div>
                     </div>
+
+                    {/* Archival Photographic Plate Banner */}
+                    {selectedLocation.imageUrl && (
+                      <div className="relative w-full h-44 rounded-2xl overflow-hidden border border-[#C89D56]/40 shadow-inner group bg-[#061524]">
+                        <img 
+                          src={selectedLocation.imageUrl} 
+                          alt={selectedLocation.name}
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" 
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#061524]/90 via-transparent to-transparent pointer-events-none" />
+                        <div className="absolute bottom-2 left-3 right-3 text-[11px] font-mono text-[#F3E4C9] flex items-center justify-between">
+                          <span className="truncate">Archival Photographic Plate</span>
+                          <span className="text-[#C89D56] font-bold">Verified Heritage Lineage</span>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Verified Memorial Status Line */}
                     <div className="p-3.5 rounded-2xl bg-[#0A2947]/70 border border-[#C89D56]/30 flex items-center justify-between text-xs font-mono">

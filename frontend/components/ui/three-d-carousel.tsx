@@ -64,7 +64,7 @@ export interface ThreeDPhotoCarouselProps {
 const DEFAULT_CARDS: ThreeDCarouselCard[] = [
   {
     id: 'birth-1891',
-    image: '/images/ambedkar_archive_hero_1790176060286.jpg',
+    image: '/images/ambedkar_young.gif',
     title: 'Birth at Mhow Cantonment',
     year: 1891,
     dateString: 'April 14, 1891',
@@ -80,7 +80,7 @@ const DEFAULT_CARDS: ThreeDCarouselCard[] = [
   },
   {
     id: 'columbia-1916',
-    image: '/images/ambedkar_drafting_constitution_1790182039282.jpg',
+    image: '/images/ambedkar_columbia_study_tour.jpg',
     title: 'Columbia University & London School of Economics',
     year: 1916,
     dateString: '1913 – 1923',
@@ -96,7 +96,7 @@ const DEFAULT_CARDS: ThreeDCarouselCard[] = [
   },
   {
     id: 'mahad-1927',
-    image: '/images/ambedkar_rajgruha_library_1790182019374.jpg',
+    image: '/images/ambedkar_public_assembly.png',
     title: 'The Historic Mahad Satyagraha (Chavdar Tale)',
     year: 1927,
     dateString: 'March 20, 1927',
@@ -114,7 +114,7 @@ const DEFAULT_CARDS: ThreeDCarouselCard[] = [
   },
   {
     id: 'round-table-1930',
-    image: '/images/ambedkar_round_table_1790182055124.jpg',
+    image: '/images/ambedkar_barrister_1922.jpg',
     title: 'Round Table Conferences in London',
     year: 1930,
     dateString: 'November 1930 – 1932',
@@ -130,7 +130,7 @@ const DEFAULT_CARDS: ThreeDCarouselCard[] = [
   },
   {
     id: 'constitution-1947',
-    image: '/images/ambedkar_law_minister_1790182070157.jpg',
+    image: '/images/ambedkar_signing_constitution.jpg',
     title: 'Chairman of Constitution Drafting Committee',
     year: 1947,
     dateString: 'August 29, 1947 – January 26, 1950',
@@ -148,7 +148,7 @@ const DEFAULT_CARDS: ThreeDCarouselCard[] = [
   },
   {
     id: 'deeksha-1956',
-    image: '/images/ambedkar_nagpur_deeksha_1790182086774.jpg',
+    image: '/images/ambedkar_historic_seated.jpg',
     title: 'The Historic Dhamma Deeksha at Nagpur',
     year: 1956,
     dateString: 'October 14, 1956',
@@ -661,7 +661,7 @@ export function ThreeDPhotoCarousel({
                   {/* Full-Bleed Archival Photo Container */}
                   <div className="relative flex-1 w-full overflow-hidden bg-[#040E1A]">
                     <img
-                      src={card.image || '/images/ambedkar_archive_hero_1790176060286.jpg'}
+                      src={card.image || '/images/ambedkar_portrait_1950.jpg'}
                       alt={displayTitle || `Reel Frame ${i + 1}`}
                       className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
                       style={{

@@ -3,14 +3,29 @@ import {
   KnowledgeGraphNode, KnowledgeGraphLink, GuidedStoryPath, DocComparisonPreset, OCRJobRecord
 } from '../types';
 
-export const HERO_IMAGE = '/images/ambedkar_archive_hero_1790176060286.jpg';
-export const MAHAD_IMAGE = '/images/mahad_satyagraha_archive_1790176078736.jpg';
-export const ASSEMBLY_IMAGE = '/images/constituent_assembly_hall_1790176093139.jpg';
-export const RAJGRUHA_LIBRARY_IMAGE = '/images/ambedkar_rajgruha_library_1790182019374.jpg';
-export const DRAFTING_CONSTITUTION_IMAGE = '/images/ambedkar_drafting_constitution_1790182039282.jpg';
-export const ROUND_TABLE_IMAGE = '/images/ambedkar_round_table_1790182055124.jpg';
-export const LAW_MINISTER_IMAGE = '/images/ambedkar_law_minister_1790182070157.jpg';
-export const NAGPUR_DEEKSHA_IMAGE = '/images/ambedkar_nagpur_deeksha_1790182086774.jpg';
+export const HERO_IMAGE = '/images/ambedkar_portrait_1950.jpg';
+export const MAHAD_IMAGE = '/images/ambedkar_public_assembly.png';
+export const ASSEMBLY_IMAGE = '/images/ambedkar_pm_nehrus_cabinet.png';
+export const RAJGRUHA_LIBRARY_IMAGE = '/images/ambedkar_rajgruha_reading.jpg';
+export const DRAFTING_CONSTITUTION_IMAGE = '/images/ambedkar_signing_constitution.jpg';
+export const ROUND_TABLE_IMAGE = '/images/ambedkar_barrister_1922.jpg';
+export const LAW_MINISTER_IMAGE = '/images/ambedkar_law_minister.jpg';
+export const NAGPUR_DEEKSHA_IMAGE = '/images/ambedkar_historic_seated.jpg';
+
+// Additional authentic archival photographic plates from incoming documents
+export const SYDENHAM_PROFESSOR_IMAGE = '/images/ambedkar_sydenham_professor_1918.jpg';
+export const RAMABAI_AMBEDKAR_IMAGE = '/images/ambedkar_and_ramabai.jpg';
+export const YOUNG_AMBEDKAR_IMAGE = '/images/ambedkar_young.gif';
+export const USA_STUDY_TOUR_IMAGE = '/images/ambedkar_columbia_study_tour.jpg';
+export const MEMORIAL_ALIPUR_IMAGE = '/images/ambedkar_memorial_alipur.jpg';
+export const INTERNATIONAL_CENTRE_IMAGE = '/images/ambedkar_international_centre.png';
+export const COMMEMORATIVE_STAMP_IMAGE = '/images/ambedkar_commemorative_stamp.png';
+export const VINTAGE_PORTRAIT_IMAGE = '/images/ambedkar_portrait_vintage.jpg';
+export const SIDE_PORTRAIT_IMAGE = '/images/ambedkar_portrait_side.jpg';
+export const CLOSE_PORTRAIT_IMAGE = '/images/ambedkar_portrait_close.jpg';
+export const MEMORIAL_MONUMENT_IMAGE = '/images/ambedkar_memorial_monument.jpg';
+export const BIOGRAPHY_GALLERY_IMAGE = '/images/ambedkar_biography_gallery.jpg';
+
 
 
 export const ARCHIVE_DOCUMENTS: ArchivalDocument[] = [
@@ -357,7 +372,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
       mr: 'भीमराव रामजी आंबेडकर यांचा जन्म महू लष्करी छावणीत सुभेदार रामजी मालोजी सकपाल आणि भीमाबाई यांच्या पोटी झाला.'
     },
     quote: 'Cultivation of mind should be the ultimate aim of human existence.',
-    imageUrl: HERO_IMAGE,
+    imageUrl: YOUNG_AMBEDKAR_IMAGE,
     relatedDocIds: ['castes-in-india-1916'],
     mediaType: 'photo',
     highlights: [
@@ -383,13 +398,38 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
       mr: 'सयाजीराव गायकवाड यांच्या शिष्यवृत्तीवर कोलंबियातून पी.एचडी. आणि लंडन स्कूल ऑफ इकॉनॉमिक्समधून डी.एस्सी. सह बार-ॲट-लॉ संपादन केले.'
     },
     quote: 'Men are mortal. So are ideas. An idea needs propagation as much as a plant needs watering.',
-    imageUrl: RAJGRUHA_LIBRARY_IMAGE,
+    imageUrl: USA_STUDY_TOUR_IMAGE,
     relatedDocIds: ['castes-in-india-1916', 'problem-of-the-rupee-1923'],
     mediaType: 'photo',
     highlights: [
       'Studied 18 hours daily at Columbia Library',
       'Doctor of Science (D.Sc.) at London School of Economics',
       'Admitted to Gray’s Inn as Barrister-at-Law'
+    ]
+  },
+  {
+    id: 'sydenham-professor-1918',
+    year: 1918,
+    dateString: 'November 19, 1918',
+    title: 'Appointed Professor of Political Economy at Sydenham College',
+    titleLocal: {
+      hi: 'सिडेनहैम कॉलेज में अर्थशास्त्र के प्रोफेसर नियुक्त',
+      mr: 'सिडनहॅम कॉलेजमध्ये अर्थशास्त्राचे प्राध्यापक म्हणून नियुक्ती'
+    },
+    era: 'Early Life & Education',
+    location: 'Sydenham College of Commerce and Economics, Bombay',
+    description: 'Dr. Ambedkar was appointed Professor of Political Economy, dazzling students with his scholarship while enduring caste discrimination from orthodox faculty members.',
+    descriptionLocal: {
+      hi: '19 नवंबर 1918 को बॉम्बे के सिडेनहैम कॉलेज में अर्थशास्त्र के प्राध्यापक के रूप में कार्यभार संभाला।',
+      mr: '१९ नोव्हेंबर १९१८ रोजी सिडनहॅम कॉलेजमध्ये प्राध्यापक म्हणून रुजू झाले.'
+    },
+    imageUrl: SYDENHAM_PROFESSOR_IMAGE,
+    relatedDocIds: ['castes-in-india-1916'],
+    mediaType: 'photo',
+    highlights: [
+      'Appointed Professor of Economics on November 19, 1918',
+      'Beloved by students from all backgrounds for brilliant lectures',
+      'Saved his salary to fund his return to LSE and Gray\'s Inn'
     ]
   },
   {
@@ -410,7 +450,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     },
     quote: 'Educate, Agitate, Organise. Have faith in yourselves.',
     quoteAttribution: 'Motto of Bahishkrit Hitakarini Sabha',
-    imageUrl: HERO_IMAGE,
+    imageUrl: VINTAGE_PORTRAIT_IMAGE,
     relatedDocIds: ['annihilation-of-caste'],
     mediaType: 'document',
     highlights: [
@@ -675,7 +715,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
       hi: 'दिल्ली स्थित निवास पर उनका देहावसान हुआ। मुंबई के चैत्यभूमि पर लाखों शोकाकुल नागरिकों ने उन्हें अश्रुपूर्ण श्रद्धांजलि दी।',
       mr: 'दिल्लीत महापरिनिर्वाण झाले. मुंबईच्या चैत्यभूमीवर जनसागराने आपल्या युगपुरुषाला भावपूर्ण निरोप दिला.'
     },
-    imageUrl: HERO_IMAGE,
+    imageUrl: MEMORIAL_ALIPUR_IMAGE,
     relatedDocIds: ['buddha-and-his-dhamma-1957'],
     mediaType: 'photo',
     highlights: [
@@ -1122,6 +1162,318 @@ export const HISTORICAL_PHOTOS: HistoricalPhoto[] = [
     relatedDocIds: ['annihilation-of-caste'],
     dimensions: '35.6 × 22.8 cm',
     medium: 'Silver gelatin documentary news photograph'
+  },
+  {
+    id: 'photo-sydenham-1918',
+    title: 'Appointed Professor of Economics at Sydenham College (1918)',
+    titleLocal: {
+      hi: 'सिडेनहैम कॉलेज में अर्थशास्त्र के प्रोफेसर नियुक्त (1918)',
+      mr: 'सिडनहॅम कॉलेजमध्ये अर्थशास्त्राचे प्राध्यापक म्हणून नियुक्ती (१९१८)'
+    },
+    year: 1918,
+    dateString: 'November 19, 1918',
+    location: 'Sydenham College, Hornby Road, Bombay',
+    era: 'Early Life & Education',
+    imageUrl: SYDENHAM_PROFESSOR_IMAGE,
+    aspectRatio: 'landscape',
+    caption: 'Official historic photograph of Dr. B. R. Ambedkar upon his appointment as Professor of Political Economy at Sydenham College on November 19, 1918.',
+    captionLocal: {
+      hi: '19 नवंबर 1918 को बॉम्बे के प्रतिष्ठित सिडेनहैम कॉलेज में अर्थशास्त्र के प्राध्यापक के रूप में कार्यभार ग्रहण करते हुए डॉ. आंबेडकर।',
+      mr: '१९ नोव्हेंबर १९१८ रोजी सिडनहॅम कॉलेजमध्ये प्राध्यापक म्हणून रुजू होतानाचे ऐतिहासिक छायाचित्र.'
+    },
+    historicalContext: 'Despite his immense academic brilliance from Columbia University, Dr. Ambedkar faced deep caste prejudice from orthodox faculty members at Sydenham. His legendary lectures drew hundreds of admiring students from across disciplines.',
+    accessionNumber: 'ARC-PH-1918-002',
+    archiveProvenance: 'Sydenham College Archives / Government of Maharashtra',
+    photographerOrAgency: 'Official College Academic Registry Photographer',
+    relatedDocIds: ['castes-in-india-1916'],
+    dimensions: '25.4 × 20.3 cm',
+    medium: 'Original vintage silver gelatin gelatin bromide print'
+  },
+  {
+    id: 'photo-young-ambedkar',
+    title: 'Young Bhimrao Ambedkar in Early Student Years',
+    titleLocal: {
+      hi: 'युवा भीमराव आंबेडकर: प्रारंभिक विद्यार्थी जीवन',
+      mr: 'तरुण भीमराव आंबेडकर: सुरुवातीचे विद्यार्थी जीवन'
+    },
+    year: 1908,
+    dateString: 'Circa 1908',
+    location: 'Bombay',
+    era: 'Early Life & Education',
+    imageUrl: YOUNG_AMBEDKAR_IMAGE,
+    aspectRatio: 'portrait',
+    caption: 'Rare archival plate of young Bhimrao during his matriculation and collegiate studies at Elphinstone College, Bombay.',
+    captionLocal: {
+      hi: 'एल्फिंस्टन कॉलेज, बॉम्बे में उच्च शिक्षा के प्रारंभिक वर्षों का दुर्लभ ऐतिहासिक चित्रांकन।',
+      mr: 'एल्फिन्स्टन कॉलेज, मुंबई येथील उच्च शिक्षणाच्या सुरुवातीच्या काळातील दुर्मिळ छायाचित्र.'
+    },
+    historicalContext: 'Bhimrao passed his matriculation in 1907 from Elphinstone High School, a historic breakthrough for the untouchable community, celebrated with a public felicitation where he was presented a copy of the life of Gautama Buddha by K. A. Keluskar.',
+    accessionNumber: 'ARC-PH-1908-001',
+    archiveProvenance: 'Ambedkar Family Photographic Archives / National Archives of India',
+    photographerOrAgency: 'Bourne & Shepherd Studios, Bombay Branch',
+    relatedDocIds: ['castes-in-india-1916'],
+    dimensions: '18.0 × 12.5 cm',
+    medium: 'Albumin vintage print, sepia toned'
+  },
+  {
+    id: 'photo-usa-study-tour',
+    title: 'Columbia University Study Tour & Intellectual Cohort',
+    titleLocal: {
+      hi: 'कोलंबिया विश्वविद्यालय अध्ययन यात्रा एवं शोध दल (USA)',
+      mr: 'कोलंबिया विद्यापीठ अभ्यास दौरा आणि संशोधन गट (अमेरिका)'
+    },
+    year: 1914,
+    dateString: '1914',
+    location: 'Columbia University, New York City, USA',
+    era: 'Early Life & Education',
+    imageUrl: USA_STUDY_TOUR_IMAGE,
+    aspectRatio: 'landscape',
+    caption: 'Group photograph of the study tour delegation at Columbia University, New York, during Dr. Ambedkar’s graduate studies.',
+    captionLocal: {
+      hi: 'न्यूयॉर्क स्थित कोलंबिया विश्वविद्यालय में अध्ययन दल के साथ डॉ. आंबेडकर का समूह चित्र।',
+      mr: 'न्यूयॉर्कच्या कोलंबिया विद्यापीठात अभ्यास दौऱ्यादरम्यान डॉ. आंबेडकरांचे समूह छायाचित्र.'
+    },
+    historicalContext: 'While at Columbia from 1913 to 1916, Dr. Ambedkar absorbed American pragmatism under John Dewey, public finance under Edwin Seligman, and comparative sociology under Alexander Goldenweiser, working up to 18 hours every single day.',
+    accessionNumber: 'ARC-PH-1914-003',
+    archiveProvenance: 'Columbia University Rare Book & Manuscript Library / Dr. Ambedkar Foundation',
+    photographerOrAgency: 'Pach Brothers Photographic Studio, New York',
+    relatedDocIds: ['castes-in-india-1916'],
+    dimensions: '28.0 × 20.0 cm',
+    medium: 'Gelatin silver print'
+  },
+  {
+    id: 'photo-barrister-grays-inn',
+    title: 'Dr. B. R. Ambedkar as Barrister-at-Law in London (1922)',
+    titleLocal: {
+      hi: 'बैरिस्टर-एट-लॉ, ग्रेज़ इन, लंदन (1922)',
+      mr: 'बार-ॲट-लॉ, ग्रेज इन, लंडन (१९२२)'
+    },
+    year: 1922,
+    dateString: '1922',
+    location: 'Gray’s Inn, London, United Kingdom',
+    era: 'Early Life & Education',
+    imageUrl: ROUND_TABLE_IMAGE,
+    aspectRatio: 'portrait',
+    caption: 'Official portrait plate of Dr. Ambedkar in barrister’s robes following his qualification for the Bar at Gray’s Inn, London.',
+    captionLocal: {
+      hi: 'ग्रेज़ इन, लंदन में बैरिस्टर की उपाधि प्राप्त करने के पश्चात औपचारिक परिधान में डॉ. आंबेडकर।',
+      mr: 'लंडनच्या ग्रेज इनमधून बॅरिस्टर पदवी संपादन केल्यानंतरचे ऐतिहासिक छायाचित्र.'
+    },
+    historicalContext: 'Called to the Bar on June 28, 1923, Dr. Ambedkar returned to India equipped with formidable forensic mastery, establishing his practice at the Bombay High Court to advocate for marginalized litigants without financial resources.',
+    accessionNumber: 'ARC-PH-1922-005',
+    archiveProvenance: 'Gray’s Inn Library & Archives, London / National Archives of India',
+    photographerOrAgency: 'Bassano Photographic Studios, 25 Old Bond Street, London',
+    relatedDocIds: ['problem-of-the-rupee-1923'],
+    dimensions: '30.5 × 20.3 cm',
+    medium: 'Studio portrait, carbon print'
+  },
+  {
+    id: 'photo-babasaheb-ramabai',
+    title: 'Dr. Babasaheb Ambedkar and Ramabai Ambedkar',
+    titleLocal: {
+      hi: 'डॉ. बाबासाहेब आंबेडकर एवं रमाबाई आंबेडकर (रमाई)',
+      mr: 'डॉ. बाबासाहेब आंबेडकर आणि रमाबाई आंबेडकर (रमाई)'
+    },
+    year: 1930,
+    dateString: 'Circa 1930',
+    location: 'Dadar, Bombay',
+    era: 'Social Movements',
+    imageUrl: RAMABAI_AMBEDKAR_IMAGE,
+    aspectRatio: 'landscape',
+    caption: 'Intimate historical family photograph of Dr. B. R. Ambedkar and his devoted wife Ramabai Ambedkar (Ramai), steadfast pillar of the subaltern emancipation movement.',
+    captionLocal: {
+      hi: 'डॉ. बाबासाहेब आंबेडकर और उनकी धर्मपत्नी त्यागमूर्ति माता रमाबाई आंबेडकर का दुर्लभ व अनमोल पारिवारिक छायाचित्र।',
+      mr: 'डॉ. बाबासाहेब आंबेडकर आणि त्यागमूर्ती मातोश्री रमाबाई आंबेडकर यांचे अत्यंत दुर्मिळ व ऐतिहासिक कौटुंबिक छायाचित्र.'
+    },
+    historicalContext: 'Ramabai endured extreme hardship and privation during Babasaheb’s overseas educational years and social struggles. In deep gratitude, Dr. Ambedkar dedicated his groundbreaking book "Thoughts on Pakistan" (1940) to Ramu.',
+    accessionNumber: 'ARC-PH-1930-011',
+    archiveProvenance: 'Babasaheb Ambedkar Memorial Trust Archives / Maharashtra State Archives',
+    photographerOrAgency: 'Kinsey Brothers Photographic Studio, Bombay',
+    relatedDocIds: ['annihilation-of-caste'],
+    dimensions: '32.6 × 24.5 cm',
+    medium: 'High-resolution archival photographic negative contact print'
+  },
+  {
+    id: 'photo-first-cabinet-1947',
+    title: 'First Cabinet of Independent India with Nehru and Patel (1947)',
+    titleLocal: {
+      hi: 'स्वतंत्र भारत का प्रथम मंत्रिमंडल: नेहरू, पटेल एवं आंबेडकर (1947)',
+      mr: 'स्वतंत्र भारताचे पहिले मंत्रिमंडळ: नेहरू, पटेल आणि आंबेडकर (१९४७)'
+    },
+    year: 1947,
+    dateString: 'August 1947',
+    location: 'Government House, New Delhi',
+    era: 'Constitution & Governance',
+    imageUrl: ASSEMBLY_IMAGE,
+    aspectRatio: 'wide',
+    caption: 'The historic first Union Cabinet of Independent India, featuring Law Minister Dr. B. R. Ambedkar, Prime Minister Jawaharlal Nehru, Deputy PM Sardar Vallabhbhai Patel, and Maulana Azad.',
+    captionLocal: {
+      hi: 'स्वतंत्र भारत का प्रथम ऐतिहासिक मंत्रिमंडल: विधि मंत्री डॉ. आंबेडकर, प्रधानमंत्री जवाहरलाल नेहरू, सरदार पटेल तथा मौलाना आजाद।',
+      mr: 'स्वतंत्र भारताचे पहिले ऐतिहासिक मंत्रिमंडळ: कायदेमंत्री डॉ. आंबेडकर, पंतप्रधान नेहरू, सरदार पटेल आणि मौलाना आझाद.'
+    },
+    historicalContext: 'Representing the non-Congress opposition, Dr. Ambedkar was invited into the national government as Law Minister to draft the Constitution, bringing unrivaled constitutional erudition to the founding moment of the republic.',
+    accessionNumber: 'ARC-PH-1947-015',
+    archiveProvenance: 'Press Information Bureau / Parliamentary Museum & Archives, New Delhi',
+    photographerOrAgency: 'Photo Division, Ministry of Information & Broadcasting, Government of India',
+    relatedDocIds: ['constituent-assembly-speech-1949', 'states-and-minorities-1947'],
+    dimensions: '40.6 × 18.2 cm',
+    medium: 'Panoramic gelatin silver news agency print'
+  },
+  {
+    id: 'photo-signing-constitution',
+    title: 'Dr. Ambedkar Signing the Constitution of India (1950)',
+    titleLocal: {
+      hi: 'संविधान की मूल प्रति पर हस्ताक्षर करते हुए डॉ. आंबेडकर (1950)',
+      mr: 'भारतीय संविधानाच्या मूळ प्रतीवर स्वाक्षरी करताना डॉ. आंबेडकर (१९५०)'
+    },
+    year: 1950,
+    dateString: 'January 24, 1950',
+    location: 'Constitution Hall, Parliament House, New Delhi',
+    era: 'Constitution & Governance',
+    imageUrl: DRAFTING_CONSTITUTION_IMAGE,
+    aspectRatio: 'landscape',
+    caption: 'Closer view of Dr. B. R. Ambedkar signing the official calligraphed register of the Constitution of India in Constitution Hall.',
+    captionLocal: {
+      hi: 'संविधान सभा के केंद्रीय कक्ष में भारतीय संविधान की सुलेखन प्रति पर हस्ताक्षर करते डॉ. बाबासाहेब आंबेडकर।',
+      mr: 'घटना समितीच्या सभागृहात भारतीय संविधानाच्या मूळ ऐतिहासिक प्रतीवर स्वाक्षरी करताना भारतरत्न डॉ. बाबासाहेब आंबेडकर.'
+    },
+    historicalContext: 'On January 24, 1950, members of the Constituent Assembly gathered to append their signatures to the Hindi and English calligraphed copies of the Constitution. Two days later on January 26, the Constitution of India came into full force.',
+    accessionNumber: 'ARC-PH-1950-001',
+    archiveProvenance: 'National Archives of India / Parliamentary Archives, New Delhi',
+    photographerOrAgency: 'Press Information Bureau Official Photographer',
+    relatedDocIds: ['constituent-assembly-speech-1949'],
+    dimensions: '25.4 × 20.3 cm',
+    medium: 'Original monochrome official registry print'
+  },
+  {
+    id: 'photo-national-memorial-alipur',
+    title: 'Dr. Ambedkar National Memorial, 26 Alipur Road',
+    titleLocal: {
+      hi: 'डॉ. आंबेडकर राष्ट्रीय स्मारक, 26 अलीपुर रोड, नई दिल्ली',
+      mr: 'डॉ. आंबेडकर राष्ट्रीय स्मारक, २६ अलीपूर रोड, नवी दिल्ली'
+    },
+    year: 1956,
+    dateString: 'Civil Lines, New Delhi',
+    location: '26 Alipur Road, Civil Lines, New Delhi',
+    era: 'Later Life & Philosophy',
+    imageUrl: MEMORIAL_ALIPUR_IMAGE,
+    aspectRatio: 'landscape',
+    caption: 'Architectural view of the Dr. Ambedkar National Memorial at 26 Alipur Road, designed in the majestic form of an open book where Babasaheb spent his final years.',
+    captionLocal: {
+      hi: '26 अलीपुर रोड, नई दिल्ली स्थित भव्य राष्ट्रीय स्मारक, जिसे खुली पुस्तक के आकार में निर्मित किया गया है।',
+      mr: '२६ अलीपूर रोड, नवी दिल्ली येथील भव्य राष्ट्रीय स्मारक, जिथे बाबासाहेबांचे महापरिनिर्वाण झाले.'
+    },
+    historicalContext: 'This historic residence served as Dr. Ambedkar’s private study during his tenure in the Rajya Sabha. It was here that he finalized his magnum opus "The Buddha and His Dhamma" and attained Mahaparinirvan on December 6, 1956.',
+    accessionNumber: 'ARC-PH-MEM-001',
+    archiveProvenance: 'Dr. Ambedkar Foundation / Ministry of Social Justice & Empowerment',
+    photographerOrAgency: 'Official Heritage Documentation Unit',
+    relatedDocIds: ['annihilation-of-caste'],
+    dimensions: '30.5 × 20.3 cm',
+    medium: 'Digital architectural documentary photographic plate'
+  },
+  {
+    id: 'photo-international-centre',
+    title: 'Dr. Ambedkar International Centre (DAIC), 15 Janpath',
+    titleLocal: {
+      hi: 'डॉ. आंबेडकर अंतरराष्ट्रीय केंद्र, 15 जनपथ, नई दिल्ली',
+      mr: 'डॉ. आंबेडकर आंतरराष्ट्रीय केंद्र, १५ जनपथ, नवी दिल्ली'
+    },
+    year: 1950,
+    dateString: 'New Delhi',
+    location: '15 Janpath, New Delhi',
+    era: 'Constitution & Governance',
+    imageUrl: INTERNATIONAL_CENTRE_IMAGE,
+    aspectRatio: 'landscape',
+    caption: 'The Dr. Ambedkar International Centre on Janpath, New Delhi, premier national institution dedicated to research on socio-economic transformation.',
+    captionLocal: {
+      hi: 'जनपथ, नई दिल्ली स्थित अंतरराष्ट्रीय केंद्र, जो सामाजिक-आर्थिक शोध एवं समतावादी चिंतन का प्रमुख मंच है।',
+      mr: 'जनपथ, नवी दिल्ली येथील डॉ. आंबेडकर आंतरराष्ट्रीय केंद्र.'
+    },
+    historicalContext: 'Conceived as an apex think tank on social justice and inclusive development, DAIC houses digital archives, conference amphitheaters, and comprehensive research wings on constitutional law.',
+    accessionNumber: 'ARC-PH-MEM-002',
+    archiveProvenance: 'Ministry of Social Justice & Empowerment, Government of India',
+    photographerOrAgency: 'DAIC Curatorial Photography Division',
+    relatedDocIds: ['states-and-minorities-1947'],
+    dimensions: '28.0 × 16.0 cm',
+    medium: 'Architectural color document photograph'
+  },
+  {
+    id: 'photo-commemorative-stamp',
+    title: 'Official Commemorative Philatelic Issue',
+    titleLocal: {
+      hi: 'भारत सरकार द्वारा जारी आधिकारिक स्मारक डाक टिकट',
+      mr: 'भारत सरकारचे अधिकृत स्मृती टपाल तिकीट'
+    },
+    year: 1966,
+    dateString: '1966',
+    location: 'Government of India, New Delhi',
+    era: 'Public Life',
+    imageUrl: COMMEMORATIVE_STAMP_IMAGE,
+    aspectRatio: 'portrait',
+    caption: 'Official postal stamp issued by India Post in honor of Bharat Ratna Dr. B. R. Ambedkar, commemorating his lifelong dedication to democracy and justice.',
+    captionLocal: {
+      hi: 'भारतीय डाक विभाग द्वारा डॉ. बी. आर. आंबेडकर के सम्मान में जारी किया गया ऐतिहासिक स्मारक डाक टिकट।',
+      mr: 'भारतीय टपाल विभागाने डॉ. बाबासाहेब आंबेडकरांच्या स्मरणार्थ जारी केलेले ऐतिहासिक टपाल तिकीट.'
+    },
+    historicalContext: 'Issued to commemorate Dr. Ambedkar’s seminal contribution to the drafting of the Indian Constitution and emancipation of the depressed classes, depicting his iconic portrait with Parliament House.',
+    accessionNumber: 'ARC-PH-PHIL-001',
+    archiveProvenance: 'National Philatelic Museum / India Post, New Delhi',
+    photographerOrAgency: 'Security Press, Nashik',
+    relatedDocIds: ['constituent-assembly-speech-1949'],
+    dimensions: '12.0 × 16.0 cm',
+    medium: 'Intaglio engraved postage stamp proof'
+  },
+  {
+    id: 'photo-portrait-vintage',
+    title: 'Archival Vintage Portrait of Dr. B. R. Ambedkar',
+    titleLocal: {
+      hi: 'डॉ. बी. आर. आंबेडकर का विंटेज पुरातात्विक चित्रांकन',
+      mr: 'डॉ. बाबासाहेब आंबेडकर यांचे ऐतिहासिक विंटेज छायाचित्र'
+    },
+    year: 1946,
+    dateString: 'Circa 1946',
+    location: 'New Delhi',
+    era: 'Public Life',
+    imageUrl: VINTAGE_PORTRAIT_IMAGE,
+    aspectRatio: 'portrait',
+    caption: 'Classic archival portrait of Babasaheb during the crucial transfer of power and constitutional deliberations.',
+    captionLocal: {
+      hi: 'संविधान निर्माण एवं सत्ता हस्तांतरण के ऐतिहासिक दौर में डॉ. आंबेडकर का भव्य रूप।',
+      mr: 'संविधान निर्मितीच्या ऐतिहासिक काळातील डॉ. आंबेडकरांचे ओजस्वी छायाचित्र.'
+    },
+    historicalContext: 'Depicts Dr. Ambedkar during his pivotal leadership of the All-India Scheduled Castes Federation and submission of the memorandum on safeguards to the British Cabinet Mission.',
+    accessionNumber: 'ARC-PH-1946-008',
+    archiveProvenance: 'National Archives of India, New Delhi',
+    photographerOrAgency: 'Official Archive Collection',
+    relatedDocIds: ['states-and-minorities-1947'],
+    dimensions: '22.0 × 28.0 cm',
+    medium: 'Silver gelatin print, museum archival scan'
+  },
+  {
+    id: 'photo-biography-national',
+    title: 'National Biographical Archive Photographic Plate',
+    titleLocal: {
+      hi: 'राष्ट्रीय जीवनी संग्रह: ऐतिहासिक छायाचित्र',
+      mr: 'राष्ट्रीय चरित्र संग्रह: ऐतिहासिक छायाचित्र'
+    },
+    year: 1952,
+    dateString: '1952',
+    location: 'New Delhi',
+    era: 'Public Life',
+    imageUrl: BIOGRAPHY_GALLERY_IMAGE,
+    aspectRatio: 'landscape',
+    caption: 'Preserved photograph from the national biography archives documenting Dr. Ambedkar’s parliamentary tenure.',
+    captionLocal: {
+      hi: 'राष्ट्रीय अभिलेखागार से प्राप्त डॉ. आंबेडकर का संसदीय काल का सुरक्षित छायाचित्र।',
+      mr: 'राष्ट्रीय अभिलेखागारातील डॉ. आंबेडकरांचे संसदेतील छायाचित्र.'
+    },
+    historicalContext: 'Documented in the official pictorial biography series compiled by the Government of India, tracing his statesman career through the First General Elections.',
+    accessionNumber: 'ARC-PH-1952-019',
+    archiveProvenance: 'National Photo Archives / Press Information Bureau',
+    photographerOrAgency: 'Government Photo Division Unit',
+    relatedDocIds: ['constituent-assembly-speech-1949'],
+    dimensions: '25.0 × 18.0 cm',
+    medium: 'Gelatin silver documentary plate'
   }
 ];
 

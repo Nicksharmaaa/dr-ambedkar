@@ -72,12 +72,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
         id: 'photo-wikimedia-portrait',
       },
       {
-        image: '/images/constituent_assembly_hall_1790176093139.jpg',
-        alt: 'The Constituent Assembly Chamber at New Delhi',
-        title: 'Framing the Sovereign Charter',
-        subtitle: '1949 · New Delhi',
-        year: 1949,
-        id: 'photo-assembly-debates-1949',
+        image: '/images/ambedkar_pm_nehrus_cabinet.png',
+        alt: 'First Cabinet of Independent India with Dr. Ambedkar, Nehru, and Patel',
+        title: 'The Sovereign Republic Cabinet',
+        subtitle: '1947 · New Delhi',
+        year: 1947,
+        id: 'photo-first-cabinet-1947',
       },
     ];
 
