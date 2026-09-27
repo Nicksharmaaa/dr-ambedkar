@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import {
   Search, BookOpen, Sparkles, ArrowRight, Zap, Radio,
   Compass, Quote, Camera, CheckCircle2, Network, ShieldCheck,
-  Star, ExternalLink, Calendar, FileText, ChevronRight, Bookmark, Film
+  Star, ExternalLink, Calendar, FileText, ChevronRight, Bookmark, Film,
+  Clock
 } from 'lucide-react';
 import { Language, ArchivalDocument } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
@@ -18,6 +19,7 @@ import { HomeAskAI } from './HomeAskAI';
 import { soundEffects } from '@/utils/soundEffects';
 import DitherVeil from '@/components/ui/DitherVeil';
 import ClickSpark from '@/components/ui/ClickSpark';
+import DepthCarousel from '@/components/ui/DepthCarousel';
 import { HomeStickySearchBar } from './navigation/HomeStickySearchBar';
 
 interface HomeViewProps {
@@ -50,17 +52,104 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const featuredDocument = ARCHIVE_DOCUMENTS.find(d => d.id === 'constituent-assembly-speech-1949') || ARCHIVE_DOCUMENTS[0];
   const primaryCorpusDocs = ARCHIVE_DOCUMENTS.filter(d => d.id !== featuredDocument.id).slice(0, 3);
 
-  // Museum Curatorial Themes (Concise, zero clutter)
-  const museumThemes = [
-    { id: 'constitution', title: 'Constitutional Law', desc: 'Drafting the sovereign charter and constitutional morality', docQuery: 'constitution', code: 'W-01' },
-    { id: 'caste', title: 'Annihilation of Caste', desc: 'Critique of graded inequality and foundational human rights', docQuery: 'caste', code: 'W-02' },
-    { id: 'economics', title: 'Monetary Economics', desc: 'Currency reform, public finance, and rural peasant agrarian policy', docQuery: 'economics', code: 'W-03' },
-    { id: 'women', title: "Women's Emancipation", desc: 'The Hindu Code Bill, reproductive self-determination, and gender parity', docQuery: 'women', code: 'W-04' },
-    { id: 'labour', title: 'Labour & Trade Unions', desc: 'Eight-hour workdays, social security insurance, and workers rights', docQuery: 'labour', code: 'W-05' },
-    { id: 'religion', title: 'Buddhist Philosophy', desc: 'The Buddha and His Dhamma, moral fraternity, and psychological liberation', docQuery: 'buddhism', code: 'W-06' },
-    { id: 'democracy', title: 'Social Democracy', desc: 'Associated living and the one man, one value principle', docQuery: 'democracy', code: 'W-07' },
-    { id: 'education', title: 'Enlightenment & Reason', desc: 'Cultivation of mind as the ultimate aim of human existence', docQuery: 'education', code: 'W-08' },
-    { id: 'human-rights', title: 'Civil Dignity & Water Rights', desc: 'Mahad Satyagraha and universal subaltern citizenship', docQuery: 'human rights', code: 'W-09' }
+  // Archival Photographs of Babasaheb Dr. B. R. Ambedkar for Depth Carousel
+  const items = React.useMemo(() => {
+    const base = HISTORICAL_PHOTOS.map((photo) => ({
+      image: photo.imageUrl,
+      alt: photo.title,
+      title: photo.title,
+      subtitle: `${photo.year} · ${photo.location.split(',')[0]}`,
+      year: photo.year,
+      id: photo.id,
+    }));
+
+    const additional = [
+      {
+        image: '/images/ambedkar_wikimedia.jpg',
+        alt: 'Historic Photographic Portrait of Dr. B. R. Ambedkar (1935)',
+        title: 'Scholar & Jurist',
+        subtitle: '1935 · Mumbai',
+        year: 1935,
+        id: 'photo-wikimedia-portrait',
+      },
+      {
+        image: '/images/constituent_assembly_hall_1790176093139.jpg',
+        alt: 'The Constituent Assembly Chamber at New Delhi',
+        title: 'Framing the Sovereign Charter',
+        subtitle: '1949 · New Delhi',
+        year: 1949,
+        id: 'photo-assembly-debates-1949',
+      },
+    ];
+
+    return [...base, ...additional];
+  }, []);
+
+  // 9 Core Museum Exploration Wings (Aligned 1:1 with Side Navigation Rail, excluding Exhibition/Home)
+  const navigationWings = [
+    {
+      id: 'archive',
+      tab: 'archive',
+      title: 'The Archive',
+      subtitle: 'BAWS Volumes 1–22 · Full Corpus',
+      icon: BookOpen
+    },
+    {
+      id: 'timeline',
+      tab: 'timeline',
+      title: 'Timeline Chronicle',
+      subtitle: '1891–1956 · Five Historical Epochs',
+      icon: Clock
+    },
+    {
+      id: 'media',
+      tab: 'media',
+      title: 'Media & Voice',
+      subtitle: 'BBC Broadcasts & Historic Audio',
+      icon: Radio
+    },
+    {
+      id: 'assistant',
+      tab: 'assistant',
+      title: 'AI Scholar',
+      subtitle: 'Grounded Archival Research & Citations',
+      icon: Sparkles
+    },
+    {
+      id: 'gallery',
+      tab: 'gallery',
+      title: 'Visual Folio',
+      subtitle: 'Rare Photographic Prints & Plates',
+      icon: Camera
+    },
+    {
+      id: 'graph',
+      tab: 'graph',
+      title: '3D Knowledge Graph',
+      subtitle: 'Interactive Semantic Lineage & Map',
+      icon: Network
+    },
+    {
+      id: 'stories',
+      tab: 'stories',
+      title: 'Audio Stories',
+      subtitle: 'Guided Audiovisual Walkthroughs',
+      icon: Star
+    },
+    {
+      id: 'quest',
+      tab: 'quest',
+      title: 'Interactive Quest',
+      subtitle: 'Constitutional Challenges & Quiz',
+      icon: Zap
+    },
+    {
+      id: 'collection',
+      tab: 'collection',
+      title: 'Personal Notebook',
+      subtitle: 'Saved Dossier & Scholarly Notes',
+      icon: Bookmark
+    },
   ];
 
   // Curatorial Timeline Gateways
@@ -263,66 +352,63 @@ export const HomeView: React.FC<HomeViewProps> = ({
       </section>
 
       {/* =========================================================================
-          SECTION 2: EXHIBITIONS BY THEME (Curatorial Discipline Galleries)
+          SECTION 2: MUSEUM EXPLORATION WINGS (Side Navigation Rail Portals)
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-4 border-b border-[#D3D4C0]">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#D3D4C0]">
           <div>
-            <div className="text-xs font-cinzel font-bold uppercase tracking-wider text-[#8B5E3C]">
-              Curatorial Galleries
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-serif-editorial font-bold text-[#0A2947] mt-1">
-              Explore by Discipline & Theme
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif-editorial font-bold text-[#0A2947] mt-1 tracking-tight">
+              Explore the Museum
             </h2>
-            <p className="text-xs sm:text-sm text-[#0A2947]/75 mt-0.5">
-              The 22 volumes structured through nine foundational intellectual disciplines.
+            <p className="text-xs sm:text-sm text-[#0A2947]/75 mt-0.5 font-dmsans max-w-2xl">
+              Direct access to all dedicated research pavilions, interactive archives, audio narrations, and 3D visualizers.
             </p>
           </div>
 
-          <button
-            onClick={() => {
-              soundEffects.playClick();
-              onNavigateTab('archive');
-            }}
-            className="text-xs font-montserrat font-bold text-[#8B5E3C] hover:text-[#0A2947] uppercase tracking-wider flex items-center gap-1 cursor-pointer shrink-0"
-          >
-            <span>View All Works</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-[#8B5E3C] bg-white/80 px-3.5 py-1.5 rounded-full border border-[#D3D4C0] shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-[#C89D56] animate-pulse" />
+            <span>9 Pavilions</span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {museumThemes.map((thm) => (
-            <button
-              key={thm.id}
-              onClick={() => {
-                soundEffects.playClick();
-                onExploreCategory(thm.docQuery);
-                onNavigateTab('archive');
-              }}
-              className="p-5 sm:p-6 rounded-2xl bg-white border-2 border-[#C8C9B4] hover:border-[#0A2947] text-left transition-all hover:shadow-lg cursor-pointer group flex flex-col justify-between shadow-xs"
-            >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#8B5E3C] font-bold">
-                    {thm.code}
-                  </span>
-                  <ArrowRight className="w-4 h-4 text-[#8B5E3C] group-hover:text-[#0A2947] group-hover:translate-x-1 transition-all" />
-                </div>
-                <h3 className="font-serif-editorial text-lg font-bold text-[#0A2947] group-hover:text-[#8B5E3C] transition-colors">
-                  {thm.title}
-                </h3>
-                <p className="text-xs text-[#334155] font-normal leading-relaxed">
-                  {thm.desc}
-                </p>
-              </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          {navigationWings.map((wing) => {
+            const Icon = wing.icon;
+            return (
+              <button
+                key={wing.id}
+                onClick={() => {
+                  soundEffects.playClick();
+                  onNavigateTab(wing.tab);
+                }}
+                className="group relative p-5 sm:p-6 rounded-2xl bg-white/85 hover:bg-white border border-[#D3D4C0] hover:border-[#0A2947]/30 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_-10px_rgba(10,41,71,0.08),0_2px_8px_rgba(200,157,86,0.06)] cursor-pointer flex flex-col justify-between h-[142px] sm:h-[150px] overflow-hidden backdrop-blur-xs shadow-2xs"
+              >
+                {/* Gilded Top Accent Line */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#C89D56] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-              <div className="pt-3.5 mt-3.5 border-t-2 border-[#D3D4C0]/70 text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#0A2947] group-hover:text-[#8B5E3C]">
-                Open Gallery &rarr;
-              </div>
-            </button>
-          ))}
+                {/* Top Row: Icon Squircle & Directional Arrow */}
+                <div className="flex items-center justify-between">
+                  <div className="w-11 h-11 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] flex items-center justify-center text-[#0A2947] group-hover:bg-[#0A2947] group-hover:text-[#F3E4C9] group-hover:border-[#0A2947] group-hover:scale-105 group-hover:rotate-[-2deg] transition-all duration-300 shadow-2xs">
+                    <Icon className="w-5 h-5 transition-transform duration-300" />
+                  </div>
+                  <div className="w-8 h-8 rounded-full border border-transparent group-hover:border-[#D3D4C0] group-hover:bg-[#FAF7F0] flex items-center justify-center text-[#8B5E3C]/60 group-hover:text-[#0A2947] group-hover:translate-x-1 transition-all duration-300">
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </div>
+
+                {/* Bottom Row: Minimal Title & 1-line Subtitle */}
+                <div className="mt-auto">
+                  <h3 className="font-serif-editorial text-lg sm:text-[19px] font-bold text-[#0A2947] group-hover:text-[#8B5E3C] transition-colors leading-tight line-clamp-1">
+                    {wing.title}
+                  </h3>
+                  <p className="text-xs text-[#0A2947]/65 font-dmsans mt-1 truncate">
+                    {wing.subtitle}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
         </div>
 
       </section>
@@ -331,22 +417,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
           SECTION 4: PHOTOGRAPHIC ARCHIVE (Museum Gallery Wall)
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white border border-[#D3D4C0] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
+        <div className="border border-[#D3D4C0] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
 
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#D3D4C0]">
             <div>
-              <div className="flex items-center gap-2 text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-widest">
-                <Camera className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                <span>Visual Heritage Folio</span>
-                <span>·</span>
-                <span className="text-[#0A2947]">1891–1956</span>
-              </div>
               <h2 className="text-2xl sm:text-3xl font-serif-editorial font-bold text-[#0A2947] mt-1">
-                Archival Photographic Records
+                Gallery
               </h2>
-              <p className="text-xs sm:text-sm text-[#0A2947]/75 mt-0.5 max-w-xl font-dmsans">
-                Original plates preserving historic assemblies, university studies, and the drafting of the Constitution.
-              </p>
             </div>
 
             <button
@@ -356,48 +433,39 @@ export const HomeView: React.FC<HomeViewProps> = ({
               }}
               className="px-5 py-2.5 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-xs shrink-0"
             >
-              <span>Examine Folio ({HISTORICAL_PHOTOS.length})</span>
+              <span>See More ({HISTORICAL_PHOTOS.length})</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {HISTORICAL_PHOTOS.slice(0, 4).map((photo) => (
-              <div
-                key={photo.id}
-                onClick={() => {
-                  soundEffects.playClick();
-                  onNavigateTab('gallery');
-                }}
-                className="group relative rounded-2xl overflow-hidden bg-[#07131F] border border-[#D3D4C0] hover:border-[#8B5E3C] shadow-2xs hover:shadow-md transition-all duration-300 cursor-pointer h-72"
-              >
-                <img
-                  src={photo.imageUrl}
-                  alt={photo.title}
-                  className="w-full h-full object-cover grayscale contrast-110 group-hover:scale-105 transition-transform duration-500"
-                />
-
-                <div className="absolute top-2.5 left-2.5 bg-[#07131F]/90 px-2 py-0.5 rounded text-[10px] font-mono font-bold text-[#F3E4C9] z-10">
-                  {photo.year} · {photo.location.split(',')[0]}
-                </div>
-
-                <div className="absolute inset-0 bg-gradient-to-t from-[#07131F] via-[#07131F]/70 to-transparent p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-[10px] font-mono font-bold uppercase text-[#C89D56]">
-                    {photo.accessionNumber}
-                  </span>
-                  <h4 className="font-montserrat font-bold text-white text-sm line-clamp-2 mt-0.5">
-                    {photo.title}
-                  </h4>
-                  <p className="text-[11px] text-[#D3D4C0] line-clamp-2 mt-1 leading-snug">
-                    {photo.caption}
-                  </p>
-                  <div className="mt-2 pt-2 border-t border-white/20 flex items-center justify-between text-[10px] text-[#F3E4C9] font-montserrat font-bold">
-                    <span>Inspect Plate</span>
-                    <span>&rarr;</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+          {/* DepthCarousel: Dynamic 3D Perspective Photo Rail */}
+          <div style={{ height: '580px', position: 'relative', overflow: 'hidden' }}>
+            <DepthCarousel
+              items={items}
+              depth={85}
+              spread={185}
+              tilt={16}
+              tiltDirection="both"
+              perspective={1400}
+              visibleCards={3}
+              falloff={0.18}
+              blur={1}
+              autoplay
+              loop
+              cardWidth={420}
+              cardHeight={500}
+              radius={24}
+              tint="#0a2947"
+              autoplayDelay={2600}
+              duration={900}
+              ease="power2.out"
+              showControls={false}
+              showIndicators={false}
+              onCardClick={(index, item) => {
+                soundEffects.playClick();
+                onNavigateTab('gallery');
+              }}
+            />
           </div>
 
         </div>
@@ -408,19 +476,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
-        <WisdomMachine
-          language={language}
-          onAskAI={onAskAssistantWithQuery}
-        />
-
-
         <SoundboardWidget
           onOpenDocument={(docId) => {
             const doc = ARCHIVE_DOCUMENTS.find(d => d.id === docId);
             if (doc) onOpenDocument(doc);
           }}
         />
-
 
       </section>
 

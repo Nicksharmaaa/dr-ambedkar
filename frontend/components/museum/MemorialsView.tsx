@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { soundEffects } from '@/utils/soundEffects';
+import { MemorialGlobe } from './MemorialGlobe';
 
 export interface HeritageLocation {
   id: string;
@@ -282,11 +283,24 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
             </div>
           </div>
 
-          {/* Right Column: Selected Memorial Dossier */}
+          {/* Right Column: Selected Memorial Dossier & Interactive 3D Globe */}
           <div className="lg:col-span-7">
             {selectedLocation ? (
               <div className="bg-white rounded-3xl border-2 border-[#D3D4C0] shadow-2xl p-6 sm:p-8 space-y-6 sticky top-24">
                 
+                {/* Interactive 3D Heritage Globe */}
+                <div className="w-full">
+                  <MemorialGlobe
+                    locations={filteredLocations}
+                    selectedLocation={selectedLocation}
+                    onSelectLocation={(loc) => {
+                      soundEffects.playClick();
+                      setSelectedLocation(loc);
+                    }}
+                    className="h-[360px] sm:h-[420px] w-full"
+                  />
+                </div>
+
                 {/* Memorial Header */}
                 <div>
                   <div className="flex items-center justify-between gap-3 mb-2">
