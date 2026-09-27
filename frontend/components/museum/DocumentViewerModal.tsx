@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  X, BookOpen, Volume2, VolumeX, Globe, Sparkles, Bookmark, 
-  Check, ZoomIn, ZoomOut, Layers, FileText, ArrowRight, Share2, 
+import {
+  X, BookOpen, Volume2, VolumeX, Globe, Sparkles, Bookmark,
+  Check, ZoomIn, ZoomOut, Layers, FileText, ArrowRight, Share2,
   HelpCircle, MessageSquare, Download, Copy, Cpu, ShieldCheck, Lightbulb,
   Printer, Maximize2, Minimize2, CheckCircle2, RotateCcw, Columns3
 } from 'lucide-react';
@@ -141,18 +141,18 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 lg:p-6 bg-[#0A2947]/75 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-150 font-dmsans">
-      <div 
+      <div
         className="w-full max-w-7xl max-h-[94vh] bg-[#FAF7F0] border-2 border-[#D3D4C0] rounded-3xl shadow-2xl flex flex-col overflow-hidden text-[#0A2947]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="document-title"
       >
-        
+
         {/* =========================================================================
             TOP OPERATIONAL BAR: Accession, Title, Provenance, Quick Actions
             ========================================================================= */}
         <div className="h-16 px-4 sm:px-6 bg-white border-b-2 border-[#D3D4C0] flex items-center justify-between shrink-0">
-          
+
           <div className="flex items-center gap-3 overflow-hidden">
             <span className="text-xs font-montserrat font-bold px-2.5 py-1 bg-[#0A2947] text-[#F3E4C9] rounded-lg shrink-0 uppercase tracking-wider">
               {document.categoryLabel}
@@ -182,11 +182,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                 soundEffects.playClick();
                 setIsReadMode(!isReadMode);
               }}
-              className={`px-3 py-1.5 text-xs font-montserrat font-bold rounded-xl border flex items-center gap-1.5 transition-colors cursor-pointer ${
-                isReadMode 
-                  ? 'bg-[#0A2947] text-[#F3E4C9] border-[#0A2947]' 
-                  : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
-              }`}
+              className={`px-3 py-1.5 text-xs font-montserrat font-bold rounded-xl border flex items-center gap-1.5 transition-colors cursor-pointer ${isReadMode
+                ? 'bg-[#0A2947] text-[#F3E4C9] border-[#0A2947]'
+                : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
+                }`}
               title="Toggle Immersive Read Mode"
             >
               <Maximize2 className="w-3.5 h-3.5" />
@@ -224,11 +223,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
             {/* Save to Notebook */}
             <button
               onClick={() => onToggleSaveItem({ itemId: document.id, itemType: 'document', title: document.title })}
-              className={`px-3 py-1.5 text-xs font-montserrat font-bold rounded-xl border flex items-center gap-1.5 transition-colors cursor-pointer ${
-                isItemSaved
-                  ? 'bg-[#8B5E3C] text-white border-[#8B5E3C]'
-                  : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
-              }`}
+              className={`px-3 py-1.5 text-xs font-montserrat font-bold rounded-xl border flex items-center gap-1.5 transition-colors cursor-pointer ${isItemSaved
+                ? 'bg-[#8B5E3C] text-white border-[#8B5E3C]'
+                : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
+                }`}
             >
               {isItemSaved ? <Check className="w-3.5 h-3.5 text-white" /> : <Bookmark className="w-3.5 h-3.5 text-[#8B5E3C]" />}
               <span className="hidden sm:inline">{isItemSaved ? 'Saved in Notebook' : 'Save to Notebook'}</span>
@@ -254,7 +252,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
             MAIN 3-PART ARTIFACT VIEWPORT: Left Thumbnails + Center Canvas + Right Metadata
             ========================================================================= */}
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
-          
+
           {/* 1. LEFT COLUMN: Page Thumbnails / Folio Navigator (Hidden in Read Mode or Mobile) */}
           {!isReadMode && (
             <div className="hidden xl:flex lg:col-span-2 bg-[#FAF7F0] border-r border-[#D3D4C0] flex-col p-4 space-y-3 overflow-y-auto">
@@ -270,11 +268,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                       soundEffects.playClick();
                       setSelectedFolio(folio.page);
                     }}
-                    className={`w-full p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col space-y-1.5 ${
-                      selectedFolio === folio.page
-                        ? 'bg-white border-[#0A2947] shadow-xs ring-2 ring-[#0A2947]/10'
-                        : 'bg-white/60 hover:bg-white border-[#D3D4C0]'
-                    }`}
+                    className={`w-full p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col space-y-1.5 ${selectedFolio === folio.page
+                      ? 'bg-white border-[#0A2947] shadow-xs ring-2 ring-[#0A2947]/10'
+                      : 'bg-white/60 hover:bg-white border-[#D3D4C0]'
+                      }`}
                   >
                     <div className="flex items-center justify-between text-[11px] font-montserrat font-bold text-[#0A2947]">
                       <span>Page {folio.page}</span>
@@ -294,21 +291,20 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
 
           {/* 2. CENTER CANVAS: Document Artifact Canvas (5 or 7 or 12 Cols depending on read mode) */}
           <div className={`${isReadMode ? 'lg:col-span-12' : 'lg:col-span-7 xl:col-span-6'} bg-[#F3E4C9]/40 border-r border-[#D3D4C0] flex flex-col h-[520px] lg:h-auto overflow-hidden`}>
-            
+
             {/* Folio Controls Ribbon */}
             <div className="h-12 px-4 bg-white border-b border-[#D3D4C0] flex items-center justify-between text-xs text-[#0A2947] shrink-0">
-              
+
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => {
                     soundEffects.playClick();
                     setViewMode('split');
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    viewMode === 'split'
-                      ? 'bg-[#0A2947] text-[#F3E4C9]'
-                      : 'text-[#0A2947]/70 hover:bg-[#FAF7F0]'
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${viewMode === 'split'
+                    ? 'bg-[#0A2947] text-[#F3E4C9]'
+                    : 'text-[#0A2947]/70 hover:bg-[#FAF7F0]'
+                    }`}
                   title="Side-by-side manuscript facsimile & OCR transcription"
                 >
                   <Columns3 className="w-3.5 h-3.5" />
@@ -321,11 +317,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                     soundEffects.playClick();
                     setViewMode('ocr');
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    viewMode === 'ocr'
-                      ? 'bg-[#0A2947] text-[#F3E4C9]'
-                      : 'text-[#0A2947]/70 hover:bg-[#FAF7F0]'
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${viewMode === 'ocr'
+                    ? 'bg-[#0A2947] text-[#F3E4C9]'
+                    : 'text-[#0A2947]/70 hover:bg-[#FAF7F0]'
+                    }`}
                 >
                   <FileText className="w-3.5 h-3.5" />
                   <span>OCR</span>
@@ -336,11 +331,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                     soundEffects.playClick();
                     setViewMode('scan');
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    viewMode === 'scan'
-                      ? 'bg-[#0A2947] text-[#F3E4C9]'
-                      : 'text-[#0A2947]/70 hover:bg-[#FAF7F0]'
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${viewMode === 'scan'
+                    ? 'bg-[#0A2947] text-[#F3E4C9]'
+                    : 'text-[#0A2947]/70 hover:bg-[#FAF7F0]'
+                    }`}
                 >
                   <Layers className="w-3.5 h-3.5" />
                   <span>Facsimile</span>
@@ -351,11 +345,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                     soundEffects.playClick();
                     setViewMode('bbox');
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold items-center gap-1.5 transition-colors cursor-pointer hidden sm:flex ${
-                    viewMode === 'bbox'
-                      ? 'bg-[#8B5E3C] text-white'
-                      : 'text-[#0A2947]/70 hover:bg-[#FAF7F0]'
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold items-center gap-1.5 transition-colors cursor-pointer hidden sm:flex ${viewMode === 'bbox'
+                    ? 'bg-[#8B5E3C] text-white'
+                    : 'text-[#0A2947]/70 hover:bg-[#FAF7F0]'
+                    }`}
                 >
                   <Cpu className="w-3.5 h-3.5" />
                   <span>OCR Bounds</span>
@@ -366,11 +359,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleToggleAudio}
-                  className={`p-1.5 px-2.5 rounded-lg text-xs font-montserrat font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    isPlayingAudio
-                      ? 'bg-emerald-700 text-white animate-pulse'
-                      : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
-                  }`}
+                  className={`p-1.5 px-2.5 rounded-lg text-xs font-montserrat font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${isPlayingAudio
+                    ? 'bg-emerald-700 text-white animate-pulse'
+                    : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                    }`}
                   title="Listen to excerpt with Speech Synthesis"
                 >
                   {isPlayingAudio ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-[#8B5E3C]" />}
@@ -409,7 +401,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
 
             {/* Scrollable Parchment Sheet Container */}
             <div className="flex-1 p-4 sm:p-8 overflow-y-auto flex items-start justify-center bg-[#FAF7F0]/60">
-              <div 
+              <div
                 style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }}
                 className={`w-full ${isReadMode ? 'max-w-4xl' : 'max-w-2xl'} bg-white rounded-2xl shadow-sm p-6 sm:p-10 border-2 border-[#D3D4C0] text-[#0A2947] transition-all relative overflow-hidden`}
               >
@@ -499,8 +491,8 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                       <span className="text-emerald-700">100% Characters Vectorized</span>
                     </div>
                     {displayText.split('\n\n').map((paragraph, pIdx) => (
-                      <div 
-                        key={pIdx} 
+                      <div
+                        key={pIdx}
                         className="p-3 border-2 border-[#8B5E3C]/40 bg-[#FAF7F0]/40 rounded-xl relative hover:border-[#8B5E3C] hover:bg-[#FAF7F0] transition-colors"
                       >
                         <span className="absolute -top-2.5 left-2 px-1.5 py-0.2 bg-[#0A2947] text-[#F3E4C9] text-[9px] font-mono rounded font-bold">
@@ -558,7 +550,6 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                 className="px-3 py-1.5 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#F3E4C9] rounded-lg text-xs font-montserrat font-bold uppercase transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer shadow-2xs"
               >
                 <Sparkles className="w-3 h-3 text-[#F3E4C9]" />
-                <span>Ask About This Document</span>
               </button>
             </div>
 
@@ -567,7 +558,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
           {/* 3. RIGHT COLUMN: Curatorial Metadata & AI Companion (5 or 4 Cols, Hidden in Read Mode) */}
           {!isReadMode && (
             <div className="lg:col-span-5 xl:col-span-4 bg-white flex flex-col h-auto overflow-y-auto">
-              
+
               {/* Navigation Tabs on Right Pane */}
               <div className="flex border-b border-[#D3D4C0] px-4 bg-[#FAF7F0] text-xs font-montserrat font-bold text-[#0A2947]/70 shrink-0">
                 <button
@@ -575,11 +566,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                     soundEffects.playClick();
                     setActiveTab('metadata');
                   }}
-                  className={`py-3 mr-4 border-b-2 transition-colors cursor-pointer ${
-                    activeTab === 'metadata'
-                      ? 'border-[#0A2947] text-[#0A2947]'
-                      : 'border-transparent hover:text-[#0A2947]'
-                  }`}
+                  className={`py-3 mr-4 border-b-2 transition-colors cursor-pointer ${activeTab === 'metadata'
+                    ? 'border-[#0A2947] text-[#0A2947]'
+                    : 'border-transparent hover:text-[#0A2947]'
+                    }`}
                 >
                   Dossier
                 </button>
@@ -589,11 +579,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                     soundEffects.playClick();
                     setActiveTab('askDoc');
                   }}
-                  className={`py-3 mr-4 border-b-2 transition-colors cursor-pointer flex items-center gap-1 ${
-                    activeTab === 'askDoc'
-                      ? 'border-[#8B5E3C] text-[#8B5E3C]'
-                      : 'border-transparent hover:text-[#8B5E3C]'
-                  }`}
+                  className={`py-3 mr-4 border-b-2 transition-colors cursor-pointer flex items-center gap-1 ${activeTab === 'askDoc'
+                    ? 'border-[#8B5E3C] text-[#8B5E3C]'
+                    : 'border-transparent hover:text-[#8B5E3C]'
+                    }`}
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Ask AI Folio</span>
@@ -604,11 +593,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                     soundEffects.playClick();
                     setActiveTab('summary');
                   }}
-                  className={`py-3 mr-4 border-b-2 transition-colors cursor-pointer ${
-                    activeTab === 'summary'
-                      ? 'border-[#0A2947] text-[#0A2947]'
-                      : 'border-transparent hover:text-[#0A2947]'
-                  }`}
+                  className={`py-3 mr-4 border-b-2 transition-colors cursor-pointer ${activeTab === 'summary'
+                    ? 'border-[#0A2947] text-[#0A2947]'
+                    : 'border-transparent hover:text-[#0A2947]'
+                    }`}
                 >
                   Summary
                 </button>
@@ -618,11 +606,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                     soundEffects.playClick();
                     setActiveTab('citations');
                   }}
-                  className={`py-3 border-b-2 transition-colors cursor-pointer ${
-                    activeTab === 'citations'
-                      ? 'border-[#0A2947] text-[#0A2947]'
-                      : 'border-transparent hover:text-[#0A2947]'
-                  }`}
+                  className={`py-3 border-b-2 transition-colors cursor-pointer ${activeTab === 'citations'
+                    ? 'border-[#0A2947] text-[#0A2947]'
+                    : 'border-transparent hover:text-[#0A2947]'
+                    }`}
                 >
                   Citations
                 </button>
@@ -630,11 +617,11 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
 
               {/* Tab Contents */}
               <div className="p-5 sm:p-6 overflow-y-auto space-y-5 text-xs text-[#0A2947]">
-                
+
                 {/* TAB 1: CURATORIAL DOSSIER */}
                 {activeTab === 'metadata' && (
                   <div className="space-y-5">
-                    
+
                     <div className="space-y-1">
                       <span className="text-[10px] font-mono text-[#8B5E3C] uppercase tracking-wider block font-bold">
                         Archival Provenance
@@ -733,7 +720,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                     </div>
 
                     {/* Question Input */}
-                    <form 
+                    <form
                       onSubmit={(e) => {
                         e.preventDefault();
                         handleAskThisDocument();

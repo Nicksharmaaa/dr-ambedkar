@@ -254,10 +254,6 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
               <h1 className="text-3xl sm:text-5xl font-serif-editorial font-bold text-white tracking-tight leading-tight">
                 Manuscripts & Primary Archival Corpus
               </h1>
-
-              <p className="text-xs sm:text-sm text-[#F3E4C9]/90 font-normal leading-relaxed">
-                22 Canonical Volumes · Constituent Assembly Debates · Unabridged Facsimiles · Verified Transcription
-              </p>
             </div>
 
             {/* Live Repository Stat Counters */}
@@ -350,8 +346,8 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                   setSelectedTopic(isSelected ? 'all' : vault.topic);
                 }}
                 className={`p-5 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${isSelected
-                    ? 'bg-[#0A2947] text-[#FAF7F0] border-[#C59A45] shadow-lg ring-2 ring-[#C59A45]/30'
-                    : 'bg-white hover:bg-[#FAF7F0] text-[#0A2947] border-[#D3D4C0] hover:border-[#8B5E3C]'
+                  ? 'bg-[#0A2947] text-[#FAF7F0] border-[#C59A45] shadow-lg ring-2 ring-[#C59A45]/30'
+                  : 'bg-white hover:bg-[#FAF7F0] text-[#0A2947] border-[#D3D4C0] hover:border-[#8B5E3C]'
                   }`}
               >
                 <div className="space-y-2">
@@ -388,8 +384,8 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
           {/* Live Voice Status Indicator */}
           {voiceNotice && (
             <div className={`px-4 py-2 rounded-xl text-xs font-mono flex items-center justify-between border transition-all ${isListeningVoice
-                ? 'bg-amber-100/90 text-amber-900 border-amber-300 animate-pulse'
-                : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+              ? 'bg-amber-100/90 text-amber-900 border-amber-300 animate-pulse'
+              : 'bg-emerald-50 text-emerald-800 border-emerald-200'
               }`}>
               <div className="flex items-center gap-2">
                 <span className={`w-2.5 h-2.5 rounded-full ${isListeningVoice ? 'bg-red-600 animate-ping' : 'bg-emerald-600'}`} />
@@ -470,8 +466,8 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                   setSearchQuery(sug);
                 }}
                 className={`px-3 py-1 rounded-xl text-xs font-montserrat transition-all cursor-pointer ${searchQuery.toLowerCase() === sug.toLowerCase()
-                    ? 'bg-[#0A2947] text-[#F3E4C9] font-bold shadow-xs'
-                    : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                  ? 'bg-[#0A2947] text-[#F3E4C9] font-bold shadow-xs'
+                  : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
                   }`}
               >
                 {sug}
@@ -530,8 +526,8 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                     setSelectedEra(era.id);
                   }}
                   className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${selectedEra === era.id
-                      ? 'bg-[#0A2947] text-[#FAF7F0] border-[#0A2947] shadow-sm font-bold'
-                      : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
+                    ? 'bg-[#0A2947] text-[#FAF7F0] border-[#0A2947] shadow-sm font-bold'
+                    : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
                     }`}
                 >
                   <div className="text-xs font-montserrat font-bold">{era.label}</div>
@@ -563,8 +559,8 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                     setSelectedType(btn.id);
                   }}
                   className={`px-4 py-2 rounded-xl text-xs font-montserrat font-semibold transition-all cursor-pointer ${selectedType === btn.id
-                      ? 'bg-[#0A2947] text-[#F3E4C9] font-bold shadow-xs'
-                      : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                    ? 'bg-[#0A2947] text-[#F3E4C9] font-bold shadow-xs'
+                    : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
                     }`}
                 >
                   {btn.label}
@@ -952,8 +948,8 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                         <button
                           onClick={() => onToggleSaveItem({ itemId: doc.id, itemType: 'document', title: doc.title })}
                           className={`p-2 rounded-xl text-xs font-montserrat font-bold border transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs ${isSaved
-                              ? 'bg-[#8B5E3C] text-white border-[#8B5E3C]'
-                              : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
+                            ? 'bg-[#8B5E3C] text-white border-[#8B5E3C]'
+                            : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0]'
                             }`}
                           title={isSaved ? "Saved in Research Notebook" : "Save to Notebook"}
                         >
