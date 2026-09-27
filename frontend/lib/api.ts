@@ -205,7 +205,7 @@ export const api = {
   // Search
   searchArchive: (
     query: string,
-    mode: "fts" | "vector" | "hybrid" = "fts",
+    mode: "fts" | "vector" | "hybrid" = "hybrid",
     limit = 20,
     offset = 0
   ) => {
@@ -217,6 +217,14 @@ export const api = {
     });
     return fetchJson<SearchResponse>(`/search?${q.toString()}`);
   },
+
+  semanticSearch: (query: string, limit = 20) => {
+    return fetchJson<SearchResponse>("/search", {
+      method: "POST",
+      body: JSON.stringify({ q: query, mode: "hybrid", limit, enable_rerank: true }),
+    });
+  },
+
 
   // Admin
   getSchemaStatus: () => fetchJson<{ applied_migrations: any[]; count: number }>("/admin/schema/status"),

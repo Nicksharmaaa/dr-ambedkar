@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Search, BookOpen, User, Calendar, Tag, Image, Sparkles, 
   ArrowRight, X, Command, ExternalLink, Mic, MicOff 
@@ -10,6 +11,7 @@ import { ARCHIVE_DOCUMENTS, HISTORICAL_PHOTOS, TIMELINE_EVENTS } from '@/data/ar
 import { soundEffects } from '@/utils/soundEffects';
 import { voiceRecognitionController } from '@/utils/speechUtils';
 import VoicePill from '@/components/ui/VoicePill';
+
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -28,7 +30,11 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   onAskAI,
   language
 }) => {
+  const router = useRouter();
+
   const [query, setQuery] = useState('');
+  const [semanticDocs, setSemanticDocs] = useState<ArchivalDocument[]>([]);
+  const [isSearchingSemantic, setIsSearchingSemantic] = useState<boolean>(false);
   const [isListeningVoice, setIsListeningVoice] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -37,6 +43,75 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       voiceRecognitionController.stopListening();
     };
   }, []);
+
+  const cleanQuery = query.toLowerCase().trim();
+
+  // Canonical Semantic Search Fetch
+  useEffect(() => {
+    if (!cleanQuery) {
+      setSemanticDocs([]);
+      setIsSearchingSemantic(false);
+      return;
+    }
+
+    let isMounted = true;
+    const timer = setTimeout(async () => {
+      try {
+        setIsSearchingSemantic(true);
+        const res = await fetch("/api/v1/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            q: query.trim(),
+            mode: "hybrid",
+            limit: 4,
+            enable_rerank: true,
+          }),
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        if (isMounted) {
+          const mapped: ArchivalDocument[] = (data.results || []).map((r: any, idx: number) => {
+            const volNum = r.volume_number || '';
+            const pageNum = r.page_number || 1;
+            const scorePct = Math.round((r.reranker_score ?? r.score ?? 0.8) * 100);
+            return {
+              id: r.chunk_id || `chunk-${idx}`,
+              title: r.section_title || r.object_title || 'Dr. Ambedkar Archival Corpus',
+              author: 'Dr. B. R. Ambedkar',
+              type: 'book',
+              categoryLabel: `${volNum ? `Vol. ${volNum}` : 'Writings'} · p. ${pageNum}`,
+              date: volNum ? `Volume ${volNum}` : 'Archival Corpus',
+              year: 1949,
+              collection: r.object_title || 'Dr. Babasaheb Ambedkar: Writings and Speeches',
+              language: r.language || 'en',
+              source: r.object_title || 'BAWS Archival Repository',
+              accessionNo: r.object_id || r.chunk_id?.slice(0, 8) || 'AMBEDKAR-ARC',
+              accessRights: 'Public Domain',
+              shortDescription: r.text.length > 200 ? r.text.slice(0, 200) + '...' : r.text,
+              fullText: r.text,
+              ocrConfidence: 99.4,
+              keyTopics: [`Relevance: ${scorePct}%`, volNum ? `Vol. ${volNum}` : 'Passage'],
+              aiSummary: { en: r.text.slice(0, 160), hi: '', mr: '' },
+              relatedDocumentIds: []
+            };
+          });
+          setSemanticDocs(mapped);
+          setIsSearchingSemantic(false);
+        }
+      } catch {
+        if (isMounted) setIsSearchingSemantic(false);
+      }
+    }, 200);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [cleanQuery, query]);
+
 
   const handleToggleVoice = () => {
     soundEffects.playClick();
@@ -84,15 +159,17 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
 
   if (!isOpen) return null;
 
-  const cleanQuery = query.toLowerCase().trim();
+  // Search Documents (Source from Canonical Semantic Vector Search when query entered)
+  const matchedDocs = cleanQuery
+    ? (semanticDocs.length > 0
+        ? semanticDocs
+        : ARCHIVE_DOCUMENTS.filter(doc => 
+            doc.title.toLowerCase().includes(cleanQuery) || 
+            doc.shortDescription.toLowerCase().includes(cleanQuery) ||
+            doc.keyTopics.some(t => t.toLowerCase().includes(cleanQuery))
+          ).slice(0, 4))
+    : ARCHIVE_DOCUMENTS.slice(0, 4);
 
-  // Search Documents
-  const matchedDocs = ARCHIVE_DOCUMENTS.filter(doc => 
-    !cleanQuery || 
-    doc.title.toLowerCase().includes(cleanQuery) || 
-    doc.shortDescription.toLowerCase().includes(cleanQuery) ||
-    doc.keyTopics.some(t => t.toLowerCase().includes(cleanQuery))
-  ).slice(0, 4);
 
   // Search Historical Events & People
   const matchedEvents = TIMELINE_EVENTS.filter(evt =>
@@ -144,8 +221,16 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && query.trim()) {
+                e.preventDefault();
+                onClose();
+                router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+              }
+            }}
             placeholder={isListeningVoice ? "Listening to your voice... Speak now..." : "Search documents, people, events, themes, photographs..."}
             autoComplete="off"
+
             className={`w-full text-base sm:text-lg bg-transparent border-none focus:outline-none text-[#0A2947] placeholder-[#0A2947]/40 font-dmsans ${
               isListeningVoice ? 'font-semibold text-amber-900' : ''
             }`}
@@ -217,18 +302,26 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               <div className="flex items-center justify-between text-xs font-montserrat font-bold uppercase tracking-wider text-[#8B5E3C]">
                 <div className="flex items-center gap-1.5">
                   <BookOpen className="w-3.5 h-3.5" />
-                  <span>Archival Documents & Treatises ({matchedDocs.length})</span>
+                  <span>
+                    Archival Documents & Passages ({matchedDocs.length})
+                    {isSearchingSemantic && (
+                      <span className="text-[10px] lowercase font-normal ml-2 text-[#8B5E3C] animate-pulse">
+                        searching vectors...
+                      </span>
+                    )}
+                  </span>
                 </div>
                 <button
                   onClick={() => {
                     onClose();
-                    onNavigateTab('archive');
+                    router.push(query.trim() ? `/search?q=${encodeURIComponent(query.trim())}` : '/search');
                   }}
                   className="text-[11px] hover:underline cursor-pointer"
                 >
-                  View All Archives &rarr;
+                  View All in Search &rarr;
                 </button>
               </div>
+
 
               <div className="grid grid-cols-1 gap-2">
                 {matchedDocs.map((doc) => (

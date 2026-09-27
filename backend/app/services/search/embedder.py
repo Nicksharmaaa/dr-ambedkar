@@ -27,7 +27,8 @@ EMBEDDING_VERSION = "v1"
 
 # Instruction prefix (Qwen3 instruction-aware embedding)
 PASSAGE_INSTRUCTION = "Represent this document for retrieval:"
-QUERY_INSTRUCTION   = "Instruct: Given a research query about Dr. B.R. Ambedkar's writings, retrieve the most relevant passage\nQuery:"
+QUERY_INSTRUCTION   = "Instruct: Given a user's query about Dr. B. R. Ambedkar, retrieve relevant archival passages that answer the query.\nQuery:"
+
 
 
 class EmbeddingEngine:
