@@ -3,7 +3,7 @@
 import React from 'react';
 import { 
   Landmark, BookOpen, Clock, Radio, Sparkles, 
-  Camera, Network, Star, Zap, Bookmark
+  Camera, Network, Star, Zap, Bookmark, Search, ShieldCheck, MapPin
 } from 'lucide-react';
 import PillNav, { PillNavItem } from '@/components/ui/PillNav';
 
@@ -35,10 +35,22 @@ export const NAV_DESTINATIONS: NavDestination[] = [
     icon: BookOpen 
   },
   { 
+    id: 'search', 
+    label: 'Search', 
+    subtitle: 'Corpus Hybrid RRF Search', 
+    icon: Search 
+  },
+  { 
     id: 'timeline', 
     label: 'Timeline', 
     subtitle: 'Chronicle 1891–1956', 
     icon: Clock 
+  },
+  { 
+    id: 'memorials', 
+    label: 'Memorials', 
+    subtitle: 'Historical Geography & Map', 
+    icon: MapPin 
   },
   { 
     id: 'media', 
@@ -82,6 +94,12 @@ export const NAV_DESTINATIONS: NavDestination[] = [
     subtitle: 'Curated Archival Folio', 
     icon: Bookmark 
   },
+  { 
+    id: 'preservation', 
+    label: 'Preservation', 
+    subtitle: 'PREMIS 3.0 & Fixity Audit', 
+    icon: ShieldCheck 
+  },
 ];
 
 export const MuseumNavRail: React.FC<MuseumNavRailProps> = ({
@@ -89,11 +107,20 @@ export const MuseumNavRail: React.FC<MuseumNavRailProps> = ({
   onSelectTab,
   savedCount = 0,
 }) => {
+  const getHref = (id: string) => {
+    switch (id) {
+      case 'home': return '/';
+      case 'archive': return '/archive';
+      case 'graph': return '/knowledge-map';
+      default: return `/${id}`;
+    }
+  };
+
   const items: PillNavItem[] = NAV_DESTINATIONS.map((d) => ({
     id: d.id,
     label: d.label,
     subtitle: d.subtitle,
-    href: d.id === 'home' ? '/' : `/${d.id === 'archive' ? 'archive' : d.id}`,
+    href: getHref(d.id),
     icon: d.icon,
     badge: d.id === 'collection' && savedCount > 0 ? savedCount : undefined,
     ariaLabel: `${d.label} - ${d.subtitle}`,

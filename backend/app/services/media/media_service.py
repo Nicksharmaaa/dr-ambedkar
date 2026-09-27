@@ -179,6 +179,9 @@ class MediaService:
         sql += " ORDER BY created_at DESC"
 
         res = await self.db.execute(sql, params)
+        if not res.rows:
+            await self.seed_canonical_media()
+            res = await self.db.execute(sql, params)
         return [dict(r) for r in res.rows]
 
     async def get_track(self, track_id: str) -> dict[str, Any] | None:

@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { 
   Bookmark, Trash2, Download, Plus, BookOpen, ExternalLink, 
-  FileText, Share2, Sparkles, Check, Edit3, Save, Landmark, X 
+  FileText, Share2, Sparkles, Check, Edit3, Save, Landmark, X, Package
 } from 'lucide-react';
 import { Language, SavedCollectionItem, ArchivalDocument } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
 import { ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
+import { api } from '@/lib/api';
 
 interface MyCollectionViewProps {
   language: Language;
@@ -32,8 +33,9 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [tempNoteText, setTempNoteText] = useState('');
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [citationFormat, setCitationFormat] = useState<'APA' | 'Chicago' | 'BibTeX'>('APA');
+  const [citationFormat, setCitationFormat] = useState<'APA' | 'Chicago' | 'BibTeX' | 'RIS'>('APA');
   const [isCopied, setIsCopied] = useState(false);
+  const [isDownloadingPack, setIsDownloadingPack] = useState(false);
 
   const filteredItems = savedItems.filter(item => {
     if (selectedFilter === 'all') return true;
@@ -52,12 +54,50 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
     setEditingNoteId(null);
   };
 
+  const handleDownloadResearchPack = async () => {
+    try {
+      setIsDownloadingPack(true);
+      soundEffects.playClick();
+      const docIds = savedItems.filter(i => i.itemType === 'document').map(i => i.itemId);
+      const res = await fetch(`${api.getBaseUrl()}/collections/export/research-pack`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          collection_name: 'Dr. Ambedkar Heritage Research Folio',
+          document_ids: docIds.length > 0 ? docIds : undefined,
+          include_transcripts: true,
+          include_citations: true,
+          include_metadata: true,
+        }),
+      });
+      if (!res.ok) throw new Error('Research pack generation failed');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Ambedkar_Research_Pack_${new Date().toISOString().slice(0, 10)}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Failed to download research pack:', err);
+      alert('Could not download research pack. Please verify backend service.');
+    } finally {
+      setIsDownloadingPack(false);
+    }
+  };
+
   const generateCitation = () => {
     return savedItems.map(item => {
       if (citationFormat === 'APA') {
         return `Ambedkar, B. R. (${item.title}). In Dr. Babasaheb Ambedkar: Writings and Speeches. Ministry of Social Justice & Empowerment, Govt of India. Retrieved from Ambedkar National Digital Heritage Archive.`;
       } else if (citationFormat === 'Chicago') {
         return `Ambedkar, Bhimrao Ramji. "${item.title}." In Dr. Babasaheb Ambedkar: Writings and Speeches. New Delhi: Ministry of Social Justice & Empowerment, Government of India.`;
+      } else if (citationFormat === 'RIS') {
+        return `TY  - CHAP\nAU  - Ambedkar, Bhimrao Ramji\nTI  - ${item.title}\nT2  - Dr. Babasaheb Ambedkar: Writings and Speeches\nPB  - Ministry of Social Justice & Empowerment, Government of India\nID  - ${item.itemId}\nER  - `;
       } else {
         return `@archive{ambedkar_${item.itemId},\n  author = {Ambedkar, B. R.},\n  title = {${item.title}},\n  publisher = {Dr. Ambedkar Foundation / National Archives of India},\n  url = {https://ambedkar-archive.gov.in}\n}`;
       }
@@ -90,7 +130,17 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={handleDownloadResearchPack}
+              disabled={isDownloadingPack || savedItems.length === 0}
+              className="px-4 py-2.5 bg-[#FAF7F0] hover:bg-[#F3E4C9] disabled:opacity-40 text-[#0A2947] border border-[#D3D4C0] hover:border-[#8B5E3C] rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
+              title="Download full archival ZIP with Manuscripts, Transcripts, Metadata & Citations"
+            >
+              <Package className="w-4 h-4 text-[#8B5E3C]" />
+              <span>{isDownloadingPack ? 'Packaging ZIP...' : 'Research Pack (.ZIP)'}</span>
+            </button>
+
             <button
               onClick={() => {
                 soundEffects.playClick();
@@ -287,7 +337,7 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
             </div>
 
             <div className="flex gap-2">
-              {(['APA', 'Chicago', 'BibTeX'] as const).map(fmt => (
+              {(['APA', 'Chicago', 'BibTeX', 'RIS'] as const).map(fmt => (
                 <button
                   key={fmt}
                   onClick={() => setCitationFormat(fmt)}

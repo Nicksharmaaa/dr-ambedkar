@@ -22,7 +22,7 @@ export default function HomePage() {
   };
 
   const handleSearchSubmit = (query: string) => {
-    router.push(`/archive?q=${encodeURIComponent(query)}`);
+    router.push(`/search?q=${encodeURIComponent(query)}`);
   };
 
   return (

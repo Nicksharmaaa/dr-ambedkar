@@ -49,7 +49,9 @@ const routeToTabMap: Record<string, string> = {
   '/': 'home',
   '/archive': 'archive',
   '/documents': 'archive',
+  '/search': 'search',
   '/timeline': 'timeline',
+  '/memorials': 'memorials',
   '/stories': 'stories',
   '/compare': 'compare',
   '/knowledge-map': 'graph',
@@ -59,13 +61,17 @@ const routeToTabMap: Record<string, string> = {
   '/quest': 'quest',
   '/assistant': 'assistant',
   '/collection': 'collection',
+  '/preservation': 'preservation',
   '/admin': 'admin',
+  '/kiosk': 'kiosk',
 };
 
 const tabToRouteMap: Record<string, string> = {
   home: '/',
   archive: '/archive',
+  search: '/search',
   timeline: '/timeline',
+  memorials: '/memorials',
   stories: '/stories',
   compare: '/compare',
   graph: '/knowledge-map',
@@ -74,7 +80,9 @@ const tabToRouteMap: Record<string, string> = {
   quest: '/quest',
   assistant: '/assistant',
   collection: '/collection',
+  preservation: '/preservation',
   admin: '/admin',
+  kiosk: '/kiosk',
 };
 
 export const MuseumProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  Sparkles, Dices, Copy, Check, Volume2, Share2, 
+import {
+  Sparkles, Dices, Copy, Check, Volume2, Share2,
   Quote, ArrowRight, Bookmark, Compass, Landmark, Scale, BookOpen
 } from 'lucide-react';
 import { FAMOUS_QUOTES } from '@/data/interactiveData';
@@ -26,8 +26,8 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
   const [copied, setCopied] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
-  const filteredQuotes = selectedTheme === 'all' 
-    ? FAMOUS_QUOTES 
+  const filteredQuotes = selectedTheme === 'all'
+    ? FAMOUS_QUOTES
     : FAMOUS_QUOTES.filter(q => q.theme === selectedTheme);
 
   const currentQuote: QuoteItem = filteredQuotes[currentIndex % filteredQuotes.length] || FAMOUS_QUOTES[0];
@@ -55,7 +55,7 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
 
   const handleSpeak = () => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    
+
     if (isSpeaking) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
@@ -83,7 +83,7 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
 
   return (
     <div className="w-full bg-[#0A2947] text-[#FAF7F0] rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border-2 border-[#C59A45]/40 font-dmsans">
-      
+
       {/* Decorative Archival Corner Accents */}
       <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-[#C59A45]/60 pointer-events-none" />
       <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-[#C59A45]/60 pointer-events-none" />
@@ -129,11 +129,10 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
               setCurrentIndex(0);
               soundEffects.playClick();
             }}
-            className={`px-4 py-2 rounded-xl text-xs font-montserrat font-semibold whitespace-nowrap transition-all cursor-pointer border ${
-              selectedTheme === t.id
+            className={`px-4 py-2 rounded-xl text-xs font-montserrat font-semibold whitespace-nowrap transition-all cursor-pointer border ${selectedTheme === t.id
                 ? 'bg-[#C59A45] text-[#0A2947] border-[#F3E4C9] shadow-md font-bold'
                 : 'bg-white/10 hover:bg-white/20 text-[#FAF7F0] border-white/15'
-            }`}
+              }`}
           >
             {t.label}
           </button>
@@ -141,10 +140,9 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
       </div>
 
       {/* Quote Display Card with Rich Antique Parchment Styling & Smooth Flip Transition */}
-      <div className={`relative z-10 my-4 bg-[#FAF7F0] text-[#0A2947] border-2 border-[#C59A45]/40 rounded-2xl p-6 sm:p-9 shadow-xl transition-all duration-200 ${
-        isFlipping ? 'scale-95 opacity-50 rotate-1' : 'scale-100 opacity-100 rotate-0'
-      }`}>
-        
+      <div className={`relative z-10 my-4 bg-[#FAF7F0] text-[#0A2947] border-2 border-[#C59A45]/40 rounded-2xl p-6 sm:p-9 shadow-xl transition-all duration-200 ${isFlipping ? 'scale-95 opacity-50 rotate-1' : 'scale-100 opacity-100 rotate-0'
+        }`}>
+
         {/* Top Folio Specimen Tag & Year */}
         <div className="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-[#D3D4C0]">
           <div className="flex items-center gap-2">
@@ -192,11 +190,10 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
           <div className="flex items-center gap-2 self-end sm:self-auto">
             <button
               onClick={handleSpeak}
-              className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${
-                isSpeaking 
-                  ? 'bg-[#C59A45] text-[#0A2947] border-[#C59A45] font-bold shadow-md' 
+              className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${isSpeaking
+                  ? 'bg-[#C59A45] text-[#0A2947] border-[#C59A45] font-bold shadow-md'
                   : 'bg-white hover:bg-[#F3E4C9] border-[#D3D4C0] text-[#0A2947]'
-              }`}
+                }`}
               title={isSpeaking ? "Stop Voice Narration" : "Listen via Audio"}
             >
               <Volume2 className="w-4 h-4 text-[#8B5E3C]" />

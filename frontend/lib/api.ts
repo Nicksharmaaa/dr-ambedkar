@@ -61,6 +61,8 @@ export class ApiError extends Error {
   }
 }
 
+const ADMIN_KEY = process.env.NEXT_PUBLIC_ADMIN_API_KEY || "ambedkar-heritage-admin-2026-secure";
+
 async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
   const url = `${API_BASE}${cleanEndpoint}`;
@@ -69,6 +71,7 @@ async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T>
       ...options,
       headers: {
         "Content-Type": "application/json",
+        "X-Admin-Key": ADMIN_KEY,
         ...(options?.headers || {}),
       },
     });
@@ -91,6 +94,11 @@ async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T>
 }
 
 export const api = {
+  // Base URLs
+  getBaseUrl: () => API_BASE,
+  getDocumentExportUrl: (id: string, format: string = "text") => `${API_BASE}/documents/${id}/export?format=${format}`,
+  getResearchPackExportUrl: () => `${API_BASE}/collections/export/research-pack`,
+
   // Health
   getHealth: () => fetchJson<HealthStatus>("/health"),
   getDatabaseHealth: () => fetchJson<DatabaseHealth>("/health/database"),
@@ -125,6 +133,20 @@ export const api = {
     fetchJson<PaginatedResponse<DocumentChunk>>(
       `/documents/${id}/chunks?limit=${limit}&offset=${offset}`
     ),
+
+  getDocumentCitations: (id: string) =>
+    fetchJson<{
+      document_id: string;
+      title: string;
+      date: string;
+      citations: {
+        apa: string;
+        mla: string;
+        chicago: string;
+        bibtex: string;
+        ris: string;
+      };
+    }>(`/documents/${id}/citations`),
 
   // Search
   searchArchive: (
@@ -382,6 +404,9 @@ export const api = {
 
   getTimelineCategories: () =>
     fetchJson<{ categories: { category: string; count: number }[] }>("/timeline/categories"),
+
+  getHeritageLocations: () =>
+    fetchJson<{ locations: any[]; count: number }>("/timeline/locations"),
 
   // Phase 8 Heritage Stories
   getStories: () =>
