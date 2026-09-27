@@ -1,8 +1,9 @@
 """Collections API routes."""
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 
+from app.core.security import get_current_user, UserSession, log_audit_event
 from app.db.database import get_db_client
 from app.db.repositories.collections import CollectionRepository
 from app.schemas.collection import CollectionCreate, CollectionResponse
@@ -37,21 +38,46 @@ async def get_collection(collection_id: str) -> dict:
 
 
 @router.post("", response_model=CollectionResponse, status_code=status.HTTP_201_CREATED)
-async def create_collection(data: CollectionCreate) -> dict:
+async def create_collection(
+    data: CollectionCreate,
+    user: UserSession = Depends(get_current_user),
+    request: Request = None,
+) -> dict:
+    if user.role not in ("archivist", "admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden: Collection creation requires Archivist credentials.",
+        )
     db = get_db_client()
     repo = CollectionRepository(db)
     col_id = await repo.create(data.model_dump())
     col = await repo.get_by_id(col_id)
     col["object_count"] = 0
+
+    client_ip = request.client.host if request and request.client else "unknown"
+    await log_audit_event(
+        db,
+        user_id=user.user_id,
+        action="CREATE_COLLECTION",
+        resource="collections",
+        resource_id=col_id,
+        details=f"Created collection '{data.title}'",
+        ip_address=client_ip,
+    )
     return col
 
 
 @router.post("/export/research-pack")
 async def export_research_pack(
     body: dict = {},
+    user: UserSession = Depends(get_current_user),
+    request: Request = None,
 ):
     """
     Generate an Institutional Archival Research Pack (.zip) complying with Section T:
+    Requires verified Researcher, Archivist, or Administrator role.
+
+    Structure:
     Research Pack/
     ├── README.txt
     ├── CITATIONS.bib
@@ -62,6 +88,11 @@ async def export_research_pack(
     └── documents/
         └── {id}.txt
     """
+    if user.role not in ("researcher", "archivist", "admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Access forbidden: Research Pack (.ZIP) generation requires verified Researcher, Archivist, or Administrator role. Current role: '{user.role}'.",
+        )
     import io
     import csv
     import json

@@ -85,7 +85,7 @@ export default function KioskPage() {
   const [isAttractMode, setIsAttractMode] = useState<boolean>(true);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [quoteIndex, setQuoteIndex] = useState<number>(0);
-  const [inactivityTimer, setInactivityTimer] = useState<number>(60);
+  const [inactivityTimer, setInactivityTimer] = useState<number>(120);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -99,12 +99,12 @@ export default function KioskPage() {
     return () => clearInterval(interval);
   }, [isAttractMode]);
 
-  // Inactivity countdown when kiosk is active
+  // Inactivity countdown when kiosk is active (120s institutional museum reset)
   useEffect(() => {
-    if (isAttractMode) return;
+    if (!isAttractMode) return;
 
     const resetInactivity = () => {
-      setInactivityTimer(60);
+      setInactivityTimer(120);
     };
 
     window.addEventListener("touchstart", resetInactivity);
@@ -116,7 +116,7 @@ export default function KioskPage() {
         if (prev <= 1) {
           // Reset to attract screen & purge privacy session
           handlePrivacyReset();
-          return 60;
+          return 120;
         }
         return prev - 1;
       });
@@ -135,7 +135,7 @@ export default function KioskPage() {
     setSearchQuery("");
     sessionStorage.clear();
     setIsAttractMode(true);
-    setInactivityTimer(60);
+    setInactivityTimer(120);
   };
 
   const toggleFullscreen = () => {

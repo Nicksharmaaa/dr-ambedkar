@@ -3,11 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
   MapPin, Compass, Globe, Sparkles, BookOpen, ExternalLink, 
-  ChevronRight, Landmark, Navigation, Award, Search, Info
+  ChevronRight, Landmark, Navigation, Award, Search, Info, Map
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { soundEffects } from '@/utils/soundEffects';
-import { MemorialGlobe } from './MemorialGlobe';
 
 export interface HeritageLocation {
   id: string;
@@ -34,10 +33,11 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
   const [locations, setLocations] = useState<HeritageLocation[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<HeritageLocation | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [mapScope, setMapScope] = useState<'india' | 'global'>('india');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fallback canonical locations in case backend is offline
+  // Canonical registry fallback in case backend is offline
   const fallbackLocations: HeritageLocation[] = [
     {
       id: "loc-mhow",
@@ -172,6 +172,25 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
     return true;
   });
 
+  // Geographical projection calculation for SVG map
+  const projectCoordinates = (lat: number, lon: number, scope: 'india' | 'global') => {
+    if (scope === 'india') {
+      // Bounding box for India: Lat 8N to 36N, Lon 68E to 94E
+      const minLat = 7.5, maxLat = 36.5;
+      const minLon = 68.0, maxLon = 92.5;
+      const x = ((lon - minLon) / (maxLon - minLon)) * 740 + 30;
+      const y = ((maxLat - lat) / (maxLat - minLat)) * 440 + 30;
+      return { x: Math.max(30, Math.min(770, x)), y: Math.max(30, Math.min(470, y)) };
+    } else {
+      // Global Mercator Bounding: Lon -85W to 85E, Lat 10N to 55N
+      const minLon = -85.0, maxLon = 85.0;
+      const minLat = 10.0, maxLat = 55.0;
+      const x = ((lon - minLon) / (maxLon - minLon)) * 740 + 30;
+      const y = ((maxLat - lat) / (maxLat - minLat)) * 440 + 30;
+      return { x: Math.max(30, Math.min(770, x)), y: Math.max(30, Math.min(470, y)) };
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#FAF7F0] text-[#0A2947] font-dmsans pb-24">
       {/* Header Banner */}
@@ -186,16 +205,17 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
             Panchtirth & Memorials Map
           </h1>
           <p className="max-w-3xl mx-auto text-sm sm:text-base text-[#D3D4C0] font-dmsans leading-relaxed">
-            Trace the life trajectory, constitutional labors, and civil rights landmarks of Dr. B. R. Ambedkar across India and the world, connected directly to verified primary source manuscripts.
+            Interactive geographical projection of Dr. B. R. Ambedkar's life trajectory, civil rights satyagrahas, and constitutional landmarks, linked directly to verified primary source manuscripts.
           </p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
+        
         {/* Controls Toolbar */}
-        <div className="bg-white rounded-2xl shadow-xl border border-[#D3D4C0] p-4 flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+        <div className="bg-white rounded-2xl shadow-xl border border-[#D3D4C0] p-4 flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
           {/* Search Box */}
-          <div className="relative w-full md:w-96">
+          <div className="relative w-full md:w-80">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8B5E3C]" />
             <input
               type="text"
@@ -207,7 +227,7 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
           </div>
 
           {/* Filter Pills */}
-          <div className="flex flex-wrap gap-2 w-full md:w-auto">
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
             {[
               { id: 'all', label: 'All Memorials' },
               { id: 'panchtirth', label: 'Panchtirth (5 Shrines)' },
@@ -219,6 +239,8 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
                 onClick={() => {
                   soundEffects.playClick();
                   setActiveFilter(f.id);
+                  if (f.id === 'international') setMapScope('global');
+                  if (f.id === 'india' || f.id === 'panchtirth') setMapScope('india');
                 }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold transition-all cursor-pointer ${
                   activeFilter === f.id
@@ -229,6 +251,179 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
                 {f.label}
               </button>
             ))}
+          </div>
+
+          {/* Map Scope Toggle */}
+          <div className="flex items-center gap-1.5 bg-[#FAF7F0] p-1 rounded-xl border border-[#D3D4C0]">
+            <button
+              onClick={() => {
+                soundEffects.playClick();
+                setMapScope('india');
+              }}
+              className={`px-3 py-1 rounded-lg text-xs font-montserrat font-bold transition-all cursor-pointer ${
+                mapScope === 'india' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
+              }`}
+            >
+              India Subcontinent
+            </button>
+            <button
+              onClick={() => {
+                soundEffects.playClick();
+                setMapScope('global');
+              }}
+              className={`px-3 py-1 rounded-lg text-xs font-montserrat font-bold transition-all cursor-pointer ${
+                mapScope === 'global' ? 'bg-[#0A2947] text-[#F3E4C9]' : 'text-[#0A2947]/70'
+              }`}
+            >
+              Global Itinerary
+            </button>
+          </div>
+        </div>
+
+        {/* ── INTERACTIVE CARTOGRAPHIC GEOGRAPHIC PROJECTION MAP ───────────── */}
+        <div className="bg-white rounded-3xl border-2 border-[#D3D4C0] shadow-xl p-5 mb-8 relative overflow-hidden">
+          <div className="flex items-center justify-between mb-3 px-2">
+            <div className="flex items-center gap-2">
+              <Map className="w-4 h-4 text-[#C89D56]" />
+              <span className="font-cinzel font-bold text-sm text-[#0A2947] uppercase tracking-wider">
+                Geographic Cartographic Canvas ({mapScope === 'india' ? 'National Subcontinent Projection' : 'Transcontinental Hemisphere'})
+              </span>
+            </div>
+            <div className="text-[11px] font-mono text-[#8B5E3C]">
+              Click any geographical pin to inspect curatorial dossier
+            </div>
+          </div>
+
+          <div className="w-full h-80 sm:h-96 bg-[#0A2947]/95 rounded-2xl relative border border-[#C89D56]/50 overflow-hidden shadow-inner">
+            <svg
+              viewBox="0 0 800 500"
+              className="w-full h-full select-none"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <defs>
+                <pattern id="mapGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(200, 157, 86, 0.12)" strokeWidth="0.8" />
+                </pattern>
+                <radialGradient id="beaconHalo" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#C89D56" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="#C89D56" stopOpacity="0" />
+                </radialGradient>
+              </defs>
+
+              {/* Coordinate Grid Background */}
+              <rect width="800" height="500" fill="url(#mapGrid)" />
+
+              {/* Geographic Graticule Coordinates */}
+              <text x="15" y="25" fill="#C89D56" opacity="0.6" fontSize="10" fontFamily="monospace">
+                {mapScope === 'india' ? 'LAT 35°N — LON 68°E' : 'LAT 55°N — LON -75°W'}
+              </text>
+              <text x="15" y="485" fill="#C89D56" opacity="0.6" fontSize="10" fontFamily="monospace">
+                {mapScope === 'india' ? 'LAT 08°N — LON 92°E' : 'LAT 10°N — LON 85°E'}
+              </text>
+
+              {/* Stylized Landmass Geometry */}
+              {mapScope === 'india' ? (
+                <g opacity="0.25" stroke="#C89D56" strokeWidth="1.5" fill="none">
+                  {/* Northern Himalayan Crest */}
+                  <path d="M 220 80 Q 280 50 360 70 T 490 85 T 620 120" />
+                  {/* Western Coast */}
+                  <path d="M 220 80 Q 210 160 210 240 Q 200 320 280 440" />
+                  {/* Eastern Coast */}
+                  <path d="M 620 120 Q 560 210 500 280 Q 420 370 280 440" />
+                  {/* Central Spine */}
+                  <path d="M 210 240 Q 360 250 500 280" strokeDasharray="3 3" />
+                </g>
+              ) : (
+                <g opacity="0.2" stroke="#C89D56" strokeWidth="1.2" fill="none">
+                  {/* Transatlantic Arc */}
+                  <path d="M 120 180 Q 350 80 480 130" strokeDasharray="4 4" />
+                  {/* European-Indian Arc */}
+                  <path d="M 480 130 Q 560 220 680 270" strokeDasharray="4 4" />
+                </g>
+              )}
+
+              {/* Trajectory Arcs Between Locations */}
+              <g stroke="#C89D56" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.45" fill="none">
+                {filteredLocations.slice(0, -1).map((loc, i) => {
+                  const p1 = projectCoordinates(loc.coordinates.latitude, loc.coordinates.longitude, mapScope);
+                  const p2 = projectCoordinates(filteredLocations[i + 1].coordinates.latitude, filteredLocations[i + 1].coordinates.longitude, mapScope);
+                  return (
+                    <line
+                      key={`arc-${i}`}
+                      x1={p1.x}
+                      y1={p1.y}
+                      x2={p2.x}
+                      y2={p2.y}
+                    />
+                  );
+                })}
+              </g>
+
+              {/* Geographic Beacon Pins */}
+              {filteredLocations.map((loc) => {
+                const { x, y } = projectCoordinates(loc.coordinates.latitude, loc.coordinates.longitude, mapScope);
+                const isSelected = selectedLocation?.id === loc.id;
+
+                return (
+                  <g
+                    key={loc.id}
+                    className="cursor-pointer transition-transform duration-200"
+                    onClick={() => {
+                      soundEffects.playClick();
+                      setSelectedLocation(loc);
+                    }}
+                  >
+                    {/* Pulsing Halo if Selected */}
+                    {isSelected && (
+                      <circle cx={x} cy={y} r="22" fill="url(#beaconHalo)" className="animate-pulse" />
+                    )}
+
+                    {/* Outer Ring */}
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r={isSelected ? "9" : "6"}
+                      fill={isSelected ? "#FAF7F0" : "#0A2947"}
+                      stroke="#C89D56"
+                      strokeWidth={isSelected ? "3" : "2"}
+                    />
+
+                    {/* Core Pin */}
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r={isSelected ? "4" : "2.5"}
+                      fill={isSelected ? "#0A2947" : "#C89D56"}
+                    />
+
+                    {/* Label */}
+                    <text
+                      x={x + 12}
+                      y={y + 4}
+                      fill={isSelected ? "#FAF7F0" : "#D3D4C0"}
+                      fontSize={isSelected ? "11" : "9"}
+                      fontWeight={isSelected ? "bold" : "normal"}
+                      fontFamily="sans-serif"
+                      className="pointer-events-none drop-shadow-md"
+                    >
+                      {loc.name.split('(')[0].trim()}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* In-Map Active Location Readout */}
+            {selectedLocation && (
+              <div className="absolute bottom-3 left-3 bg-[#0A2947]/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-[#C89D56]/60 text-xs text-[#FAF7F0] font-mono flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5 text-[#C89D56]" />
+                <span className="font-bold">{selectedLocation.name.split('(')[0].trim()}</span>
+                <span>·</span>
+                <span className="text-[#C89D56]">
+                  {selectedLocation.coordinates.latitude.toFixed(2)}°N, {selectedLocation.coordinates.longitude.toFixed(2)}°E
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -283,24 +478,11 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
             </div>
           </div>
 
-          {/* Right Column: Selected Memorial Dossier & Interactive 3D Globe */}
+          {/* Right Column: Selected Memorial Dossier */}
           <div className="lg:col-span-7">
             {selectedLocation ? (
               <div className="bg-white rounded-3xl border-2 border-[#D3D4C0] shadow-2xl p-6 sm:p-8 space-y-6 sticky top-24">
                 
-                {/* Interactive 3D Heritage Globe */}
-                <div className="w-full">
-                  <MemorialGlobe
-                    locations={filteredLocations}
-                    selectedLocation={selectedLocation}
-                    onSelectLocation={(loc) => {
-                      soundEffects.playClick();
-                      setSelectedLocation(loc);
-                    }}
-                    className="h-[360px] sm:h-[420px] w-full"
-                  />
-                </div>
-
                 {/* Memorial Header */}
                 <div>
                   <div className="flex items-center justify-between gap-3 mb-2">
@@ -405,7 +587,7 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
               </div>
             ) : (
               <div className="h-64 flex items-center justify-center text-xs font-mono text-[#0A2947]/50 bg-white rounded-3xl border border-[#D3D4C0]">
-                Select a memorial to inspect its curatorial dossier
+                Select a memorial on the map to inspect its curatorial dossier
               </div>
             )}
           </div>

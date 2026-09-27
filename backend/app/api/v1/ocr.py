@@ -5,9 +5,10 @@ Exposes OCR baseline metrics, page OCR status, and curator review endpoints.
 from __future__ import annotations
 
 from typing import Any
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel, Field
 
+from app.core.security import get_current_user, UserSession, log_audit_event
 from app.db.database import DatabaseClient, get_db_client
 from app.services.ocr.ocr_service import MultilingualOCRService
 
@@ -48,14 +49,34 @@ async def get_page_ocr(
 @router.post("/review")
 async def review_page_ocr(
     body: OCRReviewRequest,
+    user: UserSession = Depends(get_current_user),
+    request: Request = None,
     db: DatabaseClient = Depends(get_db_client),
 ) -> dict[str, Any]:
     """Submit curator review of OCR text without overwriting the authoritative raw OCR text."""
+    if user.role not in ("archivist", "admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden: OCR review and correction requires Archivist or Administrator credentials.",
+        )
+
     svc = MultilingualOCRService(db)
-    return await svc.save_review(
+    res = await svc.save_review(
         document_id=body.document_id,
         page_number=body.page_number,
         reviewed_text=body.reviewed_text,
-        reviewer=body.reviewer,
+        reviewer=user.username or body.reviewer,
         review_status=body.review_status,
     )
+
+    client_ip = request.client.host if request and request.client else "unknown"
+    await log_audit_event(
+        db,
+        user_id=user.user_id,
+        action="OCR_REVIEW",
+        resource="ocr_pages",
+        resource_id=f"{body.document_id}_p{body.page_number}",
+        details=f"Reviewed OCR page {body.page_number} of {body.document_id} with status {body.review_status}",
+        ip_address=client_ip,
+    )
+    return res

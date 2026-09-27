@@ -16,15 +16,20 @@ import os
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 
+from app.core.security import require_role
 from app.db.database import get_db_client
 from app.db.repositories.archival_objects import ArchivalObjectRepository
 from app.services.ingestion.scanner import INBOX_DIR, discover_inbox_files, scan_and_ingest
 from app.services.storage.local import LocalStorageBackend
 from app.core.config import settings
 
-router = APIRouter(prefix="/admin/ingest", tags=["admin-ingestion"])
+router = APIRouter(
+    prefix="/admin/ingest",
+    tags=["admin-ingestion"],
+    dependencies=[Depends(require_role(["archivist", "admin"]))],
+)
 
 MANIFESTS_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent.parent / "data" / "manifests"
 

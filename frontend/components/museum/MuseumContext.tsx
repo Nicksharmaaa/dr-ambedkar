@@ -7,6 +7,7 @@ import {
 } from '@/types/museum';
 import { ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
+import { api } from '@/lib/api';
 
 interface MuseumContextType {
   currentTab: string;
@@ -114,7 +115,18 @@ export const MuseumProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, []);
 
   const [language, setLanguage] = useState<Language>('en');
-  const [userMode, setUserMode] = useState<UserMode>('visitor');
+  const [userMode, setUserModeState] = useState<UserMode>('visitor');
+
+  const handleSetUserMode = (mode: UserMode) => {
+    setUserModeState(mode);
+    api.acquireRoleSession(mode).catch((err) => {
+      console.warn('Could not acquire server session token for role:', mode, err);
+    });
+  };
+
+  useEffect(() => {
+    api.acquireRoleSession('visitor').catch(() => {});
+  }, []);
 
   const [accessibility, setAccessibility] = useState<AccessibilitySettings>({
     textSize: 'normal',
@@ -263,7 +275,7 @@ export const MuseumProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         language,
         setLanguage,
         userMode,
-        setUserMode,
+        setUserMode: handleSetUserMode,
         accessibility,
         setAccessibility,
         isAccessibilityModalOpen,

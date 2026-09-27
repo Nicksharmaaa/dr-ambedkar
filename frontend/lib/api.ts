@@ -61,17 +61,47 @@ export class ApiError extends Error {
   }
 }
 
-const ADMIN_KEY = process.env.NEXT_PUBLIC_ADMIN_API_KEY || "ambedkar-heritage-admin-2026-secure";
+let cachedSessionToken: string | null = null;
+
+export function setSessionToken(token: string | null): void {
+  cachedSessionToken = token;
+  if (typeof window !== "undefined") {
+    try {
+      if (token) {
+        sessionStorage.setItem("ambedkar_auth_token", token);
+      } else {
+        sessionStorage.removeItem("ambedkar_auth_token");
+      }
+    } catch {
+      // sessionStorage restricted fallback
+    }
+  }
+}
+
+export function getSessionToken(): string | null {
+  if (cachedSessionToken) return cachedSessionToken;
+  if (typeof window !== "undefined") {
+    try {
+      cachedSessionToken = sessionStorage.getItem("ambedkar_auth_token");
+    } catch {
+      // fallback
+    }
+  }
+  return cachedSessionToken;
+}
 
 async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
   const url = `${API_BASE}${cleanEndpoint}`;
+  const token = getSessionToken();
+  const authHeaders: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+
   try {
     const res = await fetch(url, {
       ...options,
       headers: {
         "Content-Type": "application/json",
-        "X-Admin-Key": ADMIN_KEY,
+        ...authHeaders,
         ...(options?.headers || {}),
       },
     });
@@ -94,10 +124,34 @@ async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T>
 }
 
 export const api = {
-  // Base URLs
+  // Base URLs & Auth
   getBaseUrl: () => API_BASE,
-  getDocumentExportUrl: (id: string, format: string = "text") => `${API_BASE}/documents/${id}/export?format=${format}`,
+  getDocumentExportUrl: (id: string, format: string = "text") => {
+    const token = getSessionToken();
+    const tokenParam = token ? `&token=${encodeURIComponent(token)}` : "";
+    return `${API_BASE}/documents/${id}/export?format=${format}${tokenParam}`;
+  },
   getResearchPackExportUrl: () => `${API_BASE}/collections/export/research-pack`,
+
+  // Authentication & RBAC
+  acquireRoleSession: async (role: string, fullName?: string) => {
+    const res = await fetchJson<{ access_token: string; user: any }>("/auth/session-token", {
+      method: "POST",
+      body: JSON.stringify({ role, full_name: fullName }),
+    });
+    if (res?.access_token) {
+      setSessionToken(res.access_token);
+    }
+    return res;
+  },
+  getCurrentUser: () => fetchJson<any>("/auth/me"),
+  logout: async () => {
+    try {
+      await fetchJson("/auth/logout", { method: "POST" });
+    } finally {
+      setSessionToken(null);
+    }
+  },
 
   // Health
   getHealth: () => fetchJson<HealthStatus>("/health"),

@@ -23,7 +23,7 @@ from app.api.v1 import (
     graph, timeline, stories,
     indic, voice, media, multimodal,
     ocr, multilingual_corpus,
-    hardware, kiosk,
+    hardware, kiosk, auth,
 )
 
 configure_logging()
@@ -85,6 +85,7 @@ app.add_middleware(
 PREFIX = "/api/v1"
 
 app.include_router(health.router,       prefix=PREFIX)
+app.include_router(auth.router,         prefix=PREFIX)
 app.include_router(collections.router,  prefix=PREFIX)
 app.include_router(documents.router,    prefix=PREFIX)
 app.include_router(search.router,       prefix=PREFIX)

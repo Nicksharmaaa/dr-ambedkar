@@ -1,8 +1,9 @@
 """Documents (Archival Objects) API routes."""
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
+from app.core.security import get_current_user, UserSession, log_audit_event
 from app.db.database import get_db_client
 from app.db.repositories.archival_objects import ArchivalObjectRepository
 from app.db.repositories.chunks import ChunkRepository
@@ -177,11 +178,21 @@ ER  - """
 async def export_document(
     document_id: str,
     format: str = Query("text", pattern="^(text|json|csv|pdf|citations)$"),
+    user: UserSession = Depends(get_current_user),
+    request: Request = None,
 ):
     """
     Export archival document in multiple machine-readable and academic formats.
-    Supported: text, json, csv, pdf, citations.
+    Citation format is public to all visitors.
+    Bulk data export (text, json, csv, pdf) requires verified researcher, archivist, or admin role.
     """
+    if format in ("text", "json", "csv", "pdf"):
+        if user.role not in ("researcher", "archivist", "admin"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Access forbidden: Bulk analytical export in '{format}' format requires verified Researcher, Archivist, or Administrator role. Current role: '{user.role}'.",
+            )
+
     import io
     import csv
     import json
@@ -200,6 +211,18 @@ async def export_document(
     actual_id = obj["id"]
     stable_id = obj.get("stable_id") or actual_id
     title = obj.get("title", "Writings and Speeches")
+
+    # Log audit event
+    client_ip = request.client.host if request and request.client else "unknown"
+    await log_audit_event(
+        db,
+        user_id=user.user_id,
+        action="EXPORT_DOCUMENT",
+        resource="documents",
+        resource_id=actual_id,
+        details=f"Exported format '{format}' by user '{user.username}' (role: {user.role})",
+        ip_address=client_ip,
+    )
 
     # Fetch all chunks
     chunk_res = await db.execute(
@@ -308,9 +331,29 @@ async def export_document(
 
 
 @router.post("", response_model=ArchivalObjectResponse, status_code=status.HTTP_201_CREATED)
-async def create_document(data: ArchivalObjectCreate) -> dict:
+async def create_document(
+    data: ArchivalObjectCreate,
+    user: UserSession = Depends(get_current_user),
+    request: Request = None,
+) -> dict:
+    if user.role not in ("archivist", "admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden: Document creation requires Archivist credentials.",
+        )
     db = get_db_client()
     repo = ArchivalObjectRepository(db)
     obj_id = await repo.create(data.model_dump())
     obj = await repo.get_by_id(obj_id)
+
+    client_ip = request.client.host if request and request.client else "unknown"
+    await log_audit_event(
+        db,
+        user_id=user.user_id,
+        action="CREATE_DOCUMENT",
+        resource="documents",
+        resource_id=obj_id,
+        details=f"Created document '{data.title}'",
+        ip_address=client_ip,
+    )
     return obj
