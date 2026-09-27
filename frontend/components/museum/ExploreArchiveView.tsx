@@ -101,8 +101,6 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
     "Problem of the Rupee",
     "States and Minorities",
     "Mahad Satyagraha",
-    "Buddha and His Dhamma",
-    "Hindu Code Bill"
   ];
 
   const allTopics = [
@@ -490,7 +488,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
           {/* Quick Archival Search Suggestions */}
           <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
             <span className="font-montserrat font-bold uppercase tracking-wider text-[#8B5E3C] text-[10px] shrink-0">
-              Curatorial Suggestions:
+              Suggestions:
             </span>
             {searchSuggestions.map((sug) => (
               <button
@@ -546,11 +544,10 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                   soundEffects.playClick();
                   setShowAdvancedFilters(!showAdvancedFilters);
                 }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                  showAdvancedFilters || (selectedTopic !== 'all' || selectedSource !== 'all')
-                    ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs'
-                    : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
-                }`}
+                className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold flex items-center gap-1.5 transition-all cursor-pointer ${showAdvancedFilters || (selectedTopic !== 'all' || selectedSource !== 'all')
+                  ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs'
+                  : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                  }`}
               >
                 <Filter className="w-3.5 h-3.5" />
                 <span>More Filters</span>
@@ -670,25 +667,22 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                       soundEffects.playClick();
                       setSelectedEra(era.id);
                     }}
-                    className={`p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer group flex flex-col justify-between ${
-                      isSelected
-                        ? 'bg-[#0A2947] text-[#FAF7F0] border-[#0A2947] shadow-md ring-2 ring-[#C89D56]/30'
-                        : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0] hover:border-[#8B5E3C]/40'
-                    }`}
+                    className={`p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer group flex flex-col justify-between ${isSelected
+                      ? 'bg-[#0A2947] text-[#FAF7F0] border-[#0A2947] shadow-md ring-2 ring-[#C89D56]/30'
+                      : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border-[#D3D4C0] hover:border-[#8B5E3C]/40'
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-base sm:text-lg">{era.icon}</span>
-                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded font-bold ${
-                        isSelected ? 'bg-white/20 text-[#F3E4C9]' : 'bg-white/80 text-[#8B5E3C] border border-[#D3D4C0]'
-                      }`}>
+                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded font-bold ${isSelected ? 'bg-white/20 text-[#F3E4C9]' : 'bg-white/80 text-[#8B5E3C] border border-[#D3D4C0]'
+                        }`}>
                         {era.years}
                       </span>
                     </div>
                     <div>
                       <div className="text-xs font-montserrat font-bold truncate">{era.label}</div>
-                      <div className={`text-[10px] font-mono truncate ${
-                        isSelected ? 'text-[#F3E4C9]/70' : 'text-[#0A2947]/50'
-                      }`}>
+                      <div className={`text-[10px] font-mono truncate ${isSelected ? 'text-[#F3E4C9]/70' : 'text-[#0A2947]/50'
+                        }`}>
                         {era.desc}
                       </div>
                     </div>
@@ -721,17 +715,15 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                       soundEffects.playClick();
                       setSelectedType(btn.id);
                     }}
-                    className={`px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-montserrat font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                      isSelected
-                        ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#C89D56]/40'
-                        : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
-                    }`}
+                    className={`px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-montserrat font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isSelected
+                      ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#C89D56]/40'
+                      : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                      }`}
                   >
                     <span>{btn.icon}</span>
                     <span>{btn.label}</span>
-                    <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
-                      isSelected ? 'bg-white/20 text-[#FAF7F0]' : 'bg-[#D3D4C0]/40 text-[#0A2947]/70'
-                    }`}>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-white/20 text-[#FAF7F0]' : 'bg-[#D3D4C0]/40 text-[#0A2947]/70'
+                      }`}>
                       {btn.count}
                     </span>
                   </button>
@@ -765,11 +757,10 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                       soundEffects.playClick();
                       setSelectedTopic('all');
                     }}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
-                      selectedTopic === 'all'
-                        ? 'bg-[#0A2947] text-[#FAF7F0] font-bold'
-                        : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
-                    }`}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors cursor-pointer ${selectedTopic === 'all'
+                      ? 'bg-[#0A2947] text-[#FAF7F0] font-bold'
+                      : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                      }`}
                   >
                     All Themes
                   </button>
@@ -781,11 +772,10 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                         soundEffects.playClick();
                         setSelectedTopic(selectedTopic === topic ? 'all' : topic);
                       }}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
-                        selectedTopic === topic
-                          ? 'bg-[#0A2947] text-[#FAF7F0] font-bold ring-1 ring-[#C89D56]'
-                          : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
-                      }`}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors cursor-pointer ${selectedTopic === topic
+                        ? 'bg-[#0A2947] text-[#FAF7F0] font-bold ring-1 ring-[#C89D56]'
+                        : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                        }`}
                     >
                       {topic}
                     </button>
@@ -814,11 +804,10 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                         soundEffects.playClick();
                         setSelectedSource(selectedSource === src.id ? 'all' : src.id);
                       }}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
-                        selectedSource === src.id
-                          ? 'bg-[#0A2947] text-[#FAF7F0] font-bold ring-1 ring-[#C89D56]'
-                          : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
-                      }`}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors cursor-pointer ${selectedSource === src.id
+                        ? 'bg-[#0A2947] text-[#FAF7F0] font-bold ring-1 ring-[#C89D56]'
+                        : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                        }`}
                     >
                       {src.label}
                     </button>

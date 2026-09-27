@@ -20,7 +20,6 @@ import { soundEffects } from '@/utils/soundEffects';
 import DitherVeil from '@/components/ui/DitherVeil';
 import ClickSpark from '@/components/ui/ClickSpark';
 import DepthCarousel from '@/components/ui/DepthCarousel';
-import { HomeStickySearchBar } from './navigation/HomeStickySearchBar';
 
 interface HomeViewProps {
   language: Language;
@@ -189,13 +188,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
   return (
     <div className="min-h-screen bg-transparent text-[#0A2947] pb-28 space-y-24 font-dmsans selection:bg-[#D3D4C0] selection:text-[#0A2947]">
 
-      {/* Clean Persistent Sticky Top-Center Search Bar */}
-      <HomeStickySearchBar onSearchSubmit={onSearchSubmit} />
-
       {/* =========================================================================
           HERO EXHIBITION: CINEMATIC MUSEUM ENTRANCE
           ========================================================================= */}
-      <section className="relative overflow-hidden bg-transparent -mt-20 sm:-mt-24 pt-0 pb-16 px-4 sm:px-6 lg:px-8 border-b border-[#D3D4C0]">
+      <section className="relative overflow-hidden bg-transparent pt-14 sm:pt-20 lg:pt-24 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 border-b border-[#D3D4C0]">
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center relative z-10">
 

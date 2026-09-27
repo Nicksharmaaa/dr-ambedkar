@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { useMuseum } from './MuseumContext';
 import { MuseumNavRail, TopUtilityBar } from './navigation';
 import { KioskBar } from './KioskBar';
@@ -13,6 +14,7 @@ import { IntroVideoScreen } from './IntroVideoScreen';
 import { MuseumFooter } from './MuseumFooter';
 
 export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const pathname = usePathname();
   const {
     currentTab,
     navigateToTab,
@@ -81,8 +83,8 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
         />
       )}
 
-      {/* Floating Top-Right Secondary Utilities Dock */}
-      {!showIntro && (
+      {/* Floating Top-Right Secondary Utilities Dock - Visible exclusively on the Home Page */}
+      {!showIntro && (pathname === '/' || currentTab === 'home') && (
         <TopUtilityBar
           language={language}
           onSelectLanguage={setLanguage}

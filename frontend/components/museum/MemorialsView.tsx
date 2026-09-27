@@ -291,14 +291,6 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
                         Archival Memorials ({filteredLocations.length})
                       </h2>
                     </div>
-                    <span className="text-[10px] font-mono text-[#C89D56] bg-[#0A2947] px-2 py-0.5 rounded-full border border-[#C89D56]/40 font-bold">
-                      Panchtirth Shrines
-                    </span>
-                  </div>
-
-                  <div className="text-[11px] font-mono text-[#F3E4C9]/70 flex items-center justify-between">
-                    <span>Select to examine</span>
-                    <span className="text-[10px] text-[#C89D56]">Auto-centers globe</span>
                   </div>
 
                   {/* Compact Search Box */}
