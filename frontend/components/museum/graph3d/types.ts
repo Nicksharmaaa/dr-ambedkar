@@ -1,5 +1,29 @@
 import { GraphCategory } from '@/types/museum';
 
+export type MapState = 
+  | 'IDLE' 
+  | 'HOVERED' 
+  | 'SELECTING' 
+  | 'SELECTED' 
+  | 'TRANSITIONING' 
+  | 'DESELECTING';
+
+export type QualityTier = 'HIGH' | 'MEDIUM' | 'LOW';
+
+export const MUSEUM_PALETTE = {
+  background: '#F4EBDD',
+  secondary: '#EEECE5',
+  surface: '#FFF9EF',
+  parchment: '#E9DBC5',
+  particleGold: '#DCC79D',
+  particleGold2: '#C9AC72',
+  particleFaded: '#E9DCC4',
+  text: '#2F241C',
+  secondaryText: '#756555',
+  accentBrass: '#A47745',
+  terracotta: '#9A5F43',
+} as const;
+
 export interface Graph3DNode {
   id: string;
   label: string;
@@ -60,4 +84,5 @@ export interface ConnectedEntitySummary {
   node: Graph3DNode;
   relation: string;
   isOutgoing: boolean;
+  notes?: string;
 }

@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Layers } from 'lucide-react';
 
 const LEGEND_ITEMS = [
-  { label: 'Dr. B. R. Ambedkar',       color: '#C59A45' },
-  { label: 'Works & Treatises',         color: '#0A2947' },
-  { label: 'Movements & Events',        color: '#B91C1C' },
-  { label: 'Institutions & Parties',    color: '#0D6E57' },
-  { label: 'Philosophy & Concepts',     color: '#B45309' },
-  { label: 'Contemporaries & Figures',  color: '#8B5E3C' },
-  { label: 'Historic Places',           color: '#6D28D9' },
-  { label: 'Speeches & Media',          color: '#C2410C' },
+  { label: 'Dr. B. R. Ambedkar',       color: '#A47745' },
+  { label: 'Works & Treatises',         color: '#3D4A54' },
+  { label: 'Movements & Events',        color: '#8B4836' },
+  { label: 'Institutions & Parties',    color: '#4A6B63' },
+  { label: 'Philosophy & Concepts',     color: '#7A6B48' },
+  { label: 'Contemporaries & Figures',  color: '#A47745' },
+  { label: 'Historic Places',           color: '#6D5B4F' },
+  { label: 'Speeches & Media',          color: '#9A6B3D' },
 ];
 
 export const GraphLegend: React.FC = () => {

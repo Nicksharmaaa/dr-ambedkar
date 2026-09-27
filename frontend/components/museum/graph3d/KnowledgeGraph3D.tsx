@@ -408,28 +408,8 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
       setAutoRotate(false); // Pause auto-rotation for focused exploration
       soundEffects.playNodeSelectSound();
 
-      if (fgRef.current && node.x !== undefined && node.y !== undefined && node.z !== undefined) {
-        const currentPos = fgRef.current.cameraPosition();
-        const dx = (currentPos.x ?? 0) - node.x;
-        const dy = (currentPos.y ?? 0) - node.y;
-        const dz = (currentPos.z ?? 320) - node.z;
-        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
-
-        // Smooth orbital zoom: stay along current line of sight
-        const targetDist = 135;
-        const newPos = {
-          x: node.x + (dx / dist) * targetDist,
-          y: node.y + (dy / dist) * targetDist * 0.75 + 10,
-          z: node.z + (dz / dist) * targetDist,
-        };
-
-        const lookAt = {
-          x: node.x,
-          y: node.y,
-          z: node.z,
-        };
-
-        fgRef.current.cameraPosition(newPos, lookAt, 850);
+      if (fgRef.current && fgRef.current.selectEntity) {
+        fgRef.current.selectEntity(node);
       }
     },
     [fgRef, selectedNode]
@@ -439,19 +419,8 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
     if (selectedNode) {
       setSelectedNode(null);
       soundEffects.playTactileChime();
-      if (fgRef.current) {
-        const currentPos = fgRef.current.cameraPosition();
-        const dist = Math.sqrt((currentPos.x || 0) ** 2 + (currentPos.y || 0) ** 2 + (currentPos.z || 320) ** 2) || 1;
-        const overviewDist = 380;
-        fgRef.current.cameraPosition(
-          {
-            x: ((currentPos.x || 0) / dist) * overviewDist,
-            y: ((currentPos.y || 0) / dist) * overviewDist,
-            z: ((currentPos.z || 320) / dist) * overviewDist,
-          },
-          { x: 0, y: 0, z: 0 },
-          800
-        );
+      if (fgRef.current && fgRef.current.deselect) {
+        fgRef.current.deselect();
       }
     }
   }, [selectedNode, fgRef]);
@@ -482,39 +451,27 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
 
   // 8. Navigation Handlers
   const handleZoomIn = () => {
-    if (fgRef.current) {
-      const currentPos = fgRef.current.cameraPosition();
-      fgRef.current.cameraPosition(
-        { x: currentPos.x * 0.75, y: currentPos.y * 0.75, z: currentPos.z * 0.75 },
-        undefined,
-        600
-      );
+    if (fgRef.current && fgRef.current.zoomIn) {
+      fgRef.current.zoomIn();
     }
   };
 
   const handleZoomOut = () => {
-    if (fgRef.current) {
-      const currentPos = fgRef.current.cameraPosition();
-      fgRef.current.cameraPosition(
-        { x: currentPos.x * 1.35, y: currentPos.y * 1.35, z: currentPos.z * 1.35 },
-        undefined,
-        600
-      );
+    if (fgRef.current && fgRef.current.zoomOut) {
+      fgRef.current.zoomOut();
     }
   };
 
   const handleResetView = () => {
-    const ambedkarNode = rawNodes.find((n) => n.isCenter);
-    if (ambedkarNode) {
-      flyToNode(ambedkarNode, false);
-    } else if (fgRef.current) {
-      fgRef.current.cameraPosition({ x: 0, y: 0, z: 420 }, { x: 0, y: 0, z: 0 }, 1400);
+    setSelectedNode(null);
+    if (fgRef.current && fgRef.current.resetView) {
+      fgRef.current.resetView();
     }
   };
 
   const handleFitGraph = () => {
-    if (fgRef.current) {
-      fgRef.current.zoomToFit(900, 60);
+    if (fgRef.current && fgRef.current.fitGraph) {
+      fgRef.current.fitGraph();
     }
   };
 
@@ -682,25 +639,10 @@ export const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = ({
           highlightedLinkIds={highlightedLinkIds}
           dimensions={dimensions}
           fgRef={fgRef}
+          onOpenDocument={onOpenDocument}
+          onAskAI={onAskAI}
         />
       )}
-
-      {/* 6. Right-Side Inspector Drawer with Sequential Navigation */}
-      <NodeDetailDrawer
-        node={selectedNode}
-        connectedEntities={connectedEntities}
-        onClose={() => setSelectedNode(null)}
-        onSelectConnectedNode={(nodeId) => {
-          const nextNode = rawNodes.find((n) => n.id === nodeId);
-          if (nextNode) flyToNode(nextNode, true);
-        }}
-        onOpenDocument={onOpenDocument}
-        onAskAI={onAskAI}
-        onExpandConnections={(nodeId) => setIs2HopExpanded(!is2HopExpanded)}
-        isExpanded={is2HopExpanded}
-        historyStack={historyStack}
-        onNavigateHistoryBack={handleNavigateHistoryBack}
-      />
 
       {/* 7. Screen-Reader / Keyboard Accessible Entity Directory */}
       {isAccessibleListOpen && (
