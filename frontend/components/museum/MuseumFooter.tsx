@@ -24,6 +24,8 @@ import {
   Award,
 } from 'lucide-react';
 import { soundEffects } from '@/utils/soundEffects';
+import { Language } from '@/types/museum';
+import { UI_STRINGS } from '@/utils/i18n';
 
 interface MuseumFooterProps {
   onNavigateTab: (tab: string) => void;
@@ -32,6 +34,7 @@ interface MuseumFooterProps {
   onOpenAccessibility?: () => void;
   onSelectUserMode?: (mode: any) => void;
   userMode?: string;
+  language?: Language;
 }
 
 export const MuseumFooter: React.FC<MuseumFooterProps> = ({
@@ -40,7 +43,9 @@ export const MuseumFooter: React.FC<MuseumFooterProps> = ({
   onOpenVoice,
   onOpenAccessibility,
   onSelectUserMode,
+  language = 'en',
 }) => {
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const handleScrollTop = () => {
     soundEffects.playClick();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -64,32 +69,32 @@ export const MuseumFooter: React.FC<MuseumFooterProps> = ({
           <div>
             <div className="flex items-center gap-2 mb-4 text-[#0A2947]">
               <BookOpen className="w-5 h-5 text-[#C89D56]" />
-              <h3 className="font-cinzel font-bold text-sm tracking-wider uppercase text-[#0A2947]">Archival Holdings</h3>
+              <h3 className="font-cinzel font-bold text-sm tracking-wider uppercase text-[#0A2947]">{t.footerHoldings || "Archival Holdings"}</h3>
             </div>
             <ul className="space-y-2 text-xs font-montserrat">
               <li>
                 <a href="/archive" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#C89D56]">›</span> The Archive (BAWS Volumes 1–22)
+                  <span className="text-[#C89D56]">›</span> {t.wingArchiveTitle || "The Archive"}
                 </a>
               </li>
               <li>
                 <a href="/search" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#C89D56]">›</span> Hybrid Corpus Search (RRF)
+                  <span className="text-[#C89D56]">›</span> {t.searchBtn || "Search"} & Research
                 </a>
               </li>
               <li>
                 <a href="/gallery" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#C89D56]">›</span> Visual Folio & Historical Plates
+                  <span className="text-[#C89D56]">›</span> {t.wingGalleryTitle || "Visual Folio"}
                 </a>
               </li>
               <li>
                 <a href="/media" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#C89D56]">›</span> Audio & Spoken Speeches Archive
+                  <span className="text-[#C89D56]">›</span> {t.wingMediaTitle || "Media & Voice"}
                 </a>
               </li>
               <li>
                 <a href="/knowledge-map" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#C89D56]">›</span> 3D Semantic Lineage Graph
+                  <span className="text-[#C89D56]">›</span> {t.wingGraphTitle || "3D Knowledge Graph"}
                 </a>
               </li>
             </ul>
@@ -99,32 +104,32 @@ export const MuseumFooter: React.FC<MuseumFooterProps> = ({
           <div>
             <div className="flex items-center gap-2 mb-4 text-[#0A2947]">
               <Compass className="w-5 h-5 text-[#C89D56]" />
-              <h3 className="font-cinzel font-bold text-sm tracking-wider uppercase text-[#0A2947]">Research & Memorials</h3>
+              <h3 className="font-cinzel font-bold text-sm tracking-wider uppercase text-[#0A2947]">{t.footerResearch || "Research & Memorials"}</h3>
             </div>
             <ul className="space-y-2 text-xs font-montserrat">
               <li>
                 <a href="/timeline" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#C89D56]">›</span> Interactive Chronicle (1891–1956)
+                  <span className="text-[#C89D56]">›</span> {t.wingTimelineTitle || "Timeline Chronicle"}
                 </a>
               </li>
               <li>
                 <a href="/memorials" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#C89D56]">›</span> Memorials & Geography Map
+                  <span className="text-[#C89D56]">›</span> {t.wingStoriesTitle ? "Memorials & Geography" : "Memorials"}
                 </a>
               </li>
               <li>
                 <a href="/stories" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#C89D56]">›</span> Audio-Narrative Heritage Stories
+                  <span className="text-[#C89D56]">›</span> {t.wingStoriesTitle || "Audio Stories"}
                 </a>
               </li>
               <li>
                 <a href="/assistant" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#C89D56]">›</span> AI Archival Research Scholar
+                  <span className="text-[#C89D56]">›</span> {t.wingAssistantTitle || "AI Scholar"}
                 </a>
               </li>
               <li>
                 <a href="/collection" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#C89D56]">›</span> Researcher Notebook & Export Pack
+                  <span className="text-[#C89D56]">›</span> {t.wingCollectionTitle || "Personal Notebook"}
                 </a>
               </li>
             </ul>
@@ -134,7 +139,7 @@ export const MuseumFooter: React.FC<MuseumFooterProps> = ({
           <div>
             <div className="flex items-center gap-2 mb-4 text-[#0A2947]">
               <ShieldCheck className="w-5 h-5 text-[#C89D56]" />
-              <h3 className="font-cinzel font-bold text-sm tracking-wider uppercase text-[#0A2947]">Preservation & Ops</h3>
+              <h3 className="font-cinzel font-bold text-sm tracking-wider uppercase text-[#0A2947]">{t.footerPreservation || "Preservation & Ops"}</h3>
             </div>
             <ul className="space-y-2 text-xs font-montserrat">
               <li>
@@ -144,17 +149,17 @@ export const MuseumFooter: React.FC<MuseumFooterProps> = ({
               </li>
               <li>
                 <a href="/admin" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5 font-medium">
-                  <span className="text-[#C89D56]">›</span> Archivist Command Center
+                  <span className="text-[#C89D56]">›</span> {t.adminPortal || "Admin Portal"}
                 </a>
               </li>
               <li>
                 <a href="/kiosk" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#C89D56]">›</span> Museum Exhibition Kiosk Mode
+                  <span className="text-[#C89D56]">›</span> {t.kioskModeTitle || "Kiosk Mode"}
                 </a>
               </li>
               <li>
                 <a href="/quest" className="text-[#0A2947]/80 hover:text-[#C89D56] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#C89D56]">›</span> Interactive Heritage Quest
+                  <span className="text-[#C89D56]">›</span> {t.wingQuestTitle || "Interactive Quest"}
                 </a>
               </li>
               <li>
@@ -169,11 +174,11 @@ export const MuseumFooter: React.FC<MuseumFooterProps> = ({
           <div>
             <div className="flex items-center gap-2 mb-4 text-[#0A2947]">
               <Award className="w-5 h-5 text-[#C89D56]" />
-              <h3 className="font-cinzel font-bold text-sm tracking-wider uppercase text-[#0A2947]">Archive Standards</h3>
+              <h3 className="font-cinzel font-bold text-sm tracking-wider uppercase text-[#0A2947]">{t.footerStandards || "Archive Standards"}</h3>
             </div>
             <div className="space-y-2 text-xs text-[#0A2947]/80 font-dmsans">
               <p className="leading-relaxed">
-                Grounding democratic thought with verifiable primary sources, immutable SHA-256 fixity hashes, and high-precision RAG.
+                {t.footerStandardsDesc || "Grounding democratic thought with verifiable primary sources, immutable SHA-256 fixity hashes, and high-precision RAG."}
               </p>
               <div className="pt-2 flex flex-wrap gap-1.5">
                 <span className="px-2 py-0.5 rounded-sm bg-[#0A2947]/10 text-[#0A2947] text-[10px] font-mono font-bold">PREMIS 3.0</span>
@@ -196,11 +201,11 @@ export const MuseumFooter: React.FC<MuseumFooterProps> = ({
 
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-center sm:text-left">
             <span className="font-dmsans text-[11px] text-[#F3E4C9]">
-              © {new Date().getFullYear()} Dr. B. R. Ambedkar Digital Heritage Archive.
+              © {new Date().getFullYear()} {t.footerCopyright || "Dr. B. R. Ambedkar Digital Heritage Archive."}
             </span>
             <span className="hidden sm:inline text-[#8B5E3C]">❖</span>
             <span className="text-[11px] text-[#D3D4C0] font-mono">
-              National Digital Heritage Archive & Audio-Visual Knowledge Platform
+              {t.footerPlatform || "National Digital Heritage Archive & Audio-Visual Knowledge Platform"}
             </span>
           </div>
 
@@ -212,7 +217,7 @@ export const MuseumFooter: React.FC<MuseumFooterProps> = ({
             title="Elevate to top of page"
             aria-label="Back to top"
           >
-            <span>Back to Top</span>
+            <span>{t.backToTop || "Back to Top"}</span>
             <ArrowUp className="w-3.5 h-3.5 transition-transform group-hover:-translate-y-0.5 text-[#C89D56] group-hover:text-[#0A2947]" />
           </button>
         </div>

@@ -28,7 +28,7 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
   onUpdateNote,
   onNavigateTab
 }) => {
-  const t = UI_STRINGS[language];
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [tempNoteText, setTempNoteText] = useState('');
@@ -123,10 +123,10 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
               <span>RESEARCHER CURATORIAL NOTEBOOK & DESK</span>
             </div>
             <h1 className="font-serif-editorial text-3xl sm:text-4xl lg:text-5xl font-bold text-[#0A2947] tracking-tight">
-              My Archival Folios & Citations
+              {t.myCollectionTitle || "My Archival Folios & Citations"}
             </h1>
             <p className="text-sm text-[#0A2947]/75 max-w-2xl font-dmsans">
-              Your personalized academic workspace for cross-referencing primary treatises, annotating legal passages, and generating peer-reviewed citations.
+              {t.myCollectionSubtitle || "Your personalized academic workspace for cross-referencing primary treatises, annotating legal passages, and generating peer-reviewed citations."}
             </p>
           </div>
 

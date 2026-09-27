@@ -33,7 +33,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   onAskAIAboutEvent,
   userMode = 'visitor'
 }) => {
-  const t = UI_STRINGS[language];
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [selectedEra, setSelectedEra] = useState<string>('all');
   const [timelineMode, setTimelineMode] = useState<'alternating' | 'slideshow' | 'grid'>('alternating');
   const [activeMediaEvent, setActiveMediaEvent] = useState<TimelineEvent | null>(null);
@@ -299,11 +299,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
               </div>
 
               <h1 className="text-3xl sm:text-5xl font-serif-editorial font-bold text-[#0A2947] tracking-tight leading-tight">
-                Chronicles of a Revolutionary Life
+                {t.timelineTitle || "Chronicles of a Revolutionary Life"}
               </h1>
 
               <p className="text-sm sm:text-base text-[#0A2947]/75 font-normal leading-relaxed">
-                Step into the epochal journey of Dr. Bhimrao Ramji Ambedkar. Touch the interactive horizon to explore historical newsreels, primary treaties, audio proclamations, and seminal constitutional milestones.
+                {t.timelineSubtitle || "Step into the epochal journey of Dr. Bhimrao Ramji Ambedkar. Touch the interactive horizon to explore historical newsreels, primary treaties, audio proclamations, and seminal constitutional milestones."}
               </p>
             </div>
 
@@ -321,7 +321,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   title="Auto-advancing memorial presentation"
                 >
                   {isTourActive ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-                  <span>{isTourActive ? 'Stop Tour' : 'Guided Tour'}</span>
+                  <span>{isTourActive ? (language === 'hi' ? 'दौरा रोकें' : language === 'mr' ? 'दौरा थांबवा' : 'Stop Tour') : (language === 'hi' ? 'मार्गदर्शित यात्रा' : language === 'mr' ? 'मार्गदर्शित दौरा' : 'Guided Tour')}</span>
                 </button>
 
                 {/* Milestone Quiz Challenge */}
@@ -334,7 +334,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   title="Test Your Knowledge in the Memorial Quiz"
                 >
                   <Trophy className="w-3.5 h-3.5 text-[#C59A45]" />
-                  <span>Epoch Quiz</span>
+                  <span>{language === 'hi' ? 'क्विज़' : language === 'mr' ? 'प्रश्नावली' : 'Epoch Quiz'}</span>
                 </button>
               </div>
 

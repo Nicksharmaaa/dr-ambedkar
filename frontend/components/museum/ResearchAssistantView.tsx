@@ -77,7 +77,7 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
   activeDocumentContext = null,
   onClearDocumentContext
 }) => {
-  const t = UI_STRINGS[language];
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [question, setQuestion] = useState(incomingQuery);
   const [activeResult, setActiveResult] = useState<GroundedAnswerPayload | null>(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -691,15 +691,15 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
                 {/* Museum Editorial Title */}
                 <div>
                   <h1 className="text-3xl sm:text-5xl font-serif-editorial font-bold text-[#0A2947] tracking-tight">
-                    BABASAHEB AI SCHOLAR
+                    {t.chatbotTitle || "BABASAHEB AI SCHOLAR"}
                   </h1>
                   <p className="text-xs sm:text-sm font-cinzel tracking-widest text-[#8B5E3C] uppercase font-bold mt-1">
-                    ARCHIVE-GROUNDED RESEARCH ASSISTANT & JURISPRUDENTIAL SYNTHESIZER
+                    {t.askAssistantSubtitle || "ARCHIVE-GROUNDED RESEARCH ASSISTANT & JURISPRUDENTIAL SYNTHESIZER"}
                   </p>
                 </div>
 
                 <p className="text-sm sm:text-base text-[#0A2947]/80 font-dmsans leading-relaxed">
-                  A curatorial research companion grounded strictly in the verified historical corpus of Dr. B. R. Ambedkar. Every synthesis cites primary Constituent Assembly Debates, doctoral treatises, and legislative records with accession provenance.
+                  {t.heroDescription || "A curatorial research companion grounded strictly in the verified historical corpus of Dr. B. R. Ambedkar. Every synthesis cites primary Constituent Assembly Debates, doctoral treatises, and legislative records with accession provenance."}
                 </p>
               </div>
             </div>

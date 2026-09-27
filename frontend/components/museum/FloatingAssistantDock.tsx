@@ -10,9 +10,10 @@ import {
 import { Language, SavedCollectionItem, ArchivalDocument, ResearchAnswer } from '@/types/museum';
 import { RESEARCH_ANSWERS_DB, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
-import { voiceRecognitionController } from '@/utils/speechUtils';
+import { speechController, voiceRecognitionController } from '@/utils/speechUtils';
 import { api } from '@/lib/api';
 import VoicePill from '@/components/ui/VoicePill';
+import { UI_STRINGS } from '@/utils/i18n';
 
 interface FloatingAssistantDockProps {
   language: Language;
@@ -47,6 +48,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
   onOpenDocument,
   onNavigateTab
 }) => {
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isNotebookOpen, setIsNotebookOpen] = useState(false);
   
@@ -57,10 +59,25 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
     {
       id: 'welcome-msg',
       sender: 'assistant',
-      text: "Jai Bhim! I am the source-grounded research assistant for the Dr. B. R. Ambedkar digital archives. You can ask me any question about Babasaheb's 22 BAWS volumes, constitutional debates, philosophy, or social movements. Every response is strictly grounded with primary document citations.",
+      text: t.chatbotGreeting || "Jai Bhim! I am the source-grounded research assistant for the Dr. B. R. Ambedkar digital archives. You can ask me any question about Babasaheb's 22 BAWS volumes, constitutional debates, philosophy, or social movements. Every response is strictly grounded with primary document citations.",
       timestamp: 'Now'
     }
   ]);
+
+  // Sync greeting on language change
+  useEffect(() => {
+    setMessages(prev => {
+      if (prev.length === 1 && prev[0].id === 'welcome-msg') {
+        return [{
+          id: 'welcome-msg',
+          sender: 'assistant',
+          text: t.chatbotGreeting || "Jai Bhim! I am the source-grounded research assistant for the Dr. B. R. Ambedkar digital archives.",
+          timestamp: 'Now'
+        }];
+      }
+      return prev;
+    });
+  }, [language, t.chatbotGreeting]);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const [copiedMsgId, setCopiedMsgId] = useState<string | null>(null);
   const [isListeningVoice, setIsListeningVoice] = useState(false);
@@ -210,21 +227,27 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
     }, 450);
   };
 
+  // Stop speech if widget unmounts
+  useEffect(() => {
+    return () => {
+      speechController.stop();
+    };
+  }, []);
+
   const handleSpeak = (msgId: string, text: string) => {
-    if (!('speechSynthesis' in window)) return;
+    soundEffects.playClick();
     if (speakingMsgId === msgId) {
-      window.speechSynthesis.cancel();
+      speechController.stop();
       setSpeakingMsgId(null);
       return;
     }
 
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = language === 'hi' ? 'hi-IN' : language === 'mr' ? 'mr-IN' : 'en-IN';
-    utterance.onend = () => setSpeakingMsgId(null);
-    utterance.onerror = () => setSpeakingMsgId(null);
+    speechController.stop();
     setSpeakingMsgId(msgId);
-    window.speechSynthesis.speak(utterance);
+    const langCode = (language === 'hi' ? 'hi' : language === 'mr' ? 'mr' : 'en') as 'en' | 'hi' | 'mr';
+    speechController.speak(text, langCode, () => {
+      setSpeakingMsgId(prev => (prev === msgId ? null : prev));
+    });
   };
 
   const handleCopyText = (msgId: string, text: string) => {
@@ -258,7 +281,17 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
     }).join('\n\n');
   };
 
-  const samplePrompts = [
+  const samplePrompts = language === 'hi' ? [
+    "संविधान निर्माण में डॉ. आंबेडकर की क्या भूमिका थी?",
+    "अनुच्छेद 32 को 'संविधान का हृदय और आत्मा' क्यों कहा जाता है?",
+    "जाति का विनाश के मुख्य विचार क्या हैं?",
+    "1927 के महाड सत्याग्रह का क्या महत्व है?"
+  ] : language === 'mr' ? [
+    "संविधान निर्मितीत डॉ. आंबेडकरांची भूमिका काय होती?",
+    "कलम ३२ ला 'संविधानाचा आत्मा' का म्हटले जाते?",
+    "'जातीचा विनाश' या ग्रंथातील मुख्य विचार कोणते?",
+    "१९२७ च्या महाड सत्याग्रहाचे ऐतिहासिक महत्त्व काय आहे?"
+  ] : [
     "What role did Dr. Ambedkar play in drafting the Constitution?",
     "Why is Article 32 the 'Heart and Soul'?",
     "What were his key arguments in Annihilation of Caste?",
@@ -274,6 +307,10 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
         <button
           onClick={() => {
             soundEffects.playClick();
+            if (isChatOpen) {
+              speechController.stop();
+              setSpeakingMsgId(null);
+            }
             setIsChatOpen(prev => !prev);
             setIsNotebookOpen(false);
           }}
@@ -282,7 +319,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
               ? 'w-12 h-12 rounded-full bg-[#8B5E3C] border-2 border-[#C89D56] text-[#FAF7F0] shadow-2xl ring-4 ring-[#8B5E3C]/20'
               : 'w-[72px] h-[72px] sm:w-[84px] sm:h-[84px] bg-transparent border-0 p-0 focus:outline-none'
           }`}
-          title={isChatOpen ? "Close AI Scholar" : "Ask Babasaheb AI Scholar"}
+          title={isChatOpen ? "Close AI Scholar" : (t.chatbotTitle || "Ask Babasaheb AI Scholar")}
           aria-label={isChatOpen ? "Close AI Scholar" : "Open AI Scholar Chat"}
         >
           {isChatOpen ? (
@@ -298,7 +335,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
           {/* Micro Tooltip on Hover */}
           {!isChatOpen && (
             <span className="absolute right-full mr-3 px-2.5 py-1 bg-[#0A2947] text-[#FAF7F0] text-[11px] font-montserrat font-medium rounded-xl shadow-lg border border-[#D3D4C0]/40 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-              Ask AI Scholar
+              {t.chatbotTitle || "Ask AI Scholar"}
             </span>
           )}
         </button>
@@ -319,11 +356,11 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
               </div>
               <div className="leading-tight">
                 <h3 className="font-montserrat font-bold text-xs tracking-tight text-white">
-                  Babasaheb AI Scholar
+                  {t.chatbotTitle || "Babasaheb AI Scholar"}
                 </h3>
                 <span className="text-[9px] text-[#D3D4C0] font-mono flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  22 Volumes Grounded
+                  {t.volumesGrounded || "22 Volumes Grounded"}
                 </span>
               </div>
             </div>
@@ -332,11 +369,13 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
               <button
                 onClick={() => {
                   soundEffects.playClick();
+                  speechController.stop();
+                  setSpeakingMsgId(null);
                   setMessages([
                     {
                       id: 'welcome-msg',
                       sender: 'assistant',
-                      text: "Jai Bhim! Ask me anything about Babasaheb's 22 BAWS volumes, writings, speeches, or constitutional debates.",
+                      text: t.chatbotGreeting || "Jai Bhim! Ask me anything about Babasaheb's 22 BAWS volumes, writings, speeches, or constitutional debates.",
                       timestamp: 'Now'
                     }
                   ]);
@@ -348,7 +387,11 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
               <button
-                onClick={() => setIsChatOpen(false)}
+                onClick={() => {
+                  speechController.stop();
+                  setSpeakingMsgId(null);
+                  setIsChatOpen(false);
+                }}
                 className="p-1 rounded-md hover:bg-white/15 text-[#D3D4C0] hover:text-white transition-colors cursor-pointer"
                 aria-label="Close AI Chat"
               >
@@ -383,7 +426,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
                   {msg.sources && msg.sources.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-[#D3D4C0]/70 space-y-1.5">
                       <span className="text-[9px] font-mono uppercase tracking-wider text-[#8B5E3C] font-bold block">
-                        Verified Sources:
+                        {t.verifiedRecord || "Verified Sources"}:
                       </span>
                       {msg.sources.map((src, sIdx) => (
                         <div
@@ -407,7 +450,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
                             onClick={() => handleOpenDocById(src.docId)}
                             className="text-[9px] font-montserrat font-bold text-[#8B5E3C] hover:underline flex items-center gap-1 cursor-pointer pt-0.5"
                           >
-                            <span>View Folio</span>
+                            <span>{t.viewDocument || "View Folio"}</span>
                             <ExternalLink className="w-2.5 h-2.5" />
                           </button>
                         </div>
@@ -422,11 +465,11 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
                       <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => handleSpeak(msg.id, msg.text)}
-                          className="hover:text-[#8B5E3C] transition-colors p-0.5"
-                          title="Read out loud"
+                          className="hover:text-[#8B5E3C] transition-colors p-0.5 cursor-pointer"
+                          title={speakingMsgId === msg.id ? "Stop voice narration" : "Listen via ElevenLabs AI"}
                         >
                           {speakingMsgId === msg.id ? (
-                            <VolumeX className="w-3.5 h-3.5 text-[#8B5E3C]" />
+                            <VolumeX className="w-3.5 h-3.5 text-[#8B5E3C] animate-pulse" />
                           ) : (
                             <Volume2 className="w-3.5 h-3.5" />
                           )}
@@ -453,7 +496,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
             {isGenerating && (
               <div className="flex items-center gap-2 text-[11px] text-[#0A2947] font-montserrat p-2 bg-white rounded-xl border border-[#D3D4C0] w-fit">
                 <Sparkles className="w-3.5 h-3.5 text-[#8B5E3C] animate-spin" />
-                <span>Searching BAWS archives...</span>
+                <span>{language === 'hi' ? 'BAWS अभिलेखागार में खोज जारी...' : language === 'mr' ? 'BAWS अभिलेखागारात शोध सुरू...' : 'Searching BAWS archives...'}</span>
               </div>
             )}
 
@@ -510,7 +553,9 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
               type="text"
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
-              placeholder={isListeningVoice ? "Listening... Speak now..." : "Ask about speeches, treaties, articles..."}
+              placeholder={isListeningVoice 
+                ? (language === 'hi' ? "सुन रहा हूँ... बोलिए..." : language === 'mr' ? "ऐकत आहे... बोला..." : "Listening... Speak now...") 
+                : (t.chatbotPlaceholder || "Ask about speeches, treaties, articles...")}
               autoComplete="off"
               className={`flex-1 bg-[#FAF7F0] border rounded-xl px-3 py-1.5 text-xs text-[#0A2947] focus:outline-none transition-all font-dmsans ${
                 isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40 bg-amber-50/50' : 'border-[#D3D4C0] focus:border-[#0A2947]'

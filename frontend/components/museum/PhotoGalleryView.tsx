@@ -23,6 +23,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
   onOpenDocument,
   onAskAIWithPhoto
 }) => {
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [selectedPhoto, setSelectedPhoto] = useState<HistoricalPhoto | null>(null);
   const [activeEra, setActiveEra] = useState<string>('all');
   const [selectedYear, setSelectedYear] = useState<string>('all');
@@ -150,11 +151,11 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif-editorial font-bold tracking-tight text-[#0A2947] leading-tight">
-              Photographic Folio & Visual History
+              {t.wingGalleryTitle || "Photographic Folio & Visual History"}
             </h1>
 
             <p className="text-xs sm:text-sm text-[#0A2947]/75 leading-relaxed font-dmsans">
-              Curated archival plates from 1916 to 1956 — historic assemblies, university research, and constitutional sessions.
+              {t.wingGallerySub ? `${t.wingGallerySub} — 1916–1956` : "Curated archival plates from 1916 to 1956 — historic assemblies, university research, and constitutional sessions."}
             </p>
           </div>
 

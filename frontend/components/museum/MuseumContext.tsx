@@ -114,7 +114,36 @@ export const MuseumProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguageState] = useState<Language>('en');
+
+  // Hydrate persisted language preference
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('ambedkar_museum_language') as Language;
+        if (stored && (stored === 'en' || stored === 'hi' || stored === 'mr')) {
+          setLanguageState(stored);
+          document.documentElement.lang = stored;
+        }
+      } catch (e) {
+        console.debug('localStorage language read error:', e);
+      }
+    }
+  }, []);
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('ambedkar_museum_language', lang);
+        document.documentElement.lang = lang;
+        window.dispatchEvent(new CustomEvent('museum-language-change', { detail: lang }));
+      } catch (e) {
+        console.debug('localStorage language write error:', e);
+      }
+    }
+  };
+
   const [userMode, setUserModeState] = useState<UserMode>('visitor');
 
   const handleSetUserMode = (mode: UserMode) => {

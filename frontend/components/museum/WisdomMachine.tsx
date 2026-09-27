@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { FAMOUS_QUOTES } from '@/data/interactiveData';
 import { soundEffects } from '@/utils/soundEffects';
+import { speechController } from '@/utils/speechUtils';
 import { QuoteItem, Language } from '@/types/museum';
 
 interface WisdomMachineProps {
@@ -54,22 +55,18 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
   };
 
   const handleSpeak = () => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-
+    soundEffects.playClick();
     if (isSpeaking) {
-      window.speechSynthesis.cancel();
+      speechController.stop();
       setIsSpeaking(false);
       return;
     }
 
-    const utterance = new SpeechSynthesisUtterance(currentQuote.quote);
-    utterance.rate = 0.95;
-    utterance.pitch = 1.0;
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-
     setIsSpeaking(true);
-    window.speechSynthesis.speak(utterance);
+    const langCode = (language === 'hi' ? 'hi' : language === 'mr' ? 'mr' : 'en') as 'en' | 'hi' | 'mr';
+    speechController.speak(currentQuote.quote, langCode, () => {
+      setIsSpeaking(false);
+    });
   };
 
   const themes = [

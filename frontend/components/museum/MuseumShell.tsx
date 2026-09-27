@@ -80,11 +80,12 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
           currentTab={currentTab}
           onSelectTab={navigateToTab}
           savedCount={savedCollection.length}
+          language={language}
         />
       )}
 
-      {/* Floating Top-Right Secondary Utilities Dock - Visible exclusively on the Home Page */}
-      {!showIntro && (pathname === '/' || currentTab === 'home') && (
+      {/* Floating Top-Right Secondary Utilities Dock - Available across the platform */}
+      {!showIntro && (
         <TopUtilityBar
           language={language}
           onSelectLanguage={setLanguage}
@@ -195,6 +196,7 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
         onOpenAccessibility={() => setIsAccessibilityModalOpen(true)}
         onSelectUserMode={setUserMode}
         userMode={userMode}
+        language={language}
       />
     </div>
   );
