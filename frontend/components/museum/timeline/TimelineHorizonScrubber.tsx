@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { 
-  Clock, ChevronLeft, ChevronRight, Film, BookOpen, Compass, 
-  Sparkles, Award, MapPin, CheckCircle2 
+import {
+  Clock, ChevronLeft, ChevronRight, Film, BookOpen, Compass,
+  Sparkles, Award, MapPin, CheckCircle2
 } from 'lucide-react';
 import { TimelineEvent } from '@/types/museum';
 import { soundEffects } from '@/utils/soundEffects';
@@ -64,14 +64,8 @@ export const TimelineHorizonScrubber: React.FC<TimelineHorizonScrubberProps> = (
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-cinzel font-bold text-[#8B5E3C] uppercase tracking-widest">
-                INTERACTIVE EPOCH HORIZON
+                INTERACTIVE TIMELINE
               </span>
-              <span className="px-2 py-0.5 bg-[#FAF7F0] border border-[#D3D4C0] rounded text-[10px] font-mono font-bold text-[#0A2947]">
-                1891 – 1956
-              </span>
-            </div>
-            <div className="text-xs text-[#0A2947]/75">
-              {"Touch or slide to travel across Babasaheb's historical turning points"}
             </div>
           </div>
         </div>
@@ -99,7 +93,7 @@ export const TimelineHorizonScrubber: React.FC<TimelineHorizonScrubberProps> = (
       </div>
 
       {/* Horizontal Touch Scroll Corridor */}
-      <div 
+      <div
         ref={scrollContainerRef}
         className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-[#8B5E3C]/40 scrollbar-track-[#FAF7F0] scroll-smooth"
       >
@@ -113,23 +107,20 @@ export const TimelineHorizonScrubber: React.FC<TimelineHorizonScrubberProps> = (
                   soundEffects.playClick();
                   onSelectMilestone(ev);
                 }}
-                className={`flex-1 min-w-[145px] p-3.5 rounded-2xl text-left transition-all cursor-pointer flex flex-col justify-between group relative border-2 ${
-                  isActive
-                    ? 'bg-[#0A2947] text-white border-[#C59A45] shadow-lg scale-102 ring-2 ring-[#C59A45]/30'
-                    : 'bg-[#FAF7F0] hover:bg-white text-[#0A2947] border-[#D3D4C0] hover:border-[#8B5E3C]'
-                }`}
+                className={`flex-1 min-w-[145px] p-3.5 rounded-2xl text-left transition-all cursor-pointer flex flex-col justify-between group relative border-2 ${isActive
+                  ? 'bg-[#0A2947] text-white border-[#C59A45] shadow-lg scale-102 ring-2 ring-[#C59A45]/30'
+                  : 'bg-[#FAF7F0] hover:bg-white text-[#0A2947] border-[#D3D4C0] hover:border-[#8B5E3C]'
+                  }`}
               >
                 {/* Year Header & Media Tag */}
                 <div className="flex items-center justify-between gap-1 mb-2">
-                  <span className={`text-base font-mono font-black tracking-tight ${
-                    isActive ? 'text-[#C59A45]' : 'text-[#0A2947] group-hover:text-[#8B5E3C]'
-                  }`}>
+                  <span className={`text-base font-mono font-black tracking-tight ${isActive ? 'text-[#C59A45]' : 'text-[#0A2947] group-hover:text-[#8B5E3C]'
+                    }`}>
                     {ev.year}
                   </span>
 
-                  <span className={`p-1 rounded-lg text-[10px] ${
-                    isActive ? 'bg-white/15 text-[#F3E4C9]' : 'bg-white text-[#8B5E3C] border border-[#D3D4C0]'
-                  }`}>
+                  <span className={`p-1 rounded-lg text-[10px] ${isActive ? 'bg-white/15 text-[#F3E4C9]' : 'bg-white text-[#8B5E3C] border border-[#D3D4C0]'
+                    }`}>
                     {ev.mediaType === 'video' ? (
                       <Film className="w-3 h-3 text-[#C59A45]" />
                     ) : ev.mediaType === 'document' ? (
@@ -141,16 +132,14 @@ export const TimelineHorizonScrubber: React.FC<TimelineHorizonScrubberProps> = (
                 </div>
 
                 {/* Title Preview */}
-                <div className={`text-xs font-serif-editorial font-bold line-clamp-2 leading-snug ${
-                  isActive ? 'text-white' : 'text-[#0A2947]'
-                }`}>
+                <div className={`text-xs font-serif-editorial font-bold line-clamp-2 leading-snug ${isActive ? 'text-white' : 'text-[#0A2947]'
+                  }`}>
                   {ev.title}
                 </div>
 
                 {/* Location / Date Footnote */}
-                <div className={`text-[10px] font-mono mt-2 pt-2 border-t truncate ${
-                  isActive ? 'border-white/20 text-[#F3E4C9]/80' : 'border-[#D3D4C0]/70 text-[#0A2947]/60'
-                }`}>
+                <div className={`text-[10px] font-mono mt-2 pt-2 border-t truncate ${isActive ? 'border-white/20 text-[#F3E4C9]/80' : 'border-[#D3D4C0]/70 text-[#0A2947]/60'
+                  }`}>
                   {ev.location.split(',')[0]}
                 </div>
 
@@ -162,24 +151,6 @@ export const TimelineHorizonScrubber: React.FC<TimelineHorizonScrubberProps> = (
             );
           })}
         </div>
-      </div>
-
-      {/* Interactive Range Slider Scrubber */}
-      <div className="pt-2 px-1 flex flex-col sm:flex-row sm:items-center gap-3">
-        <span className="text-xs font-mono font-bold text-[#8B5E3C] uppercase shrink-0">
-          Slide Corridor:
-        </span>
-        <input
-          type="range"
-          min="0"
-          max={Math.max(0, events.length - 1)}
-          value={activeIndex >= 0 ? activeIndex : 0}
-          onChange={handleSliderChange}
-          className="w-full accent-[#C59A45] cursor-pointer h-2 bg-[#FAF7F0] border border-[#D3D4C0] rounded-lg"
-        />
-        <span className="text-xs font-mono text-[#0A2947]/70 shrink-0 font-bold">
-          {activeEvent ? `${activeEvent.year} (${activeEvent.location.split(',')[0]})` : ''}
-        </span>
       </div>
 
       {/* Era Jump Buttons Strip */}
@@ -194,11 +165,10 @@ export const TimelineHorizonScrubber: React.FC<TimelineHorizonScrubberProps> = (
               soundEffects.playClick();
               onSelectEra(era.id);
             }}
-            className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
-              selectedEra === era.id
-                ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#8B5E3C]'
-                : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947]/80 border border-[#D3D4C0]'
-            }`}
+            className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${selectedEra === era.id
+              ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#8B5E3C]'
+              : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947]/80 border border-[#D3D4C0]'
+              }`}
           >
             <span>{era.label}</span>
             <span className={`text-[10px] font-mono ${selectedEra === era.id ? 'text-[#F3E4C9]/70' : 'text-[#8B5E3C]'}`}>
