@@ -11,6 +11,7 @@ import { Language, HistoricalPhoto, ArchivalDocument } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
 import { HISTORICAL_PHOTOS, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
+import { Masonry, MasonryItem } from '@/components/ui/Masonry';
 
 interface PhotoGalleryViewProps {
   language: Language;
@@ -86,6 +87,30 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
       return matchesEra && matchesYear && matchesLocation && matchesSource && matchesQuery;
     });
   }, [activeEra, selectedYear, selectedLocation, selectedSource, searchQuery]);
+
+  // Convert filtered historical photos to React Bits Masonry items with organic heights
+  const masonryItems: MasonryItem[] = useMemo(() => {
+    return filteredPhotos.map((photo, index) => {
+      let height = 540;
+      if (photo.aspectRatio === 'portrait') {
+        height = 740;
+      } else if (photo.aspectRatio === 'square') {
+        height = 600;
+      } else if (photo.aspectRatio === 'landscape') {
+        height = 460;
+      } else {
+        height = index % 3 === 0 ? 700 : index % 3 === 1 ? 480 : 580;
+      }
+
+      return {
+        id: photo.id,
+        img: photo.imageUrl,
+        url: '#',
+        height,
+        photo,
+      };
+    });
+  }, [filteredPhotos]);
 
   // Handle keyboard navigation for Lightbox modal
   useEffect(() => {
@@ -371,96 +396,79 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
           )}
         </div>
 
-        {/* 1. MASONRY GRID LAYOUT */}
+        {/* 1. REACT BITS MASONRY GRID LAYOUT */}
         {viewMode === 'masonry' && (
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
-            {filteredPhotos.map((photo) => {
-              const displayTitle = language !== 'en' && photo.titleLocal?.[language] 
-                ? photo.titleLocal[language] 
-                : photo.title;
-              const displayCaption = language !== 'en' && photo.captionLocal?.[language]
-                ? photo.captionLocal[language]
-                : photo.caption;
+          <div className="w-full">
+            <Masonry
+              items={masonryItems}
+              ease="sine.out"
+              duration={0.6}
+              stagger={0.05}
+              animateFrom="random"
+              scaleOnHover={true}
+              hoverScale={0.95}
+              blurToFocus={true}
+              colorShiftOnHover={false}
+              onItemClick={(item) => {
+                soundEffects.playClick();
+                const photo = item.photo || filteredPhotos.find(p => p.id === item.id);
+                if (photo) setSelectedPhoto(photo);
+              }}
+              renderItem={(item) => {
+                const photo = (item.photo || filteredPhotos.find(p => p.id === item.id)) as HistoricalPhoto;
+                if (!photo) return null;
+                const displayTitle = language !== 'en' && photo.titleLocal?.[language] 
+                  ? photo.titleLocal[language] 
+                  : photo.title;
 
-              return (
-                <div
-                  key={photo.id}
-                  className="break-inside-avoid group relative rounded-2xl overflow-hidden bg-stone-900 border border-stone-200/90 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
-                  onClick={() => {
-                    soundEffects.playClick();
-                    setSelectedPhoto(photo);
-                  }}
-                >
-                  {/* Historical Photographic Print */}
-                  <div className="relative overflow-hidden bg-stone-950">
-                    <img
-                      src={photo.imageUrl}
-                      alt={photo.title}
-                      loading="lazy"
-                      className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-500 ease-out"
-                    />
-
-                    {/* Permanent Subtle Top Metadata Strip */}
-                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between text-[11px] font-mono text-white/90 z-10 pointer-events-none drop-shadow-md">
-                      <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg">
-                        <Calendar className="w-3 h-3 text-stone-300" />
-                        <span className="font-semibold tabular-nums">{photo.year}</span>
+                return (
+                  <div className="relative w-full h-full flex flex-col justify-between overflow-hidden group/card select-none">
+                    {/* Top Metadata Strip */}
+                    <div className="p-3 flex items-center justify-between text-[11px] font-mono text-white/95 z-10 pointer-events-none drop-shadow-md">
+                      <div className="flex items-center gap-1.5 bg-black/65 px-2.5 py-1 rounded-lg border border-white/10 shadow-xs">
+                        <Calendar className="w-3 h-3 text-[#C59A45]" />
+                        <span className="font-semibold tabular-nums text-white">{photo.year}</span>
                       </div>
-                      <div className="bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] text-stone-300">
+                      <div className="bg-black/65 px-2 py-1 rounded-lg text-[10px] text-stone-300 border border-white/10 shadow-xs">
                         {photo.accessionNumber}
                       </div>
                     </div>
 
-                    {/* Non-intrusive concise hover strip (Does NOT obscure the photo) */}
-                    <div 
-                      className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-stone-950/95 via-stone-950/60 to-transparent px-4 py-3 text-white transition-all duration-200 ${
+                    {/* Gradient Bottom Vignette & Captions */}
+                    <div
+                      className={`mt-auto bg-gradient-to-t from-stone-950/95 via-stone-950/75 to-transparent p-3.5 sm:p-4 text-white transition-opacity duration-300 z-10 ${
                         alwaysShowCaptions 
                           ? 'opacity-100' 
-                          : 'opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'
+                          : 'opacity-0 group-hover/card:opacity-100'
                       }`}
                     >
                       <div className="space-y-1">
-                        <div className="flex items-center justify-between text-[10px] font-mono text-amber-300">
-                          <span className="flex items-center gap-1 truncate max-w-[180px]">
-                            <MapPin className="w-3 h-3 text-stone-300 shrink-0" />
+                        <div className="flex items-center justify-between text-[10px] font-mono text-[#C59A45]">
+                          <span className="flex items-center gap-1 truncate max-w-[200px]">
+                            <MapPin className="w-3 h-3 text-[#C59A45] shrink-0" />
                             {photo.year} · {photo.location}
                           </span>
-                          <span className="text-stone-300 shrink-0">{photo.accessionNumber}</span>
+                          <span className="text-stone-300 shrink-0 text-[9px] uppercase tracking-wider">{photo.era}</span>
                         </div>
-                        <h4 className="font-serif text-sm font-bold text-white line-clamp-1">
+                        <h4 className="font-serif-editorial text-sm font-bold text-white line-clamp-2 leading-snug drop-shadow-sm">
                           {displayTitle}
                         </h4>
-                        <div className="flex items-center justify-between text-[10px] font-mono text-stone-300 pt-1 border-t border-white/15">
-                          <span className="text-emerald-400 font-semibold">Verified Archival Specimen</span>
-                          <span className="text-amber-300 font-sans font-medium flex items-center gap-0.5">
+                        <div className="flex items-center justify-between text-[10px] font-mono text-stone-300 pt-1.5 border-t border-white/15">
+                          <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            Archival Specimen
+                          </span>
+                          <span className="text-[#C59A45] font-sans font-bold flex items-center gap-1 bg-[#C59A45]/20 px-2 py-0.5 rounded-md hover:bg-[#C59A45] hover:text-[#0A2947] transition-colors">
                             <span>Deep View</span>
                             <ArrowRight className="w-3 h-3" />
                           </span>
                         </div>
                       </div>
                     </div>
-
                   </div>
-
-                  {/* Accessible Under-Photo Caption for Print/Museum Presentation */}
-                  {alwaysShowCaptions && (
-                    <div className="p-4 bg-white border-t border-stone-200 space-y-1.5">
-                      <div className="flex items-center justify-between text-[11px] font-mono text-stone-500">
-                        <span>{photo.dateString}</span>
-                        <span>{photo.location}</span>
-                      </div>
-                      <h4 className="font-serif font-bold text-stone-900 text-sm">
-                        {displayTitle}
-                      </h4>
-                      <p className="text-xs text-stone-600 line-clamp-2">
-                        {displayCaption}
-                      </p>
-                    </div>
-                  )}
-
-                </div>
-              );
-            })}
+                );
+              }}
+            />
           </div>
         )}
 
