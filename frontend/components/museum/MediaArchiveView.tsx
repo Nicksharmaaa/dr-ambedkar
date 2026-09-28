@@ -28,6 +28,10 @@ export const MediaArchiveView: React.FC<MediaArchiveViewProps> = ({
   const [transcriptLang, setTranscriptLang] = useState<Language>(language);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
+  useEffect(() => {
+    setTranscriptLang(language);
+  }, [language]);
+
   const totalDurationSeconds = 1335; // 22:15
 
   useEffect(() => {
@@ -201,6 +205,22 @@ export const MediaArchiveView: React.FC<MediaArchiveViewProps> = ({
                     }`}
                   >
                     MR
+                  </button>
+                  <button
+                    onClick={() => setTranscriptLang('ta')}
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      transcriptLang === 'ta' ? 'bg-[#0A2947] text-white' : 'text-[#0A2947]/70'
+                    }`}
+                  >
+                    TA
+                  </button>
+                  <button
+                    onClick={() => setTranscriptLang('bn')}
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      transcriptLang === 'bn' ? 'bg-[#0A2947] text-white' : 'text-[#0A2947]/70'
+                    }`}
+                  >
+                    BN
                   </button>
                 </div>
               </div>

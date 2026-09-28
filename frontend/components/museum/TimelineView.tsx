@@ -182,7 +182,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     setActiveSpeakingId(event.id);
 
     const quoteToRead = event.quote || event.title;
-    speechController.speak(quoteToRead, language === 'mr' ? 'mr' : language === 'hi' ? 'hi' : 'en', () => {
+    speechController.speak(quoteToRead, ['mr', 'hi', 'ta', 'bn'].includes(language) ? language : 'en', () => {
       setActiveSpeakingId(null);
     });
   };
@@ -238,7 +238,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
               // Speak quote if voice guide is enabled
               if (voiceGuideEnabled && nextEvent.quote) {
-                speechController.speak(nextEvent.quote, language === 'mr' ? 'mr' : language === 'hi' ? 'hi' : 'en');
+                speechController.speak(nextEvent.quote, ['mr', 'hi', 'ta', 'bn'].includes(language) ? language : 'en');
                 setActiveSpeakingId(nextEvent.id);
               }
             }
@@ -270,7 +270,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
       }
 
       if (voiceGuideEnabled && firstEvent.quote) {
-        speechController.speak(firstEvent.quote, language === 'mr' ? 'mr' : language === 'hi' ? 'hi' : 'en');
+        speechController.speak(firstEvent.quote, ['mr', 'hi', 'ta', 'bn'].includes(language) ? language : 'en');
         setActiveSpeakingId(firstEvent.id);
       }
     }
@@ -298,7 +298,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         setActiveEventIndex(prevIdx);
       }
       if (voiceGuideEnabled && ev.quote) {
-        speechController.speak(ev.quote, language === 'mr' ? 'mr' : language === 'hi' ? 'hi' : 'en');
+        speechController.speak(ev.quote, ['mr', 'hi', 'ta', 'bn'].includes(language) ? language : 'en');
         setActiveSpeakingId(ev.id);
       }
     }
@@ -319,7 +319,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         setActiveEventIndex(nextIdx);
       }
       if (voiceGuideEnabled && ev.quote) {
-        speechController.speak(ev.quote, language === 'mr' ? 'mr' : language === 'hi' ? 'hi' : 'en');
+        speechController.speak(ev.quote, ['mr', 'hi', 'ta', 'bn'].includes(language) ? language : 'en');
         setActiveSpeakingId(ev.id);
       }
     }
@@ -363,7 +363,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 title="Auto-advancing memorial presentation"
               >
                 {isTourActive ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-                <span>{isTourActive ? (language === 'hi' ? 'दौरा रोकें' : language === 'mr' ? 'दौरा थांबवा' : 'Stop Tour') : (language === 'hi' ? 'मार्गदर्शित यात्रा' : language === 'mr' ? 'मार्गदर्शित दौरा' : 'Guided Tour')}</span>
+                <span>{isTourActive ? (language === 'hi' ? 'दौरा रोकें' : language === 'mr' ? 'दौरा थांबवा' : language === 'ta' ? 'நிறுத்து' : language === 'bn' ? 'যাত্রা থামান' : 'Stop Tour') : (language === 'hi' ? 'मार्गदर्शित यात्रा' : language === 'mr' ? 'मार्गदर्शित दौरा' : language === 'ta' ? 'நிகழ்வுப் பயணம்' : language === 'bn' ? 'পরিচালিত যাত্রা' : 'Guided Tour')}</span>
               </button>
 
               <button
@@ -375,7 +375,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 title="Test Your Knowledge in the Memorial Quiz"
               >
                 <Trophy className="w-3.5 h-3.5 text-[#F5D061]" />
-                <span>{language === 'hi' ? 'क्विज़' : language === 'mr' ? 'प्रश्नावली' : 'Epoch Quiz'}</span>
+                <span>{language === 'hi' ? 'क्विज़' : language === 'mr' ? 'प्रश्नावली' : language === 'ta' ? 'வினாடி வினா' : language === 'bn' ? 'কুইজ' : 'Epoch Quiz'}</span>
               </button>
             </div>
 
@@ -830,7 +830,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   onAskAIAboutEvent(query);
                 }}
                 onSpeakQuote={(text) => {
-                  speechController.speak(text, language === 'mr' ? 'mr' : language === 'hi' ? 'hi' : 'en');
+                  speechController.speak(text, ['mr', 'hi', 'ta', 'bn'].includes(language) ? language : 'en');
                 }}
               />
             </div>

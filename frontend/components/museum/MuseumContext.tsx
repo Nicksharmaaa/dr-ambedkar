@@ -121,7 +121,7 @@ export const MuseumProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (typeof window !== 'undefined') {
       try {
         const stored = localStorage.getItem('ambedkar_museum_language') as Language;
-        if (stored && (stored === 'en' || stored === 'hi' || stored === 'mr')) {
+        if (stored && (stored === 'en' || stored === 'hi' || stored === 'mr' || stored === 'ta' || stored === 'bn')) {
           setLanguageState(stored);
           document.documentElement.lang = stored;
         }

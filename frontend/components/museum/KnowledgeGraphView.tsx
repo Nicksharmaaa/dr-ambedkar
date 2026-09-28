@@ -44,7 +44,7 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
       <div className="max-w-[1600px] mx-auto space-y-5">
 
         {/* Curatorial Header */}
-<<<<<<< HEAD
+        {/* Curatorial Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#8B5E3C] via-[#C59A45] to-[#0A2947]" />
 
@@ -69,7 +69,7 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
                 {KNOWLEDGE_GRAPH_NODES.length}
               </div>
               <div className="text-[10px] text-[#8B5E3C] uppercase font-mono font-bold tracking-wider">
-                {language === 'hi' ? 'संस्थाएं' : language === 'mr' ? 'संकल्पना' : 'Entities'}
+                {language === 'hi' ? 'संस्थाएं' : language === 'mr' ? 'संकल्पना' : language === 'ta' ? 'உட்பொருள்கள்' : language === 'bn' ? 'সত্তা ও ধারণা' : 'Entities'}
               </div>
             </div>
 
@@ -78,7 +78,7 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
                 {KNOWLEDGE_GRAPH_LINKS.length}
               </div>
               <div className="text-[10px] text-[#8B5E3C] uppercase font-mono font-bold tracking-wider">
-                {language === 'hi' ? 'संबंध' : language === 'mr' ? 'संबंध' : 'Lineages'}
+                {language === 'hi' ? 'संबंध' : language === 'mr' ? 'संबंध' : language === 'ta' ? 'தொடர்புகள்' : language === 'bn' ? 'সংযোগ' : 'Lineages'}
               </div>
             </div>
 
@@ -88,26 +88,11 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
                 <span>100%</span>
               </div>
               <div className="text-[10px] text-emerald-800 uppercase font-mono font-bold tracking-wider">
-                {language === 'hi' ? 'प्रमाणित' : language === 'mr' ? 'प्रमाणित' : 'Verified'}
+                {language === 'hi' ? 'प्रमाणित' : language === 'mr' ? 'प्रमाणित' : language === 'ta' ? 'சரிபார்க்கப்பட்டது' : language === 'bn' ? 'যাচাইকৃত' : 'Verified'}
               </div>
             </div>
           </div>
         </div>
-=======
-        {/* Curatorial Header */}
-        <MuseumGrandPavilion
-          title={
-            <>
-              Semantic{' '}
-              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
-                Knowledge
-              </span>{' '}
-              Graph
-            </>
-          }
-          watermarkIcon={Network}
-        />
->>>>>>> 8141688d294d17155f2b60e48c3a0aaef5576a61
 
         {/* 3D Knowledge Universe Viewport */}
         <KnowledgeGraph3D

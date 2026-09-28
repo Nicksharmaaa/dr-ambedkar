@@ -1,4 +1,4 @@
-export type Language = 'en' | 'hi' | 'mr';
+export type Language = 'en' | 'hi' | 'mr' | 'ta' | 'bn';
 
 export type UserMode = 'visitor' | 'student' | 'researcher' | 'archivist';
 
@@ -19,6 +19,8 @@ export interface ArchivalDocument {
   titleLocal?: {
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   type: 'book' | 'speech' | 'debate' | 'manuscript' | 'photograph';
   categoryLabel: string;
@@ -34,11 +36,15 @@ export interface ArchivalDocument {
   shortDescriptionLocal?: {
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   fullText: string;
   fullTextLocal?: {
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   ocrConfidence: number;
   scannedPageUrl?: string;
@@ -47,11 +53,15 @@ export interface ArchivalDocument {
     en: string;
     hi: string;
     mr: string;
+    ta?: string;
+    bn?: string;
   };
   kidSummary?: {
     en: string;
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   relatedDocumentIds: string[];
   thumbnailUrl?: string;
@@ -67,6 +77,8 @@ export interface TimelineEvent {
   titleLocal?: {
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   era: 'Early Life & Education' | 'Social Awakening' | 'Social Movements' | 'Political Life' | 'Constitution & Governance' | 'Later Life & Philosophy' | string;
   location: string;
@@ -74,6 +86,8 @@ export interface TimelineEvent {
   descriptionLocal?: {
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   quote?: string;
   quoteAttribution?: string;
@@ -91,6 +105,8 @@ export interface MediaItem {
   titleLocal?: {
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   type: 'speech' | 'interview' | 'documentary' | 'historical_recording';
   typeLabel: string;
@@ -104,6 +120,8 @@ export interface MediaItem {
     en: string;
     hi: string;
     mr: string;
+    ta?: string;
+    bn?: string;
   };
   relatedDocIds: string[];
 }
@@ -125,6 +143,8 @@ export interface ResearchAnswer {
     en: string;
     hi: string;
     mr: string;
+    ta?: string;
+    bn?: string;
   };
   groundingStatus: 'Source-grounded response' | 'Verified archival record';
   confidenceScore: number;
@@ -167,6 +187,8 @@ export interface QuoteItem {
   quoteLocal?: {
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   work: string;
   year: number;
@@ -191,6 +213,8 @@ export interface HistoricalPhoto {
   titleLocal?: {
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   year: number;
   dateString: string;
@@ -202,6 +226,8 @@ export interface HistoricalPhoto {
   captionLocal?: {
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   historicalContext: string;
   accessionNumber: string;

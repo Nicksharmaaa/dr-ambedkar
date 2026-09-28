@@ -343,7 +343,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
               </>
             ) : (
               <span className="bg-gradient-to-r from-white via-[#FAF7F0] to-[#EAD8B1] bg-clip-text text-transparent">
-                {language === 'hi' ? 'पांडुलिपियां एवं अभिलेखीय कोष' : language === 'mr' ? 'हस्तलिखिते व ऐतिहासिक दस्तऐवज' : t.exploreTitle}
+                {language === 'hi' ? 'पांडुलिपियां एवं अभिलेखीय कोष' : language === 'mr' ? 'हस्तलिखिते व ऐतिहासिक दस्तऐवज' : language === 'ta' ? 'கையெழுத்துப் பிரதிகள் & காப்பகத் தொகுப்பு' : language === 'bn' ? 'পাণ্ডুলিপি ও ঐতিহাসিক সংকলন' : t.exploreTitle}
               </span>
             )
           }
@@ -416,7 +416,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={isListeningVoice
-                ? (language === 'hi' ? "सुन रहा हूँ... खोज विषय बोलें..." : language === 'mr' ? "ऐकत आहे... विषय बोला..." : "Listening... Speak your query...")
+                ? (language === 'hi' ? "सुन रहा हूँ... खोज विषय बोलें..." : language === 'mr' ? "ऐकत आहे... विषय बोला..." : language === 'ta' ? "கேட்கிறது... தேடல் சொல்லைக் கூறுங்கள்..." : language === 'bn' ? "শুনছি... আপনার অনুসন্ধান বলুন..." : "Listening... Speak your query...")
                 : (t.searchCorpusPlaceholder || "Search the archive by title, speech, clause...")}
               autoComplete="off"
               className={`w-full pl-12 pr-32 sm:pr-40 py-4 bg-[#FAF7F0] hover:bg-white focus:bg-white border-2 text-[#0A2947] placeholder-[#0A2947]/50 rounded-2xl text-sm sm:text-base focus:outline-none transition-all font-dmsans ${isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40' : 'border-[#D3D4C0] focus:border-[#0A2947] focus:ring-4 focus:ring-[#0A2947]/5'
@@ -452,7 +452,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                   onClick={() => setSearchQuery('')}
                   className="px-3 py-2 bg-white border border-[#D3D4C0] text-xs font-montserrat font-bold text-[#0A2947] rounded-xl hover:bg-[#FAF7F0] cursor-pointer shadow-2xs"
                 >
-                  {language === 'hi' ? 'हटाएं' : language === 'mr' ? 'साफ करा' : 'Clear'}
+                  {language === 'hi' ? 'हटाएं' : language === 'mr' ? 'साफ करा' : language === 'ta' ? 'அழி' : language === 'bn' ? 'মুছুন' : 'Clear'}
                 </button>
               )}
             </div>
@@ -464,10 +464,10 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
               <div className="flex items-center gap-2">
                 <Sparkles className="w-3.5 h-3.5 text-[#C59A45] animate-pulse shrink-0" />
                 {isSearchingSemantic ? (
-                  <span>{language === 'hi' ? '12,154 अभिलेखीय अनुच्छेदों में खोज जारी...' : language === 'mr' ? '12,154 संदर्भांमधून शोध सुरू आहे...' : 'Searching 12,154 archival embeddings via Qwen3-Embedding-0.6B...'}</span>
+                  <span>{language === 'hi' ? '12,154 अभिलेखीय अनुच्छेदों में खोज जारी...' : language === 'mr' ? '12,154 संदर्भांमधून शोध सुरू आहे...' : language === 'ta' ? '12,154 காப்பகப் பத்திகளில் தேடல் நடைபெறுகிறது...' : language === 'bn' ? '১২,১৫৪টি সংরক্ষিত অনুচ্ছেদে অনুসন্ধান চলছে...' : 'Searching 12,154 archival embeddings via Qwen3-Embedding-0.6B...'}</span>
                 ) : (
                   <span>
-                    {language === 'hi' ? `आलेख प्राप्ति: ${filteredDocuments.length} संदर्भ (${semanticSearchMeta?.tookMs || 0}ms)` : language === 'mr' ? `संदर्भ शोध: ${filteredDocuments.length} उतारे (${semanticSearchMeta?.tookMs || 0}ms)` : `Semantic Retrieval: ${filteredDocuments.length} archival passages (${semanticSearchMeta?.tookMs || 0}ms · Qwen3-Embedding-0.6B + Reranker)`}
+                    {language === 'hi' ? `आलेख प्राप्ति: ${filteredDocuments.length} संदर्भ (${semanticSearchMeta?.tookMs || 0}ms)` : language === 'mr' ? `संदर्भ शोध: ${filteredDocuments.length} उतारे (${semanticSearchMeta?.tookMs || 0}ms)` : language === 'ta' ? `காப்பகத் தேடல் முடிவு: ${filteredDocuments.length} குறிப்புகள் (${semanticSearchMeta?.tookMs || 0}ms)` : language === 'bn' ? `প্রাপ্ত তথ্যসূত্র: ${filteredDocuments.length}টি অনুচ্ছেদ (${semanticSearchMeta?.tookMs || 0}ms)` : `Semantic Retrieval: ${filteredDocuments.length} archival passages (${semanticSearchMeta?.tookMs || 0}ms · Qwen3-Embedding-0.6B + Reranker)`}
                   </span>
                 )}
               </div>
@@ -553,7 +553,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                   className="px-3 py-1.5 rounded-xl text-xs text-[#8B5E3C] hover:text-[#0A2947] bg-[#FAF7F0] hover:bg-[#F3E4C9] border border-[#D3D4C0] font-montserrat font-bold flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span>{language === 'hi' ? 'रीसेट' : language === 'mr' ? 'रीसेट' : 'Reset'} ({activeFiltersCount})</span>
+                  <span>{language === 'hi' ? 'रीसेट' : language === 'mr' ? 'रीसेट' : language === 'ta' ? 'மீட்டமை' : language === 'bn' ? 'রিসেট' : 'Reset'} ({activeFiltersCount})</span>
                 </button>
               )}
             </div>
@@ -685,7 +685,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
           <div className="space-y-1.5 pt-1">
             <span className="text-[11px] font-montserrat font-bold uppercase tracking-wider text-[#8B5E3C] flex items-center gap-1.5">
               <BookOpen className="w-3.5 h-3.5 text-[#8B5E3C]" />
-              <span>{language === 'hi' ? 'दस्तावेज़ वर्गीकरण:' : language === 'mr' ? 'दस्तऐवज वर्गीकरण:' : 'Document Classification:'}</span>
+              <span>{language === 'hi' ? 'दस्तावेज़ वर्गीकरण:' : language === 'mr' ? 'दस्तऐवज वर्गीकरण:' : language === 'ta' ? 'ஆவண வகைப்பாடு:' : language === 'bn' ? 'নথির শ্রেণিবিভাগ:' : 'Document Classification:'}</span>
             </span>
             <div className="flex flex-wrap items-center gap-2">
               {[
@@ -874,14 +874,14 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2">
 
           <div className="text-xs text-[#0A2947]/70 font-mono">
-            {language === 'hi' ? 'प्रदर्शित:' : language === 'mr' ? 'दर्शवित आहे:' : 'Displaying'} <strong className="text-[#0A2947] font-bold">{filteredDocuments.length}</strong> {t.foliosCount ? `${t.foliosCount}` : 'verified archival folios'}
+            {language === 'hi' ? 'प्रदर्शित:' : language === 'mr' ? 'दर्शवित आहे:' : language === 'ta' ? 'காண்பிக்கப்படுகிறது:' : language === 'bn' ? 'প্রদর্শিত হচ্ছে:' : 'Displaying'} <strong className="text-[#0A2947] font-bold">{filteredDocuments.length}</strong> {t.foliosCount ? `${t.foliosCount}` : 'verified archival folios'}
           </div>
 
           <div className="flex items-center gap-4">
 
             {/* Sort Selector */}
             <div className="flex items-center gap-1.5 text-xs">
-              <label htmlFor="explore-sort-select" className="text-[#0A2947]/60 font-montserrat font-bold uppercase text-[10px]">{language === 'hi' ? 'क्रमबद्ध:' : language === 'mr' ? 'क्रमवारी:' : 'Sort:'}</label>
+              <label htmlFor="explore-sort-select" className="text-[#0A2947]/60 font-montserrat font-bold uppercase text-[10px]">{language === 'hi' ? 'क्रमबद्ध:' : language === 'mr' ? 'क्रमवारी:' : language === 'ta' ? 'வரிசைப்படுத்து:' : language === 'bn' ? 'সাজান:' : 'Sort:'}</label>
               <select
                 id="explore-sort-select"
                 name="explore_sort_order"
@@ -1184,7 +1184,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                         title="Inspect Specimen"
                       >
                         <Eye className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                        <span className="hidden sm:inline">{language === 'hi' ? 'निरीक्षण' : language === 'mr' ? 'तपासा' : 'Inspect'}</span>
+                        <span className="hidden sm:inline">{language === 'hi' ? 'निरीक्षण' : language === 'mr' ? 'तपासा' : language === 'ta' ? 'ஆய்வு செய்' : language === 'bn' ? 'পরিদর্শন' : 'Inspect'}</span>
                       </button>
 
                       {/* Open Full Document in Viewer */}

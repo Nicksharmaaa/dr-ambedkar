@@ -25,6 +25,8 @@ export interface ThreeDCarouselCard {
   titleLocal?: {
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   year: number | string;
   dateString?: string;
@@ -34,6 +36,8 @@ export interface ThreeDCarouselCard {
   descriptionLocal?: {
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   quote?: string;
   quoteAttribution?: string;
@@ -686,8 +690,8 @@ export function ThreeDPhotoCarousel({
           {cards.map((card, i) => {
             const isSelected = activeIndex === i;
             const displayTitle =
-              language !== 'en' && card.titleLocal?.[language as 'hi' | 'mr']
-                ? card.titleLocal[language as 'hi' | 'mr']
+              language !== 'en' && card.titleLocal?.[language as 'hi' | 'mr' | 'ta' | 'bn']
+                ? card.titleLocal[language as 'hi' | 'mr' | 'ta' | 'bn']
                 : card.title;
 
             return (

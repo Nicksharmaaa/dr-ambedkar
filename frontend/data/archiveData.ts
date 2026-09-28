@@ -34,7 +34,9 @@ export const ARCHIVE_DOCUMENTS: ArchivalDocument[] = [
     title: 'Annihilation of Caste',
     titleLocal: {
       hi: 'जाति का विनाश',
-      mr: 'जातीचा विनाश'
+      mr: 'जातीचा विनाश',
+      ta: 'சாதி ஒழிப்பு',
+      bn: 'জাতপাত উচ্ছেদ'
     },
     type: 'book',
     categoryLabel: 'Book & Treatise',
@@ -47,7 +49,9 @@ export const ARCHIVE_DOCUMENTS: ArchivalDocument[] = [
     shortDescription: "One of Dr. Ambedkar's most influential and foundational works on the anatomy of caste hierarchy, social reform, and human dignity.",
     shortDescriptionLocal: {
       hi: "जाति व्यवस्था, सामाजिक सुधार और मानवीय गरिमा के विच्छेदन पर डॉ. आंबेडकर की सबसे प्रभावशाली व युगांतरकारी कृति।",
-      mr: "जातीव्यवस्था, सामाजिक सुधारणा आणि मानवी प्रतिष्ठेच्या संरचनेवरील डॉ. आंबेडकरांची अत्यंत प्रभावशाली व मूलभूत कृती."
+      mr: "जातीव्यवस्था, सामाजिक सुधारणा आणि मानवी प्रतिष्ठेच्या संरचनेवरील डॉ. आंबेडकरांची अत्यंत प्रभावशाली व मूलभूत कृती.",
+      ta: "சாதி படிநிலை, சமூக சீர்திருத்தம் மற்றும் மனித கண்ணியம் குறித்த டாக்டர் அம்பேத்கரின் மிக முக்கியமான படைப்பு.",
+      bn: "জাতব্যবস্থা, সমাজ সংস্কার ও মানব মর্যাদার ব্যবচ্ছেদ নিয়ে ড. আম্বেদকরের অন্যতম যুগান্তকারী সৃষ্টি।"
     },
     fullText: `You cannot build anything on the foundations of caste. You cannot build up a nation, you cannot build up an ethical morality. Anything that you will build on the foundations of caste will crack and will never be a whole.
 
@@ -84,7 +88,9 @@ The real remedy for breaking Caste is inter-marriage. Nothing else will serve as
     title: 'Constituent Assembly Debates: Speech on the Adoption of the Constitution',
     titleLocal: {
       hi: 'संविधान सभा वाद-विवाद: संविधान अंगीकरण पर ऐतिहासिक भाषण',
-      mr: 'घटना समिती वादविवाद: राज्यघटना स्वीकृतीवरील ऐतिहासिक भाषण'
+      mr: 'घटना समिती वादविवाद: राज्यघटना स्वीकृतीवरील ऐतिहासिक भाषण',
+      ta: 'அரசியலமைப்பு நிர்ணய சபை விவாதம்: அரசியலமைப்பு ஏற்பு உரை',
+      bn: 'গণপরিষদ বিতর্ক: সংবিধান গ্রহণের ঐতিহাসিক ভাষণ'
     },
     type: 'debate',
     categoryLabel: 'Constitutional Debate',
@@ -97,7 +103,9 @@ The real remedy for breaking Caste is inter-marriage. Nothing else will serve as
     shortDescription: "The landmark address warning the nation against political democracy without social and economic democracy, coining the metaphor of 'entering into a life of contradictions'.",
     shortDescriptionLocal: {
       hi: "सामाजिक और आर्थिक लोकतंत्र के बिना राजनीतिक लोकतंत्र की सीमाओं पर राष्ट्र को आगाह करने वाला ऐतिहासिक 'विरोधाभासों का जीवन' भाषण।",
-      mr: "सामाजिक आणि आर्थिक लोकशाहीशिवाय केवळ राजकीय लोकशाहीच्या मर्यादांवर देशाला सावध करणारे ऐतिहासिक भाषण."
+      mr: "सामाजिक आणि आर्थिक लोकशाहीशिवाय केवळ राजकीय लोकशाहीच्या मर्यादांवर देशाला सावध करणारे ऐतिहासिक भाषण.",
+      ta: "சமூக மற்றும் பொருளாதார ஜனநாயகம் இல்லாத அரசியல் ஜனநாயகத்தின் ஆபத்துகளை தேசத்திற்கு எச்சரிக்கும் வரலாற்று உரை.",
+      bn: "সামাজিক ও অর্থনৈতিক গণতন্ত্র ছাড়া রাজনৈতিক গণতন্ত্রের সীমাবদ্ধতা সম্পর্কে সতর্ককারী ঐতিহাসিক ভাষণ।"
     },
     fullText: `On the 26th of January 1950, we are going to enter into a life of contradictions. In politics we will have equality and in social and economic life we will have inequality. In politics we will be recognising the principle of one man one vote and one vote one value. In our social and economic life, we shall, by reason of our social and economic structure, continue to deny the principle of one man one value.
 
@@ -129,7 +137,9 @@ Political democracy cannot last unless there lies at the base of it social democ
     title: 'Constituent Assembly Debates: Article 32 as the Heart and Soul of the Constitution',
     titleLocal: {
       hi: 'संविधान सभा वाद-विवाद: अनुच्छेद 32 संविधान का हृदय और आत्मा',
-      mr: 'घटना समिती वादविवाद: कलम ३२ राज्यघटनेचा आत्मा व हृदय'
+      mr: 'घटना समिती वादविवाद: कलम ३२ राज्यघटनेचा आत्मा व हृदय',
+      ta: 'அரசியலமைப்பு நிர்ணய சபை: பிரிவு 32 - அரசியலமைப்பின் இதயம் மற்றும் ஆன்மா',
+      bn: 'গণপরিষদ বিতর্ক: ধারা ৩২ সংবিধানের প্রাণ ও আত্মা'
     },
     type: 'debate',
     categoryLabel: 'Constitutional Debate',
@@ -142,7 +152,9 @@ Political democracy cannot last unless there lies at the base of it social democ
     shortDescription: "Dr. Ambedkar's definitive exposition declaring the right to constitutional remedies as the most fundamental provision protecting citizen liberties against state encroachment.",
     shortDescriptionLocal: {
       hi: "संवैधानिक उपचारों के अधिकार (अनुच्छेद 32) को संविधान का हृदय एवं आत्मा घोषित करने वाला युगांतरकारी विमर्श।",
-      mr: "घटनात्मक उपाययोजनांच्या अधिकाराला (कलम ३२) संविधानाचा आत्मा घोषित करणारे ऐतिहासिक विवेचन."
+      mr: "घटनात्मक उपाययोजनांच्या अधिकाराला (कलम ३२) संविधानाचा आत्मा घोषित करणारे ऐतिहासिक विवेचन.",
+      ta: "அரசியலமைப்பு பரிகாரங்களுக்கான உரிமையை (பிரிவு 32) அரசியலமைப்பின் இதயம் மற்றும் ஆன்மாவாக அறிவிக்கும் வரலாற்று உரை.",
+      bn: "সাংবিধানিক প্রতিকারের অধিকারকে (ধারা ৩২) সংবিধানের প্রাণ ও আত্মা হিসেবে ঘোষণা করা ঐতিহাসিক বিতর্ক।"
     },
     fullText: `If I was asked to name any particular article in this Constitution as the most important—an article without which this Constitution would be a nullity—I could not refer to any other article except this one. It is the very soul of the Constitution and the very heart of it and I am glad that the House has realised its importance.
 
@@ -166,7 +178,9 @@ Hereafter it would not be possible for any legislature to take away the rights w
     title: 'Declaration at the Mahad Satyagraha (Chavdar Tale)',
     titleLocal: {
       hi: 'महाड सत्याग्रह घोषणापत्र (चवदार तालाब)',
-      mr: 'महाड सत्याग्रह जाहीरनामा (चवदार तळे)'
+      mr: 'महाड सत्याग्रह जाहीरनामा (चवदार तळे)',
+      ta: 'மகாத் சத்தியாகிரக பிரகடனம் (சவ்தார் குளம்)',
+      bn: 'মহাদ সত্যাগ্রহের ঘোষণাপত্র (চবদার জলাশয়)'
     },
     type: 'speech',
     categoryLabel: 'Historical Speech',
@@ -179,7 +193,9 @@ Hereafter it would not be possible for any legislature to take away the rights w
     shortDescription: "The clarion call establishing that the struggle for drinking water from Chavdar Tale was not merely for water, but for asserting universal human dignity and civic equality.",
     shortDescriptionLocal: {
       hi: "चवदार तालाब से पानी पीने का संघर्ष केवल प्यास बुझाने का नहीं, बल्कि मानव गरिमा और नागरिक समानता को सिद्ध करने का ऐतिहासिक आंदोलन था।",
-      mr: "चवदार तळ्याचे पाणी पिण्याचा लढा केवळ तहान भागवण्यासाठी नसून माणसाचे माणूसपण व समतेचा हक्क प्रस्थापित करण्यासाठी होता."
+      mr: "चवदार तळ्याचे पाणी पिण्याचा लढा केवळ तहान भागवण्यासाठी नसून माणसाचे माणूसपण व समतेचा हक्क प्रस्थापित करण्यासाठी होता.",
+      ta: "சவ்தார் குளத்தில் தண்ணீர் குடிப்பதற்கான போராட்டம் வெறும் தண்ணீருக்காக மட்டுமல்ல, மனித கண்ணியம் மற்றும் சமூக சமத்துவத்தை நிலைநாட்டுவதாகும்.",
+      bn: "চবদার জলাশয় থেকে জল পানের সংগ্রাম শুধু জলের জন্য নয়, মানবিক মর্যাদা ও নাগরিক সাম্য প্রতিষ্ঠার ঐতিহাসিক আন্দোলন ছিল।"
     },
     fullText: `It is not that by drinking water from the Chavdar Tale we will become immortal. We have gone to the tank only to prove that we too are human beings like other human beings. This conference has been called to usher in a new era of equality.
 
@@ -205,7 +221,9 @@ Our struggle is not for the sake of water. It is for establishing our human righ
     title: 'The Problem of the Rupee: Its Origin and Its Solution',
     titleLocal: {
       hi: 'द प्रॉब्लम ऑफ द रूपी: इसका उद्भव और समाधान',
-      mr: 'द प्रॉब्लेम ऑफ द रुपी: त्याचे उगम आणि निवारण'
+      mr: 'द प्रॉब्लेम ऑफ द रुपी: त्याचे उगम आणि निवारण',
+      ta: 'ரூபாயின் சிக்கல்: அதன் தோற்றமும் தீர்வும்',
+      bn: 'দ্য প্রবলেম অফ দ্য রুপি: এর উৎপত্তি ও সমাধান'
     },
     type: 'book',
     categoryLabel: 'Economic Treatise',
@@ -218,7 +236,9 @@ Our struggle is not for the sake of water. It is for establishing our human righ
     shortDescription: "Dr. Ambedkar's pioneering monetary economics dissertation submitted to the University of London, which formed the foundational concepts for the establishment of the Reserve Bank of India.",
     shortDescriptionLocal: {
       hi: "लंदन स्कूल ऑफ इकोनॉमिक्स में प्रस्तुत उनका मौद्रिक शोधग्रंथ, जिसने भारतीय रिज़र्व बैंक (RBI) की स्थापना की वैचारिक आधारशिला रखी।",
-      mr: "लंडन स्कूल ऑफ इकॉनॉमिक्समध्ये सादर केलेला प्रबंध, ज्याने भारतीय रिझर्व्ह बँकेच्या (RBI) स्थापनेचा पाया रचला."
+      mr: "लंडन स्कूल ऑफ इकॉनॉमिक्समध्ये सादर केलेला प्रबंध, ज्याने भारतीय रिझर्व्ह बँकेच्या (RBI) स्थापनेचा पाया रचला.",
+      ta: "லண்டன் ஸ்கூல் ஆஃப் எகனாமிக்ஸில் சமர்ப்பிக்கப்பட்ட ஆய்வு, இது இந்திய ரிசர்வ் வங்கியின் (RBI) அடித்தளத்தை அமைத்தது.",
+      bn: "লন্ডন স্কুল অব ইকোনমিক্সে উপস্থাপিত মুদ্রা গবেষণাপত্র, যা ভারতীয় রিজার্ভ ব্যাঙ্ক (RBI) প্রতিষ্ঠার মূল ভিত্তি রচনা করে।"
     },
     fullText: `Trade is an exchange of goods for goods, and money is only a medium of exchange. A stable currency system is one that maintains stability of internal purchasing power rather than stability of foreign exchange rates alone.
 
@@ -242,7 +262,9 @@ The Indian currency system has suffered from frequent arbitrary tinkering by the
     title: 'Castes in India: Their Mechanism, Genesis and Development',
     titleLocal: {
       hi: 'भारत में जातियां: उनकी कार्यप्रणाली, उद्भव और विकास',
-      mr: 'भारतातील जाती: त्यांची यंत्रणा, उत्पत्ती आणि विकास'
+      mr: 'भारतातील जाती: त्यांची यंत्रणा, उत्पत्ती आणि विकास',
+      ta: 'இந்தியாவில் சாதிகள்: அவற்றின் செயல்முறை, தோற்றம் மற்றும் வளர்ச்சி',
+      bn: 'ভারতে জাতপাত: তাদের প্রক্রিয়া, উৎপত্তি ও বিকাশ'
     },
     type: 'manuscript',
     categoryLabel: 'Anthropological Paper',
@@ -255,7 +277,9 @@ The Indian currency system has suffered from frequent arbitrary tinkering by the
     shortDescription: "Presented at Columbia University at age 25, this landmark academic paper identified endogamy as the core mechanism that turns open classes into closed castes.",
     shortDescriptionLocal: {
       hi: "कोलंबिया विश्वविद्यालय में 25 वर्ष की आयु में प्रस्तुत शोधपत्र, जिसमें अंतर-विवाह निषेध (Endogamy) को जाति निर्माण का मूल कारण सिद्ध किया गया।",
-      mr: "कोलंबिया विद्यापीठात २५ व्या वर्षी सादर केलेला शोधनिबंध, ज्यात आंतरजातीय विवाहबंदी हीच जातीच्या निर्मितीची मुख्य यंत्रणा असल्याचे स्पष्ट केले."
+      mr: "कोलंबिया विद्यापीठात २५ व्या वर्षी सादर केलेला शोधनिबंध, ज्यात आंतरजातीय विवाहबंदी हीच जातीच्या निर्मितीची मुख्य यंत्रणा असल्याचे स्पष्ट केले.",
+      ta: "கொலம்பியா பல்கலைக்கழகத்தில் 25 வயதில் சமர்ப்பிக்கப்பட்ட ஆய்வுக் கட்டுரை, இதில் அகமண முறை சாதிகளை உருவாக்குகிறது என்பதை விளக்கினார்.",
+      bn: "কলম্বিয়া বিশ্ববিদ্যালয়ে ২৫ বছর বয়সে উপস্থাপিত গবেষণাপত্র, যেখানে সগোত্র বিবাহকে জাতপাত সৃষ্টির মূল কারণ চিহ্নিত করা হয়।"
     },
     fullText: `Caste in India is a very much more complicated phenomenon than is generally supposed. The superposition of endogamy on exogamy means the creation of caste. 
 
@@ -281,7 +305,9 @@ The closed door of the caste creates a contagion whereby other classes, to prese
     title: 'States and Minorities: What are Their Rights and How to Secure Them',
     titleLocal: {
       hi: 'राज्य और अल्पसंख्यक: उनके अधिकार और उनका संरक्षण',
-      mr: 'राज्ये आणि अल्पसंख्याक: त्यांचे हक्क आणि संरक्षण'
+      mr: 'राज्ये आणि अल्पसंख्याक: त्यांचे हक्क आणि संरक्षण',
+      ta: 'நாடுகளும் சிறுபான்மையினரும்: அவர்களின் உரிமைகளும் அவற்றைப் பாதுகாப்பதும்',
+      bn: 'স্টেটস অ্যান্ড মাইনরিটিস: তাদের অধিকার ও তার সুরক্ষা'
     },
     type: 'book',
     categoryLabel: 'Constitutional Blueprint',
@@ -294,7 +320,9 @@ The closed door of the caste creates a contagion whereby other classes, to prese
     shortDescription: "A comprehensive constitutional memorandum submitted to the Constituent Assembly proposing state socialism, state ownership of key industries, and fundamental safeguards for minorities.",
     shortDescriptionLocal: {
       hi: "संविधान सभा को सौंपा गया ऐतिहासिक मसौदा, जिसमें 'राज्य समाजवाद', प्रमुख उद्योगों के राष्ट्रीयकरण और अल्पसंख्यकों के मौलिक अधिकारों की रूपरेखा थी।",
-      mr: "संविधान सभेला सादर केलेला मसुदा, ज्यात राज्य समाजवाद आणि अल्पसंख्याकांच्या हक्कांची भक्कम मांडणी केली होती."
+      mr: "संविधान सभेला सादर केलेला मसुदा, ज्यात राज्य समाजवाद आणि अल्पसंख्याकांच्या हक्कांची भक्कम मांडणी केली होती.",
+      ta: "அரசு சோசலிசம் மற்றும் சிறுபான்மையினருக்கான அடிப்படைப் பாதுகாப்புகளை முன்மொழிந்து அரசியலமைப்புச் சபையிடம் சமர்ப்பிக்கப்பட்ட வரைவு.",
+      bn: "রাষ্ট্রীয় সমাজতন্ত্র ও সংখ্যালঘুদের মৌলিক অধিকারের রূপরেখা সম্বলিত ঐতিহাসিক সাংবিধানিক স্মারকলিপি।"
     },
     fullText: `The state shall acquire all agricultural land and divide it into farms of standard size, to be cultivated by the residents of the village as a collective farm.
 
@@ -320,7 +348,9 @@ Insurance shall be a monopoly of the State. The purpose is to protect the freedo
     title: 'The Buddha and His Dhamma',
     titleLocal: {
       hi: 'भगवान बुद्ध और उनका धम्म',
-      mr: 'भगवान बुद्ध आणि त्यांचा धम्म'
+      mr: 'भगवान बुद्ध आणि त्यांचा धम्म',
+      ta: 'புத்தரும் அவரது தம்மமும்',
+      bn: 'বুদ্ধ ও তাঁর ধর্ম'
     },
     type: 'book',
     categoryLabel: 'Philosophical Treatise',
@@ -333,7 +363,9 @@ Insurance shall be a monopoly of the State. The purpose is to protect the freedo
     shortDescription: "Dr. Ambedkar's monumental magnum opus on Buddhist philosophy, rationalism, compassion (Karuna), and social morality (Pragya and Sheel).",
     shortDescriptionLocal: {
       hi: "बौद्ध दर्शन, तर्कशीलता, करुणा और प्रज्ञा पर डॉ. आंबेडकर का दार्शनिक महाग्रंथ।",
-      mr: "बौद्ध तत्त्वज्ञान, विवेकवाद, करुणा आणि प्रज्ञा यांवर डॉ. आंबेडकरांचा अद्वितीय महाग्रंथ."
+      mr: "बौद्ध तत्त्वज्ञान, विवेकवाद, करुणा आणि प्रज्ञा यांवर डॉ. आंबेडकरांचा अद्वितीय महाग्रंथ.",
+      ta: "பௌத்த தத்துவம், பகுத்தறிவு மற்றும் சமூக அறநெறி குறித்த டாக்டர் அம்பேத்கரின் நினைவுச்சின்ன பெருநூல்.",
+      bn: "বৌদ্ধ দর্শন, যুক্তি ও সামাজিক নৈতিকতার ওপর ড. আম্বেদকরের অনন্য মহাকাব্যিক গ্রন্থ।"
     },
     fullText: `Religion must relate to morality. If religion is separated from morality, it becomes a mockery. Dhamma is righteousness, which means right relations between man and man in all spheres of life.
 
@@ -362,14 +394,18 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     title: 'Birth at Mhow Cantonment',
     titleLocal: {
       hi: 'महू छावनी में जन्म',
-      mr: 'महू छावणीत जन्म'
+      mr: 'महू छावणीत जन्म',
+      ta: 'மோ பாசறையில் பிறப்பு',
+      bn: 'মহু সেনানিবাসে জন্ম'
     },
     era: 'Early Life & Education',
     location: 'Mhow (Dr. Ambedkar Nagar), Madhya Pradesh',
     description: 'Bhimrao Ramji Ambedkar was born into a Mahar family serving in the British Indian Army. His father Ramji Maloji Sakpal was a Subedar-major.',
     descriptionLocal: {
       hi: 'भीमराव रामजी आंबेडकर का जन्म सूबेदार रामजी मालोजी सकपाल और भीमाबाई के 14वें बच्चे के रूप में महू में हुआ।',
-      mr: 'भीमराव रामजी आंबेडकर यांचा जन्म महू लष्करी छावणीत सुभेदार रामजी मालोजी सकपाल आणि भीमाबाई यांच्या पोटी झाला.'
+      mr: 'भीमराव रामजी आंबेडकर यांचा जन्म महू लष्करी छावणीत सुभेदार रामजी मालोजी सकपाल आणि भीमाबाई यांच्या पोटी झाला.',
+      ta: 'பீமராவ் ராம்ஜி அம்பேத்கர் பிரிட்டிஷ் இந்திய இராணுவத்தில் பணியாற்றிய சுபேதார் ராம்ஜி மாலோஜி சக்பால் மற்றும் பீமாபாயின் 14வது மகனாகப் பிறந்தார்.',
+      bn: 'ভীমরাও রামজি আম্বেদকর ব্রিটিশ ভারতীয় সেনাবাহিনীতে কর্মরত সুবেদার রামজি মালোজি সাকপাল ও ভীমাবাঈয়ের ১৪তম সন্তান হিসেবে জন্মগ্রহণ করেন।'
     },
     quote: 'Cultivation of mind should be the ultimate aim of human existence.',
     imageUrl: YOUNG_AMBEDKAR_IMAGE,
@@ -388,14 +424,18 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     title: 'Higher Education at Columbia University & London School of Economics',
     titleLocal: {
       hi: 'कोलंबिया विश्वविद्यालय और लंदन स्कूल ऑफ इकोनॉमिक्स में उच्च शिक्षा',
-      mr: 'कोलंबिया विद्यापीठ आणि लंडन स्कूल ऑफ इकॉनॉमिक्समध्ये उच्च शिक्षण'
+      mr: 'कोलंबिया विद्यापीठ आणि लंडन स्कूल ऑफ इकॉनॉमिक्समध्ये उच्च शिक्षण',
+      ta: 'கொலம்பியா பல்கலைக்கழகம் மற்றும் லண்டன் ஸ்கூல் ஆஃப் எகனாமிக்ஸில் உயர் கல்வி',
+      bn: 'কলম্বিয়া বিশ্ববিদ্যালয় ও লন্ডন স্কুল অব ইকোনমিক্সে উচ্চশিক্ষা'
     },
     era: 'Early Life & Education',
     location: 'New York & London',
     description: 'Sponsored by Maharaja Sayajirao Gaekwad of Baroda, Dr. Ambedkar earned M.A. and Ph.D. from Columbia University under John Dewey, followed by M.Sc. and D.Sc. from LSE and admission to Gray’s Inn as Barrister-at-Law.',
     descriptionLocal: {
       hi: 'बड़ौदा रियासत की छात्रवृत्ति पर कोलंबिया से एम.ए., पी.एचडी. तथा लंदन से डी.एससी. व बैरिस्टर-एट-लॉ की ऐतिहासिक डिग्रियां प्राप्त कीं।',
-      mr: 'सयाजीराव गायकवाड यांच्या शिष्यवृत्तीवर कोलंबियातून पी.एचडी. आणि लंडन स्कूल ऑफ इकॉनॉमिक्समधून डी.एस्सी. सह बार-ॲट-लॉ संपादन केले.'
+      mr: 'सयाजीराव गायकवाड यांच्या शिष्यवृत्तीवर कोलंबियातून पी.एचडी. आणि लंडन स्कूल ऑफ इकॉनॉमिक्समधून डी.एस्सी. सह बार-ॲट-लॉ संपादन केले.',
+      ta: 'பரோடா மகாராஜாவின் உதவித்தொகையுடன் கொலம்பியாவில் எம்.ஏ., பி.எச்.டி. மற்றும் லண்டனில் டி.எஸ்சி., பார்-அட்-லா பட்டம் பெற்றார்.',
+      bn: 'বরোদা মহারাজার বৃত্তিতে কলম্বিয়া থেকে এম.এ., পিএইচ.ডি. এবং লন্ডন থেকে ডি.এসসি. ও বার-অ্যাট-ল ডিগ্রি অর্জন করেন।'
     },
     quote: 'Men are mortal. So are ideas. An idea needs propagation as much as a plant needs watering.',
     imageUrl: USA_STUDY_TOUR_IMAGE,
@@ -414,14 +454,18 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     title: 'Appointed Professor of Political Economy at Sydenham College',
     titleLocal: {
       hi: 'सिडेनहैम कॉलेज में अर्थशास्त्र के प्रोफेसर नियुक्त',
-      mr: 'सिडनहॅम कॉलेजमध्ये अर्थशास्त्राचे प्राध्यापक म्हणून नियुक्ती'
+      mr: 'सिडनहॅम कॉलेजमध्ये अर्थशास्त्राचे प्राध्यापक म्हणून नियुक्ती',
+      ta: 'சிடன்ஹாம் கல்லூரியில் அரசியல் பொருளாதார பேராசிரியராக நியமனம்',
+      bn: 'সিডেনহ্যাম কলেজে রাষ্ট্রীয় অর্থনীতির অধ্যাপক হিসেবে নিয়োগ'
     },
     era: 'Early Life & Education',
     location: 'Sydenham College of Commerce and Economics, Bombay',
     description: 'Dr. Ambedkar was appointed Professor of Political Economy, dazzling students with his scholarship while enduring caste discrimination from orthodox faculty members.',
     descriptionLocal: {
       hi: '19 नवंबर 1918 को बॉम्बे के सिडेनहैम कॉलेज में अर्थशास्त्र के प्राध्यापक के रूप में कार्यभार संभाला।',
-      mr: '१९ नोव्हेंबर १९१८ रोजी सिडनहॅम कॉलेजमध्ये प्राध्यापक म्हणून रुजू झाले.'
+      mr: '१९ नोव्हेंबर १९१८ रोजी सिडनहॅम कॉलेजमध्ये प्राध्यापक म्हणून रुजू झाले.',
+      ta: '19 நவம்பர் 1918 அன்று பம்பாயின் சிடன்ஹாம் கல்லூரியில் பொருளாதார பேராசிரியராகப் பொறுப்பேற்றார்.',
+      bn: '১৯ নভেম্বর ১৯১৮ তারিখে বোম্বাইয়ের সিডেনহ্যাম কলেজে অর্থনীতির অধ্যাপক হিসেবে যোগ দেন।'
     },
     imageUrl: SYDENHAM_PROFESSOR_IMAGE,
     relatedDocIds: ['castes-in-india-1916'],
@@ -439,14 +483,18 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     title: 'Founding of Bahishkrit Hitakarini Sabha',
     titleLocal: {
       hi: 'बहिष्कृत हितकारिणी सभा की स्थापना',
-      mr: 'बहिष्कृत हितकारिणी सभेची स्थापना'
+      mr: 'बहिष्कृत हितकारिणी सभेची स्थापना',
+      ta: 'பஹிஷ்கிருத ஹிதகாரிணி சபா தொடக்கம்',
+      bn: 'বহিষ্কৃত হিতকারিণী সভা প্রতিষ্ঠা'
     },
     era: 'Social Awakening',
     location: 'Damodar Hall, Parel, Bombay',
     description: 'Dr. Ambedkar established the institution with the historic motto: "Educate, Agitate, Organise" (शिकवा, चेतवा, संघटित व्हा) to uplift the depressed classes through hostels, libraries, and industrial schools.',
     descriptionLocal: {
       hi: "'शिक्षित बनो, आंदोलन करो, संगठित रहो' के ऐतिहासिक मंत्र के साथ दमित वर्गों के कल्याण हेतु संस्था की नींव रखी गई।",
-      mr: "'शिका, संघटित व्हा आणि संघर्ष करा' या ब्रीदवाक्यासह उपेक्षित जनतेच्या सर्वांगीण विकासासाठी बहिष्कृत हितकारिणी सभेची स्थापना केली."
+      mr: "'शिका, संघटित व्हा आणि संघर्ष करा' या ब्रीदवाक्यासह उपेक्षित जनतेच्या सर्वांगीण विकासासाठी बहिष्कृत हितकारिणी सभेची स्थापना केली.",
+      ta: "'கற்பி, புரட்சி செய், ஒன்று சேர்' என்ற வரலாற்று முழக்கத்துடன் ஒடுக்கப்பட்ட மக்களின் முன்னேற்றத்திற்காக அமைப்பைத் தொடங்கினார்.",
+      bn: "'শিক্ষিত হও, সংগঠিত হও এবং সংগ্রাম করো' ঐতিহাসিক মন্ত্রের সাথে বঞ্চিত শ্রেণির কল্যাণে এই সভা প্রতিষ্ঠা করা হয়।"
     },
     quote: 'Educate, Agitate, Organise. Have faith in yourselves.',
     quoteAttribution: 'Motto of Bahishkrit Hitakarini Sabha',

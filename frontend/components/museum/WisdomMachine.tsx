@@ -63,7 +63,7 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
     }
 
     setIsSpeaking(true);
-    const langCode = (language === 'hi' ? 'hi' : language === 'mr' ? 'mr' : 'en') as 'en' | 'hi' | 'mr';
+    const langCode = (['hi', 'mr', 'ta', 'bn'].includes(language) ? language : 'en') as Language;
     speechController.speak(currentQuote.quote, langCode, () => {
       setIsSpeaking(false);
     });

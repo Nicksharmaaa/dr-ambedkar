@@ -16,6 +16,8 @@ const LANGUAGES: LanguageOption[] = [
   { id: 'en', code: 'EN', name: 'English', nativeName: 'English' },
   { id: 'hi', code: 'HI', name: 'Hindi', nativeName: 'हिन्दी' },
   { id: 'mr', code: 'MR', name: 'Marathi', nativeName: 'मराठी' },
+  { id: 'ta', code: 'TA', name: 'Tamil', nativeName: 'தமிழ்' },
+  { id: 'bn', code: 'BN', name: 'Bengali', nativeName: 'বাংলা' },
 ];
 
 interface LanguageDropdownProps {
@@ -110,7 +112,7 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
               Language
             </span>
             <span className="text-[11px] font-bold text-[#8B5E3C]">
-              भाषा
+              {language === 'ta' ? 'மொழி' : language === 'bn' ? 'ভাষা' : language === 'mr' || language === 'hi' ? 'भाषा' : 'Language'}
             </span>
           </div>
 

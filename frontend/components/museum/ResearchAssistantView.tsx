@@ -42,11 +42,15 @@ interface GroundedAnswerPayload {
     en: string;
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   plainSummary?: {
     en: string;
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   legalClauses?: Array<{
     title: string;

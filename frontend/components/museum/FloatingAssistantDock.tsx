@@ -244,7 +244,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
 
     speechController.stop();
     setSpeakingMsgId(msgId);
-    const langCode = (language === 'hi' ? 'hi' : language === 'mr' ? 'mr' : 'en') as 'en' | 'hi' | 'mr';
+    const langCode = (['hi', 'mr', 'ta', 'bn'].includes(language) ? language : 'en') as Language;
     speechController.speak(text, langCode, () => {
       setSpeakingMsgId(prev => (prev === msgId ? null : prev));
     });
@@ -291,6 +291,16 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
     "कलम ३२ ला 'संविधानाचा आत्मा' का म्हटले जाते?",
     "'जातीचा विनाश' या ग्रंथातील मुख्य विचार कोणते?",
     "१९२७ च्या महाड सत्याग्रहाचे ऐतिहासिक महत्त्व काय आहे?"
+  ] : language === 'ta' ? [
+    "அரசியலமைப்பு உருவாக்கத்தில் டாக்டர் அம்பேத்கரின் பங்கு என்ன?",
+    "உறுப்பு 32 ஏன் 'அரசியலமைப்பின் இதயம் மற்றும் ஆன்மா' எனப்படுகிறது?",
+    "சாதி ஒழிப்பு நூலின் முக்கியக் கருத்துக்கள் யாவை?",
+    "1927 மஹத் சத்தியாகிரகத்தின் முக்கியத்துவம் என்ன?"
+  ] : language === 'bn' ? [
+    "সংবিধান প্রণয়নে ড. আম্বেদকরের ভূমিকা কী ছিল?",
+    "অনুচ্ছেদ ৩২-কে কেন 'সংবিধানের হৃদয় ও আত্মা' বলা হয়?",
+    "'জাতপাত উচ্ছেদ' গ্রন্থের মূল বক্তব্য কী?",
+    "১৯২৭ সালের মাহাদ সত্যাগ্রহের তাৎপর্য কী?"
   ] : [
     "What role did Dr. Ambedkar play in drafting the Constitution?",
     "Why is Article 32 the 'Heart and Soul'?",
@@ -496,7 +506,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
             {isGenerating && (
               <div className="flex items-center gap-2 text-[11px] text-[#0A2947] font-montserrat p-2 bg-white rounded-xl border border-[#D3D4C0] w-fit">
                 <Sparkles className="w-3.5 h-3.5 text-[#8B5E3C] animate-spin" />
-                <span>{language === 'hi' ? 'BAWS अभिलेखागार में खोज जारी...' : language === 'mr' ? 'BAWS अभिलेखागारात शोध सुरू...' : 'Searching BAWS archives...'}</span>
+                <span>{language === 'hi' ? 'BAWS अभिलेखागार में खोज जारी...' : language === 'mr' ? 'BAWS अभिलेखागारात शोध सुरू...' : language === 'ta' ? 'BAWS காப்பகத்தில் தேடப்படுகிறது...' : language === 'bn' ? 'BAWS আর্কাইভে অনুসন্ধান চলছে...' : 'Searching BAWS archives...'}</span>
               </div>
             )}
 
@@ -554,7 +564,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
               placeholder={isListeningVoice 
-                ? (language === 'hi' ? "सुन रहा हूँ... बोलिए..." : language === 'mr' ? "ऐकत आहे... बोला..." : "Listening... Speak now...") 
+                ? (language === 'hi' ? "सुन रहा हूँ... बोलिए..." : language === 'mr' ? "ऐकत आहे... बोला..." : language === 'ta' ? "கேட்கிறது... பேசுங்கள்..." : language === 'bn' ? "শুনছি... বলুন..." : "Listening... Speak now...") 
                 : (t.chatbotPlaceholder || "Ask about speeches, treaties, articles...")}
               autoComplete="off"
               className={`flex-1 bg-[#FAF7F0] border rounded-xl px-3 py-1.5 text-xs text-[#0A2947] focus:outline-none transition-all font-dmsans ${

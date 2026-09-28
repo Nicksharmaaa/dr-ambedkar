@@ -29,6 +29,8 @@ interface GroundedHomeResult {
     en: string;
     hi?: string;
     mr?: string;
+    ta?: string;
+    bn?: string;
   };
   groundingStatus: string;
   confidenceScore: number;

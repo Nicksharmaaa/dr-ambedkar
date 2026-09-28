@@ -134,7 +134,7 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
               <Globe className="w-4 h-4 text-[#0f2d59]" />
               <span>Language Selection</span>
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
               <button
                 onClick={() => onSelectLanguage('en')}
                 className={`py-2 px-3 rounded border text-sm font-semibold transition-colors flex items-center justify-between ${
@@ -167,6 +167,28 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
               >
                 <span>मराठी</span>
                 {language === 'mr' && <Check className="w-4 h-4" />}
+              </button>
+              <button
+                onClick={() => onSelectLanguage('ta')}
+                className={`py-2 px-3 rounded border text-sm font-semibold transition-colors flex items-center justify-between ${
+                  language === 'ta'
+                    ? 'bg-blue-50 border-[#0f2d59] text-[#0f2d59]'
+                    : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                <span>தமிழ்</span>
+                {language === 'ta' && <Check className="w-4 h-4" />}
+              </button>
+              <button
+                onClick={() => onSelectLanguage('bn')}
+                className={`py-2 px-3 rounded border text-sm font-semibold transition-colors flex items-center justify-between ${
+                  language === 'bn'
+                    ? 'bg-blue-50 border-[#0f2d59] text-[#0f2d59]'
+                    : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                <span>বাংলা</span>
+                {language === 'bn' && <Check className="w-4 h-4" />}
               </button>
             </div>
           </div>

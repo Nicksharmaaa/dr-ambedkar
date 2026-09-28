@@ -85,6 +85,8 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
         photo.title.toLowerCase().includes(q) ||
         (photo.titleLocal?.hi && photo.titleLocal.hi.toLowerCase().includes(q)) ||
         (photo.titleLocal?.mr && photo.titleLocal.mr.toLowerCase().includes(q)) ||
+        (photo.titleLocal?.ta && photo.titleLocal.ta.toLowerCase().includes(q)) ||
+        (photo.titleLocal?.bn && photo.titleLocal.bn.toLowerCase().includes(q)) ||
         photo.location.toLowerCase().includes(q) ||
         photo.caption.toLowerCase().includes(q) ||
         photo.historicalContext.toLowerCase().includes(q) ||

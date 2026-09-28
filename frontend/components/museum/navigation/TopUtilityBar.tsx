@@ -94,6 +94,18 @@ const USER_MODES_I18N: Record<Language, Record<UserMode, { label: string; desc: 
     researcher: { label: 'संशोधक', desc: 'सखोल संदर्भ, उतारे व संशोधन संग्रह' },
     archivist: { label: 'अभिलेखपाल', desc: 'ओसीआर पडताळणी व जतन व्यवस्था' },
   },
+  ta: {
+    visitor: { label: 'பார்வையாளர்', desc: 'பொதுக் கண்காட்சி மற்றும் ஆய்வு' },
+    student: { label: 'மாணவர்', desc: 'கல்விசார் தேடல்கள் மற்றும் வினாடி வினா' },
+    researcher: { label: 'ஆராய்ச்சியாளர்', desc: 'ஆழமான சான்றுகள் மற்றும் ஆய்வுக் குறிப்புகள்' },
+    archivist: { label: 'காப்பகப் பொறுப்பாளர்', desc: 'OCR சரிபார்ப்பு மற்றும் டிஜிட்டல் பாதுகாப்பு' },
+  },
+  bn: {
+    visitor: { label: 'দর্শনার্থী', desc: 'পাবলিক প্রদর্শনী ও অন্বেষণ' },
+    student: { label: 'শিক্ষার্থী', desc: 'শিক্ষামূলক কুইজ ও সংক্ষিপ্ত রূপরেখা' },
+    researcher: { label: 'গবেষক', desc: 'গভীর তথ্যসূত্র, উদ্ধৃতি ও গবেষণা নথি' },
+    archivist: { label: 'নথিপত্র সংরক্ষক', desc: 'OCR যাচাইকরণ ও ডিজিটাল সংরক্ষণ' },
+  },
 };
 
 const USER_MODES: { id: UserMode; icon: any }[] = [

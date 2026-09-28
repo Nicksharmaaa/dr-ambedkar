@@ -31,7 +31,7 @@ class SpeechController {
     this.listeners.forEach(cb => cb(isPlaying));
   }
 
-  public async speak(text: string, lang: 'en' | 'hi' | 'mr' | string = 'en', onEnd?: () => void) {
+  public async speak(text: string, lang: 'en' | 'hi' | 'mr' | 'ta' | 'bn' | string = 'en', onEnd?: () => void) {
     this.stop();
 
     // Clean text of markdown formatting, bracket citations, and URLs
@@ -102,7 +102,7 @@ class SpeechController {
     this.speakWithBrowserSynth(cleanText, lang as any, onEnd);
   }
 
-  private speakWithBrowserSynth(cleanText: string, lang: 'en' | 'hi' | 'mr', onEnd?: () => void) {
+  private speakWithBrowserSynth(cleanText: string, lang: 'en' | 'hi' | 'mr' | 'ta' | 'bn' | string, onEnd?: () => void) {
     if (!this.synth) {
       if (onEnd) onEnd();
       return;
@@ -110,6 +110,8 @@ class SpeechController {
     const utterance = new SpeechSynthesisUtterance(cleanText);
     if (lang === 'hi') utterance.lang = 'hi-IN';
     else if (lang === 'mr') utterance.lang = 'mr-IN';
+    else if (lang === 'ta') utterance.lang = 'ta-IN';
+    else if (lang === 'bn') utterance.lang = 'bn-IN';
     else utterance.lang = 'en-IN';
     utterance.rate = 0.95;
     utterance.pitch = 1.0;
@@ -148,7 +150,7 @@ export const speechController = new SpeechController();
 // =========================================================================
 
 export interface VoiceRecognitionOptions {
-  lang?: 'en' | 'hi' | 'mr';
+  lang?: 'en' | 'hi' | 'mr' | 'ta' | 'bn';
   onResult: (transcript: string, isFinal: boolean) => void;
   onStart?: () => void;
   onEnd?: () => void;
@@ -282,7 +284,15 @@ class VoiceRecognitionController {
       this.recognition.continuous = true;
       this.recognition.interimResults = true;
 
-      const langCode = options.lang === 'hi' ? 'hi-IN' : options.lang === 'mr' ? 'mr-IN' : 'en-IN';
+      const langCode = options.lang === 'hi' 
+        ? 'hi-IN' 
+        : options.lang === 'mr' 
+          ? 'mr-IN' 
+          : options.lang === 'ta' 
+            ? 'ta-IN' 
+            : options.lang === 'bn' 
+              ? 'bn-IN' 
+              : 'en-IN';
       this.recognition.lang = langCode;
 
       this.recognition.onstart = () => {

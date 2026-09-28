@@ -195,12 +195,16 @@ export const VoiceNavigatorModal: React.FC<VoiceNavigatorModalProps> = ({
       matchedAnswer = db.answer[selectedLang] || db.answer.en;
       sourceCitation = 'Constituent Assembly Proceedings, New Delhi';
       targetDocId = 'constituent-assembly-speech-1949';
-    } else if (qLower.includes('mahad') || qLower.includes('water') || qLower.includes('महाड') || qLower.includes('पानी')) {
+    } else if (qLower.includes('mahad') || qLower.includes('water') || qLower.includes('महाड') || qLower.includes('पानी') || qLower.includes('மஹத்') || qLower.includes('মাহাদ')) {
       matchedAnswer = selectedLang === 'hi' 
         ? "महाड सत्याग्रह 20 मार्च 1927 को डॉ. आंबेडकर के नेतृत्व में हुआ, जिसमें चवदार तालाब से जल ग्रहण कर बुनियादी मानवीय अधिकारों और नागरिक समानता की स्थापना की गई।"
         : selectedLang === 'mr'
           ? "महाडचा सत्याग्रह २० मार्च १९२७ रोजी चवदार तळ्यावर पिण्याच्या पाण्याचा मानवी हक्क प्रस्थापित करण्यासाठी डॉ. बाबासाहेब आंबेडकरांच्या नेतृत्वाखाली झाला."
-          : "The Mahad Satyagraha of March 20, 1927, led by Dr. Ambedkar, asserted universal human rights and civic equality by reclaiming public drinking water at Chavdar Tank.";
+          : selectedLang === 'ta'
+            ? "1927 மார்ச் 20 அன்று டாக்டர் அம்பேத்கர் தலைமையில் நடைபெற்ற மஹத் சத்தியாகிரகம், சவ்தார் குளத்தில் குடிநீர் உரிமையைப் பெற்று அடிப்படை மனித உரிமைகளையும் சமத்துவத்தையும் நிலைநாட்டியது."
+            : selectedLang === 'bn'
+              ? "১৯২৭ সালের ২০ মার্চ ড. আম্বেদকরের নেতৃত্বে মাহাদ সত্যাগ্রহ অনুষ্ঠিত হয়, যা চভদার জলাশয়ে জলপানের অধিকার নিশ্চিত করে মৌলিক মানবাধিকার প্রতিষ্ঠা করে।"
+              : "The Mahad Satyagraha of March 20, 1927, led by Dr. Ambedkar, asserted universal human rights and civic equality by reclaiming public drinking water at Chavdar Tank.";
       sourceCitation = 'BAWS Vol. 17 (Part 1)';
       targetDocId = 'mahad-satyagraha-1927';
     } else if (qLower.includes('caste') || qLower.includes('annihilation') || qLower.includes('जाति')) {
@@ -217,7 +221,11 @@ export const VoiceNavigatorModal: React.FC<VoiceNavigatorModalProps> = ({
         ? `डॉ. बी. आर. आंबेडकर ने समानता, बंधुता और सामाजिक लोकतंत्र पर बल दिया। आपके प्रश्न "${query}" पर अधिक शोध के लिए AI Scholar में विस्तृत विश्लेषण उपलब्ध है।`
         : selectedLang === 'mr'
           ? `डॉ. बाबासाहेब आंबेडकरांनी समता, स्वातंत्र्य आणि बंधुतेचा मार्ग दाखवला. आपल्या "${query}" या प्रश्नाचे अधिक सखोल विश्लेषण AI Scholar मध्ये पाहू शकता.`
-          : `Dr. B. R. Ambedkar championed constitutional democracy, social justice, and equality. Based on archival records regarding "${query}", comprehensive treatises are accessible in our Digital Archives.`;
+          : selectedLang === 'ta'
+            ? `டாக்டர் பி. ஆர். அம்பேத்கர் சமத்துவம், சகோதரத்துவம் மற்றும் அரசியலமைப்பு ஜனநாயகத்தை வலியுறுத்தினார். உங்கள் கேள்வி "${query}" தொடர்பான முழுமையான ஆய்வை AI Scholar பகுதியில் காணலாம்.`
+            : selectedLang === 'bn'
+              ? `ড. বি. আর. আম্বেদকর সমতা, ভ্রাতৃত্ব এবং সামাজিক গণতন্ত্রের ওপর জোর দিয়েছিলেন। আপনার প্রশ্ন "${query}" সম্পর্কিত বিস্তারিত তথ্য AI Scholar-এ পাওয়া যাবে।`
+              : `Dr. B. R. Ambedkar championed constitutional democracy, social justice, and equality. Based on archival records regarding "${query}", comprehensive treatises are accessible in our Digital Archives.`;
       sourceCitation = 'Dr. Babasaheb Ambedkar: Writings and Speeches';
     }
 
@@ -284,6 +292,8 @@ export const VoiceNavigatorModal: React.FC<VoiceNavigatorModalProps> = ({
               <option value="en">English</option>
               <option value="hi">हिंदी (Hindi)</option>
               <option value="mr">मराठी (Marathi)</option>
+              <option value="ta">தமிழ் (Tamil)</option>
+              <option value="bn">বাংলা (Bengali)</option>
             </select>
 
             <button

@@ -93,7 +93,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       title: t.wingArchiveTitle || 'The Archive',
       subtitle: t.wingArchiveSub || 'BAWS Volumes 1–22 · Full Corpus',
       icon: BookOpen,
-      badge: language === 'hi' ? 'ग्रंथ संग्रह' : language === 'mr' ? 'ग्रंथ संग्रह' : 'Primary Corpus',
+      badge: language === 'hi' ? 'ग्रंथ संग्रह' : language === 'mr' ? 'ग्रंथ संग्रह' : language === 'ta' ? 'முதன்மை காப்பகம்' : language === 'bn' ? 'মূল আর্কাইভ' : 'Primary Corpus',
     },
     {
       id: 'timeline',
@@ -101,7 +101,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       title: t.wingTimelineTitle || 'Timeline Chronicle',
       subtitle: t.wingTimelineSub || '1891–1956 · Five Historical Epochs',
       icon: Clock,
-      badge: language === 'hi' ? 'कालक्रम' : language === 'mr' ? 'कालक्रम' : 'Chronicle',
+      badge: language === 'hi' ? 'कालक्रम' : language === 'mr' ? 'कालक्रम' : language === 'ta' ? 'காலவரிசை' : language === 'bn' ? 'সময়রেখা' : 'Chronicle',
     },
     {
       id: 'media',
@@ -109,7 +109,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       title: t.wingMediaTitle || 'Media & Voice',
       subtitle: t.wingMediaSub || 'BBC Broadcasts & Historic Audio',
       icon: Radio,
-      badge: language === 'hi' ? 'ध्वनि व प्रसारण' : language === 'mr' ? 'ध्वनि व प्रसारण' : 'Historic Audio',
+      badge: language === 'hi' ? 'ध्वनि व प्रसारण' : language === 'mr' ? 'ध्वनि व प्रसारण' : language === 'ta' ? 'ஒலி & ஒளி' : language === 'bn' ? 'অডিও ও ভাষণ' : 'Historic Audio',
     },
     {
       id: 'assistant',
@@ -117,7 +117,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       title: t.wingAssistantTitle || 'AI Scholar',
       subtitle: t.wingAssistantSub || 'Grounded Archival Research & Citations',
       icon: Sparkles,
-      badge: language === 'hi' ? 'एआई शोध' : language === 'mr' ? 'एआय संशोधन' : 'AI Intelligence',
+      badge: language === 'hi' ? 'एआई शोध' : language === 'mr' ? 'एआय संशोधन' : language === 'ta' ? 'AI அறிஞர்' : language === 'bn' ? 'এআই পণ্ডিত' : 'AI Intelligence',
     },
     {
       id: 'gallery',
@@ -125,7 +125,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       title: t.wingGalleryTitle || 'Visual Folio',
       subtitle: t.wingGallerySub || 'Rare Photographic Prints & Plates',
       icon: Camera,
-      badge: language === 'hi' ? 'चित्र दीर्घा' : language === 'mr' ? 'चित्र दालन' : 'Photo Prints',
+      badge: language === 'hi' ? 'चित्र दीर्घा' : language === 'mr' ? 'चित्र दालन' : language === 'ta' ? 'புகைப்படங்கள்' : language === 'bn' ? 'চিত্রশালা' : 'Photo Prints',
     },
     {
       id: 'graph',
@@ -133,7 +133,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       title: t.wingGraphTitle || '3D Knowledge Graph',
       subtitle: t.wingGraphSub || 'Interactive Semantic Lineage & Map',
       icon: Network,
-      badge: language === 'hi' ? 'ज्ञान संजाल' : language === 'mr' ? 'ज्ञान आलेख' : 'Semantic Map',
+      badge: language === 'hi' ? 'ज्ञान संजाल' : language === 'mr' ? 'ज्ञान आलेख' : language === 'ta' ? 'அறிவு வரைபடம்' : language === 'bn' ? 'জ্ঞান মানচিত্র' : 'Semantic Map',
     },
     {
       id: 'stories',
@@ -141,7 +141,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       title: t.wingStoriesTitle || 'Audio Stories',
       subtitle: t.wingStoriesSub || 'Guided Audiovisual Walkthroughs',
       icon: Star,
-      badge: language === 'hi' ? 'कथा यात्रा' : language === 'mr' ? 'कथा यात्रा' : 'Guided Narrative',
+      badge: language === 'hi' ? 'कथा यात्रा' : language === 'mr' ? 'कथा यात्रा' : language === 'ta' ? 'வரலாற்றுக் கதைகள்' : language === 'bn' ? 'জীবনগাথা' : 'Guided Narrative',
     },
     {
       id: 'quest',
@@ -149,7 +149,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       title: t.wingQuestTitle || 'Interactive Quest',
       subtitle: t.wingQuestSub || 'Constitutional Challenges & Quiz',
       icon: Zap,
-      badge: language === 'hi' ? 'प्रश्नोत्तरी' : language === 'mr' ? 'प्रश्नोत्तरी' : 'Constitutional Quiz',
+      badge: language === 'hi' ? 'प्रश्नोत्तरी' : language === 'mr' ? 'प्रश्नोत्तरी' : language === 'ta' ? 'வினாடி வினா' : language === 'bn' ? 'কুইজ' : 'Constitutional Quiz',
     },
     {
       id: 'collection',
@@ -157,7 +157,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       title: t.wingCollectionTitle || 'Personal Notebook',
       subtitle: t.wingCollectionSub || 'Saved Dossier & Scholarly Notes',
       icon: Bookmark,
-      badge: language === 'hi' ? 'नोंदवही' : language === 'mr' ? 'नोंदवही' : 'Saved Dossier',
+      badge: language === 'hi' ? 'नोंदवही' : language === 'mr' ? 'नोंदवही' : language === 'ta' ? 'குறிப்பேடு' : language === 'bn' ? 'নোটবই' : 'Saved Dossier',
     },
   ];
 
@@ -173,6 +173,18 @@ export const HomeView: React.FC<HomeViewProps> = ({
     'पुणे करार',
     'कलम 32',
     'रुपयाचा प्रश्न'
+  ] : language === 'ta' ? [
+    'சாதி ஒழிப்பு',
+    'அரசியலமைப்புச் சபை',
+    'பூனா ஒப்பந்தம்',
+    'உறுப்பு 32',
+    'ரூபாயின் சிக்கல்'
+  ] : language === 'bn' ? [
+    'জাতপাত উচ্ছেদ',
+    'গণপরিষদ বিতর্ক',
+    'পুনা চুক্তি',
+    'অনুচ্ছেদ ৩২',
+    'টাকার সমস্যা'
   ] : [
     'Annihilation of Caste',
     'Constituent Assembly',
