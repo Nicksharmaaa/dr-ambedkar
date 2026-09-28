@@ -10,6 +10,7 @@ import { UI_STRINGS } from '@/utils/i18n';
 import { MEDIA_RECORDS, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { SoundboardWidget } from './SoundboardWidget';
 import { soundEffects } from '@/utils/soundEffects';
+import MuseumGrandPavilion from './MuseumGrandPavilion';
 
 interface MediaArchiveViewProps {
   language: Language;
@@ -55,26 +56,18 @@ export const MediaArchiveView: React.FC<MediaArchiveViewProps> = ({
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Museum Header Bar */}
-        <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#F3E4C9] text-[#8B5E3C] border border-[#D3D4C0] rounded-full text-xs font-bold font-mono uppercase tracking-wider">
-              <Radio className="w-3.5 h-3.5 text-[#8B5E3C]" />
-              <span>Audiovisual Archive · 1930–1956</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-serif-editorial font-bold text-[#0A2947] tracking-tight">
-              {t.mediaTitle || "Voice of Dr. B. R. Ambedkar"}
-            </h1>
-            <p className="text-xs sm:text-sm text-[#0A2947]/75 font-normal leading-relaxed">
-              {t.mediaSubtitle || "Restored radio broadcasts, Constituent Assembly orations, and BBC interviews with synchronized multi-script transcripts."}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="px-3.5 py-1.5 bg-[#FAF7F0] text-[#8B5E3C] border border-[#D3D4C0] text-xs font-mono font-bold rounded-xl shadow-2xs">
-              24-Bit / 96kHz High Fidelity
-            </span>
-          </div>
-        </div>
+        <MuseumGrandPavilion
+          title={
+            <>
+              Historic Audio &{' '}
+              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                Voice
+              </span>{' '}
+              Recordings
+            </>
+          }
+          watermarkIcon={Radio}
+        />
 
         {/* 1. Interactive Soundboard Widget Spotlight */}
         <SoundboardWidget

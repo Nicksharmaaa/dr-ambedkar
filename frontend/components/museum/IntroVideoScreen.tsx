@@ -103,7 +103,7 @@ export const IntroVideoScreen: React.FC<IntroVideoScreenProps> = ({
     <div
       role="dialog"
       aria-label="Museum Exhibition Prologue"
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-[#07131F] text-[#FAF7F0] overflow-hidden select-none transition-opacity duration-700 ${
+      className={`fixed inset-0 z-[999999] flex items-center justify-center bg-[#07131F] text-[#FAF7F0] overflow-hidden select-none transition-opacity duration-700 ${
         isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >

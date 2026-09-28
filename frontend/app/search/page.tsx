@@ -26,6 +26,7 @@ import { api } from "@/lib/api";
 import { SearchResultChunk } from "@/lib/types";
 import { VoiceSearchModal } from "@/components/voice/VoiceSearchModal";
 import VoicePill from "@/components/ui/VoicePill";
+import { MuseumGrandPavilion } from "@/components/museum/MuseumGrandPavilion";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -521,20 +522,20 @@ function SearchContent() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl sm:text-4xl font-serif font-bold text-slate-100">
-          Corpus Search &amp; Retrieval
-        </h1>
-        <p className="mt-2 text-sm text-slate-400 max-w-xl mx-auto">
-          Query Dr. Ambedkar&apos;s archival writings with hybrid FTS5 BM25 lexical search,
-          Qwen3 semantic vector embeddings, and cross-encoder reranking.
-        </p>
-      </div>
-
-      {/* Stats bar */}
-      <div className="mb-4">
-        <StatsBar stats={stats} />
+      {/* Grand Pavilion Header */}
+      <div className="mb-8">
+        <MuseumGrandPavilion
+          title={
+            <>
+              Canonical &amp;{' '}
+              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                Semantic
+              </span>{' '}
+              Search
+            </>
+          }
+          watermarkIcon={Search}
+        />
       </div>
 
       {/* Search Input */}

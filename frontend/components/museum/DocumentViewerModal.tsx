@@ -142,7 +142,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 lg:p-6 bg-[#0A2947]/75 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-150 font-dmsans">
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center p-2 sm:p-4 lg:p-6 bg-[#0A2947]/85 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-150 font-dmsans">
       <div
         className="w-full max-w-7xl max-h-[94vh] bg-[#FAF7F0] border-2 border-[#D3D4C0] rounded-3xl shadow-2xl flex flex-col overflow-hidden text-[#0A2947]"
         role="dialog"

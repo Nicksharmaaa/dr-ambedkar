@@ -346,7 +346,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
           Grounded on 22 BAWS volumes - Docked snug to bottom corner
           ===================================================================== */}
       {isChatOpen && (
-        <div className="fixed bottom-[84px] right-4 sm:bottom-[96px] sm:right-5 z-50 w-[92vw] sm:w-[370px] max-h-[60vh] h-[410px] bg-[#FAF7F0] rounded-2xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div className="fixed bottom-[84px] right-4 sm:bottom-[96px] sm:right-5 z-[999999] w-[92vw] sm:w-[370px] max-h-[60vh] h-[410px] bg-[#FAF7F0] rounded-2xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
           
           {/* Compact Header */}
           <div className="bg-[#0A2947] text-[#F3E4C9] px-3.5 py-2.5 flex items-center justify-between border-b-2 border-[#8B5E3C]">
@@ -604,7 +604,7 @@ export const FloatingAssistantDock: React.FC<FloatingAssistantDockProps> = ({
           Shows saved citations, folios, personal notes, and export options
           ===================================================================== */}
       {isNotebookOpen && (
-        <div className="fixed bottom-[64px] right-4 sm:bottom-[70px] sm:right-5 z-50 w-[92vw] sm:w-[360px] max-h-[58vh] h-[390px] bg-[#FAF7F0] rounded-2xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div className="fixed bottom-[64px] right-4 sm:bottom-[70px] sm:right-5 z-[999999] w-[92vw] sm:w-[360px] max-h-[58vh] h-[390px] bg-[#FAF7F0] rounded-2xl border-2 border-[#D3D4C0] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
           
           {/* Notebook Header */}
           <div className="bg-[#8B5E3C] text-[#F3E4C9] px-5 py-3.5 flex items-center justify-between border-b-2 border-[#0A2947]">

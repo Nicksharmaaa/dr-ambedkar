@@ -17,6 +17,7 @@ import { soundEffects } from '@/utils/soundEffects';
 import { speechController, voiceRecognitionController } from '@/utils/speechUtils';
 import { api } from '@/lib/api';
 import VoicePill from '@/components/ui/VoicePill';
+import MuseumGrandPavilion from './MuseumGrandPavilion';
 
 interface ResearchAssistantViewProps {
   language: Language;
@@ -667,73 +668,32 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
             HEADER: Large Elegant Research Panel / Workspace
             BABASAHEB AI SCHOLAR · ARCHIVE-GROUNDED RESEARCH ASSISTANT
             ========================================================================= */}
-        <header className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-10 shadow-xs relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#8B5E3C]" />
-
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="flex items-start sm:items-center gap-4 sm:gap-6 max-w-3xl">
-              <div className="w-16 h-16 sm:w-22 sm:h-22 rounded-full overflow-hidden border-2 border-[#C59A45] shadow-md shrink-0 bg-[#0A2947]">
-                <img src="/chatbot.png" alt="Babasaheb AI Scholar" className="w-full h-full object-cover" />
-              </div>
-
-              <div className="space-y-2">
-                {/* Verification Status Pill */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-mono font-bold tracking-wider uppercase shadow-2xs">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
-                    GROUNDED IN VERIFIED SOURCES
-                  </span>
-                  <span className="text-xs font-mono text-[#0A2947]/60">
-                    · 22 BAWS Volumes & Constituent Assembly Debates (CAD)
-                  </span>
-                </div>
-
-                {/* Museum Editorial Title */}
-                <div>
-                  <h1 className="text-3xl sm:text-5xl font-serif-editorial font-bold text-[#0A2947] tracking-tight">
-                    {t.chatbotTitle || "BABASAHEB AI SCHOLAR"}
-                  </h1>
-                  <p className="text-xs sm:text-sm font-cinzel tracking-widest text-[#8B5E3C] uppercase font-bold mt-1">
-                    {t.askAssistantSubtitle || "ARCHIVE-GROUNDED RESEARCH ASSISTANT & JURISPRUDENTIAL SYNTHESIZER"}
-                  </p>
-                </div>
-
-                <p className="text-sm sm:text-base text-[#0A2947]/80 font-dmsans leading-relaxed">
-                  {t.heroDescription || "A curatorial research companion grounded strictly in the verified historical corpus of Dr. B. R. Ambedkar. Every synthesis cites primary Constituent Assembly Debates, doctoral treatises, and legislative records with accession provenance."}
-                </p>
-              </div>
-            </div>
-
-            {/* Curatorial Seal */}
-            <div className="shrink-0 flex flex-row lg:flex-col items-start sm:items-end gap-2 bg-[#FAF7F0] p-5 rounded-2xl border border-[#D3D4C0]">
-              <div className="text-[11px] font-mono font-bold text-[#8B5E3C] uppercase">
-                Scholarly Integrity
-              </div>
-              <div className="text-xs font-dmsans text-[#0A2947] font-semibold flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-700" />
-                <span>Zero Hallucination Policy</span>
-              </div>
-              <div className="text-[10px] font-mono text-[#0A2947]/60">
-                113,664+ Pages Indexed · 22 BAWS Vols
-              </div>
-            </div>
-          </div>
-
-          {/* Active Document Context Banner if user came from a specific folio */}
+        <MuseumGrandPavilion
+          title={
+            <>
+              Babasaheb{' '}
+              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                AI Scholar
+              </span>{' '}
+              Lab
+            </>
+          }
+          watermarkIcon={Sparkles}
+        >
           {activeDocumentContext && (
-            <div className="mt-6 pt-5 border-t border-[#D3D4C0] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FAF7F0] p-4 rounded-2xl border border-[#D3D4C0]">
+            <div className="pt-4 border-t border-[#C59A45]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/[0.04] p-4 rounded-2xl border border-[#C59A45]/30">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-[#0A2947] text-[#F3E4C9] rounded-xl shrink-0">
+                <div className="p-2 bg-[#FAF7F0]/10 text-[#F5D77F] rounded-xl shrink-0">
                   <FileText className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-[10px] font-mono text-[#8B5E3C] uppercase font-bold">
+                  <div className="text-[10px] font-mono text-[#D4AF37] uppercase font-bold">
                     Active Document Focus · {activeDocumentContext.year}
                   </div>
-                  <h4 className="font-serif-editorial font-bold text-sm text-[#0A2947]">
+                  <h4 className="font-serif-editorial font-bold text-sm text-white">
                     {activeDocumentContext.title}
                   </h4>
-                  <div className="text-[10px] font-mono text-[#0A2947]/60">
+                  <div className="text-[10px] font-mono text-[#FAF7F0]/60">
                     Accession: {activeDocumentContext.accessionNo} · {activeDocumentContext.collection}
                   </div>
                 </div>
@@ -742,15 +702,15 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
               <div className="flex items-center gap-2 self-end sm:self-center">
                 <button
                   onClick={() => handleAsk(`Explain the document currently open: "${activeDocumentContext.title}"`)}
-                  className="px-3 py-1.5 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#F3E4C9] rounded-xl text-xs font-montserrat font-bold uppercase transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-[#C59A45] hover:bg-[#D4AF37] text-[#0A2947] rounded-xl text-xs font-montserrat font-bold uppercase transition-colors cursor-pointer flex items-center gap-1.5"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-[#F3E4C9]" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#0A2947]" />
                   <span>Explain This Folio</span>
                 </button>
                 {onClearDocumentContext && (
                   <button
                     onClick={onClearDocumentContext}
-                    className="p-1.5 text-[#0A2947]/60 hover:text-[#0A2947] rounded-lg hover:bg-white transition-colors cursor-pointer"
+                    className="p-1.5 text-[#FAF7F0]/60 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
                     title="Clear Document Focus"
                   >
                     <X className="w-4 h-4" />
@@ -759,7 +719,7 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
               </div>
             </div>
           )}
-        </header>
+        </MuseumGrandPavilion>
 
         {/* =========================================================================
             CENTRAL RESEARCH INQUIRY INPUT BAR & QUICK CHIPS

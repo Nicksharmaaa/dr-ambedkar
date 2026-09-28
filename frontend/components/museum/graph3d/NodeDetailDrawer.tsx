@@ -137,7 +137,7 @@ export const NodeDetailDrawer: React.FC<NodeDetailDrawerProps> = ({
   if (isMinimized) {
     return (
       <div 
-        className="fixed bottom-6 right-6 z-[10000] w-80 sm:w-96 bg-white/95 backdrop-blur-xl border-2 border-[#D3D4C0] rounded-2xl shadow-2xl p-4 text-[#0A2947] animate-in fade-in slide-in-from-bottom-2"
+        className="fixed bottom-6 right-6 z-[999999] w-80 sm:w-96 bg-white/95 backdrop-blur-xl border-2 border-[#D3D4C0] rounded-2xl shadow-2xl p-4 text-[#0A2947] animate-in fade-in slide-in-from-bottom-2"
         role="region"
         aria-label={`Summary for ${node.label}`}
       >
@@ -206,7 +206,7 @@ export const NodeDetailDrawer: React.FC<NodeDetailDrawerProps> = ({
 
   return (
     <aside 
-      className="fixed inset-y-0 right-0 z-[10000] w-full sm:w-[460px] lg:w-[490px] bg-white/98 backdrop-blur-2xl border-l-2 border-[#D3D4C0] text-[#0A2947] shadow-2xl flex flex-col transition-transform duration-300 ease-out transform translate-x-0"
+      className="fixed inset-y-0 right-0 z-[999999] w-full sm:w-[460px] lg:w-[490px] bg-white/98 backdrop-blur-2xl border-l-2 border-[#D3D4C0] text-[#0A2947] shadow-2xl flex flex-col transition-transform duration-300 ease-out transform translate-x-0"
       aria-label={`Archival Dossier for ${node.label}`}
     >
       {/* 1. Header Bar */}

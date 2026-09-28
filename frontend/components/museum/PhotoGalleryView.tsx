@@ -14,6 +14,7 @@ import { ALL_ARCHIVAL_PHOTOS } from '@/data/archivalGalleryData';
 import { soundEffects } from '@/utils/soundEffects';
 import { Masonry, MasonryItem } from '@/components/ui/Masonry';
 import { getCdnImageUrl } from '@/utils/imageCdn';
+import MuseumGrandPavilion from './MuseumGrandPavilion';
 
 // Complete curated archival collection for dedicated photo gallery view
 const ALL_PHOTOS: HistoricalPhoto[] = [...HISTORICAL_PHOTOS, ...ALL_ARCHIVAL_PHOTOS];
@@ -202,36 +203,18 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
       <div className="max-w-7xl mx-auto space-y-10">
         
         {/* Curatorial Header */}
-        <div className="border-b-2 border-[#D3D4C0] pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-3 max-w-3xl">
-            <div className="flex items-center gap-2 text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-widest">
-              <Camera className="w-3.5 h-3.5 text-[#8B5E3C]" />
-              <span>VISUAL DOCUMENTARY COLLECTION</span>
-              <span aria-hidden="true">·</span>
-              <span className="font-mono text-[#0A2947]">1891–1956</span>
-              <span aria-hidden="true">·</span>
-              <span className="tabular-nums font-semibold text-[#0A2947] font-mono">{ALL_PHOTOS.length} Archived Photographic Plates</span>
-            </div>
-
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif-editorial font-bold tracking-tight text-[#0A2947] leading-tight">
-              {t.wingGalleryTitle || "Photographic Folio & Visual History"}
-            </h1>
-
-            <p className="text-xs sm:text-sm text-[#0A2947]/75 leading-relaxed font-dmsans">
-              {t.wingGallerySub ? `${t.wingGallerySub} — 1916–1956` : "Curated archival plates from 1916 to 1956 — historic assemblies, university research, and constitutional sessions."}
-            </p>
-          </div>
-
-          {/* Quick Stats & Exhibition Provenance */}
-          <div className="flex flex-col sm:flex-row md:flex-col items-start md:items-end gap-1.5 text-xs text-[#0A2947]/70">
-            <span className="font-montserrat text-[#8B5E3C] font-bold uppercase tracking-wider text-[11px]">
-              Archival Repositories
-            </span>
-            <span className="text-[#0A2947]/80 text-right">
-              National Archives · Parliamentary Museum · Bombay State Archives
-            </span>
-          </div>
-        </div>
+        <MuseumGrandPavilion
+          title={
+            <>
+              Photographic Folio &{' '}
+              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                Visual
+              </span>{' '}
+              History
+            </>
+          }
+          watermarkIcon={Camera}
+        />
 
         {/* Curatorial Controls & Filter Bar */}
         <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-5 sm:p-6 shadow-xs space-y-4">
@@ -644,7 +627,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
         {/* LIGHTBOX MODAL: DEEP CURATORIAL INSPECTION */}
         {selectedPhoto && (
           <div 
-            className="fixed inset-0 z-50 bg-stone-950/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 lg:p-8 animate-in fade-in duration-200"
+            className="fixed inset-0 z-[999999] bg-stone-950/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 lg:p-8 animate-in fade-in duration-200"
             role="dialog"
             aria-modal="true"
             aria-label={selectedPhoto.title}

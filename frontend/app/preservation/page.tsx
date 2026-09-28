@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { soundEffects } from "@/utils/soundEffects";
+import MuseumGrandPavilion from "@/components/museum/MuseumGrandPavilion";
 
 export default function PreservationDashboardPage() {
   const [report, setReport] = useState<any>(null);
@@ -178,26 +179,19 @@ export default function PreservationDashboardPage() {
         {/* =========================================================================
             1. CURATORIAL PRESERVATION HEADER (Matches Memorials & Archive Theme)
             ========================================================================= */}
-        <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-8 shadow-xs relative overflow-hidden flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#8B5E3C] via-[#C89D56] to-[#0A2947]" />
-
-          <div className="space-y-3 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FAF7F0] border border-[#D3D4C0] rounded-full text-xs font-mono font-bold tracking-wider uppercase text-[#8B5E3C]">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#C89D56]" />
-              <span>Digital Preservation · Cryptographic Fixity (PREMIS 3.0)</span>
-            </div>
-
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif-editorial font-bold text-[#0A2947] tracking-tight leading-tight">
-              PREMIS 3.0 Preservation & Fixity Conservatory
-            </h1>
-
-            <p className="text-xs sm:text-sm text-[#0A2947]/75 font-normal leading-relaxed font-dmsans">
-              Real-time cryptographic fixity audits, SHA-256 bit-level integrity verification, immutable WORM-standard storage enforcement, and IIIF 3.0 / ALTO v4.2 presentation layers safeguarding Dr. B. R. Ambedkar&apos;s 22-volume national corpus.
-            </p>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
+        <MuseumGrandPavilion
+          title={
+            <>
+              Preservation &{' '}
+              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                Fixity
+              </span>{' '}
+              Conservatory
+            </>
+          }
+          watermarkIcon={ShieldCheck}
+        >
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-2">
             <button
               type="button"
               onClick={() => {
@@ -205,10 +199,10 @@ export default function PreservationDashboardPage() {
                 fetchStatus();
               }}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-[#FAF7F0] border-2 border-[#D3D4C0] text-[#0A2947] text-xs font-mono font-bold transition-all shadow-2xs hover:border-[#8B5E3C] cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-[#C59A45]/30 text-white text-xs font-mono font-bold transition-all shadow-2xs cursor-pointer disabled:opacity-50"
               title="Refresh Preservation Audit Status"
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-[#8B5E3C] ${loading ? "animate-spin" : ""}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-[#F5D77F] ${loading ? "animate-spin" : ""}`} />
               <span>Refresh Status</span>
             </button>
 
@@ -216,14 +210,14 @@ export default function PreservationDashboardPage() {
               type="button"
               onClick={handleRunAllFixity}
               disabled={checkingAll}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0A2947] hover:bg-[#124273] text-[#FAF7F0] border border-[#0A2947] text-xs font-mono font-bold transition-all shadow-xs hover:shadow-md cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C59A45] hover:bg-[#D4AF37] text-[#0A2947] font-black text-xs font-mono transition-all shadow-xs hover:shadow-md cursor-pointer disabled:opacity-50"
               title="Execute full SHA-256 fixity audit across all volumes"
             >
-              <ShieldCheck className={`w-3.5 h-3.5 text-[#C89D56] ${checkingAll ? "animate-spin" : ""}`} />
+              <ShieldCheck className={`w-3.5 h-3.5 ${checkingAll ? "animate-spin" : ""}`} />
               <span>{checkingAll ? "Verifying Archive..." : "Run Fixity Audit"}</span>
             </button>
           </div>
-        </div>
+        </MuseumGrandPavilion>
 
         {/* =========================================================================
             2. FIXITY AUDIT COMPLETE BANNER

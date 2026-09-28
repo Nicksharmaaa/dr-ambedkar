@@ -10,6 +10,7 @@ import { UI_STRINGS } from '@/utils/i18n';
 import { ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { api } from '@/lib/api';
+import MuseumGrandPavilion from './MuseumGrandPavilion';
 
 interface MyCollectionViewProps {
   language: Language;
@@ -116,28 +117,26 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* Header Breadcrumb & Title */}
-        <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-          <div className="space-y-2">
-            <div className="text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-wider flex items-center gap-2">
-              <Bookmark className="w-3.5 h-3.5 text-[#8B5E3C]" />
-              <span>RESEARCHER CURATORIAL NOTEBOOK & DESK</span>
-            </div>
-            <h1 className="font-serif-editorial text-3xl sm:text-4xl lg:text-5xl font-bold text-[#0A2947] tracking-tight">
-              {t.myCollectionTitle || "My Archival Folios & Citations"}
-            </h1>
-            <p className="text-sm text-[#0A2947]/75 max-w-2xl font-dmsans">
-              {t.myCollectionSubtitle || "Your personalized academic workspace for cross-referencing primary treatises, annotating legal passages, and generating peer-reviewed citations."}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
+        <MuseumGrandPavilion
+          title={
+            <>
+              Researcher{' '}
+              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                Notebook
+              </span>{' '}
+              & Desk
+            </>
+          }
+          watermarkIcon={Bookmark}
+        >
+          <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               onClick={handleDownloadResearchPack}
               disabled={isDownloadingPack || savedItems.length === 0}
-              className="px-4 py-2.5 bg-[#FAF7F0] hover:bg-[#F3E4C9] disabled:opacity-40 text-[#0A2947] border border-[#D3D4C0] hover:border-[#8B5E3C] rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
+              className="px-4 py-2.5 bg-white/10 hover:bg-white/20 disabled:opacity-40 text-white border border-[#C59A45]/30 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
               title="Download full archival ZIP with Manuscripts, Transcripts, Metadata & Citations"
             >
-              <Package className="w-4 h-4 text-[#8B5E3C]" />
+              <Package className="w-4 h-4 text-[#F5D77F]" />
               <span>{isDownloadingPack ? 'Packaging ZIP...' : 'Research Pack (.ZIP)'}</span>
             </button>
 
@@ -147,13 +146,13 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
                 setIsExportModalOpen(true);
               }}
               disabled={savedItems.length === 0}
-              className="px-5 py-2.5 bg-[#0A2947] hover:bg-[#8B5E3C] disabled:opacity-40 text-[#F3E4C9] rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-colors flex items-center gap-2 shadow-xs cursor-pointer"
+              className="px-5 py-2.5 bg-[#C59A45] hover:bg-[#D4AF37] disabled:opacity-40 text-[#0A2947] font-black rounded-xl text-xs font-montserrat uppercase tracking-wider transition-colors flex items-center gap-2 shadow-xs cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export Citations</span>
             </button>
           </div>
-        </div>
+        </MuseumGrandPavilion>
 
         {/* Filter Bar */}
         <div className="flex flex-wrap items-center gap-2 border-b-2 border-[#D3D4C0] pb-4 text-xs">
@@ -322,7 +321,7 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
 
       {/* Export Citations Modal */}
       {isExportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0A2947]/75 backdrop-blur-xs animate-in fade-in">
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-[#0A2947]/80 backdrop-blur-md animate-in fade-in">
           <div className="w-full max-w-lg bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 space-y-5 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-[#D3D4C0]">
               <h3 className="font-serif-editorial text-xl font-bold text-[#0A2947]">

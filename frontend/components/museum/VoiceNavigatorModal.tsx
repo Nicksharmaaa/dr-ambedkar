@@ -242,7 +242,7 @@ export const VoiceNavigatorModal: React.FC<VoiceNavigatorModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0A2947]/75 backdrop-blur-md animate-in fade-in duration-200 font-dmsans"
+      className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-[#0A2947]/80 backdrop-blur-md animate-in fade-in duration-200 font-dmsans"
       onClick={onClose}
     >
       <div 

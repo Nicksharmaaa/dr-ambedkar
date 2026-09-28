@@ -2,11 +2,11 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import {
-  Search, Filter, BookOpen, Scale, Mic, MicOff, Scroll, FileText,
+  Search, Filter, BookOpen,
   ArrowRight, RotateCcw, Sparkles, LayoutGrid, List, Columns3,
   Bookmark, Check, Copy, CheckCircle2, ChevronDown, SlidersHorizontal,
-  X, ExternalLink, Calendar, MapPin, Landmark, Compass, Eye, Maximize2,
-  ShieldCheck, Volume2, VolumeX, Tag, Award, BookMarked, Shield
+  X, Calendar, Landmark, Eye,
+  ShieldCheck, Volume2, Tag
 } from 'lucide-react';
 import { Language, ArchivalDocument } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
@@ -14,6 +14,7 @@ import { ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { speechController, voiceRecognitionController } from '@/utils/speechUtils';
 import VoicePill from '@/components/ui/VoicePill';
+import { MuseumGrandPavilion } from './MuseumGrandPavilion';
 
 interface ExploreArchiveViewProps {
   language: Language;
@@ -330,71 +331,30 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
         {/* =========================================================================
             1. MUSEUM ARCHIVAL GRAND PAVILION & LIVE STATS
             ========================================================================= */}
-        <div className="bg-[#0A2947] text-[#FAF7F0] border-2 border-[#C59A45]/50 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
-
-          {/* Antique Brass Corner Accents */}
-          <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-[#C59A45]/60 pointer-events-none" />
-          <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-[#C59A45]/60 pointer-events-none" />
-          <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-[#C59A45]/60 pointer-events-none" />
-          <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-[#C59A45]/60 pointer-events-none" />
-
-          {/* Background Ambient Glow */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#C59A45]/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-            <div className="space-y-3.5 max-w-3xl">
-
-              <h1 className="text-3xl sm:text-5xl font-serif-editorial font-bold text-white tracking-tight leading-tight">
-                {t.exploreTitle || "Manuscripts & Primary Archival Corpus"}
-              </h1>
-            </div>
-
-            {/* Live Repository Stat Counters */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 lg:pt-0 border-t lg:border-t-0 lg:border-l lg:pl-8 border-[#C59A45]/30 shrink-0">
-              <div className="space-y-0.5 bg-white/5 p-3 rounded-2xl border border-white/10 text-center sm:text-left">
-                <span className="text-2xl sm:text-3xl font-serif-editorial font-bold text-[#D4AF37] block">
-                  22
-                </span>
-                <span className="text-[10px] font-montserrat font-bold text-[#F3E4C9] uppercase tracking-wider block">
-                  {t.wingArchiveSub ? t.wingArchiveSub.split('·')[0].trim() : "BAWS Volumes"}
-                </span>
-              </div>
-
-              <div className="space-y-0.5 bg-white/5 p-3 rounded-2xl border border-white/10 text-center sm:text-left">
-                <span className="text-2xl sm:text-3xl font-serif-editorial font-bold text-[#D4AF37] block">
-                  113,664+
-                </span>
-                <span className="text-[10px] font-montserrat font-bold text-[#F3E4C9] uppercase tracking-wider block">
-                  {language === 'hi' ? 'पृष्ठ अनुक्रमित' : language === 'mr' ? 'पृष्ठे अनुक्रमित' : 'Pages Indexed'}
-                </span>
-              </div>
-
-              <div className="space-y-0.5 bg-white/5 p-3 rounded-2xl border border-white/10 text-center sm:text-left">
-                <span className="text-2xl sm:text-3xl font-serif-editorial font-bold text-[#D4AF37] block">
-                  {ARCHIVE_DOCUMENTS.length}
-                </span>
-                <span className="text-[10px] font-montserrat font-bold text-[#F3E4C9] uppercase tracking-wider block">
-                  {t.foliosCount || "Curated Folios"}
-                </span>
-              </div>
-
-              <div className="space-y-0.5 bg-white/5 p-3 rounded-2xl border border-white/10 text-center sm:text-left">
-                <span className="text-2xl sm:text-3xl font-serif-editorial font-bold text-[#D4AF37] block">
-                  {allSources.length}
-                </span>
-                <span className="text-[10px] font-montserrat font-bold text-[#F3E4C9] uppercase tracking-wider block">
-                  {language === 'hi' ? 'संग्रहागार' : language === 'mr' ? 'संग्रहालय' : 'Repositories'}
-                </span>
-              </div>
-            </div>
-
-          </div>
-        </div>
+        <MuseumGrandPavilion
+          title={
+            language === 'en' ? (
+              <>
+                Manuscripts &amp;{' '}
+                <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                  Archival
+                </span>{' '}
+                Corpus
+              </>
+            ) : (
+              <span className="bg-gradient-to-r from-white via-[#FAF7F0] to-[#EAD8B1] bg-clip-text text-transparent">
+                {language === 'hi' ? 'पांडुलिपियां एवं अभिलेखीय कोष' : language === 'mr' ? 'हस्तलिखिते व ऐतिहासिक दस्तऐवज' : t.exploreTitle}
+              </span>
+            )
+          }
+          watermarkIcon={Landmark}
+        />
 
         {/* =========================================================================
             3. MUSEUM SEARCH & COMMAND CONSOLE WITH VOICE SEARCH BUTTON
             ========================================================================= */}
-        <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 shadow-sm space-y-4">
+        <div className="bg-gradient-to-b from-white to-[#FDFBF7] border border-[#D3D4C0] rounded-3xl p-6 sm:p-7 shadow-[0_12px_32px_rgba(10,41,71,0.05)] space-y-4 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8B5E3C] via-[#C59A45] to-[#0A2947]" />
 
           {/* Live Voice Status Indicator */}
           {voiceNotice && (
@@ -427,11 +387,11 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={isListeningVoice 
-                ? (language === 'hi' ? "सुन रहा हूँ... खोज विषय बोलें..." : language === 'mr' ? "ऐकत आहे... विषय बोला..." : "Listening... Speak your query...") 
+              placeholder={isListeningVoice
+                ? (language === 'hi' ? "सुन रहा हूँ... खोज विषय बोलें..." : language === 'mr' ? "ऐकत आहे... विषय बोला..." : "Listening... Speak your query...")
                 : (t.searchCorpusPlaceholder || "Search the archive by title, speech, clause...")}
               autoComplete="off"
-              className={`w-full pl-12 pr-32 sm:pr-40 py-4 bg-[#FAF7F0] border-2 text-[#0A2947] placeholder-[#0A2947]/50 rounded-2xl text-sm sm:text-base focus:outline-none transition-all font-dmsans ${isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40' : 'border-[#D3D4C0] focus:border-[#0A2947]'
+              className={`w-full pl-12 pr-32 sm:pr-40 py-4 bg-[#FAF7F0] hover:bg-white focus:bg-white border-2 text-[#0A2947] placeholder-[#0A2947]/50 rounded-2xl text-sm sm:text-base focus:outline-none transition-all font-dmsans ${isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40' : 'border-[#D3D4C0] focus:border-[#0A2947] focus:ring-4 focus:ring-[#0A2947]/5'
                 }`}
             />
 
@@ -462,7 +422,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="px-3 py-2 bg-white border border-[#D3D4C0] text-xs font-montserrat font-bold text-[#0A2947] rounded-xl hover:bg-[#FAF7F0] cursor-pointer"
+                  className="px-3 py-2 bg-white border border-[#D3D4C0] text-xs font-montserrat font-bold text-[#0A2947] rounded-xl hover:bg-[#FAF7F0] cursor-pointer shadow-2xs"
                 >
                   {language === 'hi' ? 'हटाएं' : language === 'mr' ? 'साफ करा' : 'Clear'}
                 </button>
@@ -472,7 +432,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
 
           {/* Semantic Search Live Status Banner */}
           {searchQuery.trim() && (
-            <div className="flex items-center justify-between text-xs px-3 py-2 rounded-xl bg-[#FAF7F0] border border-[#C59A45]/40 text-[#0A2947] font-mono">
+            <div className="flex items-center justify-between text-xs px-3.5 py-2.5 rounded-xl bg-[#FAF7F0] border border-[#C59A45]/40 text-[#0A2947] font-mono shadow-2xs">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-3.5 h-3.5 text-[#C59A45] animate-pulse shrink-0" />
                 {isSearchingSemantic ? (
@@ -499,16 +459,15 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                   soundEffects.playClick();
                   setSearchQuery(sug);
                 }}
-                className={`px-3 py-1 rounded-xl text-xs font-montserrat transition-all cursor-pointer ${searchQuery.toLowerCase() === sug.toLowerCase()
-                  ? 'bg-[#0A2947] text-[#F3E4C9] font-bold shadow-xs'
-                  : 'bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0]'
+                className={`px-3.5 py-1.5 rounded-full text-xs font-montserrat transition-all cursor-pointer ${searchQuery.toLowerCase() === sug.toLowerCase()
+                  ? 'bg-[#0A2947] text-[#FAF7F0] font-bold shadow-xs'
+                  : 'bg-white hover:bg-[#FAF7F0] text-[#0A2947] border border-[#D3D4C0] hover:border-[#0A2947]/40 shadow-2xs'
                   }`}
               >
                 {sug}
               </button>
             ))}
           </div>
-
         </div>
 
         {/* =========================================================================
