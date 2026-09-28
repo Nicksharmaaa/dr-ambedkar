@@ -87,10 +87,16 @@ async def get_document_page_alto(document_id: str, page_number: int):
         return Response(content=xml_content, media_type="application/xml")
 
     # On-demand fallback generation from chunks
-    chunk_res = await db.execute(
-        "SELECT text, chapter FROM chunks WHERE doc_id = ? AND page_est = ? ORDER BY chunk_index ASC",
-        [actual_id, page_number],
-    )
+    try:
+        chunk_res = await db.execute(
+            "SELECT text, section_title AS chapter FROM document_chunks WHERE object_id = ? AND page_number = ? ORDER BY chunk_index ASC",
+            [actual_id, page_number],
+        )
+    except Exception:
+        chunk_res = await db.execute(
+            "SELECT text, chapter FROM chunks WHERE doc_id = ? AND page_est = ? ORDER BY chunk_index ASC",
+            [actual_id, page_number],
+        )
     if not chunk_res.rows:
         raise HTTPException(status_code=404, detail=f"No content found for page {page_number}")
 

@@ -34,16 +34,17 @@ SARVAM_ASR_LANG_MAP: dict[str, str] = {
 
 class ASRProvider:
     """
-    Speech recognition provider using Sarvam AI (Saaras v3) and ElevenLabs (Scribe v1).
-    Routes Indic languages and Indian English to Sarvam Saaras v3;
-    Routes English to ElevenLabs Scribe v1 when available, with automatic cross-fallback.
+    Speech recognition provider using Groq Whisper Large v3 (primary)
+    with Sarvam AI (Saaras v3) fallback for Indic resilience.
     """
 
     def __init__(
         self,
+        api_key: str | None = None,
         sarvam_api_key: str | None = None,
         elevenlabs_api_key: str | None = None,
     ) -> None:
+        self.groq_api_key = api_key or settings.groq_api_key
         self.sarvam_api_key = sarvam_api_key or settings.sarvam_api_key
         self.elevenlabs_api_key = elevenlabs_api_key or settings.elevenlabs_api_key
 
@@ -55,8 +56,9 @@ class ASRProvider:
         prompt: str | None = None,
     ) -> dict[str, Any]:
         """
-        Transcribes audio bytes with word and segment timestamps using Sarvam AI or ElevenLabs.
-        Zero Groq calls.
+        Transcribes audio bytes with word and segment timestamps.
+        Primary: Groq Whisper Large v3 Turbo (ultra-low latency).
+        Fallback: Sarvam AI Saaras v3 (specialized Indic).
         """
         if len(audio_bytes) < 500:
             return {
@@ -85,22 +87,20 @@ class ASRProvider:
         if "-" in norm_lang:
             norm_lang = norm_lang.split("-")[0]
 
-        # 1. Primary Strategy:
-        # If language is English and ElevenLabs key is present, try ElevenLabs Scribe first,
-        # otherwise use Sarvam AI Saaras v3 (which excels at Indic + Indian English).
-        if norm_lang == "en" and self.elevenlabs_api_key:
-            res = await self._transcribe_elevenlabs(audio_bytes, filename, mime_type, norm_lang)
-            if res.get("text"):
+        # 1. Primary Strategy: Groq Whisper Large v3 Turbo
+        if self.groq_api_key:
+            res = await self._transcribe_groq(audio_bytes, filename, mime_type, norm_lang, prompt)
+            if not res.get("error"):
                 return res
-            logger.info("ElevenLabs ASR failed or unavailable, falling back to Sarvam AI ASR...")
+            logger.info("Groq Whisper STT failed, falling back to Sarvam AI ASR...")
 
-        # 2. Sarvam AI Saaras v3
+        # 2. Secondary Strategy: Sarvam AI Saaras v3
         if self.sarvam_api_key:
             res = await self._transcribe_sarvam(audio_bytes, filename, mime_type, norm_lang)
             if res.get("text") or not res.get("error"):
                 return res
 
-        # 3. If Sarvam had an error and ElevenLabs is available, try ElevenLabs fallback
+        # 3. Tertiary Strategy: ElevenLabs Scribe v1 fallback if configured and permitted
         if self.elevenlabs_api_key and norm_lang not in ("mr", "bn", "gu", "ta", "te", "kn", "ml", "pa", "od"):
             res = await self._transcribe_elevenlabs(audio_bytes, filename, mime_type, norm_lang)
             if res.get("text"):
@@ -110,8 +110,69 @@ class ASRProvider:
             "text": "",
             "language": language or "en",
             "segments": [],
-            "error": "Both Sarvam AI and ElevenLabs voice models failed to transcribe audio.",
+            "error": "All STT speech recognition models failed to transcribe audio.",
         }
+
+    async def _transcribe_groq(
+        self,
+        audio_bytes: bytes,
+        filename: str,
+        mime_type: str,
+        lang: str,
+        prompt: str | None = None,
+    ) -> dict[str, Any]:
+        """Transcribe using Groq Whisper Large v3 Turbo."""
+        url = "https://api.groq.com/openai/v1/audio/transcriptions"
+        headers = {
+            "Authorization": f"Bearer {self.groq_api_key}",
+        }
+        data = {
+            "model": "whisper-large-v3-turbo",
+            "response_format": "verbose_json",
+            "temperature": "0.0",
+        }
+        if lang in ("en", "hi", "mr"):
+            data["language"] = lang
+        if prompt:
+            data["prompt"] = prompt
+        else:
+            data["prompt"] = "Dr. B.R. Ambedkar, Constitution, Mahad Satyagraha, Dhamma, Annihilation of Caste"
+
+        files = {
+            "file": (filename, audio_bytes, mime_type),
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                res = await client.post(url, headers=headers, data=data, files=files)
+                if res.status_code == 200:
+                    resp_json = res.json()
+                    transcribed_text = resp_json.get("text", "").strip()
+                    detected_lang = resp_json.get("language", lang or "en")
+                    raw_segments = resp_json.get("segments", [])
+
+                    segments = []
+                    for s in raw_segments:
+                        segments.append({
+                            "start": round(s.get("start", 0.0), 2),
+                            "end": round(s.get("end", 0.0), 2),
+                            "text": s.get("text", "").strip(),
+                        })
+
+                    return {
+                        "text": transcribed_text,
+                        "language": detected_lang,
+                        "segments": segments,
+                        "duration": resp_json.get("duration", 0.0),
+                        "provider": "groq",
+                        "model": "whisper-large-v3-turbo",
+                    }
+                else:
+                    logger.warning("Groq Whisper returned HTTP %d: %s", res.status_code, res.text)
+                    return {"text": "", "error": f"Groq Whisper HTTP {res.status_code}"}
+        except Exception as e:
+            logger.error("Groq Whisper exception: %s", e)
+            return {"text": "", "error": str(e)}
 
     async def _transcribe_sarvam(
         self,

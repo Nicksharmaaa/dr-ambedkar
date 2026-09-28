@@ -82,15 +82,28 @@ class EmbeddingEngine:
         except Exception:
             pass
 
-        self._tokenizer = AutoTokenizer.from_pretrained(
-            self.model_name,
-            cache_dir=cache_dir,
-        )
-        self._model = AutoModel.from_pretrained(
-            self.model_name,
-            cache_dir=cache_dir,
-            torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
-        ).to(self.device)
+        try:
+            self._tokenizer = AutoTokenizer.from_pretrained(
+                self.model_name,
+                cache_dir=cache_dir,
+                local_files_only=True,
+            )
+            self._model = AutoModel.from_pretrained(
+                self.model_name,
+                cache_dir=cache_dir,
+                dtype=torch.float16 if self.device == "cuda" else torch.float32,
+                local_files_only=True,
+            ).to(self.device)
+        except Exception:
+            self._tokenizer = AutoTokenizer.from_pretrained(
+                self.model_name,
+                cache_dir=cache_dir,
+            )
+            self._model = AutoModel.from_pretrained(
+                self.model_name,
+                cache_dir=cache_dir,
+                dtype=torch.float16 if self.device == "cuda" else torch.float32,
+            ).to(self.device)
         self._model.eval()
 
         # Detect actual hidden dimension from model config

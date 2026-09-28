@@ -202,7 +202,7 @@ def get_db_client() -> DatabaseClient:
 
     from app.core.config import settings
 
-    url = settings.turso_db_url
+    url = getattr(settings, "database_url", None) or settings.turso_db_url
 
     if url.startswith("postgresql://") or url.startswith("postgres://") or "dbname=" in url or "host=" in url:
         from app.db.postgres_client import PostgresClient

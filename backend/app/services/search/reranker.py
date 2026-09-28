@@ -69,27 +69,46 @@ class RerankerService:
 
         # Check model architecture
         try:
-            cfg = AutoConfig.from_pretrained(self.model_name, cache_dir=cache_dir)
+            cfg = AutoConfig.from_pretrained(self.model_name, cache_dir=cache_dir, local_files_only=True)
             archs = getattr(cfg, "architectures", []) or []
             is_causal = any("CausalLM" in a for a in archs)
         except Exception:
-            is_causal = False
+            try:
+                cfg = AutoConfig.from_pretrained(self.model_name, cache_dir=cache_dir)
+                archs = getattr(cfg, "architectures", []) or []
+                is_causal = any("CausalLM" in a for a in archs)
+            except Exception:
+                is_causal = False
 
         target_model = self.model_name
         if is_causal:
             # If CausalLM requested, use compatible cross-encoder for standard scoring
             target_model = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
-        self._tokenizer = AutoTokenizer.from_pretrained(
-            target_model,
-            cache_dir=cache_dir,
-        )
-        self._model = AutoModelForSequenceClassification.from_pretrained(
-            target_model,
-            cache_dir=cache_dir,
-            torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
-            num_labels=1,
-        ).to(self.device)
+        try:
+            self._tokenizer = AutoTokenizer.from_pretrained(
+                target_model,
+                cache_dir=cache_dir,
+                local_files_only=True,
+            )
+            self._model = AutoModelForSequenceClassification.from_pretrained(
+                target_model,
+                cache_dir=cache_dir,
+                dtype=torch.float16 if self.device == "cuda" else torch.float32,
+                num_labels=1,
+                local_files_only=True,
+            ).to(self.device)
+        except Exception:
+            self._tokenizer = AutoTokenizer.from_pretrained(
+                target_model,
+                cache_dir=cache_dir,
+            )
+            self._model = AutoModelForSequenceClassification.from_pretrained(
+                target_model,
+                cache_dir=cache_dir,
+                dtype=torch.float16 if self.device == "cuda" else torch.float32,
+                num_labels=1,
+            ).to(self.device)
         self._model.eval()
         logger.info("Reranker model ready", extra={"model": target_model})
 

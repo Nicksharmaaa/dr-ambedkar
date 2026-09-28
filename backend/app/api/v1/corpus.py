@@ -58,8 +58,15 @@ async def get_corpus_stats(db: DatabaseClient = Depends(get_db_client)) -> dict[
             ORDER BY id
             """
         )
-        chunks_res = await db.execute("SELECT count(*) as c FROM chunks")
-        fts_res = await db.execute("SELECT count(*) as c FROM chunks_fts")
+        try:
+            chunks_res = await db.execute("SELECT count(*) as c FROM document_chunks")
+        except Exception:
+            chunks_res = await db.execute("SELECT count(*) as c FROM chunks")
+
+        try:
+            fts_res = await db.execute("SELECT count(*) as c FROM fts_chunks")
+        except Exception:
+            fts_res = await db.execute("SELECT count(*) as c FROM chunks_fts")
 
         volumes = []
         for row in docs_res.rows:

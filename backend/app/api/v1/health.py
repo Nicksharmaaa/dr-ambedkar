@@ -49,17 +49,22 @@ async def health_database() -> DatabaseHealthResponse:
         await db.execute("SELECT 1")
         latency_ms = (time.monotonic() - start) * 1000
 
-        # Verify critical tables exist (compatible with Turso/SQLite and PostgreSQL)
-        try:
-            tables_result = await db.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
-            )
-            table_names = [row["name"] for row in tables_result.rows]
-        except Exception:
+        # Verify critical tables exist (compatible with PostgreSQL and Turso/SQLite)
+        is_postgres = hasattr(db, "_pool") or "postgres" in str(type(db)).lower()
+        if is_postgres:
             tables_result = await db.execute(
                 "SELECT table_name AS name FROM information_schema.tables WHERE table_schema='public' ORDER BY table_name"
             )
-            table_names = [row["name"] for row in tables_result.rows]
+        else:
+            try:
+                tables_result = await db.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+                )
+            except Exception:
+                tables_result = await db.execute(
+                    "SELECT table_name AS name FROM information_schema.tables WHERE table_schema='public' ORDER BY table_name"
+                )
+        table_names = [row["name"] for row in tables_result.rows]
 
         return DatabaseHealthResponse(
             status="ok",
