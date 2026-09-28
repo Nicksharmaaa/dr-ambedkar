@@ -8,6 +8,7 @@ import {
 import { OCRJobRecord, ArchivalDocument, Language } from '@/types/museum';
 import { ADMIN_OCR_RECORDS, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
+import { MuseumGrandPavilion } from './MuseumGrandPavilion';
 
 interface AdminDashboardViewProps {
   language: Language;
@@ -72,30 +73,29 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Top Curatorial Admin Header */}
-        <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-8 shadow-xs flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-3 max-w-3xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 bg-[#0A2947] text-[#F3E4C9] text-xs font-cinzel uppercase tracking-wider font-bold rounded-xl flex items-center gap-1.5 shadow-xs">
-                <Lock className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                Curatorial Back-Office Registry
-              </span>
-              <span className="px-3 py-1 bg-[#FAF7F0] border border-[#D3D4C0] text-[#8B5E3C] text-xs font-montserrat uppercase tracking-wider font-bold rounded-xl">
-                Restricted Preservation Desk
-              </span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif-editorial font-bold text-[#0A2947] tracking-tight">
-              Archival Digitization & OCR Conservatory
-            </h1>
-            <p className="text-sm sm:text-base text-[#0A2947]/75 font-dmsans leading-relaxed">
+        <MuseumGrandPavilion
+          title={
+            <>
+              Conservatory &amp;{' '}
+              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                OCR Ingestion
+              </span>{' '}
+              Registry
+            </>
+          }
+          watermarkIcon={ShieldCheck}
+        >
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 pt-2">
+            <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed max-w-3xl">
               Verify optical character recognition accuracy across multilingual neural engines, calibrate Devanagari line segmentations, ingest historical manuscripts, and manage accession rights.
             </p>
+            <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-white/10 px-3.5 py-1.5 rounded-xl border border-white/15 shrink-0 shadow-2xs">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Audit Log: AES-256 Encrypted</span>
+            </div>
           </div>
+        </MuseumGrandPavilion>
 
-          <div className="flex flex-col sm:flex-row items-start md:items-end gap-1.5 text-xs text-[#0A2947]/70 font-mono">
-            <span>Conservator Session Active</span>
-            <span className="text-[#8B5E3C] font-bold">Audit Log: AES-256 Encrypted</span>
-          </div>
-        </div>
 
         {/* Analytics KPI Dashboard Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
