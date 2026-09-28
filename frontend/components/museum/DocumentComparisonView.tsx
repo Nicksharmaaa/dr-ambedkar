@@ -101,37 +101,37 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
 
 
       {/* Preset Pickers */}
-      <div className="mb-8">
-        <span className="text-xs font-montserrat uppercase tracking-wider font-bold text-neutral-500 block mb-2">
+      <div className="space-y-3">
+        <span className="text-xs font-montserrat uppercase tracking-wider font-bold text-[#8B5E3C] block">
           Curated Historical Case Studies
         </span>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {DOC_COMPARISON_PRESETS.map((preset) => {
             const isSelected = preset.id === selectedPresetId;
             return (
               <button
                 key={preset.id}
                 onClick={() => handleSelectPreset(preset)}
-                className={`p-4 text-left rounded-lg border-2 transition-all flex items-start justify-between gap-3 ${
+                className={`p-5 text-left rounded-3xl border-2 transition-all flex items-start justify-between gap-3 cursor-pointer shadow-xs ${
                   isSelected
-                    ? 'bg-blue-50/60 border-blue-600 shadow-md ring-2 ring-blue-500/20'
-                    : 'bg-white border-neutral-200 hover:border-black/30'
+                    ? 'bg-[#FAF7F0] border-[#0A2947] ring-2 ring-[#C89D56]/40 shadow-sm'
+                    : 'bg-white border-[#D3D4C0] hover:border-[#C59A45]'
                 }`}
               >
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-montserrat font-bold uppercase px-2 py-0.5 bg-neutral-100 text-neutral-700 rounded">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 bg-[#FAF7F0] text-[#8B5E3C] border border-[#D3D4C0] rounded-md">
                       Case Study
                     </span>
-                    <span className="text-xs font-montserrat font-semibold text-blue-700">
+                    <span className="text-sm font-serif-editorial font-bold text-[#0A2947]">
                       {preset.title}
                     </span>
                   </div>
-                  <p className="text-xs text-neutral-600 font-dmsans">
+                  <p className="text-xs text-[#0A2947]/75 font-dmsans leading-relaxed">
                     {preset.historicalEvolution}
                   </p>
                 </div>
-                <ArrowRight className={`w-4 h-4 shrink-0 mt-1 ${isSelected ? 'text-blue-700' : 'text-neutral-400'}`} />
+                <ArrowRight className={`w-4 h-4 shrink-0 mt-1 transition-colors ${isSelected ? 'text-[#8B5E3C]' : 'text-[#0A2947]/40'}`} />
               </button>
             );
           })}
@@ -139,13 +139,15 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
       </div>
 
       {/* Dynamic Document Selectors (Dropdowns for Custom Pairings) */}
-      <div className="bg-white border-2 border-black/10 rounded-xl p-5 mb-8 shadow-sm">
-        <span className="text-xs font-montserrat uppercase tracking-wider font-bold text-neutral-500 block mb-3">
+      <div className="bg-gradient-to-b from-white to-[#FDFBF7] border border-[#D3D4C0] rounded-3xl p-6 sm:p-7 shadow-xs space-y-4 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8B5E3C] via-[#C59A45] to-[#0A2947]" />
+
+        <span className="text-xs font-montserrat uppercase tracking-wider font-bold text-[#8B5E3C] block">
           Or Select Any Two Historical Texts to Compare:
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="doc-comparison-select-a" className="text-xs font-montserrat font-bold uppercase text-blue-800 block mb-1">
+            <label htmlFor="doc-comparison-select-a" className="text-xs font-montserrat font-bold uppercase text-[#0A2947] block mb-1.5">
               Document A (Primary / Baseline):
             </label>
             <select
@@ -156,7 +158,7 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
                 setDocAId(e.target.value);
                 setSelectedPresetId('');
               }}
-              className="w-full p-2.5 bg-neutral-50 border-2 border-neutral-300 rounded-lg text-xs font-montserrat font-bold text-black focus:outline-none focus:border-blue-600"
+              className="w-full p-3 bg-[#FAF7F0] border-2 border-[#D3D4C0] focus:border-[#0A2947] rounded-2xl text-xs font-montserrat font-bold text-[#0A2947] focus:outline-none cursor-pointer"
             >
               {ARCHIVE_DOCUMENTS.map(doc => (
                 <option key={doc.id} value={doc.id}>
@@ -167,7 +169,7 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
           </div>
 
           <div>
-            <label htmlFor="doc-comparison-select-b" className="text-xs font-montserrat font-bold uppercase text-amber-800 block mb-1">
+            <label htmlFor="doc-comparison-select-b" className="text-xs font-montserrat font-bold uppercase text-[#8B5E3C] block mb-1.5">
               Document B (Comparative Counterpart):
             </label>
             <select
@@ -178,7 +180,7 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
                 setDocBId(e.target.value);
                 setSelectedPresetId('');
               }}
-              className="w-full p-2.5 bg-neutral-50 border-2 border-neutral-300 rounded-lg text-xs font-montserrat font-bold text-black focus:outline-none focus:border-amber-600"
+              className="w-full p-3 bg-[#FAF7F0] border-2 border-[#D3D4C0] focus:border-[#8B5E3C] rounded-2xl text-xs font-montserrat font-bold text-[#0A2947] focus:outline-none cursor-pointer"
             >
               {ARCHIVE_DOCUMENTS.map(doc => (
                 <option key={doc.id} value={doc.id}>
@@ -191,115 +193,129 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
       </div>
 
       {/* Side-by-Side Dual Dossier Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Document A Column */}
-        <div className="bg-white border-2 border-blue-600/30 rounded-xl p-6 shadow-md flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between gap-2 border-b border-neutral-200 pb-3 mb-4">
-              <span className="text-[11px] font-montserrat uppercase tracking-wider font-bold px-2 py-0.5 bg-blue-100 text-blue-900 rounded">
+        <div className="bg-white border-2 border-[#D3D4C0] hover:border-[#C59A45] rounded-3xl p-6 sm:p-7 shadow-xs relative overflow-hidden flex flex-col justify-between group">
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#C59A45] via-[#8B5E3C] to-[#0A2947]" />
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-2 border-b border-[#D3D4C0] pb-3 text-xs font-mono">
+              <span className="font-bold text-[#8B5E3C] uppercase px-2 py-0.5 bg-[#FAF7F0] rounded-md border border-[#D3D4C0]">
                 Document A · {docA.year}
               </span>
-              <span className="text-xs font-mono text-neutral-500">
+              <span className="text-[#0A2947]/70 font-semibold">
                 {docA.accessionNo}
               </span>
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-archivo text-black mb-2">
+            <h3 className="text-xl sm:text-2xl font-serif-editorial text-[#0A2947] font-bold leading-snug">
               {docA.title}
             </h3>
 
-            <div className="text-xs font-montserrat text-neutral-500 mb-4 uppercase">
+            <div className="text-xs font-mono text-[#8B5E3C] uppercase font-bold">
               {docA.categoryLabel} · Source: {docA.source}
             </div>
 
-            <div className="p-4 bg-blue-50/50 border border-blue-200 rounded-lg mb-4">
-              <span className="text-[10px] font-montserrat uppercase tracking-wider font-bold text-blue-900 block mb-1">
-                Archival Excerpt
+            <div className="p-4 bg-[#F3E4C9]/70 border border-[#D3D4C0] rounded-2xl">
+              <span className="text-[10px] font-cinzel uppercase tracking-wider font-bold text-[#8B5E3C] block mb-1">
+                Archival Excerpt:
               </span>
-              <p className="text-xs sm:text-sm font-serif italic text-neutral-800 line-clamp-4 leading-relaxed">
-                "{docA.fullText.substring(0, 320)}..."
+              <p className="text-xs sm:text-sm font-serif italic text-[#0A2947]/90 line-clamp-4 leading-relaxed">
+                &quot;{docA.fullText.substring(0, 320)}...&quot;
               </p>
             </div>
 
-            <p className="text-xs text-neutral-600 font-dmsans line-clamp-3">
+            <p className="text-xs text-[#0A2947]/75 font-dmsans line-clamp-3 leading-relaxed">
               {docA.shortDescription}
             </p>
           </div>
 
           <button
-            onClick={() => onOpenDocument(docA)}
-            className="mt-6 w-full p-2.5 bg-white hover:bg-neutral-50 border-2 border-neutral-300 hover:border-black text-black rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+            onClick={() => {
+              soundEffects.playClick();
+              onOpenDocument(docA);
+            }}
+            className="mt-6 w-full py-3 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
           >
-            <span>Open Full Folio A</span>
-            <ExternalLink className="w-3.5 h-3.5" />
+            <span>Open Full Folio A in Viewer</span>
+            <ExternalLink className="w-3.5 h-3.5 text-[#C89D56]" />
           </button>
         </div>
 
         {/* Document B Column */}
-        <div className="bg-white border-2 border-amber-600/30 rounded-xl p-6 shadow-md flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between gap-2 border-b border-neutral-200 pb-3 mb-4">
-              <span className="text-[11px] font-montserrat uppercase tracking-wider font-bold px-2 py-0.5 bg-amber-100 text-amber-900 rounded">
+        <div className="bg-white border-2 border-[#D3D4C0] hover:border-[#C59A45] rounded-3xl p-6 sm:p-7 shadow-xs relative overflow-hidden flex flex-col justify-between group">
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#C59A45] via-[#8B5E3C] to-[#0A2947]" />
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-2 border-b border-[#D3D4C0] pb-3 text-xs font-mono">
+              <span className="font-bold text-[#8B5E3C] uppercase px-2 py-0.5 bg-[#FAF7F0] rounded-md border border-[#D3D4C0]">
                 Document B · {docB.year}
               </span>
-              <span className="text-xs font-mono text-neutral-500">
+              <span className="text-[#0A2947]/70 font-semibold">
                 {docB.accessionNo}
               </span>
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-archivo text-black mb-2">
+            <h3 className="text-xl sm:text-2xl font-serif-editorial text-[#0A2947] font-bold leading-snug">
               {docB.title}
             </h3>
 
-            <div className="text-xs font-montserrat text-neutral-500 mb-4 uppercase">
+            <div className="text-xs font-mono text-[#8B5E3C] uppercase font-bold">
               {docB.categoryLabel} · Source: {docB.source}
             </div>
 
-            <div className="p-4 bg-amber-50/50 border border-amber-200 rounded-lg mb-4">
-              <span className="text-[10px] font-montserrat uppercase tracking-wider font-bold text-amber-900 block mb-1">
-                Archival Excerpt
+            <div className="p-4 bg-[#F3E4C9]/70 border border-[#D3D4C0] rounded-2xl">
+              <span className="text-[10px] font-cinzel uppercase tracking-wider font-bold text-[#8B5E3C] block mb-1">
+                Archival Excerpt:
               </span>
-              <p className="text-xs sm:text-sm font-serif italic text-neutral-800 line-clamp-4 leading-relaxed">
-                "{docB.fullText.substring(0, 320)}..."
+              <p className="text-xs sm:text-sm font-serif italic text-[#0A2947]/90 line-clamp-4 leading-relaxed">
+                &quot;{docB.fullText.substring(0, 320)}...&quot;
               </p>
             </div>
 
-            <p className="text-xs text-neutral-600 font-dmsans line-clamp-3">
+            <p className="text-xs text-[#0A2947]/75 font-dmsans line-clamp-3 leading-relaxed">
               {docB.shortDescription}
             </p>
           </div>
 
           <button
-            onClick={() => onOpenDocument(docB)}
-            className="mt-6 w-full p-2.5 bg-white hover:bg-neutral-50 border-2 border-neutral-300 hover:border-black text-black rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+            onClick={() => {
+              soundEffects.playClick();
+              onOpenDocument(docB);
+            }}
+            className="mt-6 w-full py-3 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
           >
-            <span>Open Full Folio B</span>
-            <ExternalLink className="w-3.5 h-3.5" />
+            <span>Open Full Folio B in Viewer</span>
+            <ExternalLink className="w-3.5 h-3.5 text-[#C89D56]" />
           </button>
         </div>
 
       </div>
 
       {/* AI Comparative Insights Breakdown */}
-      <div className="bg-white border-2 border-black/20 rounded-xl p-6 sm:p-8 shadow-xl">
-        <div className="flex items-center gap-2 mb-6">
-          <Sparkles className="w-6 h-6 text-amber-500" />
-          <h2 className="text-2xl font-archivo uppercase text-black">
-            AI Comparative Synthesis & Thematic Analysis
+      <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8B5E3C] via-[#C89D56] to-[#0A2947]" />
+
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] flex items-center justify-center text-[#8B5E3C]">
+            <Sparkles className="w-5 h-5 text-[#C89D56]" />
+          </div>
+          <h2 className="text-2xl font-serif-editorial text-[#0A2947] font-bold">
+            Curatorial Synthesis &amp; Thematic Analysis
           </h2>
         </div>
 
-        {/* Kid / Student Friendly Box */}
-        <div className="mb-6 p-4 bg-green-50 border-2 border-green-300 rounded-xl">
-          <div className="flex items-center gap-2 text-green-900 font-montserrat font-bold text-xs uppercase mb-1">
-            <Lightbulb className="w-4 h-4 text-green-700" />
-            <span>Student & Young Scholar Summary (In Plain Words)</span>
+        {/* Young Scholar Friendly Box */}
+        <div className="p-4 bg-[#FAF7F0] border border-[#D3D4C0] rounded-2xl">
+          <div className="flex items-center gap-2 text-[#8B5E3C] font-montserrat font-bold text-xs uppercase mb-1">
+            <Lightbulb className="w-4 h-4 text-[#C89D56]" />
+            <span>Curatorial Synopsis (Plain Words)</span>
           </div>
-          <p className="text-sm font-dmsans text-green-950 font-medium leading-relaxed">
+          <p className="text-sm font-dmsans text-[#0A2947] font-medium leading-relaxed">
             {currentPreset 
               ? currentPreset.kidFriendlyLesson 
-              : `Comparing "${docA.title}" with "${docB.title}" shows how Dr. Ambedkar consistently stood up for fairness: first by speaking truth about unfairness, and then by writing the rules so all people are protected.`
+              : `Comparing "${docA.title}" with "${docB.title}" shows how Dr. Ambedkar consistently stood up for human dignity: first through analytical critique of discrimination, and later by establishing constitutional legal safeguards.`
             }
           </p>
         </div>
@@ -307,27 +323,27 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
           {/* Common Core Themes */}
-          <div className="p-5 bg-neutral-50 border border-neutral-200 rounded-xl">
-            <h3 className="font-archivo text-base uppercase text-black mb-3 flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-600" />
-              Shared Core Themes & Principles
+          <div className="p-5 bg-[#FAF7F0] border border-[#D3D4C0] rounded-2xl space-y-3">
+            <h3 className="font-serif-editorial text-base text-[#0A2947] font-bold flex items-center gap-2">
+              <Check className="w-4 h-4 text-emerald-700" />
+              Shared Core Themes &amp; Principles
             </h3>
-            <ul className="space-y-2.5 text-xs sm:text-sm font-dmsans text-neutral-800">
+            <ul className="space-y-2.5 text-xs sm:text-sm font-dmsans text-[#0A2947]/85">
               {currentPreset ? (
                 currentPreset.commonThemes.map((theme, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 mt-2" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#8B5E3C] shrink-0 mt-2" />
                     <span>{theme}</span>
                   </li>
                 ))
               ) : (
                 <>
                   <li className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 mt-2" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#8B5E3C] shrink-0 mt-2" />
                     <span>Primacy of human dignity over traditional custom.</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 mt-2" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#8B5E3C] shrink-0 mt-2" />
                     <span>Rejection of social hierarchy and caste discrimination.</span>
                   </li>
                 </>
@@ -336,27 +352,27 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
           </div>
 
           {/* Key Differences / Evolution of Thought */}
-          <div className="p-5 bg-neutral-50 border border-neutral-200 rounded-xl">
-            <h3 className="font-archivo text-base uppercase text-black mb-3 flex items-center gap-2">
-              <Milestone className="w-4 h-4 text-amber-600" />
-              Key Differences & Evolution
+          <div className="p-5 bg-[#FAF7F0] border border-[#D3D4C0] rounded-2xl space-y-3">
+            <h3 className="font-serif-editorial text-base text-[#0A2947] font-bold flex items-center gap-2">
+              <Milestone className="w-4 h-4 text-[#8B5E3C]" />
+              Key Differences &amp; Evolution
             </h3>
-            <ul className="space-y-2.5 text-xs sm:text-sm font-dmsans text-neutral-800">
+            <ul className="space-y-2.5 text-xs sm:text-sm font-dmsans text-[#0A2947]/85">
               {currentPreset ? (
                 currentPreset.keyDifferences.map((diff, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0 mt-2" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#C89D56] shrink-0 mt-2" />
                     <span>{diff}</span>
                   </li>
                 ))
               ) : (
                 <>
                   <li className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0 mt-2" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#C89D56] shrink-0 mt-2" />
                     <span>Difference in historical timing ({docA.year} vs {docB.year}).</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0 mt-2" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#C89D56] shrink-0 mt-2" />
                     <span>Contextual adaptation from colonial-era critique to constitutional governance.</span>
                   </li>
                 </>
@@ -369,5 +385,6 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
       </div>
 
     </div>
+  </div>
   );
 };

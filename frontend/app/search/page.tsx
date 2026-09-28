@@ -23,6 +23,7 @@ import {
   Mic,
   ShieldCheck,
   Check,
+  CheckCircle2,
   RotateCcw,
   Bot,
   ExternalLink,
