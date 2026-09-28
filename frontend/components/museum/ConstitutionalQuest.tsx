@@ -9,6 +9,7 @@ import confetti from 'canvas-confetti';
 import { QUIZ_QUESTIONS } from '@/data/interactiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { Language } from '@/types/museum';
+import { UI_STRINGS } from '@/utils/i18n';
 import MuseumGrandPavilion from './MuseumGrandPavilion';
 
 interface ConstitutionalQuestProps {
@@ -32,6 +33,7 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [copiedShare, setCopiedShare] = useState(false);
 
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const currentQ = QUIZ_QUESTIONS[currentIndex];
 
   const handleSelectOption = (idx: number) => {
@@ -98,7 +100,7 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
 
   const getRank = () => {
     const percent = (score / QUIZ_QUESTIONS.length) * 100;
-    if (percent >= 90) return { title: "Constitutional Architect", badge: "🏛️", desc: "Peerless mastery of Babasaheb's legal and social doctrines." };
+    if (percent >= 90) return { title: t.constitutionalScholar || "Constitutional Architect", badge: "🏛️", desc: "Peerless mastery of Babasaheb's legal and social doctrines." };
     if (percent >= 70) return { title: "Champion of Rights", badge: "⚖️", desc: "Deep familiarity with primary source history and social justice movements." };
     if (percent >= 40) return { title: "Keen Scholar", badge: "📖", desc: "Great foundation! Keep exploring the 22 volumes of archival writings." };
     return { title: "Curious Inquirer", badge: "🌱", desc: "Every journey of awakening starts with asking the first question." };
@@ -111,21 +113,18 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
     setTimeout(() => setCopiedShare(false), 2500);
   };
 
+  const questionText = (language !== 'en' && currentQ.questionLocal?.[language]) || currentQ.question;
+  const optionsList: string[] = (language !== 'en' && currentQ.optionsLocal?.[language]) || currentQ.options;
+  const explanationText = (language !== 'en' && currentQ.explanationLocal?.[language]) || currentQ.explanation;
+
   return (
     <div className="min-h-screen bg-transparent text-[#0A2947] py-10 px-4 sm:px-6 lg:px-8 font-dmsans">
       <div className="max-w-4xl mx-auto space-y-8">
         
         {/* Top Banner / Quest Identity */}
         <MuseumGrandPavilion
-          title={
-            <>
-              The{' '}
-              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
-                Constitutional
-              </span>{' '}
-              Quest
-            </>
-          }
+          title={t.questTitle || "Constitutional Quest"}
+          subtitle={t.questSubtitle || "Interactive Archival Knowledge Game"}
           watermarkIcon={Award}
         >
           <div className="flex items-center justify-between gap-3 pt-2">
@@ -146,7 +145,7 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
             {streak > 1 && (
               <div className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#C59A45] text-[#0A2947] font-montserrat font-black rounded-xl text-xs shadow-xs animate-pulse">
                 <Flame className="w-4 h-4 fill-current" />
-                <span>{streak}x Streak!</span>
+                <span>{streak}x {t.streakLabel || "Streak"}!</span>
               </div>
             )}
           </div>
@@ -159,10 +158,10 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs font-montserrat font-bold text-[#8B5E3C]">
                 <span className="uppercase tracking-wider">
-                  Question {currentIndex + 1} of {QUIZ_QUESTIONS.length}
+                  {t.questionLabel || "Question"} {currentIndex + 1} {t.ofLabel || "of"} {QUIZ_QUESTIONS.length}
                 </span>
                 <span className="text-[#0A2947] font-mono">
-                  Score: {score} / {currentIndex + (isAnswered ? 1 : 0)}
+                  {t.scoreLabel || "Score"}: {score} / {currentIndex + (isAnswered ? 1 : 0)}
                 </span>
               </div>
 
@@ -187,12 +186,12 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
 
               {/* Question Text */}
               <h2 className="text-xl sm:text-2xl font-serif-editorial font-bold text-[#0A2947] leading-relaxed">
-                {currentQ.question}
+                {questionText}
               </h2>
 
               {/* Option List */}
               <div className="space-y-3">
-                {currentQ.options.map((option, idx) => {
+                {optionsList.map((option: string, idx: number) => {
                   let btnStyle = "bg-[#FAF7F0] hover:bg-[#F3E4C9] border-[#D3D4C0] text-[#0A2947]";
 
                   if (isAnswered) {
@@ -235,14 +234,14 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
                 <div className="p-5 bg-[#FAF7F0] border-l-4 border-[#8B5E3C] rounded-r-2xl space-y-2 animate-in fade-in">
                   <div className="flex items-center gap-2 text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-wider">
                     <BookOpen className="w-4 h-4 text-[#8B5E3C]" />
-                    <span>Archival Historical Insight</span>
+                    <span>{t.explanationEvidence || "Explanation & Historical Evidence:"}</span>
                   </div>
                   <p className="text-xs sm:text-sm text-[#0A2947] font-dmsans leading-relaxed">
-                    {currentQ.explanation}
+                    {explanationText}
                   </p>
                   {currentQ.sourceCitation && (
                     <div className="pt-2 text-[11px] font-mono text-[#8B5E3C]">
-                      Primary Citation: {currentQ.sourceCitation}
+                      {t.primaryArchivalSource || "Primary Archival Source:"} {currentQ.sourceCitation}
                     </div>
                   )}
                 </div>
@@ -250,12 +249,21 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
 
               {/* Action Bar */}
               {isAnswered && (
-                <div className="flex justify-end pt-2">
+                <div className="flex items-center justify-between pt-2">
+                  {onAskAI && (
+                    <button
+                      onClick={() => onAskAI(`Explain the constitutional history and archival context behind this question: "${currentQ.question}"`)}
+                      className="px-4 py-2.5 bg-white hover:bg-[#FAF7F0] text-[#8B5E3C] border border-[#D3D4C0] font-montserrat font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-2xs"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-[#C59A45]" />
+                      <span>{t.askAIAboutThis || "Ask AI Scholar"}</span>
+                    </button>
+                  )}
                   <button
                     onClick={handleNext}
-                    className="px-6 py-3 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#F3E4C9] font-montserrat font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+                    className="ml-auto px-6 py-3 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#F3E4C9] font-montserrat font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-xs"
                   >
-                    <span>{currentIndex + 1 === QUIZ_QUESTIONS.length ? "Finish Exhibition Quest" : "Next Historical Inquiry"}</span>
+                    <span>{currentIndex + 1 === QUIZ_QUESTIONS.length ? (t.questCompleted || "Finish Exhibition Quest") : (t.nextChallenge || "Next Historical Inquiry")}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -273,7 +281,7 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
 
             <div className="space-y-2 max-w-md mx-auto">
               <span className="text-xs font-cinzel uppercase tracking-wider font-bold text-[#8B5E3C]">
-                Exhibition Certificate
+                {t.questCompleted || "Quest Completed!"}
               </span>
               <h2 className="text-3xl font-serif-editorial font-bold text-[#0A2947]">
                 {getRank().title}
@@ -289,7 +297,7 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
                 {score} / {QUIZ_QUESTIONS.length}
               </div>
               <div className="text-xs font-mono text-[#8B5E3C]">
-                Accuracy: {Math.round((score / QUIZ_QUESTIONS.length) * 100)}% · Longest Streak: {maxStreak}
+                {t.scoreLabel || "Score"}: {Math.round((score / QUIZ_QUESTIONS.length) * 100)}% · {t.bestStreakLabel || "Best Streak"}: {maxStreak}
               </div>
             </div>
 
@@ -300,7 +308,7 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
                 className="px-5 py-2.5 bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0] rounded-xl text-xs font-montserrat font-bold uppercase transition-colors flex items-center gap-2 cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4 text-[#8B5E3C]" />
-                <span>Retake Quest</span>
+                <span>{t.playAgain || "Play Again"}</span>
               </button>
 
               <button
@@ -308,7 +316,7 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
                 className="px-5 py-2.5 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#F3E4C9] rounded-xl text-xs font-montserrat font-bold uppercase transition-colors flex items-center gap-2 cursor-pointer"
               >
                 {copiedShare ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
-                <span>{copiedShare ? "Result Copied!" : "Share Achievement"}</span>
+                <span>{copiedShare ? (t.copiedQuote || "Result Copied!") : (t.shareScore || "Share Achievement")}</span>
               </button>
             </div>
           </div>
@@ -318,3 +326,5 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
     </div>
   );
 };
+
+export default ConstitutionalQuest;

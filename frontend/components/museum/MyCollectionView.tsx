@@ -119,13 +119,19 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
         {/* Header Breadcrumb & Title */}
         <MuseumGrandPavilion
           title={
-            <>
-              Researcher{' '}
-              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
-                Notebook
-              </span>{' '}
-              & Desk
-            </>
+            language === 'en' ? (
+              <>
+                Researcher{' '}
+                <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                  Notebook
+                </span>{' '}
+                & Desk
+              </>
+            ) : (
+              <span className="bg-gradient-to-r from-white via-[#FAF7F0] to-[#EAD8B1] bg-clip-text text-transparent">
+                {t.myCollectionTitle || (language === 'hi' ? 'शोध वही एवं व्यक्तिगत संकलन' : language === 'mr' ? 'माझी वही आणि संशोधन संकलन' : language === 'ta' ? 'ஆராய்ச்சி குறிப்பேடு' : language === 'bn' ? 'গবেষক নোটবুক ও ফোলিও' : 'Researcher Notebook')}
+              </span>
+            )
           }
           watermarkIcon={Bookmark}
         >
@@ -137,7 +143,7 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
               title="Download full archival ZIP with Manuscripts, Transcripts, Metadata & Citations"
             >
               <Package className="w-4 h-4 text-[#F5D77F]" />
-              <span>{isDownloadingPack ? 'Packaging ZIP...' : 'Research Pack (.ZIP)'}</span>
+              <span>{isDownloadingPack ? (language === 'hi' ? 'पैक हो रहा है...' : language === 'mr' ? 'पॅक होत आहे...' : language === 'ta' ? 'தொகுக்கப்படுகிறது...' : language === 'bn' ? 'প্যাক করা হচ্ছে...' : 'Packaging ZIP...') : 'Research Pack (.ZIP)'}</span>
             </button>
 
             <button
@@ -149,7 +155,7 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
               className="px-5 py-2.5 bg-[#C59A45] hover:bg-[#D4AF37] disabled:opacity-40 text-[#0A2947] font-black rounded-xl text-xs font-montserrat uppercase tracking-wider transition-colors flex items-center gap-2 shadow-xs cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Export Citations</span>
+              <span>{language === 'hi' ? 'उद्धरण निर्यात' : language === 'mr' ? 'संदर्भ निर्यात' : language === 'ta' ? 'சான்றுகள் ஏற்றுமதி' : language === 'bn' ? 'উদ্ধৃতি রপ্তানি' : 'Export Citations'}</span>
             </button>
           </div>
         </MuseumGrandPavilion>
@@ -157,12 +163,12 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
         {/* Filter Bar */}
         <div className="flex flex-wrap items-center gap-2 border-b-2 border-[#D3D4C0] pb-4 text-xs">
           <span className="text-[#8B5E3C] font-montserrat font-bold uppercase tracking-wider mr-2 text-[11px]">
-            Filter Folios:
+            {language === 'hi' ? 'अभिलेख फ़िल्टर:' : language === 'mr' ? 'नोंदी निवडा:' : language === 'ta' ? 'வடிகட்டி:' : language === 'bn' ? 'ফিল্টার:' : 'Filter Folios:'}
           </span>
           {[
-            { id: 'all', label: `All Records (${savedItems.length})` },
-            { id: 'document', label: 'Primary Manuscripts' },
-            { id: 'qa', label: 'AI Scholarly Syntheses' },
+            { id: 'all', label: `${language === 'hi' ? 'सभी अभिलेख' : language === 'mr' ? 'सर्व नोंदी' : language === 'ta' ? 'அனைத்து பதிவுகள்' : language === 'bn' ? 'সকল রেকর্ড' : 'All Records'} (${savedItems.length})` },
+            { id: 'document', label: language === 'hi' ? 'प्राथमिक पांडुलिपियां' : language === 'mr' ? 'मूळ हस्तलिखिते' : language === 'ta' ? 'மூலக் கையெழுத்துப் பிரதிகள்' : language === 'bn' ? 'মূল পাণ্ডুলিপি' : 'Primary Manuscripts' },
+            { id: 'qa', label: language === 'hi' ? 'एआई शोध निष्कर्ष' : language === 'mr' ? 'एआय संशोधन निष्कर्ष' : language === 'ta' ? 'AI ஆய்வுக் குறிப்புகள்' : language === 'bn' ? 'এআই গবেষণার সারসংক্ষেপ' : 'AI Scholarly Syntheses' },
           ].map(tab => (
             <button
               key={tab.id}
@@ -200,7 +206,7 @@ export const MyCollectionView: React.FC<MyCollectionViewProps> = ({
                         <span>Archived: {item.dateSaved}</span>
                       </div>
                       <h3 className="font-serif-editorial text-xl sm:text-2xl font-bold text-[#0A2947]">
-                        {item.title}
+                        {(matchedDoc && language !== 'en' && matchedDoc.titleLocal?.[language]) ? matchedDoc.titleLocal[language] : item.title}
                       </h3>
                       {matchedDoc && (
                         <p className="text-xs text-[#0A2947]/70 font-dmsans">

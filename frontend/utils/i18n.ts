@@ -151,7 +151,117 @@ export const UI_STRINGS: Record<Language, Record<string, string>> = {
     footerStandardsDesc: "Grounding democratic thought with verifiable primary sources, immutable SHA-256 fixity hashes, and high-precision RAG.",
     backToTop: "Back to Top",
     footerCopyright: "Dr. B. R. Ambedkar Digital Heritage Archive.",
-    footerPlatform: "National Digital Heritage Archive & Audio-Visual Knowledge Platform"
+    footerPlatform: "National Digital Heritage Archive & Audio-Visual Knowledge Platform",
+
+    // Memorials Pavilion & Spatial Geography
+    memorialsTitle: "Panchtirth & Heritage Memorials",
+    memorialsSubtitle: "Historical geography, national landmarks, and sacred panchtirth memorial grounds.",
+    sitesTab: "Sites",
+    dossierTab: "Dossier",
+    earthTab: "Globe",
+    filterPanchtirth: "Panchtirth",
+    filterIndia: "India",
+    filterInternational: "International",
+    searchMemorialPlaceholder: "Search memorial, city, or event...",
+    historicalSignificance: "Historical Significance",
+    archivalPrimarySources: "Archival Primary Sources",
+    exploreRecord: "Explore Archival Record",
+    consultAIScholar: "Consult AI Scholar",
+    geographicCoordinates: "Geographic Coordinates",
+    primaryConnections: "Primary Archival Connections",
+
+    // Soundboard & Audio Broadcasts
+    soundboardBadge: "Archival Broadcasts & Gramophone Recordings · 1930–1956",
+    soundboardTitle: "Voice of the Architect",
+    soundboardSub: "Speech Synthesizer & Primary Audio Quotes",
+    playbackSpeed: "Speed",
+    fullSpeechDoc: "Full Speech Folio",
+    listenSpeech: "Listen",
+    stopAudio: "Stop",
+
+    // Wisdom Explorer
+    wisdomExplorer: "Interactive Wisdom Explorer",
+    primarySpecimen: "Primary Archival Specimen",
+    shuffleWisdom: "Shuffle Wisdom",
+    copyQuote: "Copy Quote",
+    copiedQuote: "Copied!",
+    themeAll: "All Wisdom",
+    themeDemocracy: "Democracy",
+    themeJustice: "Social Justice",
+    themeEducation: "Education",
+    themeWomen: "Women’s Rights",
+    themeMorality: "Constitutional Morality",
+
+    // Constitutional Quest
+    questTitle: "Constitutional Quest",
+    questSubtitle: "Interactive Archival Knowledge Game",
+    questionLabel: "Question",
+    ofLabel: "of",
+    streakLabel: "Streak",
+    bestStreakLabel: "Best Streak",
+    scoreLabel: "Score",
+    submitAnswer: "Submit Answer",
+    nextChallenge: "Next Challenge",
+    explanationEvidence: "Explanation & Historical Evidence:",
+    primaryArchivalSource: "Primary Archival Source:",
+    exploreFolio: "Explore Archival Folio",
+    askAIAboutThis: "Ask AI Scholar",
+    playAgain: "Play Again",
+    shareScore: "Share Score",
+    questCompleted: "Quest Completed!",
+    constitutionalScholar: "Constitutional Scholar",
+
+    // Accessibility Modal
+    accessibilityOptions: "Accessibility Options (GIGW 3.0)",
+    textScaling: "Text Scaling & Typography",
+    standardSize: "Standard (A)",
+    largeSize: "Large (A+)",
+    xlargeSize: "X-Large (A++)",
+    highContrast: "High Contrast Mode",
+    highContrastDesc: "Increases contrast ratios for low-vision readers",
+    audioNarration: "Screen Audio Narration",
+    audioNarrationDesc: "Enable voice assistance for primary documents",
+    languageSelection: "Language Selection",
+    applyClose: "Apply & Close",
+
+    // Timeline Pavilion
+    guidedTour: "Guided Tour",
+    voiceGuide: "Voice Guide",
+    linearTimeline: "Linear View",
+    slideshowView: "Slideshow View",
+    stationOf: "Station",
+    historicalProclamation: "Historical Proclamation",
+    primaryFolios: "Primary Folios",
+    listenQuote: "Listen Quote",
+
+    // Search Page
+    searchHeading: "Ambedkar Archival Search",
+    searchSubheading: "Hybrid Lexical and Vector Neural Search across 22 Volumes of Writings and Speeches",
+    searchPlaceholderLong: "Search 12,154 pages across 22 BAWS volumes (e.g. 'Annihilation of Caste', 'Article 32')...",
+    rerankEnabled: "Neural Reranking",
+    allFormats: "All Formats",
+    resultsFound: "results found",
+    appliedFilters: "Applied Filters:",
+
+    // Kiosk & Touch
+    touchScreenEnabled: "Touch Screen Enabled",
+    kioskAttractHint: "Touch anywhere to explore the archive",
+    startExploring: "Start Exploring",
+    resetSession: "Reset Session",
+
+    // Preservation
+    preservationTitle: "Digital Preservation & Cryptographic Audit",
+    preservationSubtitle: "PREMIS 3.0 Compliant Digital Archival Preservation, SHA-256 Fixity & IIIF Compliance",
+    runFixityAudit: "Run Fixity Audit",
+    systemHealth: "System Health",
+
+    // Research & Scholar
+    scholarTitle: "Babasaheb AI Scholar Lab",
+    scholarSubtitle: "Grounded Archival Research with Verifiable Primary Sources",
+    copyDossier: "Copy Dossier",
+    downloadDossier: "Download Dossier (.MD)",
+    researchPack: "Research Pack (.ZIP)",
+    askingQuestion: "Synthesizing source-grounded response..."
   },
 
   hi: {
@@ -304,7 +414,117 @@ export const UI_STRINGS: Record<Language, Record<string, string>> = {
     footerStandardsDesc: "सत्यापित प्राथमिक स्रोतों, अपरिवर्तनीय SHA-256 हैश और उच्च-सटीक RAG के साथ लोकतांत्रिक विचारों का संरक्षण।",
     backToTop: "शीर्ष पर जाएं",
     footerCopyright: "डॉ. बी. आर. आंबेडकर डिजिटल हेरिटेज आर्काइव।",
-    footerPlatform: "राष्ट्रीय डिजिटल हेरिटेज आर्काइव एवं ऑडियो-विजुअल ज्ञान मंच"
+    footerPlatform: "राष्ट्रीय डिजिटल हेरिटेज आर्काइव एवं ऑडियो-विजुअल ज्ञान मंच",
+
+    // Memorials Pavilion & Spatial Geography
+    memorialsTitle: "पंचतीर्थ एवं ऐतिहासिक स्मारक",
+    memorialsSubtitle: "पवित्र पंचतीर्थ स्थलों, ऐतिहासिक सत्याग्रहों और राष्ट्रीय स्मारकों का संवादात्मक 3D मानचित्र।",
+    sitesTab: "स्मारक स्थल",
+    dossierTab: "दस्तावेज़ विवरण",
+    earthTab: "ग्लोब 3D",
+    filterPanchtirth: "पंचतीर्थ",
+    filterIndia: "भारत",
+    filterInternational: "अंतर्राष्ट्रीय",
+    searchMemorialPlaceholder: "स्मारक, शहर या ऐतिहासिक घटना खोजें...",
+    historicalSignificance: "ऐतिहासिक महत्व",
+    archivalPrimarySources: "प्राथमिक अभिलेखीय स्रोत",
+    exploreRecord: "अभिलेख दस्तावेज़ देखें",
+    consultAIScholar: "एआई विद्वान से पूछें",
+    geographicCoordinates: "भौगोलिक निर्देशांक",
+    primaryConnections: "अभिलेखीय संबंध",
+
+    // Soundboard & Audio Broadcasts
+    soundboardBadge: "दुर्लभ प्रसारण एवं ऐतिहासिक रिकॉर्डिंग · 1930–1956",
+    soundboardTitle: "संविधान निर्माता की आवाज",
+    soundboardSub: "भाषण सिंथेसाइज़र एवं प्राथमिक ऐतिहासिक विचार",
+    playbackSpeed: "गति",
+    fullSpeechDoc: "पूर्ण भाषण दस्तावेज़",
+    listenSpeech: "भाषण सुनें",
+    stopAudio: "ध्वनि रोकें",
+
+    // Wisdom Explorer
+    wisdomExplorer: "संवादात्मक सुविचार अन्वेषक",
+    primarySpecimen: "प्राथमिक अभिलेखीय उद्धरण",
+    shuffleWisdom: "नया विचार देखें",
+    copyQuote: "विचार कॉपी करें",
+    copiedQuote: "कॉपी हो गया!",
+    themeAll: "समग्र विचार",
+    themeDemocracy: "लोकतंत्र",
+    themeJustice: "सामाजिक न्याय",
+    themeEducation: "शिक्षा",
+    themeWomen: "महिला अधिकार",
+    themeMorality: "संवैधानिक नैतिकता",
+
+    // Constitutional Quest
+    questTitle: "संवैधानिक प्रश्नमंजूषा",
+    questSubtitle: "संवादात्मक ऐतिहासिक ज्ञान परीक्षा",
+    questionLabel: "प्रश्न",
+    ofLabel: "का",
+    streakLabel: "लगातार सही",
+    bestStreakLabel: "सर्वश्रेष्ठ स्कोर",
+    scoreLabel: "अंक",
+    submitAnswer: "उत्तर सबमिट करें",
+    nextChallenge: "अगला प्रश्न",
+    explanationEvidence: "स्पष्टीकरण एवं ऐतिहासिक प्रमाण:",
+    primaryArchivalSource: "प्राथमिक अभिलेखीय स्रोत:",
+    exploreFolio: "दस्तावेज़ देखें",
+    askAIAboutThis: "एआई विद्वान से पूछें",
+    playAgain: "पुनः खेलें",
+    shareScore: "स्कोर साझा करें",
+    questCompleted: "क्विज़ पूर्ण!",
+    constitutionalScholar: "संवैधानिक विद्वान",
+
+    // Accessibility Modal
+    accessibilityOptions: "सुगम्यता विकल्प (GIGW 3.0)",
+    textScaling: "पाठ का आकार एवं टाइपोग्राफी",
+    standardSize: "मानक (A)",
+    largeSize: "बड़ा (A+)",
+    xlargeSize: "अति बड़ा (A++)",
+    highContrast: "उच्च कंट्रास्ट मोड",
+    highContrastDesc: "दृष्टि-बाधित पाठकों हेतु उच्च कंट्रास्ट अनुपात",
+    audioNarration: "स्क्रीन ऑडियो वाचन",
+    audioNarrationDesc: "प्राथमिक दस्तावेजों के लिए ध्वनि वाचन सक्षम करें",
+    languageSelection: "भाषा चयन",
+    applyClose: "लागू करें और बंद करें",
+
+    // Timeline Pavilion
+    guidedTour: "मार्गदर्शित यात्रा",
+    voiceGuide: "ध्वनि मार्गदर्शक",
+    linearTimeline: "रैखिक दृश्य",
+    slideshowView: "स्लाइडशो दृश्य",
+    stationOf: "पड़ाव",
+    historicalProclamation: "ऐतिहासिक उद्घोषणा",
+    primaryFolios: "प्राथमिक खंड",
+    listenQuote: "उद्धरण सुनें",
+
+    // Search Page
+    searchHeading: "आंबेडकर अभिलेखीय खोज",
+    searchSubheading: "22 खंडों के भाषणों और लेखन में हाइब्रिड लेक्सिकल व न्यूरल खोज",
+    searchPlaceholderLong: "22 खंडों के 12,154 पृष्ठों में खोजें (उदा. 'जाति का विनाश', 'अनुच्छेद 32')...",
+    rerankEnabled: "न्यूरल री-रैंकिंग",
+    allFormats: "सभी प्रारूप",
+    resultsFound: "परिणाम मिले",
+    appliedFilters: "लागू किए गए फिल्टर:",
+
+    // Kiosk & Touch
+    touchScreenEnabled: "टच स्क्रीन सक्षम",
+    kioskAttractHint: "अभिलेख अन्वेषण हेतु स्क्रीन पर कहीं भी स्पर्श करें",
+    startExploring: "अन्वेषण आरंभ करें",
+    resetSession: "सत्र रीसेट करें",
+
+    // Preservation
+    preservationTitle: "डिजिटल संरक्षण एवं क्रिप्टोग्राफिक ऑडिट",
+    preservationSubtitle: "PREMIS 3.0 अनुरूप डिजिटल संरक्षण, SHA-256 एवं IIIF मानक",
+    runFixityAudit: "फिक्सिटी ऑडिट चलाएं",
+    systemHealth: "सिस्टम स्वास्थ्य",
+
+    // Research & Scholar
+    scholarTitle: "बाबासाहेब एआई शोध प्रयोगशाला",
+    scholarSubtitle: "सत्यापित प्राथमिक स्रोतों पर आधारित अनुसंधान",
+    copyDossier: "डोज़ियर कॉपी करें",
+    downloadDossier: "डोज़ियर डाउनलोड करें (.MD)",
+    researchPack: "शोध पैक (.ZIP)",
+    askingQuestion: "प्रमाणित उत्तर तैयार किया जा रहा है..."
   },
 
   mr: {
@@ -457,7 +677,117 @@ export const UI_STRINGS: Record<Language, Record<string, string>> = {
     footerStandardsDesc: "अधिकृत प्राथमिक ऐतिहासिक संदर्भ, अपरिवर्तनीय SHA-256 हॅश आणि प्रगत RAG द्वारे लोकशाही विचारांचे चिरंतन जतन.",
     backToTop: "शीर्षावर जा",
     footerCopyright: "डॉ. बी. आर. आंबेडकर डिजिटल हेरिटेज आर्काइव्ह.",
-    footerPlatform: "राष्ट्रीय डिजिटल हेरिटेज आर्काइव्ह आणि ज्ञान व्यासपीठ"
+    footerPlatform: "राष्ट्रीय डिजिटल हेरिटेज आर्काइव्ह आणि ज्ञान व्यासपीठ",
+
+    // Memorials Pavilion & Spatial Geography
+    memorialsTitle: "पंचतीर्थ आणि ऐतिहासिक स्मारके",
+    memorialsSubtitle: "पवित्र पंचतीर्थ स्थळे, ऐतिहासिक लढे आणि राष्ट्रीय स्मारकांचा संवादात्मक 3D नकाशा.",
+    sitesTab: "स्मारक स्थळे",
+    dossierTab: "माहिती विवरण",
+    earthTab: "ग्लोब 3D",
+    filterPanchtirth: "पंचतीर्थ",
+    filterIndia: "भारत",
+    filterInternational: "आंतरराष्ट्रीय",
+    searchMemorialPlaceholder: "स्मारक, शहर किंवा ऐतिहासिक घटना शोधा...",
+    historicalSignificance: "ऐतिहासिक महत्त्व",
+    archivalPrimarySources: "प्राथमिक ऐतिहासिक संदर्भ",
+    exploreRecord: "मूळ दस्तऐवज पहा",
+    consultAIScholar: "एआय विद्वानाला विचारा",
+    geographicCoordinates: "भौगोलिक निर्देशक",
+    primaryConnections: "ऐतिहासिक संदर्भ",
+
+    // Soundboard & Audio Broadcasts
+    soundboardBadge: "दुर्लभ प्रक्षेपण व ऐतिहासिक ध्वनीमुद्रणे · 1930–1956",
+    soundboardTitle: "संविधान शिल्पकाराचा आवाज",
+    soundboardSub: "भाषण सिंथेसायझर व मूळ ऐतिहासिक विचार",
+    playbackSpeed: "गती",
+    fullSpeechDoc: "संपूर्ण भाषण दस्तऐवज",
+    listenSpeech: "भाषण ऐका",
+    stopAudio: "थांबवा",
+
+    // Wisdom Explorer
+    wisdomExplorer: "संवादात्मक सुविचार दालन",
+    primarySpecimen: "प्राथमिक ऐतिहासिक विचार",
+    shuffleWisdom: "नवीन विचार पहा",
+    copyQuote: "विचार कॉपी करा",
+    copiedQuote: "कॉपी केले!",
+    themeAll: "समग्र विचार",
+    themeDemocracy: "लोकशाही",
+    themeJustice: "सामाजिक न्याय",
+    themeEducation: "शिक्षण",
+    themeWomen: "महिलांचे हक्क",
+    themeMorality: "घटनात्मक नैतिकता",
+
+    // Constitutional Quest
+    questTitle: "संविधान ज्ञान परीक्षा",
+    questSubtitle: "संवादात्मक ऐतिहासिक प्रश्नमंजूषा",
+    questionLabel: "प्रश्न",
+    ofLabel: "पैकी",
+    streakLabel: "सलग बरोबर",
+    bestStreakLabel: "सर्वोत्कृष्ट गुण",
+    scoreLabel: "गुण",
+    submitAnswer: "उत्तर नोंदवा",
+    nextChallenge: "पुढील प्रश्न",
+    explanationEvidence: "स्पष्टीकरण आणि ऐतिहासिक पुरावे:",
+    primaryArchivalSource: "प्राथमिक ऐतिहासिक संदर्भ:",
+    exploreFolio: "दस्तऐवज पहा",
+    askAIAboutThis: "एआय विद्वानाला विचारा",
+    playAgain: "पुन्हा खेळा",
+    shareScore: "गुण शेअर करा",
+    questCompleted: "परीक्षा पूर्ण!",
+    constitutionalScholar: "संविधान अभ्यासक",
+
+    // Accessibility Modal
+    accessibilityOptions: "सुलभता पर्याय (GIGW 3.0)",
+    textScaling: "मजकूर आकार आणि रचना",
+    standardSize: "प्रमाणित (A)",
+    largeSize: "मोठा (A+)",
+    xlargeSize: "अति मोठा (A++)",
+    highContrast: "उच्च कॉन्ट्रास्ट मोड",
+    highContrastDesc: "कमी दृष्टी असलेल्या वाचकांसाठी कॉन्ट्रास्ट वाढवा",
+    audioNarration: "स्क्रीन ध्वनी वाचन",
+    audioNarrationDesc: "ऐतिहासिक दस्तऐवजांसाठी ऑडिओ वाचन सुरू करा",
+    languageSelection: "भाषा निवडा",
+    applyClose: "लागू करा आणि बंद करा",
+
+    // Timeline Pavilion
+    guidedTour: "मार्गदर्शित सफर",
+    voiceGuide: "व्हॉइस मार्गदर्शक",
+    linearTimeline: "रेषीय मांडणी",
+    slideshowView: "स्लाइडशो दृश्य",
+    stationOf: "टप्पा",
+    historicalProclamation: "ऐतिहासिक घोषणा",
+    primaryFolios: "प्राथमिक खंड",
+    listenQuote: "उद्धरण ऐका",
+
+    // Search Page
+    searchHeading: "आंबेडकर अभिलेखागार शोध",
+    searchSubheading: "२२ खंडांमधील भाषणे व साहित्यात हायब्रिड न्यूरल शोध",
+    searchPlaceholderLong: "२२ खंडांमधील १२,१५४ पानांमधून शोधा (उदा. 'जातीचा उच्छेद', 'कलम ३२')...",
+    rerankEnabled: "न्यूरल री-रँकिंग",
+    allFormats: "सर्व प्रकार",
+    resultsFound: "नोंदी सापडल्या",
+    appliedFilters: "निवडलेले फिल्टर्स:",
+
+    // Kiosk & Touch
+    touchScreenEnabled: "टच स्क्रीन सक्रिय",
+    kioskAttractHint: "अभिलेखागार पाहण्यासाठी स्क्रीनवर कुठेही स्पर्श करा",
+    startExploring: "सफर सुरू करा",
+    resetSession: "सत्र पूर्ववत करा",
+
+    // Preservation
+    preservationTitle: "डिजिटल जतन व क्रिप्टोग्राफिक ऑडिट",
+    preservationSubtitle: "PREMIS 3.0 मानके, SHA-256 सुरक्षा आणि IIIF पूर्तता",
+    runFixityAudit: "फिक्सिटी तपासणी चालवा",
+    systemHealth: "प्रणाली स्थिती",
+
+    // Research & Scholar
+    scholarTitle: "बाबासाहेब एआय संशोधन केंद्र",
+    scholarSubtitle: "प्रमाणित ऐतिहासिक संदर्भांवर आधारित संशोधन",
+    copyDossier: "नोंदवही कॉपी करा",
+    downloadDossier: "नोंदवही डाउनलोड (.MD)",
+    researchPack: "संशोधन संच (.ZIP)",
+    askingQuestion: "पुरावे-आधारित उत्तर तयार होत आहे..."
   },
 
   ta: {
@@ -610,7 +940,117 @@ export const UI_STRINGS: Record<Language, Record<string, string>> = {
     footerStandardsDesc: "சரிபார்க்கக்கூடிய முதன்மை ஆதாரங்கள், மாறாத SHA-256 ஹாஷ்கள் மற்றும் உயர்-துல்லிய RAG மூலம் ஜனநாயக சிந்தனைகளைப் பாதுகாத்தல்.",
     backToTop: "மேலே செல்க",
     footerCopyright: "டாக்டர் பி. ஆர். அம்பேத்கர் டிஜிட்டல் மரபு காப்பகம்.",
-    footerPlatform: "தேசிய டிஜிட்டல் மரபு காப்பகம் & ஒலி-ஒளி அறிவுத் தளம்"
+    footerPlatform: "தேசிய டிஜிட்டல் மரபு காப்பகம் & ஒலி-ஒளி அறிவுத் தளம்",
+
+    // Memorials Pavilion & Spatial Geography
+    memorialsTitle: "பஞ்சதீர்த்தம் & வரலாற்று நினைவிடங்கள்",
+    memorialsSubtitle: "புனித பஞ்சதீர்த்த தளங்கள், வரலாற்றுப் போராட்டங்கள் மற்றும் தேசிய நினைவிடங்களின் ஊடாடும் வரைபடம்.",
+    sitesTab: "நினைவிடங்கள்",
+    dossierTab: "ஆவணக் குறிப்பு",
+    earthTab: "பூகோளம் 3D",
+    filterPanchtirth: "பஞ்சதீர்த்தம்",
+    filterIndia: "இந்தியா",
+    filterInternational: "சர்வதேசம்",
+    searchMemorialPlaceholder: "நினைவிடம், நகரம் அல்லது நிகழ்வைத் தேடுங்கள்...",
+    historicalSignificance: "வரலாற்று முக்கியத்துவம்",
+    archivalPrimarySources: "முதன்மை வரலாற்று ஆதாரங்கள்",
+    exploreRecord: "ஆவணத்தைப் பார்வையிடுக",
+    consultAIScholar: "AI அறிஞரிடம் கேளுங்கள்",
+    geographicCoordinates: "புவியியல் ஆயத்தொலைவுகள்",
+    primaryConnections: "ஆவணத் தொடர்புகள்",
+
+    // Soundboard & Audio Broadcasts
+    soundboardBadge: "வரலாற்று ஒலிபரப்புகள் & அரிய குரல் பதிவுகள் · 1930–1956",
+    soundboardTitle: "அரசியலமைப்புச் சிற்பியின் குரல்",
+    soundboardSub: "உரை ஒலிச்சேர்க்கை & முதன்மை குரல் பதிவுகள்",
+    playbackSpeed: "வேகம்",
+    fullSpeechDoc: "முழு உரை ஆவணம்",
+    listenSpeech: "கேளுங்கள்",
+    stopAudio: "நிறுத்து",
+
+    // Wisdom Explorer
+    wisdomExplorer: "ஊடாடும் பொன்மொழி அரங்கு",
+    primarySpecimen: "முதன்மை வரலாற்று சிந்தனை",
+    shuffleWisdom: "புதிய சிந்தனை",
+    copyQuote: "மேற்கோளை நகலெடு",
+    copiedQuote: "நகலெடுக்கப்பட்டது!",
+    themeAll: "அனைத்து சிந்தனைகள்",
+    themeDemocracy: "ஜனநாயகம்",
+    themeJustice: "சமூக நீதி",
+    themeEducation: "கல்வி",
+    themeWomen: "பெண்கள் உரிமை",
+    themeMorality: "அரசியலமைப்பு ஒழுக்கம்",
+
+    // Constitutional Quest
+    questTitle: "அரசியலமைப்பு வினாடி வினா",
+    questSubtitle: "ஊடாடும் வரலாற்று அறிவுக் களம்",
+    questionLabel: "கேள்வி",
+    ofLabel: "இல்",
+    streakLabel: "தொடர் வெற்றி",
+    bestStreakLabel: "சிறந்த மதிப்பெண்",
+    scoreLabel: "மதிப்பெண்",
+    submitAnswer: "விடையை சமர்ப்பிக்கவும்",
+    nextChallenge: "அடுத்த கேள்வி",
+    explanationEvidence: "விளக்கம் மற்றும் வரலாற்று சான்றுகள்:",
+    primaryArchivalSource: "முதன்மை காப்பக ஆதாரம்:",
+    exploreFolio: "ஆவணத்தைக் காண்க",
+    askAIAboutThis: "AI அறிஞரிடம் கேளுங்கள்",
+    playAgain: "மீண்டும் விளையாடு",
+    shareScore: "மதிப்பெண்ணைப் பகிர்",
+    questCompleted: "வினாடி வினா முடிந்தது!",
+    constitutionalScholar: "அரசியலமைப்பு அறிஞர்",
+
+    // Accessibility Modal
+    accessibilityOptions: "அணுகல்தன்மை விருப்பங்கள் (GIGW 3.0)",
+    textScaling: "எழுத்து அளவு மற்றும் வடிவம்",
+    standardSize: "இயல்பு (A)",
+    largeSize: "பெரியது (A+)",
+    xlargeSize: "மிகப் பெரியது (A++)",
+    highContrast: "உயர் மாறுபாடு முறை (High Contrast)",
+    highContrastDesc: "பார்வைக் குறைபாடுள்ள வாசகர்களுக்கான மாறுபாட்டை அதிகரிக்கிறது",
+    audioNarration: "திரை ஒலி வாசிப்பு",
+    audioNarrationDesc: "முதன்மை ஆவணங்களுக்கான குரல் உதவியை இயக்கு",
+    languageSelection: "மொழித் தேர்வு",
+    applyClose: "பயன்படுத்தி மூடுக",
+
+    // Timeline Pavilion
+    guidedTour: "வழிகாட்டப்பட்ட பயணம்",
+    voiceGuide: "குரல் வழிகாட்டி",
+    linearTimeline: "நேரியல் பார்வை",
+    slideshowView: "ஸ்லைடு காட்சி",
+    stationOf: "மைல்கல்",
+    historicalProclamation: "வரலாற்றுப் பிரகடனம்",
+    primaryFolios: "முதன்மைத் தொகுதிகள்",
+    listenQuote: "மேற்கோளைக் கேட்க",
+
+    // Search Page
+    searchHeading: "அம்பேத்கர் காப்பகத் தேடல்",
+    searchSubheading: "22 தொகுதிகளின் எழுத்துக்கள் மற்றும் உரைகளில் கலப்பு நியூரல் தேடல்",
+    searchPlaceholderLong: "22 BAWS தொகுதிகளில் 12,154 பக்கங்களில் தேடவும் (எ.கா. 'சாதி ஒழிப்பு', 'உறுப்பு 32')...",
+    rerankEnabled: "நியூரல் மறுவரிசைப்படுத்தல்",
+    allFormats: "அனைத்து வடிவங்கள்",
+    resultsFound: "முடிவுகள் கிடைத்தன",
+    appliedFilters: "பயன்படுத்தப்பட்ட வடிகட்டிகள்:",
+
+    // Kiosk & Touch
+    touchScreenEnabled: "தொடுதிரை இயக்கப்பட்டது",
+    kioskAttractHint: "காப்பகத்தை ஆராய திரையைத் தொடவும்",
+    startExploring: "ஆய்வைத் தொடங்குக",
+    resetSession: "அமர்வை மீட்டமை",
+
+    // Preservation
+    preservationTitle: "டிஜிட்டல் பாதுகாப்பு & கிரிப்டோகிராஃபிக் தணிக்கை",
+    preservationSubtitle: "PREMIS 3.0 தரநிலைகள், SHA-256 பாதுகாப்பு & IIIF நெறிமுறைகள்",
+    runFixityAudit: "பாதுகாப்புத் தணிக்கையை இயக்கு",
+    systemHealth: "கணினி நிலை",
+
+    // Research & Scholar
+    scholarTitle: "பாபாசாகேப் AI ஆராய்ச்சி மையம்",
+    scholarSubtitle: "சரிபார்க்கப்பட்ட முதன்மை வரலாற்று ஆதாரங்களின் அடிப்படையிலான ஆய்வு",
+    copyDossier: "ஆய்வுக் குறிப்பை நகலெடு",
+    downloadDossier: "பதிவிறக்குக (.MD)",
+    researchPack: "ஆராய்ச்சித் தொகுப்பு (.ZIP)",
+    askingQuestion: "சான்றாதார அடிப்படையிலான பதில் தயாராகிறது..."
   },
 
   bn: {
@@ -763,6 +1203,116 @@ export const UI_STRINGS: Record<Language, Record<string, string>> = {
     footerStandardsDesc: "যাচাইকৃত প্রাথমিক উৎস, অপরিবর্তনীয় SHA-256 হ্যাশ এবং উচ্চ-নির্ভুল RAG দ্বারা গণতান্ত্রিক চিন্তাধারার সুরক্ষা।",
     backToTop: "উপরে যান",
     footerCopyright: "ড. বি. আর. আম্বেদকর ডিজিটাল হেরিটেজ আর্কাইভ।",
-    footerPlatform: "জাতীয় ডিজিটাল হেরিটেজ আর্কাইভ ও অডিও-ভিজ্যুয়াল জ্ঞান প্ল্যাটফর্ম"
+    footerPlatform: "জাতীয় ডিজিটাল হেরিটেজ আর্কাইভ ও অডিও-ভিজ্যুয়াল জ্ঞান প্ল্যাটফর্ম",
+
+    // Memorials Pavilion & Spatial Geography
+    memorialsTitle: "পঞ্চতীর্থ ও ঐতিহাসিক স্মারকসমূহ",
+    memorialsSubtitle: "পবিত্র পঞ্চতীর্থ তীর্থক্ষেত্র, ঐতিহাসিক সত্যাগ্রহ এবং জাতীয় স্মারকের ইন্টারেক্টিভ মানচিত্র।",
+    sitesTab: "স্মারক স্থান",
+    dossierTab: "তথ্য বিবরণী",
+    earthTab: "গ্লোব 3D",
+    filterPanchtirth: "পঞ্চতীর্থ",
+    filterIndia: "ভারত",
+    filterInternational: "আন্তর্জাতিক",
+    searchMemorialPlaceholder: "স্মারক, শহর বা ঐতিহাসিক ঘটনা খুঁজুন...",
+    historicalSignificance: "ঐতিহাসিক তাৎপর্য",
+    archivalPrimarySources: "প্রাথমিক ঐতিহাসিক তথ্যসূত্র",
+    exploreRecord: "নথি দেখুন",
+    consultAIScholar: "এআই পণ্ডিতকে জিজ্ঞাসা করুন",
+    geographicCoordinates: "ভৌগোলিক স্থানাঙ্ক",
+    primaryConnections: "আর্কাইভাল সম্পর্ক",
+
+    // Soundboard & Audio Broadcasts
+    soundboardBadge: "ঐতিহাসিক সম্প্রচার ও বিরল কণ্ঠরেকর্ড · ১৯৩০–১৯৫৬",
+    soundboardTitle: "সংবিধান প্রণেতার কণ্ঠস্বর",
+    soundboardSub: "ভাষণ সিন্থেসাইজার ও মূল ঐতিহাসিক চিন্তাধারা",
+    playbackSpeed: "গতি",
+    fullSpeechDoc: "সম্পূর্ণ ভাষণ নথি",
+    listenSpeech: "ভাষণ শুনুন",
+    stopAudio: "থামান",
+
+    // Wisdom Explorer
+    wisdomExplorer: "ইন্টারেক্টিভ চিন্তাধারা অনুসন্ধান",
+    primarySpecimen: "প্রাথমিক ঐতিহাসিক বাণী",
+    shuffleWisdom: "নতুন বাণী দেখুন",
+    copyQuote: "উদ্ধৃতি কপি করুন",
+    copiedQuote: "কপি হয়েছে!",
+    themeAll: "সকল চিন্তা",
+    themeDemocracy: "গণতন্ত্র",
+    themeJustice: "সামাজিক ন্যায়বিচার",
+    themeEducation: "শিক্ষা",
+    themeWomen: "নারী অধিকার",
+    themeMorality: "সাংবিধানিক নৈতিকতা",
+
+    // Constitutional Quest
+    questTitle: "সাংবিধানিক কুইজ",
+    questSubtitle: "ইন্টারেক্টিভ ঐতিহাসিক জ্ঞান পরীক্ষা",
+    questionLabel: "প্রশ্ন",
+    ofLabel: "এর মধ্যে",
+    streakLabel: "টানা সঠিক",
+    bestStreakLabel: "সর্বোচ্চ স্কোর",
+    scoreLabel: "স্কোর",
+    submitAnswer: "উত্তর জমা দিন",
+    nextChallenge: "পরবর্তী প্রশ্ন",
+    explanationEvidence: "ব্যাখ্যা ও ঐতিহাসিক প্রমাণ:",
+    primaryArchivalSource: "প্রাথমিক আর্কাইভাল উৎস:",
+    exploreFolio: "নথি দেখুন",
+    askAIAboutThis: "এআই পণ্ডিতকে জিজ্ঞাসা করুন",
+    playAgain: "আবার খেলুন",
+    shareScore: "স্কোর শেয়ার করুন",
+    questCompleted: "কুইজ সম্পন্ন!",
+    constitutionalScholar: "সাংবিধানিক পণ্ডিত",
+
+    // Accessibility Modal
+    accessibilityOptions: "অ্যাক্সেসিবিলিটি বিকল্প (GIGW 3.0)",
+    textScaling: "টেক্সটের আকার ও টাইপোগ্রাফি",
+    standardSize: "সাধারণ (A)",
+    largeSize: "বড় (A+)",
+    xlargeSize: "খুব বড় (A++)",
+    highContrast: "উচ্চ বৈসাদৃশ্য মোড (High Contrast)",
+    highContrastDesc: "স্বল্প দৃষ্টিসম্পন্ন পাঠকদের জন্য দৃশ্যমানতা বৃদ্ধি করে",
+    audioNarration: "স্ক্রিন অডিও বর্ণনা",
+    audioNarrationDesc: "প্রাথমিক নথির জন্য ভয়েস সহায়তা সক্রিয় করুন",
+    languageSelection: "ভাষা নির্বাচন",
+    applyClose: "প্রয়োগ ও বন্ধ করুন",
+
+    // Timeline Pavilion
+    guidedTour: "দিকনির্দেশিত ভ্রমণ",
+    voiceGuide: "ভয়েস গাইড",
+    linearTimeline: "রৈখিক দৃশ্য",
+    slideshowView: "স্লাইডশো দৃশ্য",
+    stationOf: "ধাপ",
+    historicalProclamation: "ঐতিহাসিক ঘোষণা",
+    primaryFolios: "প্রাথমিক খণ্ডসমূহ",
+    listenQuote: "বাণী শুনুন",
+
+    // Search Page
+    searchHeading: "আম্বেদকর আর্কাইভাল অনুসন্ধান",
+    searchSubheading: "২২টি খণ্ডের রচনা ও ভাষণের মধ্যে হাইব্রিড নিউরাল অনুসন্ধান",
+    searchPlaceholderLong: "২২টি BAWS খণ্ডের ১২,১৫৪ পৃষ্ঠার মধ্যে খুঁজুন (যেমন 'জাতপাত উচ্ছেদ', 'অনুচ্ছেদ ৩২')...",
+    rerankEnabled: "নিউরাল পুনর্ক্রমবিন্যাস",
+    allFormats: "সকল ফরম্যাট",
+    resultsFound: "ফলাফল পাওয়া গেছে",
+    appliedFilters: "প্রয়োগকৃত ফিল্টারসমূহ:",
+
+    // Kiosk & Touch
+    touchScreenEnabled: "টাচ স্ক্রিন সক্রিয়",
+    kioskAttractHint: "আর্কাইভ অন্বেষণ করতে স্ক্রিনের যেকোনো স্থানে স্পর্শ করুন",
+    startExploring: "অন্বেষণ শুরু করুন",
+    resetSession: "সেশন রিসেট করুন",
+
+    // Preservation
+    preservationTitle: "ডিজিটাল সংরক্ষণ ও ক্রিপ্টোগ্রাফিক অডিট",
+    preservationSubtitle: "PREMIS 3.0 মান, SHA-256 সুরক্ষা ও IIIF সম্মতি",
+    runFixityAudit: "ফিক্সিটি অডিট চালান",
+    systemHealth: "সিস্টেমের স্বাস্থ্য",
+
+    // Research & Scholar
+    scholarTitle: "বাবাসাহেব এআই গবেষণা কেন্দ্র",
+    scholarSubtitle: "যাচাইকৃত ঐতিহাসিক উৎসের ভিত্তিতে নির্ভুল গবেষণা",
+    copyDossier: "ডোজিয়ার কপি করুন",
+    downloadDossier: "ডাউনলোড করুন (.MD)",
+    researchPack: "গবেষণা প্যাক (.ZIP)",
+    askingQuestion: "তথ্যসূত্রভিত্তিক উত্তর তৈরি হচ্ছে..."
   }
 };

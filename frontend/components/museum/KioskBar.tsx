@@ -41,7 +41,7 @@ export const KioskBar: React.FC<KioskBarProps> = ({
             aria-label="Previous Screen"
           >
             <ArrowLeft className="w-5 h-5 text-[#0f2d59]" />
-            <span className="hidden sm:inline">Back</span>
+            <span className="hidden sm:inline">{language === 'hi' ? 'वापस' : language === 'mr' ? 'मागे' : language === 'ta' ? 'பின்' : language === 'bn' ? 'ফিরে' : 'Back'}</span>
           </button>
 
           <button
@@ -50,17 +50,17 @@ export const KioskBar: React.FC<KioskBarProps> = ({
             aria-label="Return to National Archive Home"
           >
             <Home className="w-5 h-5" />
-            <span>Home</span>
+            <span>{t.navHome || (language === 'hi' ? 'मुख्य पृष्ठ' : language === 'mr' ? 'मुख्य पृष्ठ' : language === 'ta' ? 'முகப்பு' : language === 'bn' ? 'হোম' : 'Home')}</span>
           </button>
         </div>
 
         {/* Center Kiosk Display Notice */}
         <div className="hidden md:flex flex-col items-center text-center">
           <span className="text-xs uppercase tracking-wider text-[#0f2d59] font-mono font-bold">
-            Interactive Museum & Memorial Terminal
+            {language === 'hi' ? 'संवादात्मक संग्रहालय एवं स्मारक टर्मिनल' : language === 'mr' ? 'संवादात्मक संग्रहालय आणि स्मारक टर्मिनल' : language === 'ta' ? 'ஊடாடும் அருங்காட்சியக முனையம்' : language === 'bn' ? 'ইন্টারেক্টিভ মিউজিয়াম টার্মিনাল' : 'Interactive Museum & Memorial Terminal'}
           </span>
           <span className="text-[11px] text-slate-500">
-            Touchscreen Access · Dr. Ambedkar National Memorial
+            {language === 'hi' ? 'स्पर्श प्रदर्शन · डॉ. आंबेडकर राष्ट्रीय स्मारक' : language === 'mr' ? 'स्पर्श प्रदर्शन · डॉ. आंबेडकर राष्ट्रीय स्मारक' : language === 'ta' ? 'தொடுதிரை அணுகல் · டாக்டர் அம்பேத்கர் தேசிய நினைவகம்' : language === 'bn' ? 'টাচস্ক্রিন অ্যাক্সেস · ড. আম্বেদকর জাতীয় স্মারক' : 'Touchscreen Access · Dr. Ambedkar National Memorial'}
           </span>
         </div>
 
@@ -72,7 +72,7 @@ export const KioskBar: React.FC<KioskBarProps> = ({
             aria-label="Open Search"
           >
             <Search className="w-4 h-4 text-[#0f2d59]" />
-            <span className="hidden lg:inline">Search</span>
+            <span className="hidden lg:inline">{t.searchBtn || (language === 'hi' ? 'खोजें' : language === 'mr' ? 'शोध' : language === 'ta' ? 'தேடல்' : language === 'bn' ? 'অনুসন্ধান' : 'Search')}</span>
           </button>
 
           <button
@@ -120,7 +120,7 @@ export const KioskBar: React.FC<KioskBarProps> = ({
             aria-label="High Contrast"
           >
             <Eye className="w-4 h-4 text-blue-900" />
-            <span className="hidden xl:inline">Contrast</span>
+            <span className="hidden xl:inline">{language === 'hi' ? 'कंट्रास्ट' : language === 'mr' ? 'कंट्रास्ट' : language === 'ta' ? 'வேறுபாடு' : language === 'bn' ? 'কনট্রাস্ট' : 'Contrast'}</span>
           </button>
 
           <button

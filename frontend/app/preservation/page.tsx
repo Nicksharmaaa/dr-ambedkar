@@ -27,8 +27,12 @@ import {
 import { api } from "@/lib/api";
 import { soundEffects } from "@/utils/soundEffects";
 import MuseumGrandPavilion from "@/components/museum/MuseumGrandPavilion";
+import { useMuseum } from "@/components/museum/MuseumContext";
+import { UI_STRINGS } from "@/utils/i18n";
 
 export default function PreservationDashboardPage() {
+  const { language } = useMuseum();
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [report, setReport] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [checkingAll, setCheckingAll] = useState(false);
@@ -180,15 +184,8 @@ export default function PreservationDashboardPage() {
             1. CURATORIAL PRESERVATION HEADER (Matches Memorials & Archive Theme)
             ========================================================================= */}
         <MuseumGrandPavilion
-          title={
-            <>
-              Preservation &{' '}
-              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
-                Fixity
-              </span>{' '}
-              Conservatory
-            </>
-          }
+          title={t.preservationTitle || "Preservation & Fixity Conservatory"}
+          subtitle={t.preservationSubtitle || "PREMIS 3.0 Compliant Digital Archival Preservation, SHA-256 Fixity & IIIF Compliance"}
           watermarkIcon={ShieldCheck}
         >
           <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-2">
@@ -214,7 +211,7 @@ export default function PreservationDashboardPage() {
               title="Execute full SHA-256 fixity audit across all volumes"
             >
               <ShieldCheck className={`w-3.5 h-3.5 ${checkingAll ? "animate-spin" : ""}`} />
-              <span>{checkingAll ? "Verifying Archive..." : "Run Fixity Audit"}</span>
+              <span>{checkingAll ? (t.askingQuestion || "Verifying Archive...") : (t.runFixityAudit || "Run Fixity Audit")}</span>
             </button>
           </div>
         </MuseumGrandPavilion>

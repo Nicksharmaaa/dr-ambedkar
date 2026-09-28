@@ -54,22 +54,23 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
               meta = JSON.parse(doc.metadata_json);
             } catch {}
           }
+          const fallback = HISTORICAL_PHOTOS.find(p => p.id === doc.id || p.title.toLowerCase() === doc.title?.toLowerCase());
           return {
             id: doc.id,
             title: doc.title,
-            titleLocal: meta.titleLocal,
-            year: parseInt(doc.publication_date || meta.year || '1940', 10),
-            dateString: meta.dateString || doc.publication_date || '',
-            location: meta.location || 'India',
-            era: meta.era || doc.subtitle || 'Social Movements',
-            imageUrl: meta.imageUrl || '/images/ambedkar_portrait_1950.jpg',
-            aspectRatio: meta.aspectRatio || 'landscape',
-            caption: doc.description || meta.caption || '',
-            captionLocal: meta.captionLocal,
-            historicalContext: meta.historicalContext || '',
+            titleLocal: meta.titleLocal || fallback?.titleLocal,
+            year: parseInt(doc.publication_date || meta.year || fallback?.year?.toString() || '1940', 10),
+            dateString: meta.dateString || doc.publication_date || fallback?.dateString || '',
+            location: meta.location || fallback?.location || 'India',
+            era: meta.era || doc.subtitle || fallback?.era || 'Social Movements',
+            imageUrl: meta.imageUrl || fallback?.imageUrl || '/images/ambedkar_portrait_1950.jpg',
+            aspectRatio: meta.aspectRatio || fallback?.aspectRatio || 'landscape',
+            caption: doc.description || meta.caption || fallback?.caption || '',
+            captionLocal: meta.captionLocal || fallback?.captionLocal,
+            historicalContext: meta.historicalContext || fallback?.historicalContext || '',
             accessionNumber: meta.accessionNumber || doc.stable_id || doc.id,
-            archiveProvenance: meta.archiveProvenance || doc.provenance || '',
-            photographerOrAgency: meta.photographerOrAgency || doc.source_institution || '',
+            archiveProvenance: meta.archiveProvenance || doc.provenance || fallback?.archiveProvenance || '',
+            photographerOrAgency: meta.photographerOrAgency || doc.source_institution || fallback?.photographerOrAgency || '',
             dimensions: meta.dimensions,
             medium: meta.medium,
           };

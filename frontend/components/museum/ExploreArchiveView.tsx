@@ -965,13 +965,13 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                   <span className="text-[#0A2947]/60">· {inspectedDoc.source}</span>
                 </div>
                 <h3 className="text-2xl font-serif-editorial font-bold text-[#0A2947]">
-                  {inspectedDoc.title}
+                  {language !== 'en' && inspectedDoc.titleLocal?.[language] ? inspectedDoc.titleLocal[language] : inspectedDoc.title}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#0A2947]/80 font-dmsans leading-relaxed">
-                  {inspectedDoc.shortDescription}
+                  {language !== 'en' && inspectedDoc.shortDescriptionLocal?.[language] ? inspectedDoc.shortDescriptionLocal[language] : inspectedDoc.shortDescription}
                 </p>
                 <div className="p-4 bg-white border-l-4 border-[#C59A45] rounded-r-2xl text-xs sm:text-sm font-serif italic text-[#0A2947] shadow-xs">
-                  "{inspectedDoc.fullText.slice(0, 320)}..."
+                  "{(language !== 'en' && inspectedDoc.fullTextLocal?.[language] ? inspectedDoc.fullTextLocal[language] : inspectedDoc.fullText).slice(0, 320)}..."
                 </div>
               </div>
 
@@ -1236,7 +1236,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                     </h4>
 
                     <p className="text-xs text-[#0A2947]/75 line-clamp-3 leading-relaxed">
-                      {doc.shortDescription}
+                      {language !== 'en' && doc.shortDescriptionLocal?.[language] ? doc.shortDescriptionLocal[language] : doc.shortDescription}
                     </p>
 
                     <div className="pt-2 text-[11px] font-mono text-[#0A2947]/60 truncate">
@@ -1290,7 +1290,7 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
                           onClick={() => onOpenDocument(doc)}
                           className="font-serif-editorial text-sm font-bold text-[#0A2947] hover:text-[#8B5E3C] text-left cursor-pointer line-clamp-1"
                         >
-                          {doc.title}
+                          {language !== 'en' && doc.titleLocal?.[language] ? doc.titleLocal[language] : doc.title}
                         </button>
                         <div className="text-[11px] text-[#0A2947]/60 truncate mt-0.5 font-mono">
                           {doc.collection} · {doc.source}

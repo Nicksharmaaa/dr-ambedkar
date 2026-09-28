@@ -426,15 +426,8 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
             BABASAHEB AI SCHOLAR · ARCHIVE-GROUNDED RESEARCH ASSISTANT
             ========================================================================= */}
         <MuseumGrandPavilion
-          title={
-            <>
-              Babasaheb{' '}
-              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
-                AI Scholar
-              </span>{' '}
-              Lab
-            </>
-          }
+          title={t.scholarTitle || "Babasaheb AI Scholar Lab"}
+          subtitle={t.scholarSubtitle || "Grounded Archival Research with Verifiable Primary Sources"}
           watermarkIcon={Sparkles}
         >
           {activeDocumentContext && (
@@ -521,7 +514,7 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
                 type="text"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                placeholder={isListeningVoice ? "Listening... Speak your research inquiry now..." : "Ask the AI Scholar regarding social democracy, Article 32, caste treaties, or CAD..."}
+                placeholder={isListeningVoice ? "Listening... Speak your research inquiry now..." : (t.chatbotPlaceholder || "Ask the AI Scholar regarding social democracy, Article 32, caste treaties, or CAD...")}
                 autoComplete="off"
                 className={`w-full pl-12 pr-40 sm:pr-48 py-4 bg-[#FAF7F0] border-2 text-[#0A2947] placeholder-[#0A2947]/45 rounded-2xl text-sm sm:text-base focus:outline-none transition-all font-dmsans ${
                   isListeningVoice ? 'border-amber-500 ring-2 ring-amber-400/40' : 'border-[#D3D4C0] focus:border-[#0A2947]'
@@ -556,7 +549,7 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
                   disabled={isSearching || !question.trim()}
                   className="px-4 sm:px-6 py-2.5 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#F3E4C9] rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-40 shadow-xs"
                 >
-                  {isSearching ? <RefreshCw className="w-4 h-4 animate-spin" /> : <span>Inquire</span>}
+                  {isSearching ? <RefreshCw className="w-4 h-4 animate-spin" /> : <span>{t.btnAskAssistant || "Inquire"}</span>}
                 </button>
               </div>
             </div>
@@ -713,7 +706,7 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
                   title="Download Research Dossier as Markdown file"
                 >
                   <Download className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                  <span>Download Dossier</span>
+                  <span>{t.downloadDossier || "Download Dossier (.MD)"}</span>
                 </button>
 
                 {/* Copy Full Synthesis */}
@@ -725,12 +718,12 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
                   {copiedDossier ? (
                     <>
                       <Check className="w-3.5 h-3.5 text-emerald-700" />
-                      <span className="text-emerald-700">Dossier Copied!</span>
+                      <span className="text-emerald-700">{t.copiedQuote || "Dossier Copied!"}</span>
                     </>
                   ) : (
                     <>
                       <Copy className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                      <span>Copy Dossier</span>
+                      <span>{t.copyDossier || "Copy Dossier"}</span>
                     </>
                   )}
                 </button>

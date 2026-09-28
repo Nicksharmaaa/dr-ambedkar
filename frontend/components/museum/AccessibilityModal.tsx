@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, Type, Eye, Volume2, Globe, Keyboard, Check, ShieldCheck } from 'lucide-react';
+import { X, Type, Eye, Volume2, Globe, Check, ShieldCheck } from 'lucide-react';
 import { AccessibilitySettings, Language } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
 
@@ -27,12 +27,12 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
   onSelectLanguage
 }) => {
   if (!isOpen) return null;
-  const t = UI_STRINGS[language];
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
 
   return (
     <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-150">
       <div 
-        className="w-full max-w-lg bg-white border border-slate-300 rounded-lg shadow-2xl p-6 text-slate-900 relative"
+        className="w-full max-w-lg bg-white border border-slate-300 rounded-2xl shadow-2xl p-6 text-slate-900 relative font-dmsans"
         role="dialog"
         aria-modal="true"
         aria-labelledby="accessibility-title"
@@ -40,13 +40,13 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
         <div className="flex items-center justify-between pb-3 border-b border-slate-200">
           <div className="flex items-center gap-2">
             <Eye className="w-5 h-5 text-[#0f2d59]" />
-            <h2 id="accessibility-title" className="text-xl font-bold font-editorial text-slate-900">
-              {t.accessibility} Options (GIGW 3.0)
+            <h2 id="accessibility-title" className="text-xl font-bold font-serif-editorial text-slate-900">
+              {t.accessibilityOptions || "Accessibility Options (GIGW 3.0)"}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Close accessibility settings"
           >
             <X className="w-5 h-5" />
@@ -58,51 +58,51 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
           <div>
             <label className="block text-xs uppercase tracking-wider text-slate-600 font-bold mb-2 flex items-center gap-1.5">
               <Type className="w-4 h-4 text-[#0f2d59]" />
-              <span>Text Scaling & Typography</span>
+              <span>{t.textScaling || "Text Scaling & Typography"}</span>
             </label>
             <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={() => onChangeTextSize('normal')}
-                className={`py-2 px-3 rounded border text-sm font-semibold transition-colors flex items-center justify-center ${
+                className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-colors flex items-center justify-center cursor-pointer ${
                   accessibility.textSize === 'normal'
-                    ? 'bg-[#0f2d59] text-white border-[#0f2d59]'
+                    ? 'bg-[#0f2d59] text-white border-[#0f2d59] shadow-xs'
                     : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
                 }`}
               >
-                Standard (A)
+                {t.standardSize || "Standard (A)"}
               </button>
               <button
                 onClick={() => onChangeTextSize('large')}
-                className={`py-2 px-3 rounded border text-base font-semibold transition-colors flex items-center justify-center ${
+                className={`py-2 px-3 rounded-xl border text-base font-semibold transition-colors flex items-center justify-center cursor-pointer ${
                   accessibility.textSize === 'large'
-                    ? 'bg-[#0f2d59] text-white border-[#0f2d59]'
+                    ? 'bg-[#0f2d59] text-white border-[#0f2d59] shadow-xs'
                     : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
                 }`}
               >
-                Large (A+)
+                {t.largeSize || "Large (A+)"}
               </button>
               <button
                 onClick={() => onChangeTextSize('xlarge')}
-                className={`py-2 px-3 rounded border text-lg font-semibold transition-colors flex items-center justify-center ${
+                className={`py-2 px-3 rounded-xl border text-lg font-semibold transition-colors flex items-center justify-center cursor-pointer ${
                   accessibility.textSize === 'xlarge'
-                    ? 'bg-[#0f2d59] text-white border-[#0f2d59]'
+                    ? 'bg-[#0f2d59] text-white border-[#0f2d59] shadow-xs'
                     : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
                 }`}
               >
-                X-Large (A++)
+                {t.xlargeSize || "X-Large (A++)"}
               </button>
             </div>
           </div>
 
           {/* High Contrast Mode */}
-          <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded">
+          <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
             <div>
-              <div className="text-sm font-bold text-slate-900">High Contrast Mode</div>
-              <div className="text-xs text-slate-600">Increases contrast ratios for low-vision readers</div>
+              <div className="text-sm font-bold text-slate-900">{t.highContrast || "High Contrast Mode"}</div>
+              <div className="text-xs text-slate-600">{t.highContrastDesc || "Increases contrast ratios for low-vision readers"}</div>
             </div>
             <button
               onClick={onToggleHighContrast}
-              className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
+              className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors cursor-pointer ${
                 accessibility.highContrast ? 'bg-[#0f2d59] justify-end' : 'bg-slate-300 justify-start'
               }`}
               aria-label="Toggle high contrast"
@@ -112,14 +112,14 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
           </div>
 
           {/* Audio Narration Global Toggle */}
-          <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded">
+          <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
             <div>
-              <div className="text-sm font-bold text-slate-900">Screen Audio Narration</div>
-              <div className="text-xs text-slate-600">Enable voice assistance for primary documents</div>
+              <div className="text-sm font-bold text-slate-900">{t.audioNarration || "Screen Audio Narration"}</div>
+              <div className="text-xs text-slate-600">{t.audioNarrationDesc || "Enable voice assistance for primary documents"}</div>
             </div>
             <button
               onClick={onToggleAudioNarration}
-              className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
+              className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors cursor-pointer ${
                 accessibility.audioNarrationActive ? 'bg-[#0f2d59] justify-end' : 'bg-slate-300 justify-start'
               }`}
               aria-label="Toggle continuous audio narration"
@@ -132,14 +132,14 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
           <div>
             <label className="block text-xs uppercase tracking-wider text-slate-600 font-bold mb-2 flex items-center gap-1.5">
               <Globe className="w-4 h-4 text-[#0f2d59]" />
-              <span>Language Selection</span>
+              <span>{t.languageSelection || "Language Selection"}</span>
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
               <button
                 onClick={() => onSelectLanguage('en')}
-                className={`py-2 px-3 rounded border text-sm font-semibold transition-colors flex items-center justify-between ${
+                className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-colors flex items-center justify-between cursor-pointer ${
                   language === 'en'
-                    ? 'bg-blue-50 border-[#0f2d59] text-[#0f2d59]'
+                    ? 'bg-blue-50 border-[#0f2d59] text-[#0f2d59] ring-2 ring-[#0f2d59]/20'
                     : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
                 }`}
               >
@@ -148,9 +148,9 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
               </button>
               <button
                 onClick={() => onSelectLanguage('hi')}
-                className={`py-2 px-3 rounded border text-sm font-semibold transition-colors flex items-center justify-between ${
+                className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-colors flex items-center justify-between cursor-pointer ${
                   language === 'hi'
-                    ? 'bg-blue-50 border-[#0f2d59] text-[#0f2d59]'
+                    ? 'bg-blue-50 border-[#0f2d59] text-[#0f2d59] ring-2 ring-[#0f2d59]/20'
                     : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
                 }`}
               >
@@ -159,9 +159,9 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
               </button>
               <button
                 onClick={() => onSelectLanguage('mr')}
-                className={`py-2 px-3 rounded border text-sm font-semibold transition-colors flex items-center justify-between ${
+                className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-colors flex items-center justify-between cursor-pointer ${
                   language === 'mr'
-                    ? 'bg-blue-50 border-[#0f2d59] text-[#0f2d59]'
+                    ? 'bg-blue-50 border-[#0f2d59] text-[#0f2d59] ring-2 ring-[#0f2d59]/20'
                     : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
                 }`}
               >
@@ -170,9 +170,9 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
               </button>
               <button
                 onClick={() => onSelectLanguage('ta')}
-                className={`py-2 px-3 rounded border text-sm font-semibold transition-colors flex items-center justify-between ${
+                className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-colors flex items-center justify-between cursor-pointer ${
                   language === 'ta'
-                    ? 'bg-blue-50 border-[#0f2d59] text-[#0f2d59]'
+                    ? 'bg-blue-50 border-[#0f2d59] text-[#0f2d59] ring-2 ring-[#0f2d59]/20'
                     : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
                 }`}
               >
@@ -181,9 +181,9 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
               </button>
               <button
                 onClick={() => onSelectLanguage('bn')}
-                className={`py-2 px-3 rounded border text-sm font-semibold transition-colors flex items-center justify-between ${
+                className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-colors flex items-center justify-between cursor-pointer ${
                   language === 'bn'
-                    ? 'bg-blue-50 border-[#0f2d59] text-[#0f2d59]'
+                    ? 'bg-blue-50 border-[#0f2d59] text-[#0f2d59] ring-2 ring-[#0f2d59]/20'
                     : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
                 }`}
               >
@@ -206,12 +206,14 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
         <div className="mt-5 flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 text-sm font-semibold bg-[#0f2d59] hover:bg-[#163e75] text-white rounded transition-colors"
+            className="px-5 py-2 text-sm font-semibold bg-[#0f2d59] hover:bg-[#163e75] text-white rounded-xl transition-colors cursor-pointer shadow-xs"
           >
-            Apply & Close
+            {t.applyClose || "Apply & Close"}
           </button>
         </div>
       </div>
     </div>
   );
 };
+
+export default AccessibilityModal;

@@ -8,6 +8,7 @@ export interface PavilionStat {
 
 export interface MuseumGrandPavilionProps {
   title: React.ReactNode;
+  subtitle?: React.ReactNode;
   stats?: PavilionStat[];
   watermarkIcon?: LucideIcon;
   className?: string;
@@ -16,6 +17,7 @@ export interface MuseumGrandPavilionProps {
 
 export const MuseumGrandPavilion: React.FC<MuseumGrandPavilionProps> = ({
   title,
+  subtitle,
   stats,
   watermarkIcon: WatermarkIcon = Landmark,
   className = '',
@@ -50,6 +52,11 @@ export const MuseumGrandPavilion: React.FC<MuseumGrandPavilionProps> = ({
           <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[4.5rem] xl:text-[5.25rem] font-serif-editorial font-bold tracking-tight leading-[1.04] text-white max-w-5xl">
             {title}
           </h1>
+          {subtitle && (
+            <p className="text-sm sm:text-base text-[#FAF7F0]/80 max-w-3xl font-dmsans leading-relaxed">
+              {subtitle}
+            </p>
+          )}
         </div>
 
         {/* Optional Custom In-Header Controls / Content */}

@@ -36,6 +36,7 @@ import { ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { useMuseum } from '@/components/museum/MuseumContext';
 import MuseumGrandPavilion from '@/components/museum/MuseumGrandPavilion';
+import { UI_STRINGS } from '@/utils/i18n';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -447,6 +448,7 @@ function SearchContent() {
   const abortRef = useRef<AbortController | null>(null);
 
   const { openDocById, askAssistant, language } = useMuseum();
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
 
   const [query, setQuery] = useState(initialQuery);
   const [mode, setMode] = useState<'fts' | 'vector' | 'hybrid'>('hybrid');
@@ -707,7 +709,7 @@ function SearchContent() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search treatises, constitutional clauses, speeches, or concepts..."
+                placeholder={t.searchCorpusPlaceholder || t.searchPlaceholderLong || t.searchPlaceholder || "Search treatises, constitutional clauses, speeches, or concepts..."}
                 className="w-full pl-12 pr-36 sm:pr-48 py-4 bg-[#FAF7F0] hover:bg-white focus:bg-white border-2 text-[#0A2947] placeholder-[#0A2947]/50 rounded-2xl text-sm sm:text-base focus:outline-none transition-all font-dmsans border-[#D3D4C0] focus:border-[#0A2947] focus:ring-4 focus:ring-[#0A2947]/5"
               />
 
@@ -755,7 +757,7 @@ function SearchContent() {
                   title="Toggle metadata filters"
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Filters</span>
+                  <span className="hidden sm:inline">{language === 'hi' ? 'फ़िल्टर' : language === 'mr' ? 'गाळणी' : language === 'ta' ? 'வடிகட்டிகள்' : language === 'bn' ? 'ফিল্টার' : 'Filters'}</span>
                 </button>
 
                 <button
@@ -767,10 +769,10 @@ function SearchContent() {
                   {loading ? (
                     <>
                       <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                      <span className="hidden sm:inline">Searching...</span>
+                      <span className="hidden sm:inline">{t.askingQuestion || "Searching..."}</span>
                     </>
                   ) : (
-                    <span>Search</span>
+                    <span>{t.searchCorpus || "Search"}</span>
                   )}
                 </button>
               </div>
@@ -817,7 +819,7 @@ function SearchContent() {
             {searchMeta && (
               <div className="flex items-center gap-3 text-[#8B5E3C] font-mono text-[11px] bg-[#FAF7F0] border border-[#D3D4C0] px-3.5 py-1.5 rounded-xl shadow-2xs">
                 <Clock className="w-3.5 h-3.5 text-[#C89D56]" />
-                <span className="font-bold text-[#0A2947]">{results.length} results</span>
+                <span className="font-bold text-[#0A2947]">{results.length} {t.resultsFound || "results"}</span>
                 <span>in {searchMeta.took_ms}ms</span>
                 {mode === 'hybrid' && (
                   <span className="text-[#8B5E3C]/75 hidden sm:inline">

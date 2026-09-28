@@ -9,6 +9,7 @@ import {
 import { Language, ArchivalDocument } from '@/types/museum';
 import { ARCHIVE_DOCUMENTS, HISTORICAL_PHOTOS, TIMELINE_EVENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
+import { UI_STRINGS } from '@/utils/i18n';
 import { voiceRecognitionController } from '@/utils/speechUtils';
 import VoicePill from '@/components/ui/VoicePill';
 
@@ -228,7 +229,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                 router.push(`/search?q=${encodeURIComponent(query.trim())}`);
               }
             }}
-            placeholder={isListeningVoice ? "Listening to your voice... Speak now..." : "Search documents, people, events, themes, photographs..."}
+            placeholder={isListeningVoice ? "Listening to your voice... Speak now..." : (UI_STRINGS[language]?.searchPlaceholder || "Search documents, people, events, themes, photographs...")}
             autoComplete="off"
 
             className={`w-full text-base sm:text-lg bg-transparent border-none focus:outline-none text-[#0A2947] placeholder-[#0A2947]/40 font-dmsans ${
@@ -345,7 +346,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                         {language !== 'en' && doc.titleLocal?.[language] ? doc.titleLocal[language] : doc.title}
                       </h4>
                       <p className="text-xs text-[#0A2947]/70 line-clamp-1">
-                        {doc.shortDescription}
+                        {language !== 'en' && doc.shortDescriptionLocal?.[language] ? doc.shortDescriptionLocal[language] : doc.shortDescription}
                       </p>
                     </div>
                     <ArrowRight className="w-4 h-4 text-[#8B5E3C] group-hover:translate-x-1 transition-transform shrink-0" />
@@ -375,10 +376,10 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                   >
                     <span className="text-xs font-mono font-bold text-[#8B5E3C] block">{evt.year}</span>
                     <h5 className="font-montserrat font-bold text-xs text-[#0A2947] group-hover:text-[#8B5E3C] transition-colors mt-0.5 line-clamp-1">
-                      {evt.title}
+                      {language !== 'en' && evt.titleLocal?.[language] ? evt.titleLocal[language] : evt.title}
                     </h5>
                     <p className="text-[11px] text-[#0A2947]/70 line-clamp-2 mt-1">
-                      {evt.description}
+                      {language !== 'en' && evt.descriptionLocal?.[language] ? evt.descriptionLocal[language] : evt.description}
                     </p>
                   </div>
                 ))}
@@ -449,7 +450,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                     <div className="overflow-hidden">
                       <span className="text-[10px] font-mono text-[#8B5E3C] block">{photo.year}</span>
                       <h6 className="font-montserrat font-bold text-xs text-[#0A2947] group-hover:text-[#8B5E3C] truncate">
-                        {photo.title}
+                        {language !== 'en' && photo.titleLocal?.[language] ? photo.titleLocal[language] : photo.title}
                       </h6>
                     </div>
                   </div>

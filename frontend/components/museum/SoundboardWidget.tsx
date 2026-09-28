@@ -8,12 +8,16 @@ import {
 import { SOUNDBOARD_CLIPS } from '@/data/interactiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { speechController } from '@/utils/speechUtils';
+import { Language } from '@/types';
+import { UI_STRINGS } from '@/utils/i18n';
 
 interface SoundboardWidgetProps {
+  language?: Language;
   onOpenDocument?: (docId: string) => void;
 }
 
 export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
+  language = 'en',
   onOpenDocument
 }) => {
   const [activeClipId, setActiveClipId] = useState<string | null>(SOUNDBOARD_CLIPS[0].id);
@@ -21,6 +25,7 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
   const [progress, setProgress] = useState<number>(0);
 
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const activeClip = SOUNDBOARD_CLIPS.find(c => c.id === activeClipId) || SOUNDBOARD_CLIPS[0];
 
   useEffect(() => {
@@ -56,7 +61,11 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
     setProgress(0);
     setIsPlaying(true);
 
-    speechController.speak(clip.quote, 'en', () => {
+    const quoteToSpeak = (language !== 'en' && clip.quoteLocal?.[language])
+      ? clip.quoteLocal[language]!
+      : clip.quote;
+
+    speechController.speak(quoteToSpeak, language || 'en', () => {
       setIsPlaying(false);
       setProgress(100);
     });
@@ -71,9 +80,16 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
     
     if (isPlaying && activeClip) {
       speechController.stop();
-      speechController.speak(activeClip.quote, 'en', () => setIsPlaying(false));
+      const quoteToSpeak = (language !== 'en' && activeClip.quoteLocal?.[language])
+        ? activeClip.quoteLocal[language]!
+        : activeClip.quote;
+      speechController.speak(quoteToSpeak, language || 'en', () => setIsPlaying(false));
     }
   };
+
+  const activeTitle = activeClip.titleLocal?.[language] || activeClip.title;
+  const activeEvent = activeClip.eventLocal?.[language] || activeClip.event;
+  const activeQuote = activeClip.quoteLocal?.[language] || activeClip.quote;
 
   return (
     <div className="bg-[#0A2947] text-[#FAF7F0] rounded-3xl p-6 sm:p-9 border-2 border-[#C59A45]/40 shadow-2xl relative overflow-hidden font-dmsans">
@@ -96,22 +112,22 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
           </div>
           <div>
             <div className="text-[11px] uppercase tracking-wider text-[#D4AF37] font-cinzel font-bold">
-              Archival Broadcasts & Gramophone Recordings · 1930–1956
+              {t.soundboardBadge || "Archival Broadcasts & Gramophone Recordings · 1930–1956"}
             </div>
             <h3 className="text-2xl sm:text-3xl font-serif-editorial font-bold tracking-tight text-white">
-              Voice of Babasaheb Soundboard
+              {t.soundboardTitle || "Voice of Babasaheb Soundboard"}
             </h3>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-[#F3E4C9]/70 hidden sm:inline">Speed:</span>
+          <span className="text-xs font-mono text-[#F3E4C9]/70 hidden sm:inline">{t.playbackSpeed || "Speed"}:</span>
           <button
             onClick={handleSpeedToggle}
             className="px-3.5 py-1.5 bg-[#FAF7F0]/15 hover:bg-[#FAF7F0]/25 text-[#FAF7F0] rounded-xl text-xs font-mono font-bold transition-all border border-[#C59A45]/40 cursor-pointer shadow-xs"
-            title="Playback Speed"
+            title={t.playbackSpeed || "Playback Speed"}
           >
-            {playbackSpeed}x Speed
+            {playbackSpeed}x {t.playbackSpeed || "Speed"}
           </button>
         </div>
       </div>
@@ -127,11 +143,11 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
                 {activeClip.year}
               </span>
               <span className="text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-wide">
-                {activeClip.event}
+                {activeEvent}
               </span>
             </div>
             <h4 className="text-xl sm:text-2xl font-serif-editorial font-bold text-[#0A2947] mt-1">
-              {activeClip.title}
+              {activeTitle}
             </h4>
           </div>
 
@@ -153,7 +169,7 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
 
         {/* Live synced quote preview in elegant historical typography */}
         <blockquote className="text-sm sm:text-base text-[#0A2947] font-serif italic mb-5 leading-relaxed bg-[#F3E4C9]/60 p-4 rounded-xl border border-[#D3D4C0]">
-          "{activeClip.quote}"
+          &quot;{activeQuote}&quot;
         </blockquote>
 
         {/* Playback Scrub Bar */}
@@ -170,7 +186,7 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
             <button
               onClick={() => handlePlayClip(activeClip.id)}
               className="p-3.5 bg-[#0A2947] hover:bg-[#8B5E3C] active:scale-95 text-[#F3E4C9] rounded-2xl transition-all shadow-md flex items-center justify-center cursor-pointer border border-[#C59A45]"
-              title={isPlaying ? "Pause Speech" : "Play Speech Audio"}
+              title={isPlaying ? t.stopAudio : t.listenSpeech}
             >
               {isPlaying && activeClipId === activeClip.id ? (
                 <Pause className="w-5 h-5 fill-current" />
@@ -191,7 +207,7 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
             </button>
 
             <span className="text-xs font-mono text-[#0A2947]/70 font-semibold">
-              {isPlaying ? 'Broadcasting Historical Audio...' : 'Audio Ready · Click to Play'}
+              {isPlaying ? (t.askingQuestion || 'Broadcasting Historical Audio...') : (t.listenSpeech || 'Audio Ready · Click to Play')}
             </span>
           </div>
 
@@ -200,7 +216,7 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
               onClick={() => onOpenDocument(activeClip.fullDocId)}
               className="text-xs font-montserrat font-bold text-[#8B5E3C] hover:text-[#0A2947] hover:underline flex items-center gap-1.5 cursor-pointer uppercase tracking-wider"
             >
-              <span>Examine Folio Transcript</span>
+              <span>{t.fullSpeechDoc || 'Examine Folio Transcript'}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </button>
           )}
@@ -213,6 +229,8 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
         {SOUNDBOARD_CLIPS.map((clip) => {
           const isThisActive = activeClipId === clip.id;
           const isThisPlaying = isThisActive && isPlaying;
+          const clipTitle = clip.titleLocal?.[language] || clip.title;
+          const clipEvent = clip.eventLocal?.[language] || clip.event;
 
           return (
             <button
@@ -233,12 +251,12 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
                 <h5 className={`font-serif-editorial font-bold text-sm line-clamp-1 transition-colors ${
                   isThisActive ? 'text-[#0A2947]' : 'text-white group-hover:text-[#D4AF37]'
                 }`}>
-                  {clip.title}
+                  {clipTitle}
                 </h5>
                 <p className={`text-xs line-clamp-1 ${
                   isThisActive ? 'text-[#0A2947]/75' : 'text-[#FAF7F0]/70'
                 }`}>
-                  {clip.event}
+                  {clipEvent}
                 </p>
               </div>
 
@@ -263,3 +281,5 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
     </div>
   );
 };
+
+export default SoundboardWidget;

@@ -68,26 +68,31 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
   };
 
   const primaryWings = [
-    { id: 'home', label: 'Exhibition' },
-    { id: 'archive', label: 'The Archive' },
-    { id: 'timeline', label: 'Timeline' },
-    { id: 'media', label: 'Media & Voice' },
-    { id: 'assistant', label: 'AI Scholar' },
-    { id: 'gallery', label: 'Folio' },
+    { id: 'home', label: t.navHome || 'Exhibition' },
+    { id: 'archive', label: t.wingArchiveTitle || t.navArchive || 'The Archive' },
+    { id: 'timeline', label: t.wingTimelineTitle || t.navTimeline || 'Timeline' },
+    { id: 'media', label: t.wingMediaTitle || t.navMedia || 'Media & Voice' },
+    { id: 'assistant', label: t.wingAssistantTitle || t.navAssistant || 'AI Scholar' },
+    { id: 'gallery', label: t.wingGalleryTitle || t.catPhotographs || 'Folio' },
   ];
 
   const exploreSubItems = [
-    { id: 'stories', label: 'Curated Stories', icon: Star, desc: 'Immersive narrative audio pathways' },
-    { id: 'graph', label: 'Knowledge Graph', icon: Network, desc: 'Connected intellectual network' },
-    { id: 'compare', label: 'Comparative Synthesis', icon: Scale, desc: 'Side-by-side treatise comparison' },
-    { id: 'quest', label: 'Constitutional Quest', icon: Zap, desc: 'Interactive educational exploration' },
+    { id: 'stories', label: t.wingStoriesTitle || 'Curated Stories', icon: Star, desc: t.wingStoriesSub || 'Immersive narrative audio pathways' },
+    { id: 'graph', label: t.wingGraphTitle || 'Knowledge Graph', icon: Network, desc: t.wingGraphSub || 'Connected intellectual network' },
+    { id: 'compare', label: t.compareTitle || 'Comparative Synthesis', icon: Scale, desc: t.compareSubtitle || 'Side-by-side treatise comparison' },
+    { id: 'quest', label: t.wingQuestTitle || 'Constitutional Quest', icon: Zap, desc: t.wingQuestSub || 'Interactive educational exploration' },
   ];
 
+  const exploreLabel = language === 'hi' ? 'अन्वेषण' : language === 'mr' ? 'अन्वेषण' : language === 'ta' ? 'ஆய்வு' : language === 'bn' ? 'অন্বেষণ' : 'Explore';
+  const notebookLabel = t.navCollection || (language === 'hi' ? 'शोध वही' : language === 'mr' ? 'माझी वही' : language === 'ta' ? 'குறிப்பேடு' : language === 'bn' ? 'নোটবই' : 'Notebook');
+  const searchLabel = t.searchBtn || (language === 'hi' ? 'खोजें' : language === 'mr' ? 'शोध' : language === 'ta' ? 'தேடல்' : language === 'bn' ? 'অনুসন্ধান' : 'Search');
+  const voiceLabel = language === 'hi' ? 'आवाज' : language === 'mr' ? 'ध्वनी' : language === 'ta' ? 'குரல்' : language === 'bn' ? 'কণ্ঠ' : 'Voice';
+
   const userModes: Array<{ id: UserMode; label: string; desc: string; icon: any }> = [
-    { id: 'visitor', label: 'Visitor', desc: 'Narrative storytelling & exhibits', icon: Eye },
-    { id: 'student', label: 'Student', desc: 'Guided exploration & educational trivia', icon: GraduationCap },
-    { id: 'researcher', label: 'Researcher', desc: 'Full citations & PREMIS fixity checksums', icon: UserCheck },
-    { id: 'archivist', label: 'Archivist', desc: 'OCR pipeline & digital preservation', icon: Key },
+    { id: 'visitor', label: t.userModeVisitor || 'Visitor', desc: t.userModeVisitorDesc || 'Narrative storytelling & exhibits', icon: Eye },
+    { id: 'student', label: t.userModeStudent || 'Student', desc: t.userModeStudentDesc || 'Guided exploration & educational trivia', icon: GraduationCap },
+    { id: 'researcher', label: t.userModeResearcher || 'Researcher', desc: t.userModeResearcherDesc || 'Full citations & PREMIS fixity checksums', icon: UserCheck },
+    { id: 'archivist', label: t.userModeArchivist || 'Archivist', desc: t.userModeArchivistDesc || 'OCR pipeline & digital preservation', icon: Key },
   ];
 
   return (
@@ -161,7 +166,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
                     : 'text-[#0A2947]/70 hover:text-[#0A2947]'
                 }`}
               >
-                <span>Explore</span>
+                <span>{exploreLabel}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isExploreMenuOpen ? 'rotate-180' : ''}`} />
                 {['quest', 'graph', 'media', 'compare'].includes(currentTab) && (
                   <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-[#0A2947] rounded-full" />
@@ -209,7 +214,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
               }`}
             >
               <Bookmark className="w-3.5 h-3.5 text-[#8B5E3C]" />
-              <span>Notebook</span>
+              <span>{notebookLabel}</span>
               {savedCount > 0 && (
                 <span className="text-[10px] px-1.5 py-0.2 bg-[#8B5E3C] text-white rounded font-mono font-bold">
                   {savedCount}
@@ -235,7 +240,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
               aria-label="Open Global Archival Search"
             >
               <Search className="w-3.5 h-3.5 text-[#8B5E3C]" />
-              <span className="hidden sm:inline">Search</span>
+              <span className="hidden sm:inline">{searchLabel}</span>
               <kbd className="hidden md:inline-block px-1.5 py-0.5 text-[9px] font-mono text-[#0A2947]/50 bg-[#FAF7F0] border border-[#D3D4C0] rounded">
                 /
               </kbd>
@@ -371,7 +376,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
                 }}
                 className="hidden sm:inline text-[#0A2947] text-xs font-montserrat font-bold tracking-wide uppercase cursor-pointer"
               >
-                Voice
+                {voiceLabel}
               </button>
             </div>
 
@@ -435,7 +440,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
               currentTab === 'quest' ? 'bg-[#0A2947] text-[#F3E4C9] font-bold' : 'text-[#0A2947] hover:bg-[#F3E4C9]'
             }`}
           >
-            Quest
+            {t.wingQuestTitle || 'Quest'}
           </button>
           <button
             onClick={() => handleTabClick('compare')}
@@ -443,7 +448,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
               currentTab === 'compare' ? 'bg-[#0A2947] text-[#F3E4C9] font-bold' : 'text-[#0A2947] hover:bg-[#F3E4C9]'
             }`}
           >
-            Compare
+            {t.compareTitle || 'Compare'}
           </button>
           <button
             onClick={() => handleTabClick('media')}
@@ -451,7 +456,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
               currentTab === 'media' ? 'bg-[#0A2947] text-[#F3E4C9] font-bold' : 'text-[#0A2947] hover:bg-[#F3E4C9]'
             }`}
           >
-            Voice
+            {voiceLabel}
           </button>
           <button
             onClick={() => handleTabClick('graph')}
@@ -459,7 +464,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
               currentTab === 'graph' ? 'bg-[#0A2947] text-[#F3E4C9] font-bold' : 'text-[#0A2947] hover:bg-[#F3E4C9]'
             }`}
           >
-            Graph
+            {t.wingGraphTitle || 'Graph'}
           </button>
           <button
             onClick={() => handleTabClick('collection')}
@@ -467,7 +472,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
               currentTab === 'collection' ? 'bg-[#8B5E3C] text-[#F3E4C9] font-bold' : 'text-[#0A2947] hover:bg-[#F3E4C9]'
             }`}
           >
-            <span>Notebook</span>
+            <span>{notebookLabel}</span>
             {savedCount > 0 && <span className="font-mono">({savedCount})</span>}
           </button>
         </div>

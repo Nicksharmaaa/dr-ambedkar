@@ -16,12 +16,7 @@ export interface ArchivalDocument {
   id: string;
   title: string;
   author?: string;
-  titleLocal?: {
-    hi?: string;
-    mr?: string;
-    ta?: string;
-    bn?: string;
-  };
+  titleLocal?: Partial<Record<Language, string>>;
   type: 'book' | 'speech' | 'debate' | 'manuscript' | 'photograph';
   categoryLabel: string;
   date: string;
@@ -33,19 +28,9 @@ export interface ArchivalDocument {
   accessRights?: 'Public Domain' | 'Fair Use Educational' | 'Archival Restricted';
   mediaFormat?: 'pdf' | 'audio' | 'video' | 'image' | 'text';
   shortDescription: string;
-  shortDescriptionLocal?: {
-    hi?: string;
-    mr?: string;
-    ta?: string;
-    bn?: string;
-  };
+  shortDescriptionLocal?: Partial<Record<Language, string>>;
   fullText: string;
-  fullTextLocal?: {
-    hi?: string;
-    mr?: string;
-    ta?: string;
-    bn?: string;
-  };
+  fullTextLocal?: Partial<Record<Language, string>>;
   ocrConfidence: number;
   scannedPageUrl?: string;
   keyTopics: string[];
@@ -74,21 +59,11 @@ export interface TimelineEvent {
   year: number;
   dateString: string;
   title: string;
-  titleLocal?: {
-    hi?: string;
-    mr?: string;
-    ta?: string;
-    bn?: string;
-  };
+  titleLocal?: Partial<Record<Language, string>>;
   era: 'Early Life & Education' | 'Social Awakening' | 'Social Movements' | 'Political Life' | 'Constitution & Governance' | 'Later Life & Philosophy' | string;
   location: string;
   description: string;
-  descriptionLocal?: {
-    hi?: string;
-    mr?: string;
-    ta?: string;
-    bn?: string;
-  };
+  descriptionLocal?: Partial<Record<Language, string>>;
   quote?: string;
   quoteAttribution?: string;
   imageUrl?: string;
@@ -102,12 +77,7 @@ export interface TimelineEvent {
 export interface MediaItem {
   id: string;
   title: string;
-  titleLocal?: {
-    hi?: string;
-    mr?: string;
-    ta?: string;
-    bn?: string;
-  };
+  titleLocal?: Partial<Record<Language, string>>;
   type: 'speech' | 'interview' | 'documentary' | 'historical_recording';
   typeLabel: string;
   duration: string;
@@ -174,9 +144,12 @@ export interface AccessibilitySettings {
 export interface QuizQuestion {
   id: string;
   question: string;
+  questionLocal?: Partial<Record<Language, string>>;
   options: string[];
+  optionsLocal?: Partial<Record<Language, string[]>>;
   correctIndex: number;
   explanation: string;
+  explanationLocal?: Partial<Record<Language, string>>;
   sourceCitation: string;
   category: 'Constitution' | 'Philosophy' | 'Movements' | 'Writings';
 }
@@ -184,12 +157,7 @@ export interface QuizQuestion {
 export interface QuoteItem {
   id: string;
   quote: string;
-  quoteLocal?: {
-    hi?: string;
-    mr?: string;
-    ta?: string;
-    bn?: string;
-  };
+  quoteLocal?: Partial<Record<Language, string>>;
   work: string;
   year: number;
   theme: 'Democracy' | 'Social Justice' | 'Education' | 'Women Rights' | 'Constitutional Morality';
@@ -199,23 +167,37 @@ export interface QuoteItem {
 export interface PhilosophyConcept {
   id: string;
   title: string;
+  titleLocal?: Partial<Record<Language, string>>;
   tagline: string;
+  taglineLocal?: Partial<Record<Language, string>>;
   description: string;
+  descriptionLocal?: Partial<Record<Language, string>>;
   famousQuote: string;
+  famousQuoteLocal?: Partial<Record<Language, string>>;
   relatedDocId: string;
   color: string;
   iconName: string;
 }
 
+export interface SoundboardClip {
+  id: string;
+  title: string;
+  titleLocal?: Partial<Record<Language, string>>;
+  speaker: string;
+  event: string;
+  eventLocal?: Partial<Record<Language, string>>;
+  year: number;
+  duration: string;
+  tags: string[];
+  quote: string;
+  quoteLocal?: Partial<Record<Language, string>>;
+  fullDocId: string;
+}
+
 export interface HistoricalPhoto {
   id: string;
   title: string;
-  titleLocal?: {
-    hi?: string;
-    mr?: string;
-    ta?: string;
-    bn?: string;
-  };
+  titleLocal?: Partial<Record<Language, string>>;
   year: number;
   dateString: string;
   location: string;
@@ -223,12 +205,7 @@ export interface HistoricalPhoto {
   imageUrl: string;
   aspectRatio: 'portrait' | 'landscape' | 'wide' | 'square';
   caption: string;
-  captionLocal?: {
-    hi?: string;
-    mr?: string;
-    ta?: string;
-    bn?: string;
-  };
+  captionLocal?: Partial<Record<Language, string>>;
   historicalContext: string;
   accessionNumber: string;
   archiveProvenance: string;

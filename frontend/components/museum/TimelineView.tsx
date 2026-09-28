@@ -65,18 +65,25 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     api.getTimelineEvents({ limit: 200 })
       .then((items: TimelineEventItem[]) => {
         if (!items || items.length === 0) return;
-        const adapted: TimelineEvent[] = items.map(ev => ({
-          id: ev.id,
-          year: ev.start_date ? parseInt(ev.start_date.substring(0, 4), 10) : 0,
-          dateString: ev.start_date || ev.id,
-          title: ev.title,
-          era: ev.category || 'General',
-          location: ev.location || 'India',
-          description: ev.description || '',
-          quote: ev.evidence_text || undefined,
-          relatedDocIds: ev.related_documents || [],
-          highlights: ev.related_topics || []
-        }));
+        const adapted: TimelineEvent[] = items.map(ev => {
+          const fallback = TIMELINE_EVENTS.find(t => t.id === ev.id || t.title.toLowerCase() === ev.title?.toLowerCase());
+          return {
+            id: ev.id,
+            year: ev.start_date ? parseInt(ev.start_date.substring(0, 4), 10) : (fallback?.year || 0),
+            dateString: ev.start_date || fallback?.dateString || ev.id,
+            title: ev.title,
+            titleLocal: fallback?.titleLocal,
+            era: ev.category || fallback?.era || 'General',
+            location: ev.location || fallback?.location || 'India',
+            description: ev.description || fallback?.description || '',
+            descriptionLocal: fallback?.descriptionLocal,
+            quote: ev.evidence_text || fallback?.quote,
+            quoteAttribution: fallback?.quoteAttribution,
+            imageUrl: fallback?.imageUrl,
+            relatedDocIds: ev.related_documents || fallback?.relatedDocIds || [],
+            highlights: ev.related_topics || fallback?.highlights || []
+          };
+        });
         setLiveEvents(adapted);
         if (adapted.length > 0) {
           setActiveMilestoneId(adapted[0].id);
@@ -97,13 +104,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const TOUR_DURATION = 8;
 
   const eras = [
-    { id: 'all', label: 'All Eras', span: '1891–1956', desc: 'Complete Chronology', count: liveEvents.length },
-    { id: 'Early Life & Education', label: 'Early Life & Studies', span: '1891–1923', desc: 'Satara, Columbia & London', count: liveEvents.filter(e => e.era === 'Early Life & Education').length || 2 },
-    { id: 'Social Awakening', label: 'Social Awakening', span: '1924–1926', desc: 'Bahishkrit Hitakarini Sabha', count: liveEvents.filter(e => e.era === 'Social Awakening').length || 1 },
-    { id: 'Social Movements', label: 'Civil Rights Movements', span: '1927–1939', desc: 'Mahad Satyagraha & Poona Pact', count: liveEvents.filter(e => e.era === 'Social Movements').length || 3 },
-    { id: 'Political Life', label: 'Public Statecraft', span: '1940–1946', desc: 'Viceroy Council & 8-Hr Workday', count: liveEvents.filter(e => e.era === 'Political Life').length || 2 },
-    { id: 'Constitution & Governance', label: 'Constitution & Republic', span: '1947–1950', desc: 'Drafting Committee & Law Ministry', count: liveEvents.filter(e => e.era === 'Constitution & Governance').length || 3 },
-    { id: 'Later Life & Philosophy', label: 'Dhamma & Philosophy', span: '1951–1956', desc: 'The Deeksha Revolution', count: liveEvents.filter(e => e.era === 'Later Life & Philosophy').length || 2 },
+    { id: 'all', label: language === 'hi' ? 'सभी युग' : language === 'mr' ? 'सर्व कालखंड' : language === 'ta' ? 'அனைத்து காலங்கள்' : language === 'bn' ? 'সকল যুগ' : 'All Eras', span: '1891–1956', desc: '1891–1956', count: liveEvents.length },
+    { id: 'Early Life & Education', label: language === 'hi' ? 'प्रारंभिक जीवन एवं शिक्षा' : language === 'mr' ? 'प्रारंभिक जीवन व शिक्षण' : language === 'ta' ? 'ஆரம்ப வாழ்க்கை & கல்வி' : language === 'bn' ? 'প্রাথমিক জীবন ও শিক্ষা' : 'Early Life & Studies', span: '1891–1923', desc: 'Satara, Columbia & London', count: liveEvents.filter(e => e.era === 'Early Life & Education').length || 2 },
+    { id: 'Social Awakening', label: language === 'hi' ? 'सामाजिक जागरण' : language === 'mr' ? 'सामाजिक प्रबोधन' : language === 'ta' ? 'சமூக விழிப்புணர்வு' : language === 'bn' ? 'সামাজিক জাগরণ' : 'Social Awakening', span: '1924–1926', desc: 'Bahishkrit Hitakarini Sabha', count: liveEvents.filter(e => e.era === 'Social Awakening').length || 1 },
+    { id: 'Social Movements', label: language === 'hi' ? 'नागरिक अधिकार आंदोलन' : language === 'mr' ? 'नागरी हक्क चळवळी' : language === 'ta' ? 'குடிமை உரிமை இயக்கங்கள்' : language === 'bn' ? 'নাগরিক অধিকার আন্দোলন' : 'Civil Rights Movements', span: '1927–1939', desc: 'Mahad Satyagraha & Poona Pact', count: liveEvents.filter(e => e.era === 'Social Movements').length || 3 },
+    { id: 'Political Life', label: language === 'hi' ? 'राजनीतिक जीवन एवं शासन' : language === 'mr' ? 'राजकीय जीवन व प्रशासन' : language === 'ta' ? 'அரசியல் வாழ்க்கை & நிர்வாகம்' : language === 'bn' ? 'রাজনৈতিক জীবন ও প্রশাসন' : 'Public Statecraft', span: '1940–1946', desc: 'Viceroy Council & 8-Hr Workday', count: liveEvents.filter(e => e.era === 'Political Life').length || 2 },
+    { id: 'Constitution & Governance', label: language === 'hi' ? 'संविधान निर्माण एवं गणतंत्र' : language === 'mr' ? 'घटना निर्मिती व प्रजासत्ताक' : language === 'ta' ? 'அரசியலமைப்பு & குடியரசு' : language === 'bn' ? 'সংবিধান প্রণয়ন ও প্রজাতন্ত্র' : 'Constitution & Republic', span: '1947–1950', desc: 'Drafting Committee & Law Ministry', count: liveEvents.filter(e => e.era === 'Constitution & Governance').length || 3 },
+    { id: 'Later Life & Philosophy', label: language === 'hi' ? 'धम्म दीक्षा एवं दर्शन' : language === 'mr' ? 'धम्मक्रांती व तत्त्वज्ञान' : language === 'ta' ? 'தம்ம தீக்ஷை & தத்துவம்' : language === 'bn' ? 'ধম্ম দীক্ষা ও দর্শন' : 'Dhamma & Philosophy', span: '1951–1956', desc: 'The Deeksha Revolution', count: liveEvents.filter(e => e.era === 'Later Life & Philosophy').length || 2 },
   ];
 
   // Filtering events from live API data (with static fallback)
@@ -213,7 +220,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     speechController.stop();
     setActiveSpeakingId(event.id);
 
-    const quoteToRead = event.quote || event.title;
+    const quoteToRead = (language !== 'en' && event.descriptionLocal?.[language])
+      ? event.descriptionLocal[language]!
+      : (event.quote || (language !== 'en' && event.titleLocal?.[language]) || event.title);
     speechController.speak(quoteToRead, ['mr', 'hi', 'ta', 'bn'].includes(language) ? language : 'en', () => {
       setActiveSpeakingId(null);
     });

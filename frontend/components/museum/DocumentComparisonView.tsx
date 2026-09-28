@@ -9,6 +9,7 @@ import { ArchivalDocument, DocComparisonPreset, Language } from '@/types/museum'
 import { ARCHIVE_DOCUMENTS, DOC_COMPARISON_PRESETS } from '@/data/archiveData';
 import { MuseumGrandPavilion } from './MuseumGrandPavilion';
 import { soundEffects } from '@/utils/soundEffects';
+import { UI_STRINGS } from '@/utils/i18n';
 
 interface DocumentComparisonViewProps {
   language: Language;
@@ -21,6 +22,7 @@ export const DocumentComparisonView: React.FC<DocumentComparisonViewProps> = ({
   onOpenDocument,
   kidMode = false
 }) => {
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [selectedPresetId, setSelectedPresetId] = useState<string>(DOC_COMPARISON_PRESETS[0].id);
   const [docAId, setDocAId] = useState<string>(DOC_COMPARISON_PRESETS[0].docAId);
   const [docBId, setDocBId] = useState<string>(DOC_COMPARISON_PRESETS[0].docBId);
@@ -162,7 +164,7 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
             >
               {ARCHIVE_DOCUMENTS.map(doc => (
                 <option key={doc.id} value={doc.id}>
-                  {doc.title} ({doc.year})
+                  {doc.titleLocal?.[language] || doc.title} ({doc.year})
                 </option>
               ))}
             </select>
@@ -184,7 +186,7 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
             >
               {ARCHIVE_DOCUMENTS.map(doc => (
                 <option key={doc.id} value={doc.id}>
-                  {doc.title} ({doc.year})
+                  {doc.titleLocal?.[language] || doc.title} ({doc.year})
                 </option>
               ))}
             </select>
@@ -210,7 +212,7 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
             </div>
 
             <h3 className="text-xl sm:text-2xl font-serif-editorial text-[#0A2947] font-bold leading-snug">
-              {docA.title}
+              {docA.titleLocal?.[language] || docA.title}
             </h3>
 
             <div className="text-xs font-mono text-[#8B5E3C] uppercase font-bold">
@@ -222,12 +224,12 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
                 Archival Excerpt:
               </span>
               <p className="text-xs sm:text-sm font-serif italic text-[#0A2947]/90 line-clamp-4 leading-relaxed">
-                &quot;{docA.fullText.substring(0, 320)}...&quot;
+                &quot;{(language !== 'en' && docA.fullTextLocal?.[language] ? docA.fullTextLocal[language] : docA.fullText).substring(0, 320)}...&quot;
               </p>
             </div>
 
             <p className="text-xs text-[#0A2947]/75 font-dmsans line-clamp-3 leading-relaxed">
-              {docA.shortDescription}
+              {docA.shortDescriptionLocal?.[language] || docA.shortDescription}
             </p>
           </div>
 
@@ -238,7 +240,7 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
             }}
             className="mt-6 w-full py-3 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
           >
-            <span>Open Full Folio A in Viewer</span>
+            <span>{t.viewDocument || "Open Full Folio in Viewer"}</span>
             <ExternalLink className="w-3.5 h-3.5 text-[#C89D56]" />
           </button>
         </div>
@@ -258,7 +260,7 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
             </div>
 
             <h3 className="text-xl sm:text-2xl font-serif-editorial text-[#0A2947] font-bold leading-snug">
-              {docB.title}
+              {docB.titleLocal?.[language] || docB.title}
             </h3>
 
             <div className="text-xs font-mono text-[#8B5E3C] uppercase font-bold">
@@ -270,12 +272,12 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
                 Archival Excerpt:
               </span>
               <p className="text-xs sm:text-sm font-serif italic text-[#0A2947]/90 line-clamp-4 leading-relaxed">
-                &quot;{docB.fullText.substring(0, 320)}...&quot;
+                &quot;{(language !== 'en' && docB.fullTextLocal?.[language] ? docB.fullTextLocal[language] : docB.fullText).substring(0, 320)}...&quot;
               </p>
             </div>
 
             <p className="text-xs text-[#0A2947]/75 font-dmsans line-clamp-3 leading-relaxed">
-              {docB.shortDescription}
+              {docB.shortDescriptionLocal?.[language] || docB.shortDescription}
             </p>
           </div>
 
@@ -286,7 +288,7 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
             }}
             className="mt-6 w-full py-3 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
           >
-            <span>Open Full Folio B in Viewer</span>
+            <span>{t.viewDocument || "Open Full Folio in Viewer"}</span>
             <ExternalLink className="w-3.5 h-3.5 text-[#C89D56]" />
           </button>
         </div>

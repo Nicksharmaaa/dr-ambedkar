@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import {
-  Sparkles, Dices, Copy, Check, Volume2, Share2,
-  Quote, ArrowRight, Bookmark, Compass, Landmark, Scale, BookOpen
+  Sparkles, Dices, Copy, Check, Volume2,
+  Quote, ArrowRight, BookOpen
 } from 'lucide-react';
 import { FAMOUS_QUOTES } from '@/data/interactiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { speechController } from '@/utils/speechUtils';
 import { QuoteItem, Language } from '@/types/museum';
+import { UI_STRINGS } from '@/utils/i18n';
 
 interface WisdomMachineProps {
   language: Language;
@@ -26,6 +27,8 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
   const [isFlipping, setIsFlipping] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const t = UI_STRINGS[language] || UI_STRINGS.en;
 
   const filteredQuotes = selectedTheme === 'all'
     ? FAMOUS_QUOTES
@@ -48,7 +51,10 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
 
   const handleCopy = () => {
     soundEffects.playClick();
-    const textToCopy = `"${currentQuote.quote}"\n— Dr. B. R. Ambedkar (${currentQuote.work}, ${currentQuote.year})`;
+    const localizedText = (language !== 'en' && currentQuote.quoteLocal?.[language])
+      ? `${currentQuote.quoteLocal[language]}\n("${currentQuote.quote}")`
+      : currentQuote.quote;
+    const textToCopy = `"${localizedText}"\n— Dr. B. R. Ambedkar (${currentQuote.work}, ${currentQuote.year})`;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2200);
@@ -63,19 +69,22 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
     }
 
     setIsSpeaking(true);
-    const langCode = (['hi', 'mr', 'ta', 'bn'].includes(language) ? language : 'en') as Language;
-    speechController.speak(currentQuote.quote, langCode, () => {
+    const textToSpeak = (language !== 'en' && currentQuote.quoteLocal?.[language])
+      ? currentQuote.quoteLocal[language]!
+      : currentQuote.quote;
+
+    speechController.speak(textToSpeak, language || 'en', () => {
       setIsSpeaking(false);
     });
   };
 
   const themes = [
-    { id: 'all', label: 'All Wisdom' },
-    { id: 'Democracy', label: 'Democracy' },
-    { id: 'Social Justice', label: 'Social Justice' },
-    { id: 'Education', label: 'Education' },
-    { id: 'Women Rights', label: 'Women’s Rights' },
-    { id: 'Constitutional Morality', label: 'Constitutional Morality' },
+    { id: 'all', label: t.themeAll || 'All Wisdom' },
+    { id: 'Democracy', label: t.themeDemocracy || 'Democracy' },
+    { id: 'Social Justice', label: t.themeJustice || 'Social Justice' },
+    { id: 'Education', label: t.themeEducation || 'Education' },
+    { id: 'Women Rights', label: t.themeWomen || 'Women’s Rights' },
+    { id: 'Constitutional Morality', label: t.themeMorality || 'Constitutional Morality' },
   ];
 
   return (
@@ -96,13 +105,13 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
         <div className="space-y-1.5">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#C59A45]/20 border border-[#C59A45]/50 text-[#F3E4C9] rounded-full text-xs font-cinzel font-bold tracking-wider uppercase">
             <Sparkles className="w-3.5 h-3.5 text-[#C59A45]" />
-            <span>Interactive Wisdom Explorer</span>
+            <span>{t.wisdomExplorer || "Interactive Wisdom Explorer"}</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-serif-editorial font-bold text-white tracking-tight">
-            Words of Babasaheb
+            {t.soundboardTitle || "Words of Babasaheb"}
           </h2>
           <p className="text-xs sm:text-sm text-[#F3E4C9]/85 max-w-2xl leading-relaxed">
-            Shuffle through immortal insights on human freedom, democracy, constitutional morality, and equality drawn from the 22 verified BAWS volumes.
+            {t.exploreSubtitle || "Shuffle through immortal insights on human freedom, democracy, constitutional morality, and equality drawn from the 22 verified BAWS volumes."}
           </p>
         </div>
 
@@ -112,26 +121,26 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
           className="self-start md:self-auto px-5 py-3 bg-gradient-to-r from-[#D4AF37] via-[#C59A45] to-[#B8860B] hover:brightness-110 active:scale-95 text-[#0A2947] font-montserrat font-bold rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg shadow-[#C59A45]/25 cursor-pointer border border-[#F3E4C9]/50"
         >
           <Dices className="w-4 h-4 text-[#0A2947]" />
-          <span>Shuffle Wisdom</span>
+          <span>{t.shuffleWisdom || "Shuffle Wisdom"}</span>
         </button>
       </div>
 
       {/* Theme selection buttons */}
       <div className="relative z-10 flex items-center gap-2 overflow-x-auto py-4 scrollbar-none">
-        {themes.map(t => (
+        {themes.map(th => (
           <button
-            key={t.id}
+            key={th.id}
             onClick={() => {
-              setSelectedTheme(t.id);
+              setSelectedTheme(th.id);
               setCurrentIndex(0);
               soundEffects.playClick();
             }}
-            className={`px-4 py-2 rounded-xl text-xs font-montserrat font-semibold whitespace-nowrap transition-all cursor-pointer border ${selectedTheme === t.id
+            className={`px-4 py-2 rounded-xl text-xs font-montserrat font-semibold whitespace-nowrap transition-all cursor-pointer border ${selectedTheme === th.id
                 ? 'bg-[#C59A45] text-[#0A2947] border-[#F3E4C9] shadow-md font-bold'
                 : 'bg-white/10 hover:bg-white/20 text-[#FAF7F0] border-white/15'
               }`}
           >
-            {t.label}
+            {th.label}
           </button>
         ))}
       </div>
@@ -145,7 +154,7 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
           <div className="flex items-center gap-2">
             <Quote className="w-7 h-7 text-[#C59A45] shrink-0" />
             <span className="text-[11px] font-cinzel font-bold text-[#8B5E3C] uppercase tracking-wider">
-              Primary Archival Specimen
+              {t.primarySpecimen || "Primary Archival Specimen"}
             </span>
           </div>
 
@@ -159,16 +168,20 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
           </div>
         </div>
 
-        {/* Main Quote Text */}
-        <blockquote className="text-lg sm:text-2xl font-serif-editorial leading-relaxed text-[#0A2947] font-semibold my-4">
-          "{currentQuote.quote}"
-        </blockquote>
-
-        {/* Multilingual preview if selected */}
-        {language !== 'en' && currentQuote.quoteLocal?.[language] && (
-          <p className="text-sm sm:text-base text-[#8B5E3C] font-serif italic mb-4 border-l-3 border-[#C59A45] pl-3 py-1 bg-[#F3E4C9]/40 rounded-r-lg">
-            "{currentQuote.quoteLocal[language]}"
-          </p>
+        {/* Main Quote Text: Display localized quote first if non-English, then English original */}
+        {language !== 'en' && currentQuote.quoteLocal?.[language] ? (
+          <div className="my-4 space-y-3">
+            <blockquote className="text-lg sm:text-2xl font-serif-editorial leading-relaxed text-[#0A2947] font-semibold">
+              &quot;{currentQuote.quoteLocal[language]}&quot;
+            </blockquote>
+            <p className="text-xs sm:text-sm text-[#8B5E3C] font-serif italic border-l-2 border-[#C59A45] pl-3 py-1 bg-[#F3E4C9]/40 rounded-r-lg">
+              Original: &quot;{currentQuote.quote}&quot;
+            </p>
+          </div>
+        ) : (
+          <blockquote className="text-lg sm:text-2xl font-serif-editorial leading-relaxed text-[#0A2947] font-semibold my-4">
+            &quot;{currentQuote.quote}&quot;
+          </blockquote>
         )}
 
         {/* Source and context */}
@@ -191,11 +204,11 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
                   ? 'bg-[#C59A45] text-[#0A2947] border-[#C59A45] font-bold shadow-md'
                   : 'bg-white hover:bg-[#F3E4C9] border-[#D3D4C0] text-[#0A2947]'
                 }`}
-              title={isSpeaking ? "Stop Voice Narration" : "Listen via Audio"}
+              title={isSpeaking ? (t.stopAudio || "Stop Voice Narration") : (t.listenSpeech || "Listen via Audio")}
             >
               <Volume2 className="w-4 h-4 text-[#8B5E3C]" />
               <span className="text-[11px] font-montserrat font-bold hidden sm:inline">
-                {isSpeaking ? "Speaking" : "Listen"}
+                {isSpeaking ? (t.askingQuestion || "Speaking") : (t.listenSpeech || "Listen")}
               </span>
             </button>
 
@@ -207,12 +220,12 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
               {copied ? (
                 <>
                   <Check className="w-4 h-4 text-emerald-700" />
-                  <span className="text-[11px] font-montserrat font-bold text-emerald-700">Copied!</span>
+                  <span className="text-[11px] font-montserrat font-bold text-emerald-700">{t.copiedQuote || "Copied!"}</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-4 h-4 text-[#8B5E3C]" />
-                  <span className="text-[11px] font-montserrat font-bold hidden sm:inline">Copy</span>
+                  <span className="text-[11px] font-montserrat font-bold hidden sm:inline">{t.copyQuote || "Copy"}</span>
                 </>
               )}
             </button>
@@ -224,7 +237,7 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
       {/* Footer helper */}
       <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#F3E4C9]/75 pt-2">
         <span className="font-mono text-[11px]">
-          Archival Quote {((currentIndex % filteredQuotes.length) + 1)} of {filteredQuotes.length} · Dr. B. R. Ambedkar Writings & Speeches
+          {t.primarySpecimen || "Archival Quote"} {((currentIndex % filteredQuotes.length) + 1)} / {filteredQuotes.length} · Dr. B. R. Ambedkar Writings & Speeches
         </span>
         {onAskAI && (
           <button
@@ -232,7 +245,7 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
             className="hover:text-[#F3E4C9] text-[#D4AF37] font-montserrat font-bold flex items-center gap-1.5 transition-colors cursor-pointer bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-xl border border-white/10"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>Consult AI Scholar on this Insight</span>
+            <span>{t.consultAIScholar || "Consult AI Scholar on this Insight"}</span>
             <ArrowRight className="w-3 h-3" />
           </button>
         )}
@@ -241,3 +254,5 @@ export const WisdomMachine: React.FC<WisdomMachineProps> = ({
     </div>
   );
 };
+
+export default WisdomMachine;

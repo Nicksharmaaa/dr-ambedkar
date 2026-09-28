@@ -545,6 +545,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
         <SoundboardWidget
+          language={language}
           onOpenDocument={(docId) => {
             const doc = ARCHIVE_DOCUMENTS.find(d => d.id === docId);
             if (doc) onOpenDocument(doc);
