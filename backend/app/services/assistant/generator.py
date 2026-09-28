@@ -255,11 +255,11 @@ class GroundedGenerator:
 
         prompt = build_evidence_context(query, evidence_chunks, mode=mode)
 
-        # 1. Try Gemini Cloud Generator (Fast, highly reliable Gemini 3.8 Flash)
-        if settings.gemini_api_key:
-            gemini_result = self._generate_with_gemini(prompt)
-            if gemini_result:
-                raw_answer, used_model = gemini_result
+        # 1. Try Groq Cloud Generator Primary (Instant LPU < 1.0s response)
+        if settings.groq_api_key:
+            groq_result = self._generate_with_groq(prompt)
+            if groq_result:
+                raw_answer, used_model = groq_result
                 if not raw_answer or ABSTENTION_TEXT.lower() in raw_answer.lower():
                     return {
                         "answer": ABSTENTION_TEXT,
@@ -274,11 +274,11 @@ class GroundedGenerator:
                     "prompt": prompt,
                 }
 
-        # 2. Try Groq Cloud Generator Fallback
-        if settings.groq_api_key:
-            groq_result = self._generate_with_groq(prompt)
-            if groq_result:
-                raw_answer, used_model = groq_result
+        # 2. Try Gemini Cloud Generator Fallback
+        if settings.gemini_api_key:
+            gemini_result = self._generate_with_gemini(prompt)
+            if gemini_result:
+                raw_answer, used_model = gemini_result
                 if not raw_answer or ABSTENTION_TEXT.lower() in raw_answer.lower():
                     return {
                         "answer": ABSTENTION_TEXT,

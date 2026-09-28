@@ -107,16 +107,24 @@ class ChunkRepository:
             "on", "at", "from", "with", "does", "do", "he", "she", "it", "they", "their",
             "his", "her", "its", "explain", "summarize", "tell", "me", "which", "who",
             "have", "has", "had", "can", "could", "would", "should", "view", "views",
+            "dr", "ambedkar", "babasaheb", "speech", "speeches", "final", "last", "first",
         }
 
-        # First attempt: all terms (AND query)
+        # 1. Full cleaned query
         safe_query = " ".join(clean_terms)
         queries_to_try = [safe_query]
 
-        # Second attempt: content terms joined with OR for natural language RAG questions
+        # 2. Key terms (AND query without conversational stopwords)
         key_terms = [t for t in clean_terms if t.lower() not in stopwords]
-        if key_terms and len(key_terms) > 1 and len(clean_terms) > 2:
-            queries_to_try.append(" OR ".join(key_terms))
+        if key_terms and len(key_terms) < len(clean_terms):
+            queries_to_try.append(" ".join(key_terms))
+
+        # 3. Content terms joined with OR for broader retrieval fallback
+        if len(key_terms) > 1:
+            queries_to_try.append(" or ".join(key_terms))
+
+        seen_ids = set()
+        accumulated_rows: list[dict] = []
 
         is_postgres = hasattr(self.db, "_pool") or self.db.__class__.__name__ == "PostgresClient"
         for fts_q in queries_to_try:
@@ -127,10 +135,10 @@ class ChunkRepository:
                             """
                             SELECT dc.id, dc.object_id, dc.text, dc.language,
                                    dc.page_number, dc.volume_number, dc.section_title,
-                                   ts_rank(fts.tsv, plainto_tsquery('english', %s)) AS fts_rank
+                                   ts_rank(fts.tsv, websearch_to_tsquery('english', %s)) AS fts_rank
                             FROM fts_chunks fts
                             JOIN document_chunks dc ON dc.id = fts.chunk_id
-                            WHERE fts.tsv @@ plainto_tsquery('english', %s)
+                            WHERE fts.tsv @@ websearch_to_tsquery('english', %s)
                               AND dc.object_id = %s
                             ORDER BY fts_rank DESC
                             LIMIT %s
@@ -142,10 +150,10 @@ class ChunkRepository:
                             """
                             SELECT dc.id, dc.object_id, dc.text, dc.language,
                                    dc.page_number, dc.volume_number, dc.section_title,
-                                   ts_rank(fts.tsv, plainto_tsquery('english', %s)) AS fts_rank
+                                   ts_rank(fts.tsv, websearch_to_tsquery('english', %s)) AS fts_rank
                             FROM fts_chunks fts
                             JOIN document_chunks dc ON dc.id = fts.chunk_id
-                            WHERE fts.tsv @@ plainto_tsquery('english', %s)
+                            WHERE fts.tsv @@ websearch_to_tsquery('english', %s)
                             ORDER BY fts_rank DESC
                             LIMIT %s
                             """,
@@ -183,16 +191,18 @@ class ChunkRepository:
                         )
 
                 if result.rows:
-                    rows = []
                     for r in result.rows:
                         row = dict(r)
-                        row["id"] = row.get("id", "")
-                        rows.append(row)
-                    return rows
+                        cid = row.get("id", "")
+                        if cid and cid not in seen_ids:
+                            seen_ids.add(cid)
+                            accumulated_rows.append(row)
+                    if len(accumulated_rows) >= limit:
+                        return accumulated_rows[:limit]
             except Exception:
                 continue
 
-        return []
+        return accumulated_rows[:limit]
 
     async def sync_fts_chunk(self, chunk_id: str, text: str, object_id: str) -> None:
         """Insert or replace a single chunk into the FTS5 virtual table."""
