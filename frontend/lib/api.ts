@@ -106,9 +106,11 @@ async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T>
   const token = getSessionToken();
   const authHeaders: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
-  // 6-second timeout controller to prevent hanging browser connection pool & UI lag
+  // Adaptive timeout controller: 35s for AI synthesis/RAG endpoints, 15s for standard endpoints
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 6000);
+  const isAiEndpoint = cleanEndpoint.includes("/assistant") || cleanEndpoint.includes("/corpus");
+  const timeoutMs = isAiEndpoint ? 35000 : 15000;
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const res = await fetch(url, {

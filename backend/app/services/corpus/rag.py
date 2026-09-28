@@ -64,7 +64,7 @@ def _build_context_prompt(query: str, results: list[SearchResult]) -> str:
 class AmbedkarRAGService:
     def __init__(self, search_service: HybridSearchService | None = None) -> None:
         self.search = search_service or HybridSearchService()
-        self.model_name = settings.gemini_model or "gemini-2.0-flash"
+        self.model_name = settings.gemini_model or "gemini-3.8-flash"
 
     def _get_gemini_client(self):
         if not settings.gemini_api_key:

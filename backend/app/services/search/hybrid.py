@@ -103,22 +103,30 @@ class HybridSearchService:
         vector_results: list[dict] = []
         if mode in ("hybrid", "vector"):
             try:
+                import asyncio
                 from app.services.search.embedder import EmbeddingEngine
                 engine = EmbeddingEngine.get()
                 model_name = engine.model_name
+                loop = asyncio.get_running_loop()
 
                 seen_vec = set()
                 for q_term in effective_queries:
-                    query_vec = engine.embed_query(q_term)
-                    vec_hits = await self.vector_store.search(
-                        query_embedding=query_vec,
-                        top_k=50,
-                        model_name=model_name,
-                    )
-                    for h in vec_hits:
-                        if h.chunk_id not in seen_vec:
-                            seen_vec.add(h.chunk_id)
-                            vector_results.append({"id": h.chunk_id, "vector_score": h.score})
+                    try:
+                        query_vec = await asyncio.wait_for(
+                            loop.run_in_executor(None, engine.embed_query, q_term),
+                            timeout=3.5,
+                        )
+                        vec_hits = await self.vector_store.search(
+                            query_embedding=query_vec,
+                            top_k=50,
+                            model_name=model_name,
+                        )
+                        for h in vec_hits:
+                            if h.chunk_id not in seen_vec:
+                                seen_vec.add(h.chunk_id)
+                                vector_results.append({"id": h.chunk_id, "vector_score": h.score})
+                    except (asyncio.TimeoutError, Exception) as sub_exc:
+                        logger.warning("Vector search step skipped or timed out: %s; using FTS5 lexical ranking", sub_exc)
             except Exception as exc:
                 logger.warning("Vector search failed", exc_info=exc)
 
@@ -152,17 +160,22 @@ class HybridSearchService:
         reranked = enriched[: min(limit * 2, 40)]  # send top-40 to reranker
         if enable_rerank and len(reranked) > 1:
             try:
+                import asyncio
                 from app.services.search.reranker import RerankerService
                 reranker = RerankerService.get()
                 passages = [r["text"] for r in reranked]
-                scores   = reranker.rerank(query, passages)
+                loop = asyncio.get_running_loop()
+                scores = await asyncio.wait_for(
+                    loop.run_in_executor(None, reranker.rerank, query, passages),
+                    timeout=3.5,
+                )
 
                 for r, s in zip(reranked, scores):
                     r["reranker_score"] = s
 
                 reranked.sort(key=lambda x: x.get("reranker_score", 0.0), reverse=True)
-            except Exception as exc:
-                logger.warning("Reranker failed; using RRF order", exc_info=exc)
+            except (asyncio.TimeoutError, Exception) as exc:
+                logger.warning("Reranker step skipped or timed out; using RRF order: %s", exc)
 
         final = reranked[:limit]
 

@@ -51,6 +51,27 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         logger.error("Database connection FAILED at startup", error=str(e))
         # Continue anyway — health endpoint will report the error
 
+    # Non-blocking background warmup for AI search & reranker models
+    async def _warmup_models():
+        import asyncio
+        loop = asyncio.get_running_loop()
+        def _load():
+            try:
+                from app.services.search.embedder import EmbeddingEngine
+                EmbeddingEngine.get()._ensure_loaded()
+            except Exception as e:
+                logger.warning("Embedding model background warmup notice: %s", e)
+            try:
+                from app.services.search.reranker import RerankerService
+                RerankerService.get()._ensure_loaded()
+            except Exception as e:
+                logger.warning("Reranker model background warmup notice: %s", e)
+        await loop.run_in_executor(None, _load)
+        logger.info("Search AI models successfully prewarmed in memory")
+
+    import asyncio
+    asyncio.create_task(_warmup_models())
+
     yield
 
     # Shutdown

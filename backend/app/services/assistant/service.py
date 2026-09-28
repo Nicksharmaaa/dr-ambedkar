@@ -156,7 +156,20 @@ class ResearchAssistantService:
     ) -> list[dict[str, Any]]:
         """Retrieve evidence chunks via Phase 6 four-component hybrid search with reranking."""
         try:
-            search_query = re.sub(r'^(explain\s+(simply\s+)?(why|how|what|the)?|summarize|tell\s+me\s+about|what\s+(is|are|were))\s+', '', query, flags=re.IGNORECASE).strip() or query
+            # Clean conversational query framing for effective hybrid & lexical search
+            cleaned = re.sub(
+                r'^(what\s+(did|was|is|are|were|can|could|would)\s+(dr\.?\s*)?(babasaheb\s*)?(ambedkar\s*)?(say|write|think|argue|mean|propose|state|express)?\s*(about|on|regarding|in)?|'
+                r'how\s+(did|does|can|could)\s+(dr\.?\s*)?(babasaheb\s*)?(ambedkar\s*)?(view|see|define|approach)?\s*(the)?|'
+                r'why\s+(did|does|is)\s+(dr\.?\s*)?(babasaheb\s*)?(ambedkar\s*)?|'
+                r'explain\s+(simply\s+)?(why|how|what|the)?|'
+                r'summarize\s+(what|how|the)?|'
+                r'tell\s+me\s+about)\s+',
+                '',
+                query,
+                flags=re.IGNORECASE
+            ).strip()
+            search_query = cleaned or query
+
             res = await self.search_service.search(
                 query=search_query,
                 mode="hybrid",
@@ -164,7 +177,25 @@ class ResearchAssistantService:
                 object_id=object_id,
                 enable_rerank=True,
             )
-            return res.get("results", [])
+            results = res.get("results", [])
+
+            # If conversational query produced few results, retry with extracted key terms
+            if len(results) < 2 and len(search_query.split()) > 2:
+                stopwords = {"about", "which", "their", "there", "these", "those", "speech", "speeches", "final", "last", "first"}
+                keywords = [w for w in re.findall(r'\b[a-zA-Z]{3,}\b', search_query) if w.lower() not in stopwords]
+                if keywords:
+                    alt_res = await self.search_service.search(
+                        query=" ".join(keywords[:4]),
+                        mode="hybrid",
+                        limit=limit,
+                        object_id=object_id,
+                        enable_rerank=False,
+                    )
+                    for r in alt_res.get("results", []):
+                        if not any(x.get("id") == r.get("id") for x in results):
+                            results.append(r)
+
+            return results
         except Exception as exc:
             logger.error("Hybrid retrieval failed: %s", exc)
             return []
