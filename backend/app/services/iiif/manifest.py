@@ -229,15 +229,26 @@ class IIIFService:
         Renders crisp archival folio typography at 1800 x 2700 px resolution.
         """
         # Fetch chunk text for this page
-        chunk_res = await self.db.execute(
-            """
-            SELECT text, chapter
-            FROM chunks
-            WHERE doc_id = ? AND page_est = ?
-            ORDER BY chunk_index ASC
-            """,
-            [object_id, page_number],
-        )
+        try:
+            chunk_res = await self.db.execute(
+                """
+                SELECT text, section_title AS chapter
+                FROM document_chunks
+                WHERE object_id = ? AND page_number = ?
+                ORDER BY chunk_index ASC
+                """,
+                [object_id, page_number],
+            )
+        except Exception:
+            chunk_res = await self.db.execute(
+                """
+                SELECT text, chapter
+                FROM chunks
+                WHERE doc_id = ? AND page_est = ?
+                ORDER BY chunk_index ASC
+                """,
+                [object_id, page_number],
+            )
 
         chunks = chunk_res.rows
         if not chunks:

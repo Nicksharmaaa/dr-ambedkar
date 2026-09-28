@@ -190,9 +190,34 @@ class HybridSearchService:
         vol_filter: int | None = None,
     ) -> list[SearchResult]:
         """
-        Execute Hybrid Search using Reciprocal Rank Fusion (RRF).
-        RRF_score(d) = 1 / (K + rank_lexical) + 1 / (K + rank_semantic)
+        Execute Hybrid Search using canonical HybridSearchService (PostgreSQL + Vector + Reranker),
+        with fallback to legacy SQLite RRF.
         """
+        try:
+            from app.services.search.hybrid import HybridSearchService as CanonicalSearchService
+            canonical = CanonicalSearchService(self.db)
+            vol_target = f"AMBEDKAR-VOL-{vol_filter:02d}" if vol_filter is not None else None
+            res = await canonical.search(query=query, limit=top_k, object_id=vol_target)
+            results: list[SearchResult] = []
+            for r in res.get("results", []):
+                results.append(
+                    SearchResult(
+                        chunk_id=r.get("chunk_id", ""),
+                        doc_id=r.get("object_id", ""),
+                        vol_num=r.get("volume_number"),
+                        part_num=None,
+                        chapter=r.get("section_title") or r.get("object_title") or "General",
+                        section=r.get("section_title"),
+                        page_est=r.get("page_number"),
+                        text=r.get("text", ""),
+                        score=float(r.get("score", 0.0)),
+                    )
+                )
+            if results:
+                return results
+        except Exception as exc:
+            logger.warning("Canonical search delegation in corpus.search failed: %s, using legacy path", exc)
+
         fetch_limit = max(top_k * 3, 30)
 
         # 1. Fetch lexical and semantic candidates in parallel

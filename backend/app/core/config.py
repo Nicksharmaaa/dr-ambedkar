@@ -35,7 +35,8 @@ class Settings(BaseSettings):
     app_port: int = 8000
     secret_key: str = "CHANGE_ME_GENERATE_STRONG_SECRET"
 
-    # ── Database (Turso/libSQL) ───────────────────────────────
+    # ── Database (PostgreSQL / Turso) ─────────────────────────
+    database_url: str | None = Field(default=None, alias="DATABASE_URL")
     turso_db_url: str = Field(
         default="file:storage/turso/ambedkar_dev.db",
         alias="TURSO_DB_URL",
@@ -169,8 +170,9 @@ class Settings(BaseSettings):
 
     @property
     def db_is_remote(self) -> bool:
-        """True if connecting to Turso Cloud, False for local file/in-memory."""
-        return self.turso_db_url.startswith("libsql://")
+        """True if connecting to remote DB (PostgreSQL or Turso Cloud), False for local file/in-memory."""
+        url = self.database_url or self.turso_db_url
+        return url.startswith("postgresql://") or url.startswith("postgres://") or url.startswith("libsql://")
 
 
 # Singleton — import this everywhere
