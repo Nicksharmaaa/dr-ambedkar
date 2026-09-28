@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 const BACKEND_BASE = (
   process.env.BACKEND_INTERNAL_URL ||
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://tear-venture-suppliers-many.trycloudflare.com"
+  "http://127.0.0.1:8000"
 )
   .replace(/\/api\/v1\/?$/, "")
   .replace(/\/api\/?$/, "")
@@ -38,6 +38,7 @@ async function proxyToBackend(
       body,
       // @ts-ignore
       duplex: "half",
+      signal: AbortSignal.timeout(5000),
     });
 
     const responseHeaders = new Headers();

@@ -94,6 +94,11 @@ export const TimelineHorizonScrubber: React.FC<TimelineHorizonScrubberProps> = (
 
   // 60FPS Continuous Autopilot Engine (Smooth continuous flow from start 0% till end 100%)
   useEffect(() => {
+    if (!isPlayingAuto) {
+      lastTimeRef.current = null;
+      return;
+    }
+
     let animId: number;
     // Full start-to-end journey takes ~28 seconds at buttery-smooth 60fps
     const speed = 1 / 28;
@@ -105,7 +110,7 @@ export const TimelineHorizonScrubber: React.FC<TimelineHorizonScrubberProps> = (
       const dt = Math.min(0.1, (timestamp - lastTimeRef.current) / 1000);
       lastTimeRef.current = timestamp;
 
-      if (isPlayingAuto && !isUserInteractingRef.current && !isHoldingAtEndRef.current) {
+      if (!isUserInteractingRef.current && !isHoldingAtEndRef.current) {
         let nextP = progressRef.current + dt * speed;
 
         // Reached the very end (100% of Dr. Ambedkar's chronology)

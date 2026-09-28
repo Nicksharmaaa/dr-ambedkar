@@ -12,6 +12,7 @@ export interface MasonryItem {
   img: string;
   url?: string;
   height: number;
+  photo?: any;
   [key: string]: any;
 }
 
@@ -66,19 +67,6 @@ const useMeasure = (): [React.RefObject<HTMLDivElement | null>, { width: number;
   return [ref, size];
 };
 
-const preloadImages = async (urls: string[]) => {
-  await Promise.all(
-    urls.map(
-      src =>
-        new Promise<void>(resolve => {
-          const img = new Image();
-          img.src = src;
-          img.onload = img.onerror = () => resolve();
-        })
-    )
-  );
-};
-
 export const Masonry: React.FC<MasonryProps> = ({
   items,
   ease = 'power3.out',
@@ -101,7 +89,6 @@ export const Masonry: React.FC<MasonryProps> = ({
   );
 
   const [containerRef, { width }] = useMeasure();
-  const [imagesReady, setImagesReady] = useState(false);
 
   const getInitialPosition = (item: MasonryItem & { x: number; y: number; w: number; h: number }) => {
     const containerRect = containerRef.current?.getBoundingClientRect();
@@ -133,10 +120,6 @@ export const Masonry: React.FC<MasonryProps> = ({
     }
   };
 
-  useEffect(() => {
-    preloadImages(items.map(i => i.img)).then(() => setImagesReady(true));
-  }, [items]);
-
   const { grid, totalHeight } = useMemo(() => {
     if (!width) return { grid: [], totalHeight: 0 };
 
@@ -162,7 +145,7 @@ export const Masonry: React.FC<MasonryProps> = ({
   const hasMounted = useRef(false);
 
   useIsomorphicLayoutEffect(() => {
-    if (!imagesReady || !containerRef.current) return;
+    if (!containerRef.current) return;
 
     grid.forEach((item, index) => {
       const element = containerRef.current?.querySelector(`[data-key="${item.id}"]`);
@@ -206,7 +189,7 @@ export const Masonry: React.FC<MasonryProps> = ({
 
     hasMounted.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grid, imagesReady, stagger, animateFrom, blurToFocus, duration, ease]);
+  }, [grid, stagger, animateFrom, blurToFocus, duration, ease]);
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>, item: MasonryItem) => {
     const element = e.currentTarget;
@@ -279,7 +262,14 @@ export const Masonry: React.FC<MasonryProps> = ({
             onMouseEnter={e => handleMouseEnter(e, item)}
             onMouseLeave={e => handleMouseLeave(e, item)}
           >
-            <div className="item-img" style={{ backgroundImage: `url(${item.img})` }}>
+            <div className="item-img relative overflow-hidden bg-stone-900">
+              <img
+                src={item.img}
+                alt={(item as any).photo?.title || 'Archival photographic plate'}
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-500 group-hover:scale-105"
+              />
               {colorShiftOnHover && (
                 <div
                   className="color-overlay"

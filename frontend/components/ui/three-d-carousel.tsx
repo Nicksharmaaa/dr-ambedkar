@@ -249,43 +249,29 @@ export function ThreeDPhotoCarousel({
   const lastDragXRef = useRef<number>(0);
   const hasMovedSignificantlyRef = useRef<boolean>(false);
   const isHoveredRef = useRef<boolean>(false);
+  const isLoopRunningRef = useRef<boolean>(false);
+  const wakeRenderLoopRef = useRef<() => void>(() => {});
+
+  const internalActiveRef = useRef<number>(0);
+  const onCardChangeRef = useRef(onCardChange);
+  onCardChangeRef.current = onCardChange;
+  const cardsRef = useRef(cards);
+  cardsRef.current = cards;
 
   // DOM elements
   const cylinderRef = useRef<HTMLDivElement>(null);
   const cardElementsRef = useRef<(HTMLDivElement | null)[]>([]);
   const cardPointerDownRef = useRef<{ index: number; x: number; y: number } | null>(null);
 
-  // 60fps Smooth Physics & Sharp 3D Projection Render Loop
+  // 60fps Smooth Physics & Sharp 3D Projection Render Loop with Sleep-When-Settled
   useEffect(() => {
-    let animId: number;
+    let animId: number = 0;
 
-    const render = () => {
-      // Auto-spin ticker
-      if (isAutoSpinning && !isDraggingRef.current && !isHoveredRef.current) {
-        targetAngleRef.current -= autoRotateSpeed;
-      }
-
-      // Physics spring interpolation
-      if (!isDraggingRef.current) {
-        velocityRef.current *= 0.90;
-        targetAngleRef.current += velocityRef.current;
-
-        const diff = targetAngleRef.current - currentAngleRef.current;
-        currentAngleRef.current += diff * 0.14;
-      }
-
-      const rotY = currentAngleRef.current;
-
-      // CRITICAL FOR ZERO-BLUR CRISPNESS:
-      // Translate the cylinder back into the scene by -radius along Z.
-      // Therefore, the front-facing card (baseAngle + rotY = 0) sits precisely at Z = 0 (the screen plane).
-      // At Z = 0, scale factor = perspective / (perspective - 0) = 1.000 (100% Native Pixel Resolution).
-      // This eliminates the severe upscaling blur caused by positive Z translation!
+    const updateSceneTransforms = (rotY: number) => {
       if (cylinderRef.current) {
         cylinderRef.current.style.transform = `translateZ(${-radius}px) rotateY(${rotY.toFixed(2)}deg)`;
       }
 
-      // Compute facing card & cull backfacing cards
       let bestDist = Infinity;
       let frontIdx = 0;
 
@@ -296,7 +282,7 @@ export function ThreeDPhotoCarousel({
         const baseAngle = i * angleStep;
         let rel = (baseAngle + rotY) % 360;
         if (rel < -180) rel += 360;
-        if (rel > 180) rel -= 360;
+        if (rel > 180) rel += 360;
 
         const absRel = Math.abs(rel);
         if (absRel < bestDist) {
@@ -314,7 +300,6 @@ export function ThreeDPhotoCarousel({
         } else {
           // Front and visible flanking cards: crystal sharp, natural depth falloff
           const normalizedDist = absRel / 90;
-          // Center card = 1.0 opacity, side cards = clean visible fade
           const opacity = Math.max(0.42, 1 - normalizedDist * 0.45);
           const scale = absRel < 12 ? 1.03 : Math.max(0.90, 1 - normalizedDist * 0.08);
           const zIndex = Math.round(100 - absRel);
@@ -327,18 +312,63 @@ export function ThreeDPhotoCarousel({
         }
       }
 
-      // Sync active state when rotation settles
-      if (frontIdx !== internalActive && !isDraggingRef.current) {
+      // Sync active state when card changes
+      if (frontIdx !== internalActiveRef.current && !isDraggingRef.current) {
+        internalActiveRef.current = frontIdx;
         setInternalActive(frontIdx);
-        onCardChange?.(frontIdx, cards[frontIdx]);
+        onCardChangeRef.current?.(frontIdx, cardsRef.current[frontIdx]);
+      }
+    };
+
+    const render = () => {
+      // Auto-spin ticker
+      if (isAutoSpinning && !isDraggingRef.current && !isHoveredRef.current) {
+        targetAngleRef.current -= autoRotateSpeed;
       }
 
+      // Physics spring interpolation
+      if (!isDraggingRef.current) {
+        velocityRef.current *= 0.90;
+        targetAngleRef.current += velocityRef.current;
+
+        const diff = targetAngleRef.current - currentAngleRef.current;
+        currentAngleRef.current += diff * 0.14;
+
+        // SLEEP LOGIC: When movement ceases and not auto-spinning, stop the RAF loop completely
+        // This drops idle CPU/GPU usage to exactly 0%!
+        if (
+          !isAutoSpinning &&
+          Math.abs(velocityRef.current) < 0.002 &&
+          Math.abs(diff) < 0.02
+        ) {
+          currentAngleRef.current = targetAngleRef.current;
+          velocityRef.current = 0;
+          updateSceneTransforms(currentAngleRef.current);
+          isLoopRunningRef.current = false;
+          return;
+        }
+      }
+
+      updateSceneTransforms(currentAngleRef.current);
       animId = requestAnimationFrame(render);
     };
 
-    animId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animId);
-  }, [count, angleStep, radius, isAutoSpinning, autoRotateSpeed, internalActive, cards, onCardChange]);
+    const wakeLoop = () => {
+      if (isLoopRunningRef.current) return;
+      isLoopRunningRef.current = true;
+      animId = requestAnimationFrame(render);
+    };
+
+    wakeRenderLoopRef.current = wakeLoop;
+
+    // Start initial render
+    wakeLoop();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      isLoopRunningRef.current = false;
+    };
+  }, [count, angleStep, radius, isAutoSpinning, autoRotateSpeed]);
 
   // Rotate smoothly to specific index
   const rotateToIndex = useCallback(
@@ -351,18 +381,20 @@ export function ThreeDPhotoCarousel({
       targetAngleRef.current = cur + diff;
       velocityRef.current = 0;
 
+      internalActiveRef.current = targetIndex;
       setInternalActive(targetIndex);
-      onCardChange?.(targetIndex, cards[targetIndex]);
+      onCardChangeRef.current?.(targetIndex, cardsRef.current[targetIndex]);
+      wakeRenderLoopRef.current();
     },
-    [count, angleStep, cards, onCardChange]
+    [count, angleStep]
   );
 
   // Sync external index
   useEffect(() => {
-    if (externalActiveIndex !== undefined && externalActiveIndex !== internalActive) {
+    if (externalActiveIndex !== undefined && externalActiveIndex !== internalActiveRef.current) {
       rotateToIndex(externalActiveIndex);
     }
-  }, [externalActiveIndex, rotateToIndex, internalActive]);
+  }, [externalActiveIndex, rotateToIndex]);
 
   // Pointer drag gestures
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -373,6 +405,7 @@ export function ThreeDPhotoCarousel({
     lastDragXRef.current = e.clientX;
     lastDragTimeRef.current = performance.now();
     velocityRef.current = 0;
+    wakeRenderLoopRef.current();
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
@@ -398,6 +431,7 @@ export function ThreeDPhotoCarousel({
     velocityRef.current = (frameDx / dt) * 3.2;
     lastDragXRef.current = e.clientX;
     lastDragTimeRef.current = now;
+    wakeRenderLoopRef.current();
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -422,6 +456,7 @@ export function ThreeDPhotoCarousel({
 
     e.preventDefault();
     velocityRef.current = -Math.sign(rawDelta) * Math.min(Math.abs(rawDelta) * 0.14, 5);
+    wakeRenderLoopRef.current();
   };
 
   // Click card to open detailed popup (Examine modal)
@@ -483,6 +518,7 @@ export function ThreeDPhotoCarousel({
       }}
       onMouseLeave={() => {
         isHoveredRef.current = false;
+        if (isAutoSpinning) wakeRenderLoopRef.current();
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -522,7 +558,11 @@ export function ThreeDPhotoCarousel({
           {/* Auto-Rotate Toggle */}
           <button
             type="button"
-            onClick={() => setIsAutoSpinning(!isAutoSpinning)}
+            onClick={() => {
+              const next = !isAutoSpinning;
+              setIsAutoSpinning(next);
+              if (next) wakeRenderLoopRef.current();
+            }}
             className={`px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-xs ${
               isAutoSpinning
                 ? 'bg-[#C59A45] text-[#0A2947] border-[#C59A45]'

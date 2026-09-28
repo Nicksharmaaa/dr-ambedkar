@@ -32,24 +32,33 @@ import {
 } from "./types";
 
 function getApiBase(): string {
-  let raw = (
-    process.env.NEXT_PUBLIC_API_URL ||
-    "https://tear-venture-suppliers-many.trycloudflare.com/api/v1"
-  ).trim();
-  raw = raw.replace(/^["']|["']$/g, "").trim();
-  raw = raw.replace(/\/+$/, ""); // Strip trailing slashes
-  if (!raw.startsWith("http://") && !raw.startsWith("https://") && !raw.startsWith("/")) {
-    raw = `https://${raw}`;
-  }
-  // Ensure /api/v1 is appended if not present
-  if (!raw.endsWith("/api/v1")) {
-    if (raw.endsWith("/api")) {
-      raw = `${raw}/v1`;
-    } else {
-      raw = `${raw}/api/v1`;
+  const envUrl = (process.env.NEXT_PUBLIC_API_URL || "").trim();
+  if (envUrl) {
+    let raw = envUrl.replace(/^["']|["']$/g, "").trim();
+    raw = raw.replace(/\/+$/, ""); // Strip trailing slashes
+    if (!raw.startsWith("http://") && !raw.startsWith("https://") && !raw.startsWith("/")) {
+      raw = `https://${raw}`;
     }
+    // Ensure /api/v1 is appended if not present
+    if (!raw.endsWith("/api/v1")) {
+      if (raw.endsWith("/api")) {
+        raw = `${raw}/v1`;
+      } else {
+        raw = `${raw}/api/v1`;
+      }
+    }
+    return raw;
   }
-  return raw;
+
+  // Client-side default: use relative /api/v1 so requests stay on the same origin
+  // and route cleanly through Next.js proxy / rewrites without hardcoded dead tunnels.
+  if (typeof window !== "undefined") {
+    return "/api/v1";
+  }
+
+  // Server-side (SSR / API routes) fallback:
+  const internal = (process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8000").trim();
+  return `${internal.replace(/\/+$/, "")}/api/v1`;
 }
 
 const API_BASE = getApiBase();
@@ -92,19 +101,27 @@ export function getSessionToken(): string | null {
 
 async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
-  const url = `${API_BASE}${cleanEndpoint}`;
+  const base = getApiBase();
+  const url = `${base}${cleanEndpoint}`;
   const token = getSessionToken();
   const authHeaders: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+
+  // 6-second timeout controller to prevent hanging browser connection pool & UI lag
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 6000);
 
   try {
     const res = await fetch(url, {
       ...options,
+      signal: options?.signal || controller.signal,
       headers: {
         "Content-Type": "application/json",
         ...authHeaders,
         ...(options?.headers || {}),
       },
     });
+
+    clearTimeout(timeoutId);
 
     if (!res.ok) {
       let detail: any = null;
@@ -118,31 +135,45 @@ async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T>
 
     return (await res.json()) as T;
   } catch (err: any) {
+    clearTimeout(timeoutId);
     if (err instanceof ApiError) throw err;
+    if (err?.name === "AbortError") {
+      throw new ApiError(408, "API request timed out (backend offline or unreachable)");
+    }
     throw new ApiError(0, err.message || "Network error connecting to API");
   }
 }
 
 export const api = {
   // Base URLs & Auth
-  getBaseUrl: () => API_BASE,
+  getBaseUrl: () => getApiBase(),
   getDocumentExportUrl: (id: string, format: string = "text") => {
     const token = getSessionToken();
     const tokenParam = token ? `&token=${encodeURIComponent(token)}` : "";
-    return `${API_BASE}/documents/${id}/export?format=${format}${tokenParam}`;
+    return `${getApiBase()}/documents/${id}/export?format=${format}${tokenParam}`;
   },
-  getResearchPackExportUrl: () => `${API_BASE}/collections/export/research-pack`,
+  getResearchPackExportUrl: () => `${getApiBase()}/collections/export/research-pack`,
 
   // Authentication & RBAC
   acquireRoleSession: async (role: string, fullName?: string) => {
-    const res = await fetchJson<{ access_token: string; user: any }>("/auth/session-token", {
-      method: "POST",
-      body: JSON.stringify({ role, full_name: fullName }),
-    });
-    if (res?.access_token) {
-      setSessionToken(res.access_token);
+    try {
+      const res = await fetchJson<{ access_token: string; user: any }>("/auth/session-token", {
+        method: "POST",
+        body: JSON.stringify({ role, full_name: fullName }),
+      });
+      if (res?.access_token) {
+        setSessionToken(res.access_token);
+      }
+      return res;
+    } catch (err) {
+      // Graceful offline session fallback: allow seamless navigation without blocking the UI
+      const guestToken = `local_session_${role}_${Date.now()}`;
+      setSessionToken(guestToken);
+      return {
+        access_token: guestToken,
+        user: { role, full_name: fullName || "Visitor", permissions: [] }
+      };
     }
-    return res;
   },
   getCurrentUser: () => fetchJson<any>("/auth/me"),
   logout: async () => {

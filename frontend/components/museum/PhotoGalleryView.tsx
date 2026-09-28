@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Camera, Maximize2, ZoomIn, ZoomOut, Eye, BookOpen, 
   Copy, Check, ChevronLeft, ChevronRight, X, Search, 
@@ -12,6 +12,7 @@ import { UI_STRINGS } from '@/utils/i18n';
 import { HISTORICAL_PHOTOS, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { Masonry, MasonryItem } from '@/components/ui/Masonry';
+import { getCdnImageUrl } from '@/utils/imageCdn';
 
 interface PhotoGalleryViewProps {
   language: Language;
@@ -36,7 +37,8 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
   const [copiedCitationId, setCopiedCitationId] = useState<string | null>(null);
   const [isZoomed, setIsZoomed] = useState<boolean>(false);
   const [lightboxTone, setLightboxTone] = useState<'original' | 'high_contrast' | 'sepia'>('original');
-  const [displayLimit, setDisplayLimit] = useState<number>(36);
+  const [displayLimit, setDisplayLimit] = useState<number>(24);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // Multi-dimensional filter lists
   const availableYears = useMemo(() => {
@@ -91,8 +93,29 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
 
   // Reset display limit when any filter changes
   useEffect(() => {
-    setDisplayLimit(36);
+    setDisplayLimit(24);
   }, [activeEra, selectedYear, selectedLocation, selectedSource, searchQuery]);
+
+  // High-performance IntersectionObserver: Infinite scroll batching (loads 24 plates at a time as you scroll)
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setDisplayLimit((prev) => {
+            if (prev >= filteredPhotos.length) return prev;
+            return Math.min(prev + 24, filteredPhotos.length);
+          });
+        }
+      },
+      { rootMargin: '600px 0px' }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [filteredPhotos.length]);
 
   // Progressive slicing for silky performance with 500+ authentic plates
   const visiblePhotos = useMemo(() => {
@@ -115,7 +138,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
 
       return {
         id: photo.id,
-        img: photo.imageUrl,
+        img: getCdnImageUrl(photo.imageUrl),
         url: '#',
         height,
         photo,
@@ -412,10 +435,10 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
           <div className="w-full">
             <Masonry
               items={masonryItems}
-              ease="sine.out"
+              ease="power3.out"
               duration={0.6}
               stagger={0.05}
-              animateFrom="random"
+              animateFrom="bottom"
               scaleOnHover={true}
               hoverScale={0.95}
               blurToFocus={true}
@@ -505,8 +528,10 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
                 >
                   <div className="sm:w-48 sm:h-44 shrink-0 overflow-hidden rounded-xl bg-stone-950 relative">
                     <img
-                      src={photo.imageUrl}
+                      src={getCdnImageUrl(photo.imageUrl)}
                       alt={photo.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-stone-950/20 group-hover:bg-transparent transition-colors" />
@@ -544,6 +569,9 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
           </div>
         )}
 
+        {/* High-Performance Sentinel for Native IntersectionObserver Infinite Scroll */}
+        <div ref={sentinelRef} className="h-10 w-full pointer-events-none" />
+
         {/* Load More & Pagination Bar */}
         {visiblePhotos.length < filteredPhotos.length && (
           <div className="flex flex-col items-center justify-center pt-8 pb-12 space-y-3.5 bg-gradient-to-b from-transparent to-[#FAF7F0]/60 rounded-3xl border border-[#D3D4C0]/40 p-6 shadow-2xs">
@@ -564,11 +592,11 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
                 type="button"
                 onClick={() => {
                   soundEffects.playClick();
-                  setDisplayLimit(prev => Math.min(prev + 36, filteredPhotos.length));
+                  setDisplayLimit(prev => Math.min(prev + 24, filteredPhotos.length));
                 }}
                 className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-[#0A2947] to-[#124273] hover:from-[#124273] hover:to-[#0A2947] text-[#FAF7F0] border border-[#C89D56]/40 font-mono text-xs font-bold tracking-wider uppercase transition-all shadow-md hover:shadow-lg cursor-pointer flex items-center gap-2"
               >
-                <span>Load More Plates (+36)</span>
+                <span>Load More Plates (+24)</span>
                 <ArrowRight className="w-3.5 h-3.5 text-[#C89D56]" />
               </button>
 
@@ -576,11 +604,12 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
                 type="button"
                 onClick={() => {
                   soundEffects.playClick();
-                  setDisplayLimit(filteredPhotos.length);
+                  // Safe progressive chunk loading up to +72 items instead of dumping 2000 nodes at once
+                  setDisplayLimit(prev => Math.min(prev + 72, filteredPhotos.length));
                 }}
                 className="px-4 py-2.5 rounded-2xl bg-white hover:bg-stone-50 text-[#0A2947] border border-stone-300 font-mono text-xs font-bold transition-all shadow-2xs hover:shadow-xs cursor-pointer"
               >
-                <span>View All ({filteredPhotos.length})</span>
+                <span>Load Batch (+72)</span>
               </button>
             </div>
           </div>
@@ -657,7 +686,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
                   isZoomed ? 'scale-125 cursor-zoom-out' : 'scale-100 cursor-zoom-in'
                 }`}>
                   <img
-                    src={selectedPhoto.imageUrl}
+                    src={getCdnImageUrl(selectedPhoto.imageUrl)}
                     alt={selectedPhoto.title}
                     onClick={() => setIsZoomed(!isZoomed)}
                     className={`max-h-[65vh] w-auto object-contain rounded-lg shadow-2xl transition-all ${

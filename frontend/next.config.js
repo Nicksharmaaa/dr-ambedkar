@@ -20,11 +20,11 @@ const nextConfig = {
     let rawUrl = (
       process.env.BACKEND_INTERNAL_URL ||
       process.env.NEXT_PUBLIC_API_URL ||
-      "https://tear-venture-suppliers-many.trycloudflare.com"
+      "http://127.0.0.1:8000"
     ).trim();
     rawUrl = rawUrl.replace(/^["']|["']$/g, '');
     if (!rawUrl || rawUrl === "" || rawUrl.startsWith("/")) {
-      rawUrl = "https://tear-venture-suppliers-many.trycloudflare.com";
+      rawUrl = "http://127.0.0.1:8000";
     }
     if (!rawUrl.startsWith("http://") && !rawUrl.startsWith("https://")) {
       rawUrl = `https://${rawUrl}`;
@@ -40,15 +40,6 @@ const nextConfig = {
         destination: `${backendBase}/storage/:path*`,
       },
     ];
-  },
-  webpack: (config, { dev }) => {
-    if (dev) {
-      config.watchOptions = {
-        poll: 1000,
-        aggregateTimeout: 300,
-      };
-    }
-    return config;
   },
 };
 
