@@ -21,6 +21,7 @@ import {
   Sparkles,
   Monitor,
   ChevronDown,
+  Camera,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { VoiceSearchModal } from "./voice/VoiceSearchModal";
@@ -182,6 +183,16 @@ export default function Navbar() {
             <span className="hidden xl:inline pr-2 text-xs font-medium text-blue-300">Voice</span>
           </div>
 
+          {/* Scan & OCR Link */}
+          <Link
+            href="/admin"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-medium transition-all"
+            title="Scan Document &amp; OCR Digitizer"
+          >
+            <Camera className="h-3.5 w-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">Scan OCR</span>
+          </Link>
+
           {/* Dedicated Kiosk Mode Link */}
           <Link
             href="/kiosk"
@@ -281,10 +292,18 @@ export default function Navbar() {
             <Link
               href="/admin"
               onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-semibold"
+            >
+              <Camera className="h-3.5 w-3.5" />
+              <span>Scan &amp; OCR</span>
+            </Link>
+            <Link
+              href="/admin"
+              onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-1.5 text-slate-400 hover:text-amber-400"
             >
               <Settings className="h-3.5 w-3.5" />
-              <span>Admin & Ingest</span>
+              <span>Admin &amp; Ingest</span>
             </Link>
             <Link
               href="/kiosk"

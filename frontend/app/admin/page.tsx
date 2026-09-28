@@ -4,16 +4,17 @@ import React, { useState, useEffect } from 'react';
 import { useMuseum } from '@/components/museum/MuseumContext';
 import { AdminDashboardView } from '@/components/museum/AdminDashboardView';
 import { 
-  ShieldCheck, RefreshCw, Cpu, Database, HardDrive, Edit3, Check, Layers, Sliders
+  ShieldCheck, RefreshCw, Cpu, Database, HardDrive, Edit3, Check, Layers, Sliders, Smartphone
 } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { DatabaseHealth, HealthStatus, StorageHealth } from '@/lib/types';
 import IngestionDashboard from '@/src/components/ingestion/IngestionDashboard';
+import { MobileDocumentScanner } from '@/components/museum/MobileDocumentScanner';
 
 export default function AdminPage() {
   const { language, openDocument } = useMuseum();
-  const [activeAdminTab, setActiveAdminTab] = useState<'registry' | 'curation' | 'pipeline'>('registry');
+  const [activeAdminTab, setActiveAdminTab] = useState<'registry' | 'scanner' | 'curation' | 'pipeline'>('registry');
 
   // Live telemetry states
   const [health, setHealth] = useState<HealthStatus | null>(null);
@@ -97,6 +98,17 @@ export default function AdminPage() {
               Curatorial Registry & OCR Pipeline
             </button>
             <button
+              onClick={() => setActiveAdminTab('scanner')}
+              className={`px-4 py-2 rounded-xl text-xs font-montserrat font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeAdminTab === 'scanner'
+                  ? 'bg-[#0A2947] text-[#FAF7F0] shadow-sm'
+                  : 'bg-[#FAF7F0] text-[#0A2947] hover:bg-[#F3E4C9]'
+              }`}
+            >
+              <Smartphone className="w-3.5 h-3.5 text-[#F3E4C9]" />
+              <span>Mobile Document Scanner &amp; OCR</span>
+            </button>
+            <button
               onClick={() => setActiveAdminTab('curation')}
               className={`px-4 py-2 rounded-xl text-xs font-montserrat font-bold transition-all cursor-pointer ${
                 activeAdminTab === 'curation'
@@ -136,6 +148,18 @@ export default function AdminPage() {
             language={language}
             onOpenDocument={openDocument}
           />
+        )}
+
+        {/* Tab: Standalone Full-Studio Mobile Document Scanner */}
+        {activeAdminTab === 'scanner' && (
+          <div className="space-y-4">
+            <MobileDocumentScanner
+              language={language}
+              onIngestFolio={() => {
+                setActiveAdminTab('registry');
+              }}
+            />
+          </div>
         )}
 
         {/* Tab 2: Live OCR Curation & System Health */}

@@ -314,4 +314,11 @@ export interface OCRJobRecord {
   accessRights: 'Public Domain' | 'Fair Use Educational' | 'Archival Restricted';
   rawOcrSnippet: string;
   cleanedTextSnippet: string;
+  thumbnailUrl?: string;
+  sha256Checksum?: string;
+  pageCount?: number;
+  wordCount?: number;
+  charCount?: number;
+  curatorNotes?: string;
+  isMobileScan?: boolean;
 }
