@@ -56,10 +56,10 @@ interface ChatMessage {
 const INITIAL_WELCOME: ChatMessage = {
   id: "msg-welcome",
   sender: "assistant",
-  text: "Welcome to the Dr. B. R. Ambedkar Heritage AI Research Assistant. I am directly integrated with the verified Turso Cloud vector store comprising 12,154 pages of Dr. Babasaheb Ambedkar's Writings & Speeches (BAWS).\n\nInstitutional Scholarly Mandates:\n1. Strict Archival Grounding: Every assertion derives exclusively from retrieved primary source passages.\n2. Zero Pre-training Reliance: Model training memory is never treated as historical fact.\n3. Mandatory Abstention: If verified archival evidence is absent or disconnected, I will decline to answer.\n4. Verifiable Facsimiles: Click any citation to inspect the original archival page in the document viewer.",
+  text: "Jai Bhim! 🙏\n\nI am the Dr. B. R. Ambedkar Heritage AI Research Assistant — your guide to the life, thoughts, and legacy of Babasaheb Dr. B. R. Ambedkar.\n\nI am grounded in 19,342 verified archival passages from Dr. Ambedkar's Writings & Speeches (BAWS), covering his landmark works on caste, democracy, Buddhism, law, and social justice.\n\nHow I can help you:\n• Ask questions about Ambedkar's philosophy, speeches, or writings\n• Get explanations of key concepts (e.g. annihilation of caste, social endosmosis)\n• Find exact quotations with verified citations\n• Summarize chapters or debates from his works\n\nEvery answer cites the original archival source. Click any citation to open the document viewer.\n\nWhat would you like to explore?",
   confidence: 1.0,
   is_abstention: false,
-  model: "turso-bge-m3 / hybrid-rag",
+  model: "Groq · Qwen3-27B + PostgreSQL Archive",
   timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
 };
 
@@ -306,8 +306,11 @@ export default function AssistantDrawer({ isOpen, onClose }: AssistantDrawerProp
     if (!cleanText) return;
 
     setActiveSpeechId(msgId);
-    const lang = (selectedLanguage === "hi" || selectedLanguage === "mr") ? selectedLanguage : "en";
-    speechController.speak(cleanText, lang, () => {
+    // Map language code — ElevenLabs handles en/hi; Sarvam handles mr/bn/gu/ta/te/kn/ml/pa/od
+    const ttsLang = ["en","hi","mr","bn","gu","ta","te","kn","ml","pa","od"].includes(selectedLanguage)
+      ? selectedLanguage
+      : "en";
+    speechController.speak(cleanText, ttsLang, () => {
       setActiveSpeechId(null);
     });
   };
@@ -437,7 +440,7 @@ export default function AssistantDrawer({ isOpen, onClose }: AssistantDrawerProp
                 {isOnline ? (
                   <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2 py-0.5 rounded-full shadow-sm">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Turso Grounded
+                    Archive Connected
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-amber-400 bg-amber-950/80 border border-amber-500/40 px-2 py-0.5 rounded-full">
@@ -447,7 +450,7 @@ export default function AssistantDrawer({ isOpen, onClose }: AssistantDrawerProp
                 )}
               </div>
               <p className="text-[11px] text-slate-400 mt-0.5">
-                Evidence-Grounded Scholarly Assistant • 12,154 Pages (BAWS)
+                Evidence-Grounded Scholarly Assistant • 19,342 Archival Passages (BAWS)
               </p>
             </div>
           </div>
@@ -680,7 +683,7 @@ export default function AssistantDrawer({ isOpen, onClose }: AssistantDrawerProp
           {isLoading && (
             <div className="flex items-center gap-3 p-4 bg-slate-900/80 rounded-2xl border border-amber-500/30 max-w-[85%] text-amber-200 text-xs shadow-md">
               <Sparkles className="w-4 h-4 animate-spin text-amber-400 shrink-0" />
-              <span>Synthesizing evidence from Turso Cloud vector embeddings...</span>
+              <span>Searching 19,342 archival passages and generating a grounded response...</span>
             </div>
           )}
 
@@ -805,7 +808,7 @@ export default function AssistantDrawer({ isOpen, onClose }: AssistantDrawerProp
 
           {/* Institutional Integrity Tagline */}
           <div className="mt-3 text-[10px] text-center text-slate-500 font-sans">
-            Grounded in 12,154 verified archival pages • Mandatory abstention when disconnected
+            Grounded in 19,342 verified archival passages • ElevenLabs &amp; Sarvam AI voice narration
           </div>
         </div>
       </div>

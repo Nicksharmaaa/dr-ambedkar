@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { KnowledgeGraph3D } from './graph3d';
 import { ArchivalDocument, Language } from '@/types/museum';
 import { KNOWLEDGE_GRAPH_NODES, KNOWLEDGE_GRAPH_LINKS } from '@/data/archiveData';
-import { ShieldCheck, Sparkles, Network, BookOpen } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 import { UI_STRINGS } from '@/utils/i18n';
 
 interface KnowledgeGraphViewProps {
@@ -47,10 +47,6 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#8B5E3C] via-[#C59A45] to-[#0A2947]" />
 
           <div className="space-y-2 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FAF7F0] border border-[#D3D4C0] rounded-full text-xs font-mono font-bold tracking-wider uppercase text-[#8B5E3C]">
-              <Sparkles className="w-3.5 h-3.5 text-[#C59A45]" />
-              <span>Archival 3D Exhibition · BAWS Verified Corpus</span>
-            </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#0A2947] tracking-tight">
               {t.wingGraphTitle || "Knowledge Universe"} —{' '}

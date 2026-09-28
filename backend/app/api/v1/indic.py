@@ -5,6 +5,7 @@ Provides translation, neural text-to-speech audio streaming, and localized metad
 from __future__ import annotations
 
 import os
+from typing import Optional
 from fastapi import APIRouter, HTTPException, Query, Path, Body
 from fastapi.responses import FileResponse
 
