@@ -167,6 +167,7 @@ export interface CitationItem {
   excerpt: string;
   viewer_url: string;
   reranker_score: number | null;
+  year?: number;
 }
 
 export interface ClaimValidationItem {
@@ -428,6 +429,8 @@ export interface MediaTrack {
   mime_type?: string;
   description?: string | null;
   recording_date?: string | null;
+  transcript_text?: string | null;
+  created_at?: string;
   segments?: TranscriptSegment[];
 }
 

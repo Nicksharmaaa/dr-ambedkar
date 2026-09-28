@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ShieldCheck, Upload, FileText, CheckCircle2, AlertCircle, Database, 
   BarChart3, RefreshCw, Cpu, Check, Eye, Lock, Globe, Sparkles, Filter, Search
 } from 'lucide-react';
 import { OCRJobRecord, ArchivalDocument, Language } from '@/types/museum';
 import { ADMIN_OCR_RECORDS, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
+import { api } from '@/lib/api';
 import { soundEffects } from '@/utils/soundEffects';
 import { MuseumGrandPavilion } from './MuseumGrandPavilion';
 
@@ -21,14 +22,53 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 }) => {
   const [ocrRecords, setOcrRecords] = useState<OCRJobRecord[]>(ADMIN_OCR_RECORDS);
   const [selectedRecord, setSelectedRecord] = useState<OCRJobRecord>(ADMIN_OCR_RECORDS[0]);
+  const [ocrBaseline, setOcrBaseline] = useState<any>(null);
+  const [corpusStats, setCorpusStats] = useState<any>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  useEffect(() => {
+    api.getOCRBaseline()
+      .then(data => {
+        if (data) {
+          setOcrBaseline(data);
+          // Adapt languages to OCR records if present
+          if (data.languages) {
+            const adapted: OCRJobRecord[] = Object.entries(data.languages).map(([code, l]: [string, any]) => ({
+              id: `ocr-audit-${code}`,
+              fileName: `BAWS_Facsimile_${l.language_name}_Sample_${l.total_documents}Docs.pdf`,
+              fileSize: `${((l.total_pages * 0.25)).toFixed(1)} MB`,
+              uploadDate: 'Verified Corpus Baseline',
+              status: 'Completed',
+              engine: 'PaddleOCR PP-OCRv5',
+              confidenceScore: Math.round(l.avg_confidence * 1000) / 10,
+              titleExtracted: `BAWS ${l.language_name} Facsimiles (${l.script} Script)`,
+              languageDetected: `${l.language_name} (${l.script})`,
+              accessRights: 'Public Domain',
+              rawOcrSnippet: `Audited ${l.sample_pages_audited} sample pages. Failure modes: ${(l.common_failure_modes || []).join('; ')}`,
+              cleanedTextSnippet: `Verified ${l.successful_pages}/${l.sample_pages_audited} sample pages with CER ~ ${(l.char_error_rate_est * 100).toFixed(1)}%, WER ~ ${(l.word_error_rate_est * 100).toFixed(1)}%.`
+            }));
+            if (adapted.length > 0) {
+              setOcrRecords(adapted);
+              setSelectedRecord(adapted[0]);
+            }
+          }
+        }
+      })
+      .catch(() => {});
+
+    api.getCorpusStats()
+      .then(stats => {
+        if (stats) setCorpusStats(stats);
+      })
+      .catch(() => {});
+  }, []);
 
   // Form states for Upload Simulator
   const [uploadTitle, setUploadTitle] = useState('');
   const [uploadType, setUploadType] = useState<'book' | 'speech' | 'debate' | 'manuscript'>('speech');
   const [uploadYear, setUploadYear] = useState('1930');
-  const [uploadEngine, setUploadEngine] = useState<'Tesseract OCR v5' | 'PaddleOCR v3' | 'Google Cloud Vision'>('Tesseract OCR v5');
+  const [uploadEngine, setUploadEngine] = useState<string>('PaddleOCR PP-OCRv5');
   const [uploadAccess, setUploadAccess] = useState<'Public Domain' | 'Fair Use Educational' | 'Archival Restricted'>('Public Domain');
   const [selectedFileName, setSelectedFileName] = useState('Ambedkar_Bombay_Legislative_Speech_1930.pdf');
 
@@ -101,11 +141,15 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white border-2 border-[#D3D4C0] p-5 rounded-2xl shadow-xs space-y-1">
             <div className="flex items-center justify-between text-[#8B5E3C]">
-              <span className="text-xs font-montserrat uppercase font-bold tracking-wider">Digitized Folios</span>
+              <span className="text-xs font-montserrat uppercase font-bold tracking-wider">Digitized Pages</span>
               <FileText className="w-4 h-4 text-[#8B5E3C]" />
             </div>
-            <div className="text-3xl font-serif-editorial font-bold text-[#0A2947]">2,480 Folios</div>
-            <span className="text-[11px] font-mono text-emerald-700 font-semibold block">↑ 100% Ingested in BAWS 22 Vols</span>
+            <div className="text-3xl font-serif-editorial font-bold text-[#0A2947]">
+              {ocrBaseline?.overall_scanned_pages ? `${ocrBaseline.overall_scanned_pages.toLocaleString()} Pages` : '35,371 Pages'}
+            </div>
+            <span className="text-[11px] font-mono text-emerald-700 font-semibold block">
+              ↑ {ocrBaseline?.overall_scanned_documents ? `${ocrBaseline.overall_scanned_documents} Volumes Audited` : '93 Works Audited'}
+            </span>
           </div>
 
           <div className="bg-white border-2 border-[#D3D4C0] p-5 rounded-2xl shadow-xs space-y-1">
@@ -113,8 +157,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               <span className="text-xs font-montserrat uppercase font-bold tracking-wider">Vector Chunks</span>
               <Database className="w-4 h-4 text-[#8B5E3C]" />
             </div>
-            <div className="text-3xl font-serif-editorial font-bold text-[#0A2947]">14,200 Chunks</div>
-            <span className="text-[11px] font-mono text-[#0A2947]/60 block">Dense Hybrid Vectors (Qdrant)</span>
+            <div className="text-3xl font-serif-editorial font-bold text-[#0A2947]">
+              {corpusStats?.total_chunks ? `${corpusStats.total_chunks.toLocaleString()} Chunks` : '19,342 Chunks'}
+            </div>
+            <span className="text-[11px] font-mono text-[#0A2947]/60 block">
+              PostgreSQL DiskANN + FTS5 Hybrid
+            </span>
           </div>
 
           <div className="bg-white border-2 border-[#D3D4C0] p-5 rounded-2xl shadow-xs space-y-1">
@@ -122,8 +170,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               <span className="text-xs font-montserrat uppercase font-bold tracking-wider">OCR Precision</span>
               <Cpu className="w-4 h-4 text-[#8B5E3C]" />
             </div>
-            <div className="text-3xl font-serif-editorial font-bold text-[#0A2947]">99.4% Verified</div>
-            <span className="text-[11px] font-mono text-emerald-700 font-semibold block">Tesseract v5 + Devanagari</span>
+            <div className="text-3xl font-serif-editorial font-bold text-[#0A2947]">
+              {ocrBaseline?.overall_average_confidence ? `${(ocrBaseline.overall_average_confidence * 100).toFixed(1)}% Accuracy` : '87.3% Accuracy'}
+            </div>
+            <span className="text-[11px] font-mono text-emerald-700 font-semibold block">
+              PaddleOCR PP-OCRv5 Multilingual
+            </span>
           </div>
 
           <div className="bg-white border-2 border-[#D3D4C0] p-5 rounded-2xl shadow-xs space-y-1">
@@ -131,8 +183,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               <span className="text-xs font-montserrat uppercase font-bold tracking-wider">Public Accessions</span>
               <BarChart3 className="w-4 h-4 text-[#8B5E3C]" />
             </div>
-            <div className="text-3xl font-serif-editorial font-bold text-[#0A2947]">48,250 Hits</div>
-            <span className="text-[11px] font-mono text-emerald-700 font-semibold block">Memorial Kiosks & Portal</span>
+            <div className="text-3xl font-serif-editorial font-bold text-[#0A2947]">
+              {corpusStats?.total_volumes ? `${corpusStats.total_volumes} Volumes Ingested` : '19 Volumes Ingested'}
+            </div>
+            <span className="text-[11px] font-mono text-emerald-700 font-semibold block">
+              BAWS Master Archive
+            </span>
           </div>
         </div>
 
@@ -233,12 +289,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   id="admin-upload-ocr-engine"
                   name="admin_upload_ocr_engine"
                   value={uploadEngine}
-                  onChange={(e) => setUploadEngine(e.target.value as any)}
+                  onChange={(e) => setUploadEngine(e.target.value)}
                   className="w-full p-2.5 bg-[#FAF7F0] border border-[#D3D4C0] rounded-xl text-xs font-montserrat font-semibold text-[#0A2947]"
                 >
-                  <option value="Tesseract OCR v5">Tesseract OCR v5 (High-Accuracy Devanagari + Latin)</option>
-                  <option value="PaddleOCR v3">PaddleOCR v3 (Complex Multilingual Layout Analysis)</option>
-                  <option value="Google Cloud Vision">Google Cloud Vision API (Handwriting & Aging Paper)</option>
+                  <option value="PaddleOCR PP-OCRv5">PaddleOCR PP-OCRv5 (Devanagari & Multilingual Indic)</option>
+                  <option value="PaddleOCR PP-StructureV3">PaddleOCR PP-StructureV3 (Layout & Tabular Extraction)</option>
+                  <option value="Tesseract OCR v5">Tesseract OCR v5 (Comparative Baseline)</option>
                 </select>
               </div>
 

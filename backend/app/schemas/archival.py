@@ -19,6 +19,7 @@ class ArchivalObjectBase(BaseModel):
     publication_date: str | None = None
     description: str | None = None
     subject_keywords: str | None = None
+    metadata_json: str | None = None
 
 
 class ArchivalObjectCreate(ArchivalObjectBase):

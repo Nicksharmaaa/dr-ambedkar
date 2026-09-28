@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { KnowledgeGraph3D } from './graph3d';
 import { ArchivalDocument, Language } from '@/types/museum';
 import { KNOWLEDGE_GRAPH_NODES, KNOWLEDGE_GRAPH_LINKS } from '@/data/archiveData';
+import { api } from '@/lib/api';
 import { ShieldCheck, Network } from 'lucide-react';
 import { UI_STRINGS } from '@/utils/i18n';
 import MuseumGrandPavilion from './MuseumGrandPavilion';
@@ -23,6 +24,19 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
 }) => {
   const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [isImmersive, setIsImmersive] = useState<boolean>(false);
+  const [entityCount, setEntityCount] = useState<number>(KNOWLEDGE_GRAPH_NODES.length);
+  const [lineageCount, setLineageCount] = useState<number>(KNOWLEDGE_GRAPH_LINKS.length);
+
+  useEffect(() => {
+    api.getGraphNeighborhood('person-ambedkar', 1, 60)
+      .then(nb => {
+        if (nb && nb.total_nodes) {
+          setEntityCount(Math.max(nb.total_nodes, KNOWLEDGE_GRAPH_NODES.length));
+          setLineageCount(Math.max(nb.total_edges, KNOWLEDGE_GRAPH_LINKS.length));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   if (isImmersive) {
     return (
@@ -66,14 +80,14 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
         >
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 pt-2">
             <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed max-w-3xl">
-              {t.wingGraphSub || `Explore ${KNOWLEDGE_GRAPH_NODES.length} verified historical entities and ${KNOWLEDGE_GRAPH_LINKS.length} intellectual lineages across seminal treatises, civic movements, institutional foundations, and constitutional philosophies.`}
+              {t.wingGraphSub || `Explore ${entityCount} verified historical entities and ${lineageCount} intellectual lineages across seminal treatises, civic movements, institutional foundations, and constitutional philosophies.`}
             </p>
 
             {/* Quick Metrics & Curatorial Badges */}
             <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
               <div className="px-4 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center min-w-[76px] shadow-2xs">
                 <div className="text-base sm:text-lg font-bold font-mono text-white">
-                  {KNOWLEDGE_GRAPH_NODES.length}
+                  {entityCount}
                 </div>
                 <div className="text-[10px] text-[#F5D061] uppercase font-mono font-bold tracking-wider">
                   {language === 'hi' ? 'संस्थाएं' : language === 'mr' ? 'संकल्पना' : language === 'ta' ? 'உட்பொருள்கள்' : language === 'bn' ? 'সত্তা ও ধারণা' : 'Entities'}
@@ -82,7 +96,7 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
 
               <div className="px-4 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center min-w-[76px] shadow-2xs">
                 <div className="text-base sm:text-lg font-bold font-mono text-[#F5D061]">
-                  {KNOWLEDGE_GRAPH_LINKS.length}
+                  {lineageCount}
                 </div>
                 <div className="text-[10px] text-[#F5D061] uppercase font-mono font-bold tracking-wider">
                   {language === 'hi' ? 'संबंध' : language === 'mr' ? 'संबंध' : language === 'ta' ? 'தொடர்புகள்' : language === 'bn' ? 'সংযোগ' : 'Lineages'}

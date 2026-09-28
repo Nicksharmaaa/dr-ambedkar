@@ -15,7 +15,7 @@ router = APIRouter(prefix="/documents", tags=["documents"])
 
 @router.get("", response_model=PaginatedResponse[ArchivalObjectResponse])
 async def list_documents(
-    limit: int = Query(default=20, ge=1, le=100),
+    limit: int = Query(default=20, ge=1, le=1000),
     offset: int = Query(default=0, ge=0),
     object_type: str | None = Query(default=None),
     collection_id: str | None = Query(default=None),

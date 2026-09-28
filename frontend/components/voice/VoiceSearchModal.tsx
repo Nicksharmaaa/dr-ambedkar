@@ -52,8 +52,26 @@ export function VoiceSearchModal({ isOpen, onClose, onSearch }: VoiceSearchModal
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+
+      // Pick the best MIME type the browser actually supports.
+      // MediaRecorder never produces real WAV — browsers output webm/opus or ogg/opus.
+      // Lying to Blob({ type: "audio/wav" }) corrupts the content-type header sent to Groq Whisper.
+      const preferredMimes = [
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/ogg;codecs=opus",
+        "audio/ogg",
+        "audio/mp4",
+      ];
+      const supportedMime =
+        preferredMimes.find((m) => MediaRecorder.isTypeSupported(m)) || "";
+
+      const mediaRecorder = supportedMime
+        ? new MediaRecorder(stream, { mimeType: supportedMime })
+        : new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
+
+      const actualMime = mediaRecorder.mimeType || supportedMime || "audio/webm";
 
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -63,7 +81,8 @@ export function VoiceSearchModal({ isOpen, onClose, onSearch }: VoiceSearchModal
 
       mediaRecorder.onstop = async () => {
         stream.getTracks().forEach((track) => track.stop());
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
+        // Use the real MIME type — never forge audio/wav for webm/ogg bytes
+        const audioBlob = new Blob(audioChunksRef.current, { type: actualMime });
         await handleAudioProcessing(audioBlob);
       };
 

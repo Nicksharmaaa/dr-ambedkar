@@ -11,6 +11,8 @@ import {
 import { Language, TimelineEvent, ArchivalDocument, UserMode } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
 import { TIMELINE_EVENTS, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
+import { api } from '@/lib/api';
+import type { TimelineEventItem } from '@/lib/types';
 import { soundEffects } from '@/utils/soundEffects';
 import { speechController } from '@/utils/speechUtils';
 
@@ -55,7 +57,37 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const [peekDocId, setPeekDocId] = useState<string | null>(null);
   const [activeSpeakingId, setActiveSpeakingId] = useState<string | null>(null);
   const [voiceGuideEnabled, setVoiceGuideEnabled] = useState<boolean>(true);
+  // Timeline events — fetched from live API, static data as fallback
+  const [liveEvents, setLiveEvents] = useState<TimelineEvent[]>(TIMELINE_EVENTS);
   const [activeMilestoneId, setActiveMilestoneId] = useState<string>(TIMELINE_EVENTS[0].id);
+
+  useEffect(() => {
+    api.getTimelineEvents({ limit: 200 })
+      .then((items: TimelineEventItem[]) => {
+        if (!items || items.length === 0) return;
+        const adapted: TimelineEvent[] = items.map(ev => ({
+          id: ev.id,
+          year: ev.start_date ? parseInt(ev.start_date.substring(0, 4), 10) : 0,
+          dateString: ev.start_date || ev.id,
+          title: ev.title,
+          era: ev.category || 'General',
+          location: ev.location || 'India',
+          description: ev.description || '',
+          quote: ev.evidence_text || undefined,
+          relatedDocIds: ev.related_documents || [],
+          highlights: ev.related_topics || []
+        }));
+        setLiveEvents(adapted);
+        if (adapted.length > 0) {
+          setActiveMilestoneId(adapted[0].id);
+        }
+      })
+      .catch(() => {
+        // Fallback: keep static TIMELINE_EVENTS already in state
+      });
+  }, []);
+
+
 
   // Guided Memorial Tour State
   const [isTourActive, setIsTourActive] = useState<boolean>(false);
@@ -65,17 +97,17 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   const TOUR_DURATION = 8;
 
   const eras = [
-    { id: 'all', label: 'All Eras', span: '1891–1956', desc: 'Complete Chronology', count: 13 },
-    { id: 'Early Life & Education', label: 'Early Life & Studies', span: '1891–1923', desc: 'Satara, Columbia & London', count: 2 },
-    { id: 'Social Awakening', label: 'Social Awakening', span: '1924–1926', desc: 'Bahishkrit Hitakarini Sabha', count: 1 },
-    { id: 'Social Movements', label: 'Civil Rights Movements', span: '1927–1939', desc: 'Mahad Satyagraha & Poona Pact', count: 3 },
-    { id: 'Political Life', label: 'Public Statecraft', span: '1940–1946', desc: 'Viceroy Council & 8-Hr Workday', count: 2 },
-    { id: 'Constitution & Governance', label: 'Constitution & Republic', span: '1947–1950', desc: 'Drafting Committee & Law Ministry', count: 3 },
-    { id: 'Later Life & Philosophy', label: 'Dhamma & Philosophy', span: '1951–1956', desc: 'The Deeksha Revolution', count: 2 },
+    { id: 'all', label: 'All Eras', span: '1891–1956', desc: 'Complete Chronology', count: liveEvents.length },
+    { id: 'Early Life & Education', label: 'Early Life & Studies', span: '1891–1923', desc: 'Satara, Columbia & London', count: liveEvents.filter(e => e.era === 'Early Life & Education').length || 2 },
+    { id: 'Social Awakening', label: 'Social Awakening', span: '1924–1926', desc: 'Bahishkrit Hitakarini Sabha', count: liveEvents.filter(e => e.era === 'Social Awakening').length || 1 },
+    { id: 'Social Movements', label: 'Civil Rights Movements', span: '1927–1939', desc: 'Mahad Satyagraha & Poona Pact', count: liveEvents.filter(e => e.era === 'Social Movements').length || 3 },
+    { id: 'Political Life', label: 'Public Statecraft', span: '1940–1946', desc: 'Viceroy Council & 8-Hr Workday', count: liveEvents.filter(e => e.era === 'Political Life').length || 2 },
+    { id: 'Constitution & Governance', label: 'Constitution & Republic', span: '1947–1950', desc: 'Drafting Committee & Law Ministry', count: liveEvents.filter(e => e.era === 'Constitution & Governance').length || 3 },
+    { id: 'Later Life & Philosophy', label: 'Dhamma & Philosophy', span: '1951–1956', desc: 'The Deeksha Revolution', count: liveEvents.filter(e => e.era === 'Later Life & Philosophy').length || 2 },
   ];
 
-  // Filtering events
-  const filteredEvents = TIMELINE_EVENTS.filter((ev) => {
+  // Filtering events from live API data (with static fallback)
+  const filteredEvents = liveEvents.filter((ev) => {
     const eraMatch = selectedEra === 'all' || ev.era === selectedEra;
     const typeMatch = filterType === 'all' || ev.mediaType === filterType;
     return eraMatch && typeMatch;

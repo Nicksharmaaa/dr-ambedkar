@@ -16,6 +16,7 @@ import {
 import { WisdomMachine } from './WisdomMachine';
 import { SoundboardWidget } from './SoundboardWidget';
 import { HomeAskAI } from './HomeAskAI';
+import { api } from '@/lib/api';
 import { soundEffects } from '@/utils/soundEffects';
 import dynamic from 'next/dynamic';
 import DepthCarousel from '@/components/ui/DepthCarousel';
@@ -47,6 +48,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
 }) => {
   const t = UI_STRINGS[language] || UI_STRINGS.en;
   const [heroVisualMode, setHeroVisualMode] = useState<'prism' | 'dither'>('prism');
+  const [totalPhotosCount, setTotalPhotosCount] = useState<number>(HISTORICAL_PHOTOS.length);
+
+  React.useEffect(() => {
+    api.getDocuments({ object_type: 'photo', limit: 1 })
+      .then(res => {
+        if (res && res.total) setTotalPhotosCount(res.total);
+      })
+      .catch(() => {});
+  }, []);
 
   // Landmark featured document: Constituent Assembly Speech 1949
   const featuredDocument = ARCHIVE_DOCUMENTS.find(d => d.id === 'constituent-assembly-speech-1949') || ARCHIVE_DOCUMENTS[0];
@@ -491,7 +501,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               }}
               className="px-5 py-2.5 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-xs shrink-0"
             >
-              <span>{t.seeMore || "See More"} ({HISTORICAL_PHOTOS.length})</span>
+              <span>{t.seeMore || "See More"} ({totalPhotosCount})</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

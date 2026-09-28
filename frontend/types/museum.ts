@@ -330,7 +330,7 @@ export interface OCRJobRecord {
   fileSize: string;
   uploadDate: string;
   status: 'Completed' | 'Pending Review' | 'Processing';
-  engine: 'Tesseract OCR v5' | 'PaddleOCR v3' | 'Google Cloud Vision';
+  engine: 'PaddleOCR PP-OCRv5' | 'PaddleOCR PP-StructureV3' | 'Tesseract OCR v5' | string;
   confidenceScore: number;
   titleExtracted: string;
   languageDetected: string;

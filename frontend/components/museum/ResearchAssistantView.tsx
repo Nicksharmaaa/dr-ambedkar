@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Language, ResearchAnswer, SourceCitation, ArchivalDocument } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
-import { RESEARCH_ANSWERS_DB, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
+import { ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { speechController, voiceRecognitionController } from '@/utils/speechUtils';
 import { api } from '@/lib/api';
@@ -241,298 +241,7 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
     { label: 'Hindu Code Bill', query: 'What did Ambedkar propose in the Hindu Code Bill for women’s rights?' }
   ];
 
-  // Grounded Archival Inquiry Resolver
-  const resolveArchivalInquiry = (rawQuery: string): GroundedAnswerPayload => {
-    const q = rawQuery.toLowerCase().trim();
-
-    // 1. Social Democracy
-    if (q.includes('social democracy') || (q.includes('democracy') && q.includes('define'))) {
-      return {
-        id: 'ans-social-democracy',
-        query: rawQuery,
-        category: 'idea',
-        isSupported: true,
-        answer: {
-          en: "In his historic final address to the Constituent Assembly on November 25, 1949, Dr. B. R. Ambedkar formulated his definitive doctrine of social democracy. He proclaimed: 'Political democracy cannot last unless there lies at the base of it social democracy. What does social democracy mean? It means a way of life which recognizes liberty, equality and fraternity as the principles of life.'\n\nHe insisted that these three principles do not exist as isolated separate items, but form an indivisible union: 'To divorce one from the other is to defeat the very purpose of democracy. Liberty cannot be divorced from equality, equality cannot be divorced from liberty. Nor can liberty and equality be divorced from fraternity. Without equality, liberty would produce the supremacy of the few over the many. Equality without liberty would kill individual initiative. Without fraternity, liberty and equality could not become a natural course of things.'\n\nHe warned the nation that on January 26, 1950, India was entering into a 'life of contradictions'—having equality in politics (one man, one vote), but entrenched inequality in social and economic life. He cautioned that if this contradiction was not removed at the earliest, those who suffer from inequality would blow up the structure of political democracy.",
-          hi: "25 नवंबर 1949 को संविधान सभा में अपने ऐतिहासिक समापन भाषण में डॉ. बी. आर. आंबेडकर ने सामाजिक लोकतंत्र की कालजयी परिभाषा दी। उन्होंने कहा: 'राजनीतिक लोकतंत्र तब तक जीवित नहीं रह सकता जब तक कि उसके मूल में सामाजिक लोकतंत्र न हो। सामाजिक लोकतंत्र का अर्थ जीवन की वह पद्धति है जो स्वतंत्रता, समानता और बंधुता को जीवन के सिद्धांतों के रूप में स्वीकार करती है।'\n\nउन्होंने स्पष्ट किया कि ये तीनों एक अटूट त्रयी हैं। समानता के बिना स्वतंत्रता मुट्ठी भर लोगों का आधिपत्य स्थापित कर देगी, और स्वतंत्रता के बिना समानता व्यक्तिगत पहल को समाप्त कर देगी। बंधुता के बिना स्वतंत्रता और समानता स्वाभाविक रूप धारण नहीं कर सकते।",
-          mr: "२५ नोव्हेंबर १९४९ रोजी घटना परिषदेतील आपल्या ऐतिहासिक भाषणात डॉ. बाबासाहेब आंबेडकरांनी सामाजिक लोकशाहीची मूलगामी व्याख्या मांडली: 'राजकीय लोकशाहीच्या पायाशी जोवर सामाजिक लोकशाही नसेल, तोवर ती टिकू शकत नाही. सामाजिक लोकशाही म्हणजे काय? तर स्वातंत्र्य, समता आणि बंधुता या तत्त्वांना जीवनाचे अविभाज्य अंग मानणारी जीवनपद्धती.'\n\nत्यांनी या तिन्ही मूल्यांना एकमेकांपासून वेगळे न करता येणारे त्रिकूट मानले. समतेशिवाय स्वातंत्र्य म्हणजे मूठभरांचे वर्चस्व, आणि स्वातंत्र्याशिवाय समता म्हणजे व्यक्तिगत उपक्रमांचा संकोच. बंधुतेशिवाय ही दोन्ही मूल्ये जिवंत राहू शकत नाहीत."
-        },
-        plainSummary: {
-          en: "Dr. Ambedkar believed that simply having the right to vote (political democracy) is meaningless if society still treats people as unequal based on birth or caste. True democracy requires three connected pillars: Freedom (Liberty), Equal Treatment (Equality), and Genuine Fellowship (Fraternity). If one pillar falls, democracy collapses.",
-          hi: "डॉ. आंबेडकर का मानना था कि केवल वोट देने का अधिकार मिलना ही काफी नहीं है, जब तक कि समाज में हर इंसान को बराबरी और आत्मसम्मान न मिले। स्वतंत्रता, समानता और आपसी भाईचारा ही सच्चे लोकतंत्र के तीन मजबूत खंभे हैं।",
-          mr: "डॉ. आंबेडकरांच्या मते केवळ मतदानाचा अधिकार म्हणजे खरी लोकशाही नव्हे. समाजात प्रत्येकाला समान मानणे, स्वातंत्र्य असणे आणि एकमेकांविषयी बंधुभाव असणे हेच खऱ्या लोकशाहीचे मूळ आहे."
-        },
-        legalClauses: [
-          { title: 'Preamble to the Constitution', description: 'Enshrines Justice, Liberty, Equality, and Fraternity as the supreme sovereign objectives.' },
-          { title: 'Article 14 & 15', description: 'Guarantees equality before the law and prohibits state discrimination on grounds of religion, race, caste, sex, or place of birth.' },
-          { title: 'Article 38 & 39 (Directive Principles)', description: 'Directs the State to promote welfare by securing a social order permeated by social, economic, and political justice.' }
-        ],
-        groundingStatus: '100% Grounded in Official CAD Transcripts',
-        confidenceScore: 99.8,
-        sources: [
-          {
-            docId: 'constituent-assembly-speech-1949',
-            docTitle: 'Speech on the Adoption of the Constitution',
-            year: 1949,
-            volumeOrSection: 'CAD Vol. XI, Official Proceedings',
-            pageNo: 'pp. 978–981',
-            archiveId: 'CAD-1949-VOL-11-25',
-            source: 'Constituent Assembly Secretariat, New Delhi',
-            excerpt: 'Political democracy cannot last unless there lies at the base of it social democracy. It means a way of life which recognizes liberty, equality and fraternity as the principles of life.',
-            relevanceScore: 0.99
-          },
-          {
-            docId: 'annihilation-of-caste',
-            docTitle: 'Annihilation of Caste (Section XIV)',
-            year: 1936,
-            volumeOrSection: 'BAWS Vol. 1',
-            pageNo: 'p. 57',
-            archiveId: 'ARC-1936-BAWS-001',
-            source: 'Undelivered Presidential Address, Lahore',
-            excerpt: 'Democracy is not merely a form of Government. It is primarily a mode of associated living, of conjoint communicated experience.',
-            relevanceScore: 0.96
-          }
-        ],
-        relatedRecordIds: ['constituent-assembly-speech-1949', 'annihilation-of-caste', 'states-and-minorities-1947'],
-        relatedQuestions: [
-          'What did Ambedkar mean by "entering into a life of contradictions" in 1949?',
-          'How did Ambedkar define fraternity in relation to the French Revolution and Buddhism?',
-          'What was Ambedkar’s critique of hero-worship (Bhakti) in politics?'
-        ]
-      };
-    }
-
-    // 2. Article 32 & Constitutional Remedies
-    if (q.includes('article 32') || q.includes('remedies') || q.includes('heart and soul')) {
-      return {
-        id: 'ans-article-32',
-        query: rawQuery,
-        category: 'primary-source',
-        isSupported: true,
-        answer: {
-          en: "On December 9, 1948, during the Constituent Assembly debate on draft Article 25 (which became Article 32 in the enacted Constitution), Dr. Ambedkar immortalized this clause with his famous declaration:\n\n'If I was asked to name any particular article in this Constitution as the most important—an article without which this Constitution would be a nullity—I could not refer to any other article except this one. It is the very soul of the Constitution and the very heart of it and I am glad that the House has realised its importance.'\n\nDr. Ambedkar explained why this article stood on an unprecedented legal footing:\n1. It does not merely state a right; it provides an irrevocable constitutional remedy.\n2. The right to move the Supreme Court by appropriate proceedings for the enforcement of Fundamental Rights is itself guaranteed as a Fundamental Right.\n3. It empowers the Supreme Court to issue prerogative writs—habeas corpus, mandamus, prohibition, quo warranto, and certiorari—against executive overreach or legislative tyranny.\n4. Unlike ordinary legal statutes that can be curtailed or amended by parliamentary majorities, Article 32 cannot be suspended except as provided for in the Constitution during emergency declarations.",
-          hi: "9 दिसंबर 1948 को संविधान सभा में प्रारूप अनुच्छेद 25 (जो बाद में अनुच्छेद 32 बना) पर चर्चा के दौरान डॉ. आंबेडकर ने ऐतिहासिक वक्तव्य दिया:\n\n'यदि मुझसे पूछा जाए कि इस संविधान का सबसे महत्वपूर्ण अनुच्छेद कौन सा है, जिसके बिना यह संविधान शून्य हो जाएगा, तो मैं इस अनुच्छेद के अलावा किसी अन्य का नाम नहीं ले सकता। यह संविधान की आत्मा और उसका हृदय है।'\n\nडॉ. आंबेडकर ने स्पष्ट किया कि अनुच्छेद 32 नागरिकों को मौलिक अधिकारों के हनन पर सीधे सर्वोच्च न्यायालय जाने का अचूक अधिकार देता है और न्यायालय को पांचों प्रकार के रिट जारी करने की शक्ति प्रदान करता है।",
-          mr: "९ डिसेंबर १९४८ रोजी घटना परिषदेतील चर्चेदरम्यान डॉ. बाबासाहेब आंबेडकरांनी कलम ३२ चे महत्त्व अधोरेखित करताना उद्गार काढले:\n\n'जर मला कोणी विचारले की या राज्यघटनेतील सर्वात महत्त्वाचे कलम कोणते, ज्याच्याशिवाय संपूर्ण राज्यघटनाच निरर्थक ठरेल, तर मी कलम ३२ शिवाय दुसऱ्या कोणत्याही कलमाचे नाव घेणार नाही. हे कलम राज्यघटनेचा खराखुरा आत्मा आणि हृदय आहे.'\n\nया कलमाद्वारे नागरिकांच्या मूलभूत हक्कांचे रक्षण करण्यासाठी थेट सर्वोच्च न्यायालयात दाद मागण्याचा घटनात्मक अधिकार देण्यात आला आहे."
-        },
-        plainSummary: {
-          en: "Article 32 is called the 'Heart and Soul' of India's Constitution because it gives every citizen the legal power to go directly to the Supreme Court if the government or anyone violates their basic rights. Without this article, fundamental rights would just be empty promises on paper.",
-          hi: "अनुच्छेद 32 को संविधान की आत्मा इसलिए कहा गया है क्योंकि अगर सरकार या कोई भी आपके बुनियादी अधिकारों को छीने, तो आप सीधे सुप्रीम कोर्ट जाकर न्याय मांग सकते हैं। इसके बिना अधिकार सिर्फ कागज का टुकड़ा रह जाते।",
-          mr: "कलम ३२ हे संविधानाचा आत्मा आहे कारण जर शासनाने तुमचे मूलभूत हक्क हिरावून घेतले, तर तुम्ही थेट सर्वोच्च न्यायालयात जाऊन न्याय मागू शकता."
-        },
-        legalClauses: [
-          { title: 'Article 32(1)', description: 'Guarantees the right to move the Supreme Court by appropriate proceedings for the enforcement of Part III rights.' },
-          { title: 'Article 32(2)', description: 'Empowers the Supreme Court to issue directions, orders or writs, including habeas corpus, mandamus, prohibition, quo warranto, and certiorari.' },
-          { title: 'Article 226', description: 'Companion jurisdiction empowering High Courts to issue writs for fundamental and statutory rights.' }
-        ],
-        groundingStatus: '100% Grounded in CAD Official Record Vol. VII',
-        confidenceScore: 99.9,
-        sources: [
-          {
-            docId: 'article-32-debate-1948',
-            docTitle: 'Debate on Article 32 (Constituent Assembly)',
-            year: 1948,
-            volumeOrSection: 'CAD Vol. VII, Dec 9, 1948',
-            pageNo: 'p. 953',
-            archiveId: 'CAD-1948-VOL-07-32',
-            source: 'Constituent Assembly Official Proceedings, New Delhi',
-            excerpt: 'It is the very soul of the Constitution and the very heart of it and I am glad that the House has realised its importance. The Supreme Court is constituted as the protector and guarantor of fundamental rights.',
-            relevanceScore: 0.99
-          },
-          {
-            docId: 'states-and-minorities-1947',
-            docTitle: 'States and Minorities: What are Their Rights',
-            year: 1947,
-            volumeOrSection: 'BAWS Vol. 1',
-            pageNo: 'pp. 15–20',
-            archiveId: 'CON-1947-SM-001',
-            source: 'Thacker & Co., Bombay',
-            excerpt: 'Fundamental rights must be protected not merely against the arbitrary actions of the executive, but also against the tyranny of majorities in legislative chambers.',
-            relevanceScore: 0.94
-          }
-        ],
-        relatedRecordIds: ['article-32-debate-1948', 'states-and-minorities-1947', 'constituent-assembly-speech-1949'],
-        relatedQuestions: [
-          'What are the five constitutional writs mentioned under Article 32?',
-          'How does Article 32 differ from Article 226 of the Constitution?',
-          'What safeguards did Ambedkar propose against emergency suspensions of Article 32?'
-        ]
-      };
-    }
-
-    // 3. Annihilation of Caste Core Thesis
-    if (q.includes('annihilation') || q.includes('caste') || q.includes('graded inequality')) {
-      return {
-        id: 'ans-annihilation-thesis',
-        query: rawQuery,
-        category: 'idea',
-        isSupported: true,
-        answer: {
-          en: "In 'Annihilation of Caste' (1936), prepared as the undelivered presidential address for the Jat-Pat-Todak Mandal conference in Lahore, Dr. Ambedkar presented his definitive structural critique of caste:\n\n1. **Division of Labourers**: He refuted the conservative orthodox defense that caste is simply a benign economic division of labour. He demonstrated that caste is an unnatural 'division of labourers', in which occupations are biologically pre-determined and hierarchically graded one above another without regard to individual aptitude.\n\n2. **Graded Inequality**: Unlike ordinary social classes where the poor can unite against the rich, caste enforces 'graded inequality'. Each caste looks down upon the caste below it while envying the caste above it, preventing unified collective resistance across oppressed groups.\n\n3. **Endogamy as the Key Mechanism**: In his earlier 1916 Columbia paper and reiterated in 1936, Ambedkar proved that the essence of caste is enforced endogamy (prohibition of inter-caste marriage). The only true chemical solvent of caste, he argued, is inter-caste dining and inter-caste marriage.\n\n4. **Religious Sanctification**: Ambedkar concluded that caste is sustained because it is sanctified by the Hindu Shastras (particularly Manusmriti). Therefore, caste cannot be eradicated merely by social philanthropy or polite reform; it requires dynamite—the conscious rejection of the religious notions that justify hereditary hierarchy.",
-          hi: "'जाति का विनाश' (1936) में डॉ. आंबेडकर ने जाति व्यवस्था का गहरा समाजशास्त्रीय और दार्शनिक विश्लेषण प्रस्तुत किया:\n\n1. **श्रमिकों का विभाजन**: उन्होंने सिद्ध किया कि जाति केवल श्रम का विभाजन नहीं, बल्कि श्रमिकों का अप्राकृतिक और श्रेणीबद्ध विभाजन है।\n2. **श्रेणीबद्ध असमानता (Graded Inequality)**: जाति समाज को सीढ़ीनुमा दर्जों में बांटती है, जहां हर जाति अपने नीचे वाली जाति से नफरत करती है और ऊपर वाली से ईर्ष्या, जिससे शोषितों की एकता असंभव हो जाती है।\n3. **धार्मिक मान्यता का विरोध**: जब तक उन धार्मिक शास्त्रों की सत्ता को अस्वीकार नहीं किया जाता जो जन्म आधारित ऊंच-नीच को पवित्र मानते हैं, तब तक जाति का समूल नाश संभव नहीं है।",
-          mr: "'जातीचा विनाश' (१९३६) या ग्रंथात डॉ. आंबेडकरांनी जातीव्यवस्थेचे क्रांतिकारी विश्लेषण केले:\n\n१. **श्रमिकांची विषम विभागणी**: जात ही कामाची विभागणी नसून माणसांची जन्माधारित उतरंड आहे.\n२. **श्रेणीबद्ध विषमता**: प्रत्येक जातीला दुसऱ्या जातीविरुद्ध उभे करणारी ही व्यवस्था शोषितांमधील ऐक्य नष्ट करते.\n३. **आंतरजातीय विवाह आणि समता**: आंतरजातीय विवाह हाच जातीव्यवस्थेला सुरुंग लावणारा खरा उपाय आहे, आणि त्यासाठी विषमतेला पाठबळ देणाऱ्या जुनाट धार्मिक समजुतींचा त्याग करणे आवश्यक आहे."
-        },
-        plainSummary: {
-          en: "Dr. Ambedkar proved that caste is not just about jobs; it is an unfair ladder where people are trapped on different rungs from birth. To destroy caste, society must promote inter-caste marriages and reject old religious rules that claim some humans are born superior to others.",
-          hi: "डॉ. आंबेडकर ने साबित किया कि जाति कोई प्राकृतिक व्यवस्था नहीं बल्कि जन्म आधारित अन्याय की सीढ़ी है। इसे खत्म करने के लिए अंतरजातीय विवाह और गैर-बराबरी सिखाने वाली पुरानी मान्यताओं को छोड़ना ही एकमात्र रास्ता है।",
-          mr: "डॉ. आंबेडकरांनी दाखवून दिले की जात ही जन्माधारित अन्यायाची उतरंड आहे. ही उतरंड मोडून काढण्यासाठी आंतरजातीय विवाह आणि समतेचा विचार अंगीकारणे अत्यावश्यक आहे."
-        },
-        legalClauses: [
-          { title: 'Article 17', description: 'Untouchability is abolished and its practice in any form is forbidden by law with mandatory penal sanctions.' },
-          { title: 'Article 15(2)', description: 'Prohibits any restriction regarding access to shops, public restaurants, hotels, tanks, and wells.' },
-          { title: 'Protection of Civil Rights Act (1955)', description: 'Codified criminal penalties for enforcing any religious or social caste disability.' }
-        ],
-        groundingStatus: '100% Grounded in BAWS Vol. 1 Folios',
-        confidenceScore: 99.7,
-        sources: [
-          {
-            docId: 'annihilation-of-caste',
-            docTitle: 'Annihilation of Caste',
-            year: 1936,
-            volumeOrSection: 'BAWS Vol. 1, Sections IV & XIV',
-            pageNo: 'pp. 47–58',
-            archiveId: 'ARC-1936-BAWS-001',
-            source: 'Printed at Bombay, May 1936',
-            excerpt: 'Caste is not just a division of labour, it is a division of labourers. It is a hierarchy in which the divisions of labourers are graded one above the other. You cannot build anything on the foundations of caste.',
-            relevanceScore: 0.99
-          },
-          {
-            docId: 'castes-in-india-1916',
-            docTitle: 'Castes in India: Their Mechanism, Genesis and Development',
-            year: 1916,
-            volumeOrSection: 'BAWS Vol. 1',
-            pageNo: 'pp. 3–22',
-            archiveId: 'ARC-1916-COL-001',
-            source: 'Columbia University Anthropology Seminar',
-            excerpt: 'The superimposition of endogamy on exogamy means the creation of caste. An enclosed class is a caste.',
-            relevanceScore: 0.95
-          }
-        ],
-        relatedRecordIds: ['annihilation-of-caste', 'castes-in-india-1916', 'mahad-satyagraha-1927'],
-        relatedQuestions: [
-          'What did Ambedkar propose as the real remedy for breaking caste?',
-          'What was the debate between Mahatma Gandhi and Ambedkar on Annihilation of Caste?',
-          'Why did Ambedkar resign from the Jat-Pat-Todak Mandal conference?'
-        ]
-      };
-    }
-
-    // 4. Reserve Bank of India & Economics
-    if (q.includes('rupee') || q.includes('rbi') || q.includes('economics') || q.includes('currency') || q.includes('reserve bank')) {
-      return {
-        id: 'ans-rupee-rbi',
-        query: rawQuery,
-        category: 'document',
-        isSupported: true,
-        answer: {
-          en: "Dr. B. R. Ambedkar’s seminal doctoral dissertation at the London School of Economics, published in 1923 as 'The Problem of the Rupee: Its Origin and Its Solution' (supervised by Edwin Cannan), provided the conceptual and statutory foundations for modern Indian central banking and the creation of the Reserve Bank of India (RBI).\n\n1. **Stability of Internal Purchasing Power**: In opposition to colonial orthodoxy which prioritized stabilizing foreign exchange rates for British imperial trade, Dr. Ambedkar argued that the primary duty of an Indian central bank must be to preserve the domestic purchasing power of the currency to protect the working class and agricultural producers from inflationary debasement.\n\n2. **Evidence before the Hilton Young Commission (1926)**: When the Royal Commission on Indian Currency and Finance (Hilton Young Commission) convened in 1925–26, Dr. Ambedkar was invited as a foremost economic expert. His written memorandum and oral testimony directly shaped the Commission's recommendations.\n\n3. **Statutory Creation of the RBI**: The legislative framework enacted in the Reserve Bank of India Act (1934), and the formal opening of the RBI on April 1, 1935, directly incorporated Dr. Ambedkar's stipulations: insulating currency management from executive government manipulation through an independent central monetary authority.",
-          hi: "1923 में लंदन स्कूल ऑफ इकोनॉमिक्स से प्रकाशित डॉ. आंबेडकर का डी.एससी. शोधग्रंथ 'द प्रॉब्लम ऑफ द रूपी' भारतीय रिज़र्व बैंक (RBI) की स्थापना की वैचारिक और विधिक आधारशिला बना।\n\nउन्होंने 1926 में हिल्टन यंग कमीशन के समक्ष गवाही दी और सिद्ध किया कि मुद्रा का मुख्य लक्ष्य विदेशी विनिमय दर के बजाय आम जनता की क्रय शक्ति को स्थिर रखना होना चाहिए। 1934 के आरबीआई अधिनियम और 1935 में बैंक की स्थापना में डॉ. आंबेडकर के सिद्धांतों को अंगीकार किया गया।",
-          mr: "लंडन स्कूल ऑफ इकॉनॉमिक्समध्ये सादर केलेला 'द प्रॉब्लेम ऑफ द रुपी' (१९२३) हा डॉ. आंबेडकरांचा प्रबंध भारतीय रिझर्व्ह बँकेच्या (RBI) स्थापनेचा वैचारिक पाया ठरला.\n\nहिल्टन यंग कमिशनसमोर (१९२६) त्यांनी दिलेल्या साक्षीतून स्पष्ट झाले की, चलनाचे नियमन हे राज्यकर्त्यांच्या राजकीय हस्तक्षेपापासून मुक्त असावे आणि देशांतर्गत क्रयशक्तीची स्थिरता हेच मध्यवर्ती बँकेचे मुख्य उद्दिष्ट असले पाहिजे."
-        },
-        plainSummary: {
-          en: "Long before he wrote the Constitution, Dr. Ambedkar was a brilliant economist. His doctoral book on Indian currency taught the world that a bank must protect the buying power of common people's money. His ideas were used by British and Indian leaders to establish the Reserve Bank of India (RBI) in 1935.",
-          hi: "संविधान लिखने से पहले डॉ. आंबेडकर एक महान अर्थशास्त्री थे। उनकी किताब 'द प्रॉब्लम ऑफ द रूपी' के विचारों के आधार पर ही 1935 में भारतीय रिज़र्व बैंक (RBI) की स्थापना हुई थी।",
-          mr: "संविधान निर्मितीपूर्वी डॉ. आंबेडकर अर्थशास्त्राचे जागतिक दर्जाचे विद्वान होते. त्यांच्या मौद्रिक सिद्धांतांवरूनच १९३५ मध्ये भारतीय रिझर्व्ह बँकेची स्थापना झाली."
-        },
-        legalClauses: [
-          { title: 'Reserve Bank of India Act (1934)', description: 'Established India’s central bank to regulate the issue of banknotes and maintain monetary stability.' },
-          { title: 'Seventh Schedule, Union List Entry 36', description: 'Vests exclusive constitutional jurisdiction over currency, coinage, and legal tender in the Union Parliament.' },
-          { title: 'Article 280', description: 'Mandates the President to constitute a Finance Commission to recommend allocation of tax proceeds.' }
-        ],
-        groundingStatus: '100% Grounded in BAWS Vol. 6 & LSE Archive Records',
-        confidenceScore: 99.4,
-        sources: [
-          {
-            docId: 'problem-of-the-rupee-1923',
-            docTitle: 'The Problem of the Rupee: Its Origin and Its Solution',
-            year: 1923,
-            volumeOrSection: 'BAWS Vol. 6 (P.S. King & Son)',
-            pageNo: 'Chapters IV & VII',
-            archiveId: 'ECO-1923-LSE-D01',
-            source: 'London School of Economics Library, London',
-            excerpt: 'A stable currency system is one that maintains stability of internal purchasing power rather than stability of foreign exchange rates alone. The automatic system is by far the most stable regulator of currency.',
-            relevanceScore: 0.99
-          },
-          {
-            docId: 'states-and-minorities-1947',
-            docTitle: 'States and Minorities (Economic Charter)',
-            year: 1947,
-            volumeOrSection: 'BAWS Vol. 1',
-            pageNo: 'p. 396',
-            archiveId: 'CON-1947-SM-001',
-            source: 'All-India Scheduled Castes Federation',
-            excerpt: 'Economic democracy requires that currency and central banking remain insulated from the private monopoly of commercial cartels.',
-            relevanceScore: 0.92
-          }
-        ],
-        relatedRecordIds: ['problem-of-the-rupee-1923', 'states-and-minorities-1947'],
-        relatedQuestions: [
-          'What was Ambedkar’s testimony before the Hilton Young Commission in 1926?',
-          'What was Ambedkar’s master’s thesis on the Evolution of Provincial Finance in British India?',
-          'How did Ambedkar define State Socialism in 1947?'
-        ]
-      };
-    }
-
-    // 5. Default General Archival Search Matching
-    const matchedDocs = ARCHIVE_DOCUMENTS.filter(d => 
-      q.split(' ').some(w => w.length > 3 && (d.title.toLowerCase().includes(w) || d.keyTopics.some(kt => kt.toLowerCase().includes(w))))
-    ).slice(0, 3);
-
-    const primaryDoc = matchedDocs[0] || ARCHIVE_DOCUMENTS[0];
-
-    return {
-      id: `ans-curatorial-${Date.now()}`,
-      query: rawQuery,
-      category: 'general',
-      isSupported: true,
-      answer: {
-        en: `Across the 22 volumes of Dr. B. R. Ambedkar's official writings and parliamentary records, this inquiry touches his foundational principles of constitutional morality and institutional justice. In "${primaryDoc.title}" (${primaryDoc.year}), he established that individual liberty remains fragile without institutional safeguards, social fraternity, and direct legal enforceability.\n\nHe argued that rights are not gifts to be granted by rulers or majorities; they are inherent attributes of human dignity. In his jurisprudence, the State must not merely remain neutral in the face of private discrimination—it possesses a positive obligation to enforce equality and penalize systemic oppression.`,
-        hi: `डॉ. बी. आर. आंबेडकर के २२ खंडों के अधिकृत अभिलेखों में, यह विमर्श उनके संवैधानिक नैतिकता और संस्थागत न्याय के दर्शन से जुड़ा है। "${primaryDoc.title}" (${primaryDoc.year}) में उन्होंने स्पष्ट किया कि सामाजिक बंधुता और न्यायिक संरक्षण के बिना व्यक्तिगत स्वतंत्रता असुरक्षित रहती है।`,
-        mr: `डॉ. बाबासाहेब आंबेडकरांच्या अधिकृत ग्रंथसंपदेतील संदर्भांनुसार, हा विषय घटनात्मक नैतिकता आणि सामाजिक न्यायाच्या सिद्धांतांशी थेट जोडलेला आहे. "${primaryDoc.title}" (${primaryDoc.year}) मध्ये त्यांनी व्यक्तीस्वातंत्र्य, बंधुभाव आणि समतेची अपरिहार्यता सिद्ध केली आहे.`
-      },
-      plainSummary: {
-        en: `Dr. Ambedkar taught that fairness and dignity belong to every single citizen as a natural right. In documents like "${primaryDoc.title}", he insisted that laws must actively protect people from being bullied or excluded because of their identity.`,
-        hi: `डॉ. आंबेडकर का स्पष्ट संदेश था कि समानता और आत्मसम्मान हर नागरिक का जन्मसिद्ध अधिकार है। कानून को हमेशा कमजोरों की रक्षा करनी चाहिए।`,
-        mr: `प्रत्येक माणसाला सन्मानाने जगण्याचा हक्क आहे, आणि कायद्याने नेहमी दुर्बलांचे रक्षण केले पाहिजे, हीच डॉ. आंबेडकरांची मध्यवर्ती शिकवण आहे.`
-      },
-      legalClauses: [
-        { title: 'Article 21', description: 'Protection of life and personal liberty except according to procedure established by law.' },
-        { title: 'Article 14', description: 'The State shall not deny to any person equality before the law or equal protection of the laws.' }
-      ],
-      groundingStatus: 'Verified against 22 BAWS Primary Volumes',
-      confidenceScore: 98.7,
-      sources: matchedDocs.length > 0 ? matchedDocs.map((doc, idx) => ({
-        docId: doc.id,
-        docTitle: doc.title,
-        year: doc.year,
-        volumeOrSection: doc.collection,
-        pageNo: `Folio pp. 1–${(idx + 1) * 12}`,
-        archiveId: doc.accessionNo,
-        source: doc.source,
-        excerpt: doc.shortDescription,
-        relevanceScore: 0.95 - idx * 0.04
-      })) : [
-        {
-          docId: primaryDoc.id,
-          docTitle: primaryDoc.title,
-          year: primaryDoc.year,
-          volumeOrSection: primaryDoc.collection,
-          pageNo: 'Folio Leaf 1',
-          archiveId: primaryDoc.accessionNo,
-          source: primaryDoc.source,
-          excerpt: primaryDoc.shortDescription,
-          relevanceScore: 0.95
-        }
-      ],
-      relatedRecordIds: matchedDocs.map(d => d.id),
-      relatedQuestions: [
-        'How did Ambedkar define social democracy?',
-        'Show documents discussing Article 32.',
-        'What was Ambedkar’s role in the drafting of the Indian Constitution?'
-      ]
-    };
-  };
-
+  // Live Archival Inquiry — calls RAG + Groq LLM backend. No hardcoded answers.
   const handleAsk = (queryText: string) => {
     if (!queryText.trim()) return;
     soundEffects.playClick();
@@ -542,39 +251,83 @@ export const ResearchAssistantView: React.FC<ResearchAssistantViewProps> = ({
     setIsSearching(true);
     setActiveSynthesisTab('synthesis');
 
-    setTimeout(async () => {
-      let resolved = resolveArchivalInquiry(queryText);
+    (async () => {
       try {
-        const live = await api.askAssistant({ question: queryText, mode: 'ask' });
+        const live = await api.askAssistant({ question: queryText, mode: 'ask', top_k: 5 });
         if (live && live.answer) {
-          resolved = {
-            ...resolved,
-            answer: {
-              ...resolved.answer,
-              en: live.answer,
-            },
-            confidenceScore: Math.round(live.confidence * 100) || resolved.confidenceScore,
-            groundingStatus: live.is_abstention ? 'Insufficient evidence in corpus' : '100% Grounded in Live BAWS Retrieval',
-            sources: live.citations && live.citations.length > 0 ? live.citations.map((c, idx) => ({
-              docId: c.object_id || 'corpus-doc',
-              docTitle: c.object_title || 'Dr. B. R. Ambedkar Writings & Speeches',
-              year: 1949,
-              volumeOrSection: c.section_title || 'BAWS Archival Corpus',
-              pageNo: c.page_number ? `p. ${c.page_number}` : `Folio ${idx + 1}`,
-              archiveId: c.chunk_id,
-              source: c.source || 'Dr. Ambedkar Foundation / Ministry of Social Justice',
-              excerpt: c.excerpt,
-              relevanceScore: c.reranker_score ?? 0.95
-            })) : resolved.sources
+          const result: GroundedAnswerPayload = {
+            id: `ans-live-${Date.now()}`,
+            query: queryText,
+            category: live.is_abstention ? 'unsupported' : 'general',
+            isSupported: !live.is_abstention,
+            unsupportedMessage: live.is_abstention
+              ? 'The archival corpus does not contain sufficient evidence to answer this query with confidence. Please rephrase or try a related question.'
+              : undefined,
+            answer: { en: live.answer },
+            plainSummary: undefined,
+            legalClauses: undefined,
+            groundingStatus: live.is_abstention
+              ? 'Insufficient evidence in corpus'
+              : 'Live BAWS Retrieval · PostgreSQL + RRF + Reranker',
+            confidenceScore: live.confidence != null ? Math.round(live.confidence * 100) : 0,
+            sources: live.citations && live.citations.length > 0
+              ? live.citations.map((c, idx) => ({
+                  docId: c.object_id || 'corpus-doc',
+                  docTitle: c.object_title || 'Dr. B. R. Ambedkar Writings & Speeches',
+                  year: c.year || 1949,
+                  volumeOrSection: c.section_title || 'BAWS Archival Corpus',
+                  pageNo: c.page_number ? `p. ${c.page_number}` : `Folio ${idx + 1}`,
+                  archiveId: c.chunk_id || `chunk-${idx}`,
+                  source: c.source || 'Dr. Ambedkar Foundation / Ministry of Social Justice',
+                  excerpt: c.excerpt || '',
+                  relevanceScore: c.reranker_score ?? 0.9
+                }))
+              : [],
+            relatedRecordIds: (live.citations || []).map((c: any) => c.object_id).filter(Boolean),
+            relatedQuestions: [
+              'How did Ambedkar define social democracy?',
+              "What was Ambedkar's role in drafting the Indian Constitution?",
+              'What were the key events of the Mahad Satyagraha?'
+            ]
           };
+          setActiveResult(result);
+        } else {
+          setActiveResult({
+            id: 'ans-empty',
+            query: queryText,
+            category: 'unsupported',
+            isSupported: false,
+            unsupportedMessage: 'The archival corpus returned no results. Please try rephrasing your query.',
+            answer: { en: '' },
+            groundingStatus: 'No results',
+            confidenceScore: 0,
+            sources: [],
+            relatedRecordIds: [],
+            relatedQuestions: []
+          });
         }
-      } catch {
-        // graceful offline fallback to curated archival DB
+      } catch (err) {
+        console.error('[ResearchAssistantView] API call failed:', err);
+        setActiveResult({
+          id: 'ans-error',
+          query: queryText,
+          category: 'unsupported',
+          isSupported: false,
+          unsupportedMessage: 'The research backend is temporarily unavailable. Please check your connection and try again.',
+          answer: { en: '' },
+          groundingStatus: 'Backend Unavailable',
+          confidenceScore: 0,
+          sources: [],
+          relatedRecordIds: [],
+          relatedQuestions: []
+        });
+      } finally {
+        setIsSearching(false);
       }
-      setActiveResult(resolved);
-      setIsSearching(false);
-    }, 380);
+    })();
   };
+
+
 
 
   useEffect(() => {

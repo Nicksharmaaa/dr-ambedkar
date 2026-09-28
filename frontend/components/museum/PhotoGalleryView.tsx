@@ -10,14 +10,11 @@ import {
 import { Language, HistoricalPhoto, ArchivalDocument } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
 import { HISTORICAL_PHOTOS, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
-import { ALL_ARCHIVAL_PHOTOS } from '@/data/archivalGalleryData';
+import { api } from '@/lib/api';
 import { soundEffects } from '@/utils/soundEffects';
 import { Masonry, MasonryItem } from '@/components/ui/Masonry';
 import { getCdnImageUrl } from '@/utils/imageCdn';
 import MuseumGrandPavilion from './MuseumGrandPavilion';
-
-// Complete curated archival collection for dedicated photo gallery view
-const ALL_PHOTOS: HistoricalPhoto[] = [...HISTORICAL_PHOTOS, ...ALL_ARCHIVAL_PHOTOS];
 
 interface PhotoGalleryViewProps {
   language: Language;
@@ -31,6 +28,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
   onAskAIWithPhoto
 }) => {
   const t = UI_STRINGS[language] || UI_STRINGS.en;
+  const [photos, setPhotos] = useState<HistoricalPhoto[]>(HISTORICAL_PHOTOS);
   const [selectedPhoto, setSelectedPhoto] = useState<HistoricalPhoto | null>(null);
   const [activeEra, setActiveEra] = useState<string>('all');
   const [selectedYear, setSelectedYear] = useState<string>('all');
@@ -45,25 +43,63 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
   const [displayLimit, setDisplayLimit] = useState<number>(24);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+  useEffect(() => {
+    api.getDocuments({ object_type: 'photo', limit: 600 })
+      .then(res => {
+        if (!res.items || res.items.length === 0) return;
+        const adapted: HistoricalPhoto[] = res.items.map(doc => {
+          let meta: any = {};
+          if (doc.metadata_json) {
+            try {
+              meta = JSON.parse(doc.metadata_json);
+            } catch {}
+          }
+          return {
+            id: doc.id,
+            title: doc.title,
+            titleLocal: meta.titleLocal,
+            year: parseInt(doc.publication_date || meta.year || '1940', 10),
+            dateString: meta.dateString || doc.publication_date || '',
+            location: meta.location || 'India',
+            era: meta.era || doc.subtitle || 'Social Movements',
+            imageUrl: meta.imageUrl || '/images/ambedkar_portrait_1950.jpg',
+            aspectRatio: meta.aspectRatio || 'landscape',
+            caption: doc.description || meta.caption || '',
+            captionLocal: meta.captionLocal,
+            historicalContext: meta.historicalContext || '',
+            accessionNumber: meta.accessionNumber || doc.stable_id || doc.id,
+            archiveProvenance: meta.archiveProvenance || doc.provenance || '',
+            photographerOrAgency: meta.photographerOrAgency || doc.source_institution || '',
+            dimensions: meta.dimensions,
+            medium: meta.medium,
+          };
+        });
+        setPhotos(adapted);
+      })
+      .catch(() => {
+        // Fallback to initial HISTORICAL_PHOTOS
+      });
+  }, []);
+
   // Multi-dimensional filter lists
   const availableYears = useMemo(() => {
-    const years = Array.from(new Set(ALL_PHOTOS.map(p => p.year))).sort((a, b) => a - b);
+    const years = Array.from(new Set(photos.map(p => p.year))).sort((a, b) => a - b);
     return years;
-  }, []);
+  }, [photos]);
 
   const availableLocations = useMemo(() => {
-    const locs = Array.from(new Set(ALL_PHOTOS.map(p => p.location.split(',')[0].trim())));
+    const locs = Array.from(new Set(photos.map(p => p.location.split(',')[0].trim())));
     return locs;
-  }, []);
+  }, [photos]);
 
   const availableSources = useMemo(() => {
-    const sources = Array.from(new Set(ALL_PHOTOS.map(p => p.archiveProvenance.split('/')[0].trim())));
+    const sources = Array.from(new Set(photos.map(p => p.archiveProvenance.split('/')[0].trim())));
     return sources;
-  }, []);
+  }, [photos]);
 
   // Filter photos based on era, year, location, source, and search query
   const filteredPhotos = useMemo(() => {
-    return ALL_PHOTOS.filter(photo => {
+    return photos.filter(photo => {
       // Era filter
       const matchesEra = activeEra === 'all' || 
         photo.era === activeEra ||
@@ -192,12 +228,12 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
   };
 
   const eras = [
-    { id: 'all', label: 'All Photographs', count: ALL_PHOTOS.length },
-    { id: 'Early Life & Education', label: 'Early Life & Education', count: ALL_PHOTOS.filter(p => p.era === 'Early Life & Education' || p.era === 'Early Life & Studies').length },
-    { id: 'Social Movements', label: 'Social Movements', count: ALL_PHOTOS.filter(p => p.era === 'Social Movements' || p.era === 'Civil Rights & Movements').length },
-    { id: 'Constitution & Governance', label: 'Constitution & Governance', count: ALL_PHOTOS.filter(p => p.era === 'Constitution & Governance').length },
-    { id: 'Public Life', label: 'Public Life', count: ALL_PHOTOS.filter(p => p.era === 'Public Life').length },
-    { id: 'Later Life & Philosophy', label: 'Later Life & Philosophy', count: ALL_PHOTOS.filter(p => p.era === 'Later Life & Philosophy').length },
+    { id: 'all', label: 'All Photographs', count: photos.length },
+    { id: 'Early Life & Education', label: 'Early Life & Education', count: photos.filter(p => p.era === 'Early Life & Education' || p.era === 'Early Life & Studies').length },
+    { id: 'Social Movements', label: 'Social Movements', count: photos.filter(p => p.era === 'Social Movements' || p.era === 'Civil Rights & Movements').length },
+    { id: 'Constitution & Governance', label: 'Constitution & Governance', count: photos.filter(p => p.era === 'Constitution & Governance').length },
+    { id: 'Public Life', label: 'Public Life', count: photos.filter(p => p.era === 'Public Life').length },
+    { id: 'Later Life & Philosophy', label: 'Later Life & Philosophy', count: photos.filter(p => p.era === 'Later Life & Philosophy').length },
   ];
 
   return (
@@ -413,7 +449,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
 
         {/* Photographic Count Indicator */}
         <div className="flex items-center justify-between text-xs text-stone-500 font-mono">
-          <span>Displaying {visiblePhotos.length} of {filteredPhotos.length} photographs (Total {ALL_PHOTOS.length} archival plates)</span>
+          <span>Displaying {visiblePhotos.length} of {filteredPhotos.length} photographs (Total {photos.length} archival plates)</span>
           {activeEra !== 'all' && (
             <span>Filtered by Era: {activeEra}</span>
           )}
@@ -566,7 +602,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
           <div className="flex flex-col items-center justify-center pt-8 pb-12 space-y-3.5 bg-gradient-to-b from-transparent to-[#FAF7F0]/60 rounded-3xl border border-[#D3D4C0]/40 p-6 shadow-2xs">
             <div className="text-xs font-mono text-stone-600">
               Showing <span className="font-bold text-[#0A2947]">{visiblePhotos.length}</span> of <span className="font-bold text-[#0A2947]">{filteredPhotos.length}</span> plates
-              {filteredPhotos.length < ALL_PHOTOS.length && ` (filtered from ${ALL_PHOTOS.length} total)`}
+              {filteredPhotos.length < photos.length && ` (filtered from ${photos.length} total)`}
             </div>
 
             <div className="w-72 sm:w-96 h-2 bg-stone-200 rounded-full overflow-hidden shadow-inner">

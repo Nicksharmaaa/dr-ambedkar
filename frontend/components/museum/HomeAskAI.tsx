@@ -8,7 +8,7 @@ import {
   Volume2, VolumeX, ShieldCheck, Compass, HelpCircle, Mic, MicOff
 } from 'lucide-react';
 import { Language, ArchivalDocument } from '@/types/museum';
-import { ARCHIVE_DOCUMENTS, RESEARCH_ANSWERS_DB } from '@/data/archiveData';
+import { ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { speechController, voiceRecognitionController } from '@/utils/speechUtils';
 import VoicePill from '@/components/ui/VoicePill';

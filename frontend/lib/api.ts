@@ -209,6 +209,21 @@ export const api = {
     return fetchJson<PaginatedResponse<ArchivalObject>>(`/documents${query}`);
   },
 
+  getDocuments: (params?: {
+    limit?: number;
+    offset?: number;
+    object_type?: string;
+    collection_id?: string;
+  }) => {
+    const q = new URLSearchParams();
+    if (params?.limit) q.set("limit", String(params.limit));
+    if (params?.offset) q.set("offset", String(params.offset));
+    if (params?.object_type) q.set("object_type", params.object_type);
+    if (params?.collection_id) q.set("collection_id", params.collection_id);
+    const query = q.toString() ? `?${q.toString()}` : "";
+    return fetchJson<PaginatedResponse<ArchivalObject>>(`/documents${query}`);
+  },
+
   getDocument: (idOrStableId: string) =>
     fetchJson<ArchivalObject>(`/documents/${idOrStableId}`),
 

@@ -8,6 +8,7 @@ import {
 import { Language, MediaItem, ArchivalDocument } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
 import { MEDIA_RECORDS, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
+import { api } from '@/lib/api';
 import { SoundboardWidget } from './SoundboardWidget';
 import { soundEffects } from '@/utils/soundEffects';
 import MuseumGrandPavilion from './MuseumGrandPavilion';
@@ -22,11 +23,46 @@ export const MediaArchiveView: React.FC<MediaArchiveViewProps> = ({
   onOpenDocument
 }) => {
   const t = UI_STRINGS[language] || UI_STRINGS.en;
+  const [mediaList, setMediaList] = useState<MediaItem[]>(MEDIA_RECORDS);
   const [activeMedia, setActiveMedia] = useState<MediaItem>(MEDIA_RECORDS[0]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(24);
   const [transcriptLang, setTranscriptLang] = useState<Language>(language);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  useEffect(() => {
+    api.getMediaTracks()
+      .then((tracks) => {
+        if (!tracks || tracks.length === 0) return;
+        const adapted: MediaItem[] = tracks.map((t) => {
+          const fallback = MEDIA_RECORDS.find(m => m.id === t.id || m.title === t.title);
+          const mins = Math.floor((t.duration_secs || 600) / 60);
+          const secs = Math.floor((t.duration_secs || 600) % 60);
+          return {
+            id: t.id,
+            title: t.title,
+            titleLocal: fallback?.titleLocal,
+            type: (t.asset_type === 'video' ? 'documentary' : fallback?.type || 'speech') as any,
+            typeLabel: t.asset_type === 'video' ? 'Archival Video Reel' : 'Historic Audio Broadcast',
+            duration: `${mins}:${secs.toString().padStart(2, '0')}`,
+            date: fallback?.date || (t.created_at ? t.created_at.substring(0, 10) : '1950'),
+            year: fallback?.year || 1950,
+            description: fallback?.description || t.title,
+            transcript: {
+              en: t.transcript_text || fallback?.transcript?.en || '',
+              hi: fallback?.transcript?.hi || '',
+              mr: fallback?.transcript?.mr || '',
+            },
+            relatedDocIds: [t.object_id].filter(Boolean),
+          };
+        });
+        setMediaList(adapted);
+        if (adapted.length > 0) setActiveMedia(adapted[0]);
+      })
+      .catch(() => {
+        // Fallback: keep static MEDIA_RECORDS in state
+      });
+  }, []);
 
   useEffect(() => {
     setTranscriptLang(language);
@@ -50,7 +86,7 @@ export const MediaArchiveView: React.FC<MediaArchiveViewProps> = ({
     return `${mins.toString().padStart(2, '0')}:${remainder.toString().padStart(2, '0')}`;
   };
 
-  const filteredMedia = MEDIA_RECORDS.filter(m => {
+  const filteredMedia = mediaList.filter(m => {
     if (selectedCategory === 'all') return true;
     return m.type === selectedCategory;
   });
