@@ -17,9 +17,10 @@ import { WisdomMachine } from './WisdomMachine';
 import { SoundboardWidget } from './SoundboardWidget';
 import { HomeAskAI } from './HomeAskAI';
 import { soundEffects } from '@/utils/soundEffects';
-import DitherVeil from '@/components/ui/DitherVeil';
-import ClickSpark from '@/components/ui/ClickSpark';
+import dynamic from 'next/dynamic';
 import DepthCarousel from '@/components/ui/DepthCarousel';
+
+const DitherVeil = dynamic(() => import('@/components/ui/DitherVeil'), { ssr: false });
 
 interface HomeViewProps {
   language: Language;
@@ -51,9 +52,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const featuredDocument = ARCHIVE_DOCUMENTS.find(d => d.id === 'constituent-assembly-speech-1949') || ARCHIVE_DOCUMENTS[0];
   const primaryCorpusDocs = ARCHIVE_DOCUMENTS.filter(d => d.id !== featuredDocument.id).slice(0, 3);
 
-  // Archival Photographs of Babasaheb Dr. B. R. Ambedkar for Depth Carousel
+  // Archival Photographs of Babasaheb Dr. B. R. Ambedkar for Depth Carousel (Capped for smooth 60fps rendering)
   const items = React.useMemo(() => {
-    const base = HISTORICAL_PHOTOS.map((photo) => ({
+    const base = HISTORICAL_PHOTOS.slice(0, 10).map((photo) => ({
       image: photo.imageUrl,
       alt: photo.title,
       title: photo.title,
@@ -341,7 +342,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   <img
                     src="/hero.png"
                     alt="Dr. B. R. Ambedkar Iridescent Chrome Memorial Sculpture"
-                    className="animate-hero-float max-h-[540px] w-auto object-contain drop-shadow-[0_25px_40px_rgba(10,41,71,0.25)] select-none pointer-events-none filter brightness-105 contrast-105"
+                    className="max-h-[540px] w-auto object-contain select-none pointer-events-none transform-gpu"
                   />
                 </div>
               )}

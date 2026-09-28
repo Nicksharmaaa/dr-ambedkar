@@ -353,20 +353,44 @@ export function ThreeDPhotoCarousel({
       animId = requestAnimationFrame(render);
     };
 
+    let isTabVisible = typeof document !== 'undefined' ? !document.hidden : true;
+    let isIntersecting = true;
+
     const wakeLoop = () => {
-      if (isLoopRunningRef.current) return;
+      if (isLoopRunningRef.current || !isTabVisible || !isIntersecting) return;
       isLoopRunningRef.current = true;
       animId = requestAnimationFrame(render);
     };
 
+    const pauseLoop = () => {
+      if (animId) cancelAnimationFrame(animId);
+      isLoopRunningRef.current = false;
+    };
+
     wakeRenderLoopRef.current = wakeLoop;
+
+    const onVisibility = () => {
+      isTabVisible = !document.hidden;
+      isTabVisible && isIntersecting ? wakeLoop() : pauseLoop();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    let io: IntersectionObserver | null = null;
+    if (containerRef.current) {
+      io = new IntersectionObserver(([entry]) => {
+        isIntersecting = entry.isIntersecting;
+        isIntersecting && isTabVisible ? wakeLoop() : pauseLoop();
+      }, { threshold: 0.05 });
+      io.observe(containerRef.current);
+    }
 
     // Start initial render
     wakeLoop();
 
     return () => {
-      cancelAnimationFrame(animId);
-      isLoopRunningRef.current = false;
+      pauseLoop();
+      if (io) io.disconnect();
+      document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [count, angleStep, radius, isAutoSpinning, autoRotateSpeed]);
 

@@ -2,7 +2,6 @@ import {
   ArchivalDocument, TimelineEvent, MediaItem, ResearchAnswer, HistoricalPhoto,
   KnowledgeGraphNode, KnowledgeGraphLink, GuidedStoryPath, DocComparisonPreset, OCRJobRecord
 } from '../types';
-import { ALL_ARCHIVAL_PHOTOS } from './archivalGalleryData';
 
 export const HERO_IMAGE = '/images/ambedkar_portrait_1950.jpg';
 export const MAHAD_IMAGE = '/images/ambedkar_public_assembly.png';
@@ -1475,8 +1474,7 @@ export const HISTORICAL_PHOTOS: HistoricalPhoto[] = [
     relatedDocIds: ['constituent-assembly-speech-1949'],
     dimensions: '25.0 × 18.0 cm',
     medium: 'Gelatin silver documentary plate'
-  },
-  ...ALL_ARCHIVAL_PHOTOS
+  }
 ];
 
 // 5. KNOWLEDGE GRAPH NODES & LINKS (Events, Articles, Speeches, Figures, Concepts, Orgs, Places)

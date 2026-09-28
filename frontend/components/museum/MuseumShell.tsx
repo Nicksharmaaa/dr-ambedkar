@@ -107,36 +107,40 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
       <main className="flex-1 pl-0 sm:pl-16">{children}</main>
 
       {/* Interactive Archival Document Viewer Modal */}
-      <DocumentViewerModal
-        document={selectedDocument}
-        isOpen={isDocViewerOpen}
-        onClose={closeDocViewer}
-        language={language}
-        onSelectLanguage={setLanguage}
-        onOpenRelatedDocument={openDocument}
-        onToggleSaveItem={toggleSaveItem}
-        isItemSaved={selectedDocument ? isItemSaved(selectedDocument.id) : false}
-        onAskAIAboutDoc={askAssistant}
-      />
+      {isDocViewerOpen && (
+        <DocumentViewerModal
+          document={selectedDocument}
+          isOpen={isDocViewerOpen}
+          onClose={closeDocViewer}
+          language={language}
+          onSelectLanguage={setLanguage}
+          onOpenRelatedDocument={openDocument}
+          onToggleSaveItem={toggleSaveItem}
+          isItemSaved={selectedDocument ? isItemSaved(selectedDocument.id) : false}
+          onAskAIAboutDoc={askAssistant}
+        />
+      )}
 
       {/* Accessibility Control Modal */}
-      <AccessibilityModal
-        isOpen={isAccessibilityModalOpen}
-        onClose={() => setIsAccessibilityModalOpen(false)}
-        accessibility={accessibility}
-        onChangeTextSize={(size) => setAccessibility(prev => ({ ...prev, textSize: size }))}
-        onToggleHighContrast={() =>
-          setAccessibility(prev => ({ ...prev, highContrast: !prev.highContrast }))
-        }
-        onToggleAudioNarration={() =>
-          setAccessibility(prev => ({
-            ...prev,
-            audioNarrationActive: !prev.audioNarrationActive,
-          }))
-        }
-        language={language}
-        onSelectLanguage={setLanguage}
-      />
+      {isAccessibilityModalOpen && (
+        <AccessibilityModal
+          isOpen={isAccessibilityModalOpen}
+          onClose={() => setIsAccessibilityModalOpen(false)}
+          accessibility={accessibility}
+          onChangeTextSize={(size) => setAccessibility(prev => ({ ...prev, textSize: size }))}
+          onToggleHighContrast={() =>
+            setAccessibility(prev => ({ ...prev, highContrast: !prev.highContrast }))
+          }
+          onToggleAudioNarration={() =>
+            setAccessibility(prev => ({
+              ...prev,
+              audioNarrationActive: !prev.audioNarrationActive,
+            }))
+          }
+          language={language}
+          onSelectLanguage={setLanguage}
+        />
+      )}
 
       {/* Persistent Kiosk Touch Controls when Kiosk Mode is Active */}
       {accessibility.kioskMode && (
@@ -169,24 +173,28 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
       />
 
       {/* GLOBAL SEARCH COMMAND MODAL */}
-      <GlobalSearchModal
-        isOpen={isSearchModalOpen}
-        onClose={() => setIsSearchModalOpen(false)}
-        language={language}
-        onSelectDocument={openDocument}
-        onNavigateTab={navigateToTab}
-        onAskAI={askAssistant}
-      />
+      {isSearchModalOpen && (
+        <GlobalSearchModal
+          isOpen={isSearchModalOpen}
+          onClose={() => setIsSearchModalOpen(false)}
+          language={language}
+          onSelectDocument={openDocument}
+          onNavigateTab={navigateToTab}
+          onAskAI={askAssistant}
+        />
+      )}
 
       {/* TOP-RIGHT POPUP VOICE NAVIGATOR & AI MODAL */}
-      <VoiceNavigatorModal
-        isOpen={isVoiceModalOpen}
-        onClose={() => setIsVoiceModalOpen(false)}
-        language={language}
-        onNavigateTab={navigateToTab}
-        onAskAIWithQuery={askAssistant}
-        onOpenDocument={openDocument}
-      />
+      {isVoiceModalOpen && (
+        <VoiceNavigatorModal
+          isOpen={isVoiceModalOpen}
+          onClose={() => setIsVoiceModalOpen(false)}
+          language={language}
+          onNavigateTab={navigateToTab}
+          onAskAIWithQuery={askAssistant}
+          onOpenDocument={openDocument}
+        />
+      )}
 
       {/* World-Class Revamped Museum Heritage Footer */}
       <MuseumFooter

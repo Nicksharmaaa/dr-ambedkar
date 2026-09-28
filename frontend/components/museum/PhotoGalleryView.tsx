@@ -10,9 +10,13 @@ import {
 import { Language, HistoricalPhoto, ArchivalDocument } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
 import { HISTORICAL_PHOTOS, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
+import { ALL_ARCHIVAL_PHOTOS } from '@/data/archivalGalleryData';
 import { soundEffects } from '@/utils/soundEffects';
 import { Masonry, MasonryItem } from '@/components/ui/Masonry';
 import { getCdnImageUrl } from '@/utils/imageCdn';
+
+// Complete curated archival collection for dedicated photo gallery view
+const ALL_PHOTOS: HistoricalPhoto[] = [...HISTORICAL_PHOTOS, ...ALL_ARCHIVAL_PHOTOS];
 
 interface PhotoGalleryViewProps {
   language: Language;
@@ -42,23 +46,23 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
 
   // Multi-dimensional filter lists
   const availableYears = useMemo(() => {
-    const years = Array.from(new Set(HISTORICAL_PHOTOS.map(p => p.year))).sort((a, b) => a - b);
+    const years = Array.from(new Set(ALL_PHOTOS.map(p => p.year))).sort((a, b) => a - b);
     return years;
   }, []);
 
   const availableLocations = useMemo(() => {
-    const locs = Array.from(new Set(HISTORICAL_PHOTOS.map(p => p.location.split(',')[0].trim())));
+    const locs = Array.from(new Set(ALL_PHOTOS.map(p => p.location.split(',')[0].trim())));
     return locs;
   }, []);
 
   const availableSources = useMemo(() => {
-    const sources = Array.from(new Set(HISTORICAL_PHOTOS.map(p => p.archiveProvenance.split('/')[0].trim())));
+    const sources = Array.from(new Set(ALL_PHOTOS.map(p => p.archiveProvenance.split('/')[0].trim())));
     return sources;
   }, []);
 
   // Filter photos based on era, year, location, source, and search query
   const filteredPhotos = useMemo(() => {
-    return HISTORICAL_PHOTOS.filter(photo => {
+    return ALL_PHOTOS.filter(photo => {
       // Era filter
       const matchesEra = activeEra === 'all' || 
         photo.era === activeEra ||
@@ -185,12 +189,12 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
   };
 
   const eras = [
-    { id: 'all', label: 'All Photographs', count: HISTORICAL_PHOTOS.length },
-    { id: 'Early Life & Education', label: 'Early Life & Education', count: HISTORICAL_PHOTOS.filter(p => p.era === 'Early Life & Education' || p.era === 'Early Life & Studies').length },
-    { id: 'Social Movements', label: 'Social Movements', count: HISTORICAL_PHOTOS.filter(p => p.era === 'Social Movements' || p.era === 'Civil Rights & Movements').length },
-    { id: 'Constitution & Governance', label: 'Constitution & Governance', count: HISTORICAL_PHOTOS.filter(p => p.era === 'Constitution & Governance').length },
-    { id: 'Public Life', label: 'Public Life', count: HISTORICAL_PHOTOS.filter(p => p.era === 'Public Life').length },
-    { id: 'Later Life & Philosophy', label: 'Later Life & Philosophy', count: HISTORICAL_PHOTOS.filter(p => p.era === 'Later Life & Philosophy').length },
+    { id: 'all', label: 'All Photographs', count: ALL_PHOTOS.length },
+    { id: 'Early Life & Education', label: 'Early Life & Education', count: ALL_PHOTOS.filter(p => p.era === 'Early Life & Education' || p.era === 'Early Life & Studies').length },
+    { id: 'Social Movements', label: 'Social Movements', count: ALL_PHOTOS.filter(p => p.era === 'Social Movements' || p.era === 'Civil Rights & Movements').length },
+    { id: 'Constitution & Governance', label: 'Constitution & Governance', count: ALL_PHOTOS.filter(p => p.era === 'Constitution & Governance').length },
+    { id: 'Public Life', label: 'Public Life', count: ALL_PHOTOS.filter(p => p.era === 'Public Life').length },
+    { id: 'Later Life & Philosophy', label: 'Later Life & Philosophy', count: ALL_PHOTOS.filter(p => p.era === 'Later Life & Philosophy').length },
   ];
 
   return (
@@ -206,7 +210,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
               <span aria-hidden="true">·</span>
               <span className="font-mono text-[#0A2947]">1891–1956</span>
               <span aria-hidden="true">·</span>
-              <span className="tabular-nums font-semibold text-[#0A2947] font-mono">{HISTORICAL_PHOTOS.length} Archived Photographic Plates</span>
+              <span className="tabular-nums font-semibold text-[#0A2947] font-mono">{ALL_PHOTOS.length} Archived Photographic Plates</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif-editorial font-bold tracking-tight text-[#0A2947] leading-tight">
@@ -424,7 +428,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
 
         {/* Photographic Count Indicator */}
         <div className="flex items-center justify-between text-xs text-stone-500 font-mono">
-          <span>Displaying {visiblePhotos.length} of {filteredPhotos.length} photographs (Total {HISTORICAL_PHOTOS.length} archival plates)</span>
+          <span>Displaying {visiblePhotos.length} of {filteredPhotos.length} photographs (Total {ALL_PHOTOS.length} archival plates)</span>
           {activeEra !== 'all' && (
             <span>Filtered by Era: {activeEra}</span>
           )}
@@ -577,7 +581,7 @@ export const PhotoGalleryView: React.FC<PhotoGalleryViewProps> = ({
           <div className="flex flex-col items-center justify-center pt-8 pb-12 space-y-3.5 bg-gradient-to-b from-transparent to-[#FAF7F0]/60 rounded-3xl border border-[#D3D4C0]/40 p-6 shadow-2xs">
             <div className="text-xs font-mono text-stone-600">
               Showing <span className="font-bold text-[#0A2947]">{visiblePhotos.length}</span> of <span className="font-bold text-[#0A2947]">{filteredPhotos.length}</span> plates
-              {filteredPhotos.length < HISTORICAL_PHOTOS.length && ` (filtered from ${HISTORICAL_PHOTOS.length} total)`}
+              {filteredPhotos.length < ALL_PHOTOS.length && ` (filtered from ${ALL_PHOTOS.length} total)`}
             </div>
 
             <div className="w-72 sm:w-96 h-2 bg-stone-200 rounded-full overflow-hidden shadow-inner">

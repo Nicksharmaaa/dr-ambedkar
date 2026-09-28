@@ -253,7 +253,32 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
     // 60fps Animation Loop
     let clock = new THREE.Clock();
 
+    let isGlobeVisible = typeof document !== 'undefined' ? !document.hidden : true;
+    let isIntersecting = true;
+    let isRunning = false;
+
+    const startLoop = () => {
+      if (!isRunning && isGlobeVisible && isIntersecting) {
+        isRunning = true;
+        animFrameRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    const stopLoop = () => {
+      if (isRunning) {
+        isRunning = false;
+        if (animFrameRef.current) {
+          cancelAnimationFrame(animFrameRef.current);
+          animFrameRef.current = 0 as any;
+        }
+      }
+    };
+
     const animate = () => {
+      if (!isGlobeVisible || !isIntersecting) {
+        isRunning = false;
+        return;
+      }
       animFrameRef.current = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
@@ -365,11 +390,25 @@ export const MemorialGlobe: React.FC<MemorialGlobeProps> = ({
       renderer.render(scene, camera);
     };
 
-    animate();
+    const onVisibility = () => {
+      isGlobeVisible = !document.hidden;
+      isGlobeVisible ? startLoop() : stopLoop();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    const io = new IntersectionObserver(([entry]) => {
+      isIntersecting = entry.isIntersecting;
+      isIntersecting ? startLoop() : stopLoop();
+    }, { threshold: 0.05 });
+    io.observe(container);
+
+    startLoop();
 
     return () => {
+      stopLoop();
+      io.disconnect();
+      document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('resize', handleResize);
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       if (renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
