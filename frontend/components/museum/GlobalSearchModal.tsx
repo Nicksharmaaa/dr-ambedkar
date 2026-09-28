@@ -201,7 +201,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 bg-[#0A2947]/70 backdrop-blur-sm flex items-start justify-center p-3 sm:p-6 pt-16 sm:pt-20 animate-in fade-in duration-150"
+      className="fixed inset-0 z-[999999] bg-[#0A2947]/80 backdrop-blur-md flex items-start justify-center p-3 sm:p-6 pt-16 sm:pt-20 animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div 

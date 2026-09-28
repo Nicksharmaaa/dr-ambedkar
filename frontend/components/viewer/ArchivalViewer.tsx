@@ -692,7 +692,7 @@ export function ArchivalViewer({
 
       {/* Multimodal Structure & OCR Conflict Modal (Section 11) */}
       {isMultimodalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
           <div className="relative w-full max-w-lg rounded-2xl bg-slate-900 border border-purple-900/60 shadow-2xl p-6 text-slate-100">
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">

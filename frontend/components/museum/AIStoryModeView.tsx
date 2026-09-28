@@ -10,6 +10,7 @@ import { GuidedStoryPath, StoryStep, ArchivalDocument, Language } from '@/types/
 import { GUIDED_STORY_PATHS, ARCHIVE_DOCUMENTS } from '@/data/archiveData';
 import { speechController } from '@/utils/speechUtils';
 import { soundEffects } from '@/utils/soundEffects';
+import MuseumGrandPavilion from './MuseumGrandPavilion';
 
 interface AIStoryModeViewProps {
   language: Language;
@@ -159,27 +160,22 @@ export const AIStoryModeView: React.FC<AIStoryModeViewProps> = ({
         {/* =========================================================================
             HEADER & STORY NAVIGATOR
             ========================================================================= */}
-        <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#8B5E3C] via-[#C59A45] to-[#0A2947]" />
-
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-3 max-w-2xl">
-              <div className="flex items-center gap-2 text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-wider">
-                <Compass className="w-4 h-4 text-[#8B5E3C]" />
-                <span>VISUAL STORYBOOK & HISTORICAL REELS</span>
-              </div>
-              <h1 className="text-3xl sm:text-5xl font-serif-editorial font-bold text-[#0A2947] tracking-tight leading-tight">
-                Babasaheb's Visual Stories
-              </h1>
-              <p className="text-sm sm:text-base text-[#0A2947]/75 font-normal leading-relaxed">
-                Step into illustrated chapters and archival film reels. Designed for young explorers and curious scholars of all ages with voice narration, videos, and fun challenges!
-              </p>
-            </div>
-
-            {/* Mode Switcher: Youth Explorer vs Curatorial */}
-            <div className="flex items-center gap-3 bg-[#FAF7F0] p-2 rounded-2xl border-2 border-[#D3D4C0] shadow-xs self-start md:self-auto">
-              <span className="text-xs font-montserrat font-bold uppercase text-[#0A2947] flex items-center gap-1.5 pl-1">
-                <Sparkles className="w-4 h-4 text-[#C59A45] animate-spin" />
+        <MuseumGrandPavilion
+          title={
+            <>
+              Visual{' '}
+              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                Storybooks
+              </span>{' '}
+              & Reels
+            </>
+          }
+          watermarkIcon={Star}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+            <div className="flex items-center gap-3 bg-white/[0.06] p-2 rounded-2xl border border-[#C59A45]/30 shadow-xs self-start">
+              <span className="text-xs font-montserrat font-bold uppercase text-[#FAF7F0] flex items-center gap-1.5 pl-2">
+                <Sparkles className="w-4 h-4 text-[#D4AF37]" />
                 Mode:
               </span>
               <button
@@ -189,13 +185,13 @@ export const AIStoryModeView: React.FC<AIStoryModeViewProps> = ({
                 }}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
                   isKidFriendly
-                    ? 'bg-[#C59A45] text-[#0A2947] shadow-xs ring-1 ring-[#8B5E3C]'
-                    : 'bg-[#0A2947] text-[#F3E4C9] shadow-xs'
+                    ? 'bg-[#C59A45] text-[#0A2947] shadow-xs font-black'
+                    : 'bg-[#FAF7F0]/15 text-[#FAF7F0] hover:bg-white/20'
                 }`}
               >
                 {isKidFriendly ? (
                   <>
-                    <span>🧒 Kid Friendly</span>
+                    <span>🧒 Youth Explorer</span>
                     <Star className="w-3.5 h-3.5 fill-current" />
                   </>
                 ) : (
@@ -205,26 +201,25 @@ export const AIStoryModeView: React.FC<AIStoryModeViewProps> = ({
                 )}
               </button>
             </div>
-          </div>
 
-          {/* Badges Earned Ribbon */}
-          {earnedBadges.length > 0 && (
-            <div className="mt-6 pt-4 border-t border-[#D3D4C0] flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-cinzel font-bold text-[#8B5E3C] uppercase flex items-center gap-1">
-                <Award className="w-3.5 h-3.5 text-[#C59A45]" />
-                Earned Badges:
-              </span>
-              {earnedBadges.map((badge, bIdx) => (
-                <span 
-                  key={bIdx}
-                  className="px-3 py-1 bg-[#FAF7F0] border border-[#C59A45] text-[#0A2947] rounded-xl text-xs font-montserrat font-bold shadow-2xs animate-in zoom-in"
-                >
-                  {badge}
+            {earnedBadges.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-cinzel font-bold text-[#D4AF37] uppercase flex items-center gap-1">
+                  <Award className="w-3.5 h-3.5 text-[#F5D77F]" />
+                  Earned Badges:
                 </span>
-              ))}
-            </div>
-          )}
-        </div>
+                {earnedBadges.map((badge, bIdx) => (
+                  <span 
+                    key={bIdx}
+                    className="px-3 py-1 bg-white/10 border border-[#C59A45]/40 text-[#FAF7F0] rounded-xl text-xs font-montserrat font-bold shadow-2xs animate-in zoom-in"
+                  >
+                    {badge}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </MuseumGrandPavilion>
 
         {/* =========================================================================
             STORY PATHWAY CARDS SELECTOR (VIBRANT VISUALS)

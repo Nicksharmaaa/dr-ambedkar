@@ -8,6 +8,7 @@ import {
 import { api } from '@/lib/api';
 import { soundEffects } from '@/utils/soundEffects';
 import { MemorialGlobe } from './MemorialGlobe';
+import MuseumGrandPavilion from './MuseumGrandPavilion';
 
 export interface HeritageLocation {
   id: string;
@@ -185,56 +186,19 @@ export const MemorialsView: React.FC<MemorialsViewProps> = ({
     <div className="min-h-screen bg-transparent text-[#0A2947] py-6 sm:py-8 px-4 sm:px-6 lg:px-8 font-dmsans pb-24">
       <div className="max-w-[1600px] mx-auto space-y-6">
 
-        {/* Curatorial Header - Matches Gallery, Timeline, and Knowledge Map views */}
-        <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#8B5E3C] via-[#C89D56] to-[#0A2947]" />
-
-          <div className="space-y-3 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FAF7F0] border border-[#D3D4C0] rounded-full text-xs font-mono font-bold tracking-wider uppercase text-[#8B5E3C]">
-              <Compass className="w-3.5 h-3.5 text-[#C89D56]" />
-              <span>Sacred Cartography · National Memorial Registry</span>
-            </div>
-
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif-editorial font-bold text-[#0A2947] tracking-tight leading-tight">
-              Panchtirth & Heritage Memorials
-            </h1>
-
-            <p className="text-xs sm:text-sm text-[#0A2947]/75 font-normal leading-relaxed font-dmsans">
-              Interactive 3D orbital projection of Dr. B. R. Ambedkar&apos;s sacred Panchtirth shrines and global academic landmarks, linked directly to verified primary source manuscripts.
-            </p>
-          </div>
-
-          {/* Quick Metrics & Curatorial Badges */}
-          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-            <div className="px-4 py-2.5 rounded-2xl bg-[#FAF7F0] border border-[#D3D4C0] text-center min-w-[76px] shadow-2xs">
-              <div className="text-base sm:text-lg font-bold font-mono text-[#0A2947]">
-                {locations.length}
-              </div>
-              <div className="text-[10px] text-[#8B5E3C] uppercase font-mono font-bold tracking-wider">
-                Sites
-              </div>
-            </div>
-
-            <div className="px-4 py-2.5 rounded-2xl bg-[#FAF7F0] border border-[#D3D4C0] text-center min-w-[76px] shadow-2xs">
-              <div className="text-base sm:text-lg font-bold font-mono text-[#8B5E3C]">
-                5
-              </div>
-              <div className="text-[10px] text-[#8B5E3C] uppercase font-mono font-bold tracking-wider">
-                Panchtirth
-              </div>
-            </div>
-
-            <div className="px-4 py-2.5 rounded-2xl bg-[#FAF7F0] border border-[#D3D4C0] text-center min-w-[76px] shadow-2xs">
-              <div className="text-base sm:text-lg font-bold font-mono text-emerald-800 flex items-center justify-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-                <span>100%</span>
-              </div>
-              <div className="text-[10px] text-emerald-800 uppercase font-mono font-bold tracking-wider">
-                Verified
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Curatorial Header */}
+        <MuseumGrandPavilion
+          title={
+            <>
+              Panchtirth &{' '}
+              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                Heritage
+              </span>{' '}
+              Memorials
+            </>
+          }
+          watermarkIcon={Compass}
+        />
 
         {/* ── 3D SPATIAL THEATER: Globe in Center, Left Locations, Right Descriptive Dossier ── */}
         <MemorialGlobe

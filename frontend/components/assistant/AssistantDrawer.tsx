@@ -412,7 +412,7 @@ export default function AssistantDrawer({ isOpen, onClose }: AssistantDrawerProp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] pointer-events-none">
+    <div className="fixed inset-0 z-[999999] pointer-events-none">
       {/* Dimmed Backdrop */}
       <div
         className="fixed inset-0 bg-slate-950/75 backdrop-blur-sm pointer-events-auto transition-opacity duration-300"
@@ -424,7 +424,7 @@ export default function AssistantDrawer({ isOpen, onClose }: AssistantDrawerProp
         The Assistant Drawer is anchored to the RIGHT SIDE of the screen.
       */}
       <div
-        className="fixed inset-y-0 right-0 z-50 w-full sm:w-[540px] md:w-[600px] h-full bg-[#0a0f1d] border-l border-amber-500/30 shadow-[-25px_0_60px_rgba(0,0,0,0.85)] flex flex-col pointer-events-auto text-slate-100 animate-in slide-in-from-right duration-300"
+        className="fixed inset-y-0 right-0 z-[999999] w-full sm:w-[540px] md:w-[600px] h-full bg-[#0a0f1d] border-l border-amber-500/30 shadow-[-25px_0_60px_rgba(0,0,0,0.85)] flex flex-col pointer-events-auto text-slate-100 animate-in slide-in-from-right duration-300"
       >
         {/* Imperial Heritage Header */}
         <div className="px-6 py-5 bg-gradient-to-b from-slate-900 via-slate-950 to-[#0a0f1d] border-b border-amber-500/25 flex items-center justify-between">

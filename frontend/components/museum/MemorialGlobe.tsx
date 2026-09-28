@@ -14,12 +14,6 @@ interface MemorialGlobeProps {
   children?: React.ReactNode;
 }
 
-/**
- * Mathematically exact Latitude & Longitude to 3D Cartesian coordinates
- * Perfectly aligned with Three.js SphereGeometry UV texture mapping:
- * - u goes from 0 (lon -180°) to 1.0 (lon +180°)
- * - v goes from 0 (lat +90° North Pole) to 1.0 (lat -90° South Pole)
- */
 function latLongToVector3(lat: number, lon: number, radius: number): THREE.Vector3 {
   const phi = (lon + 180) * (Math.PI / 180);
   const theta = (90 - lat) * (Math.PI / 180);

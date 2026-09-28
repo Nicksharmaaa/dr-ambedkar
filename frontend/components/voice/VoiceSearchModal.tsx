@@ -141,7 +141,7 @@ export function VoiceSearchModal({ isOpen, onClose, onSearch }: VoiceSearchModal
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
       <div className="relative w-full max-w-lg rounded-2xl bg-[#0f172a] border border-blue-900/50 shadow-2xl p-6 text-slate-100 animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-800">

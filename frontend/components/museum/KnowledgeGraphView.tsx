@@ -6,6 +6,7 @@ import { ArchivalDocument, Language } from '@/types/museum';
 import { KNOWLEDGE_GRAPH_NODES, KNOWLEDGE_GRAPH_LINKS } from '@/data/archiveData';
 import { ShieldCheck } from 'lucide-react';
 import { UI_STRINGS } from '@/utils/i18n';
+import MuseumGrandPavilion from './MuseumGrandPavilion';
 
 interface KnowledgeGraphViewProps {
   language?: Language;
@@ -43,6 +44,7 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
       <div className="max-w-[1600px] mx-auto space-y-5">
 
         {/* Curatorial Header */}
+<<<<<<< HEAD
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#8B5E3C] via-[#C59A45] to-[#0A2947]" />
 
@@ -91,6 +93,21 @@ export const KnowledgeGraphView: React.FC<KnowledgeGraphViewProps> = ({
             </div>
           </div>
         </div>
+=======
+        {/* Curatorial Header */}
+        <MuseumGrandPavilion
+          title={
+            <>
+              Semantic{' '}
+              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                Knowledge
+              </span>{' '}
+              Graph
+            </>
+          }
+          watermarkIcon={Network}
+        />
+>>>>>>> 8141688d294d17155f2b60e48c3a0aaef5576a61
 
         {/* 3D Knowledge Universe Viewport */}
         <KnowledgeGraph3D

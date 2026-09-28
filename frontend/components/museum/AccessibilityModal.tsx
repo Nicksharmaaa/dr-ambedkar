@@ -30,7 +30,7 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({
   const t = UI_STRINGS[language];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-150">
       <div 
         className="w-full max-w-lg bg-white border border-slate-300 rounded-lg shadow-2xl p-6 text-slate-900 relative"
         role="dialog"

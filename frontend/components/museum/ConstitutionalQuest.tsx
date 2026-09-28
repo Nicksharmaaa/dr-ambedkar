@@ -9,6 +9,7 @@ import confetti from 'canvas-confetti';
 import { QUIZ_QUESTIONS } from '@/data/interactiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { Language } from '@/types/museum';
+import MuseumGrandPavilion from './MuseumGrandPavilion';
 
 interface ConstitutionalQuestProps {
   language: Language;
@@ -115,42 +116,41 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
       <div className="max-w-4xl mx-auto space-y-8">
         
         {/* Top Banner / Quest Identity */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b-2 border-[#D3D4C0]">
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-[#D3D4C0] text-[#8B5E3C] font-cinzel font-bold rounded-xl text-xs uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 text-[#8B5E3C]" />
-              <span>INTERACTIVE HISTORICAL EXHIBIT</span>
+        <MuseumGrandPavilion
+          title={
+            <>
+              The{' '}
+              <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                Constitutional
+              </span>{' '}
+              Quest
+            </>
+          }
+          watermarkIcon={Award}
+        >
+          <div className="flex items-center justify-between gap-3 pt-2">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setSoundEnabled(!soundEnabled);
+                  soundEffects.enabled = !soundEnabled;
+                }}
+                className="p-2.5 rounded-xl border border-[#C59A45]/30 bg-white/5 hover:bg-white/10 text-white transition-colors cursor-pointer"
+                title={soundEnabled ? "Mute Game Audio" : "Enable Game Audio"}
+                aria-label="Sound Toggle"
+              >
+                {soundEnabled ? <Volume2 className="w-4 h-4 text-[#F5D77F]" /> : <VolumeX className="w-4 h-4 text-white/40" />}
+              </button>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-serif-editorial font-bold text-[#0A2947] tracking-tight mt-2">
-              The Constitutional Quest
-            </h1>
-            <p className="text-sm text-[#0A2947]/75 mt-1 font-dmsans">
-              Test your knowledge of Babasaheb's landmark legal texts, constituent assembly debates, and civil rights battles.
-            </p>
-          </div>
-
-          {/* Quest Controls: Audio toggle & Streak Counter */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                setSoundEnabled(!soundEnabled);
-                soundEffects.enabled = !soundEnabled;
-              }}
-              className="p-2.5 rounded-xl border border-[#D3D4C0] hover:bg-white text-[#0A2947] transition-colors cursor-pointer"
-              title={soundEnabled ? "Mute Game Audio" : "Enable Game Audio"}
-              aria-label="Sound Toggle"
-            >
-              {soundEnabled ? <Volume2 className="w-4 h-4 text-[#8B5E3C]" /> : <VolumeX className="w-4 h-4 text-[#0A2947]/40" />}
-            </button>
 
             {streak > 1 && (
-              <div className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#8B5E3C] text-[#F3E4C9] font-montserrat font-bold rounded-xl text-xs shadow-xs animate-pulse">
-                <Flame className="w-4 h-4 fill-[#F3E4C9]" />
+              <div className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#C59A45] text-[#0A2947] font-montserrat font-black rounded-xl text-xs shadow-xs animate-pulse">
+                <Flame className="w-4 h-4 fill-current" />
                 <span>{streak}x Streak!</span>
               </div>
             )}
           </div>
-        </div>
+        </MuseumGrandPavilion>
 
         {!isCompleted ? (
           <div className="space-y-6">

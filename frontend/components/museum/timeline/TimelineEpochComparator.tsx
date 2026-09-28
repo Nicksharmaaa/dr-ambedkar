@@ -150,7 +150,7 @@ export const TimelineEpochComparator: React.FC<TimelineEpochComparatorProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#0A2947]/80 backdrop-blur-sm animate-in fade-in duration-200 font-dmsans">
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-[#0A2947]/85 backdrop-blur-md animate-in fade-in duration-200 font-dmsans">
       <div 
         className="bg-white rounded-3xl border-2 border-[#C59A45] shadow-2xl max-w-5xl w-full overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}

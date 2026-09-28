@@ -50,7 +50,7 @@ export const AccessibleEntityList: React.FC<AccessibleEntityListProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[10001] flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-sm animate-in fade-in"
+      className="fixed inset-0 z-[999999] flex items-center justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-md animate-in fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="accessible-directory-title"

@@ -22,6 +22,7 @@ import { TimelineGuidedTourBar } from './timeline/TimelineGuidedTourBar';
 import TimelineDemo from '@/components/timeline-demo';
 import { ThreeDPhotoCarousel, ThreeDCarouselCard } from '@/components/ui/three-d-carousel';
 import { motion, useScroll, useTransform } from 'motion/react';
+import { MuseumGrandPavilion } from './MuseumGrandPavilion';
 
 interface TimelineViewProps {
   language: Language;
@@ -331,94 +332,82 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         {/* =========================================================================
             INSTITUTIONAL KIOSK TITLE BAR & ACTION TERMINAL
             ========================================================================= */}
-        <div className="bg-white border-2 border-[#D3D4C0] rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#8B5E3C] via-[#C59A45] to-[#0A2947]" />
-
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-            <div className="space-y-3 max-w-3xl">
-              <div className="flex flex-wrap items-center gap-2 text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-widest">
-                <Compass className="w-4 h-4 text-[#8B5E3C]" />
-                <span>DR. AMBEDKAR INTERNATIONAL CENTRE (DAIC) · MEMORIAL KIOSK</span>
-                <span className="text-[#0A2947]/30">·</span>
-                <span className="px-2.5 py-0.5 bg-[#FAF7F0] border border-[#D3D4C0] rounded-md text-[11px] text-[#0A2947] font-mono font-bold">
-                  1891–1956
-                </span>
-                <span className="px-2 py-0.5 bg-[#0A2947] text-[#F3E4C9] rounded-md text-[10px] font-mono font-bold">
-                  {filteredEvents.length} Stations
-                </span>
-              </div>
-
-              <h1 className="text-3xl sm:text-5xl font-serif-editorial font-bold text-[#0A2947] tracking-tight leading-tight">
-                {t.timelineTitle || "Chronicles of a Revolutionary Life"}
-              </h1>
-
-              <p className="text-sm sm:text-base text-[#0A2947]/75 font-normal leading-relaxed">
-                {t.timelineSubtitle || "Step into the epochal journey of Dr. Bhimrao Ramji Ambedkar. Touch the interactive horizon to explore historical newsreels, primary treaties, audio proclamations, and seminal constitutional milestones."}
-              </p>
-            </div>
-
-            {/* View Mode Switcher & Quick Kiosk Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              {/* Interactive Kiosk Buttons */}
-              <div className="flex items-center gap-2">
-                {/* Memorial Tour Button */}
-                <button
-                  onClick={isTourActive ? handleStopTour : handleStartTour}
-                  className={`px-4 py-2 rounded-2xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 shadow-sm ${isTourActive
+        <MuseumGrandPavilion
+          title={
+            language === 'en' ? (
+              <>
+                Chronicles of a{' '}
+                <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                  Revolutionary
+                </span>{' '}
+                Life
+              </>
+            ) : (
+              <span className="bg-gradient-to-r from-white via-[#FAF7F0] to-[#EAD8B1] bg-clip-text text-transparent">
+                {t.timelineTitle || "क्रांतिकारी जीवन गाथा"}
+              </span>
+            )
+          }
+          watermarkIcon={Clock}
+        >
+          {/* Action Toolbar */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={isTourActive ? handleStopTour : handleStartTour}
+                className={`px-4 py-2 rounded-2xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 shadow-sm ${
+                  isTourActive
                     ? 'bg-rose-900 text-white ring-2 ring-rose-500 animate-pulse'
                     : 'bg-[#C59A45] hover:bg-[#d6aa55] text-[#0A2947] hover:scale-105'
-                    }`}
-                  title="Auto-advancing memorial presentation"
-                >
-                  {isTourActive ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-                  <span>{isTourActive ? (language === 'hi' ? 'दौरा रोकें' : language === 'mr' ? 'दौरा थांबवा' : 'Stop Tour') : (language === 'hi' ? 'मार्गदर्शित यात्रा' : language === 'mr' ? 'मार्गदर्शित दौरा' : 'Guided Tour')}</span>
-                </button>
+                }`}
+                title="Auto-advancing memorial presentation"
+              >
+                {isTourActive ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+                <span>{isTourActive ? (language === 'hi' ? 'दौरा रोकें' : language === 'mr' ? 'दौरा थांबवा' : 'Stop Tour') : (language === 'hi' ? 'मार्गदर्शित यात्रा' : language === 'mr' ? 'मार्गदर्शित दौरा' : 'Guided Tour')}</span>
+              </button>
 
-                {/* Milestone Quiz Challenge */}
-                <button
-                  onClick={() => {
-                    soundEffects.playClick();
-                    setIsQuizOpen(true);
-                  }}
-                  className="px-3.5 py-2 bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0] hover:border-[#8B5E3C] rounded-2xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-xs"
-                  title="Test Your Knowledge in the Memorial Quiz"
-                >
-                  <Trophy className="w-3.5 h-3.5 text-[#C59A45]" />
-                  <span>{language === 'hi' ? 'क्विज़' : language === 'mr' ? 'प्रश्नावली' : 'Epoch Quiz'}</span>
-                </button>
-              </div>
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setIsQuizOpen(true);
+                }}
+                className="px-3.5 py-2 bg-white/10 hover:bg-white/20 text-[#FAF7F0] border border-white/20 rounded-2xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
+                title="Test Your Knowledge in the Memorial Quiz"
+              >
+                <Trophy className="w-3.5 h-3.5 text-[#F5D061]" />
+                <span>{language === 'hi' ? 'क्विज़' : language === 'mr' ? 'प्रश्नावली' : 'Epoch Quiz'}</span>
+              </button>
+            </div>
 
-              {/* View Mode Toggle Pill */}
-              <div className="flex items-center bg-[#FAF7F0] p-1.5 rounded-2xl border-2 border-[#D3D4C0] shadow-xs">
-                <button
-                  type="button"
-                  onClick={() => handleModeChange('slideshow')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${timelineMode === 'slideshow'
-                    ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#8B5E3C]'
-                    : 'text-[#0A2947]/70 hover:text-[#0A2947]'
-                    }`}
-                  title="Cinematic Slide Corridor"
-                >
-                  <Film className="w-3.5 h-3.5" />
-                  <span className="hidden md:inline">Reel</span>
-                </button>
+            <div className="flex items-center bg-white/10 p-1.5 rounded-2xl border border-white/20 shadow-xs">
+              <button
+                type="button"
+                onClick={() => handleModeChange('slideshow')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                  timelineMode === 'slideshow'
+                    ? 'bg-[#C59A45] text-[#0A2947] shadow-xs'
+                    : 'text-[#FAF7F0]/70 hover:text-white'
+                }`}
+              >
+                <Film className="w-3.5 h-3.5" />
+                <span className="hidden md:inline">Reel</span>
+              </button>
 
-                <button
-                  type="button"
-                  onClick={() => handleModeChange('grid')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${timelineMode === 'grid'
-                    ? 'bg-[#0A2947] text-[#F3E4C9] shadow-xs ring-1 ring-[#8B5E3C]'
-                    : 'text-[#0A2947]/70 hover:text-[#0A2947]'
-                    }`}
-                  title="Curatorial Matrix Grid"
-                >
-                  <LayoutGrid className="w-3.5 h-3.5" />
-                  <span className="hidden md:inline">Grid</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => handleModeChange('grid')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                  timelineMode === 'grid'
+                    ? 'bg-[#C59A45] text-[#0A2947] shadow-xs'
+                    : 'text-[#FAF7F0]/70 hover:text-white'
+                }`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span className="hidden md:inline">Grid</span>
+              </button>
             </div>
           </div>
-        </div>
+        </MuseumGrandPavilion>
 
         {/* =========================================================================
             TOUCH HORIZON CHRONOLOGICAL SCRUBBER & SLIDER
@@ -913,7 +902,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             ========================================================================= */}
         {activeMediaEvent && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#0A2947]/85 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-[#0A2947]/90 backdrop-blur-md animate-in fade-in duration-200"
             onClick={handleCloseMedia}
           >
             <div
