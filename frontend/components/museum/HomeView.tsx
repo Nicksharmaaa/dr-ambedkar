@@ -92,63 +92,72 @@ export const HomeView: React.FC<HomeViewProps> = ({
       tab: 'archive',
       title: t.wingArchiveTitle || 'The Archive',
       subtitle: t.wingArchiveSub || 'BAWS Volumes 1–22 · Full Corpus',
-      icon: BookOpen
+      icon: BookOpen,
+      badge: language === 'hi' ? 'ग्रंथ संग्रह' : language === 'mr' ? 'ग्रंथ संग्रह' : 'Primary Corpus',
     },
     {
       id: 'timeline',
       tab: 'timeline',
       title: t.wingTimelineTitle || 'Timeline Chronicle',
       subtitle: t.wingTimelineSub || '1891–1956 · Five Historical Epochs',
-      icon: Clock
+      icon: Clock,
+      badge: language === 'hi' ? 'कालक्रम' : language === 'mr' ? 'कालक्रम' : 'Chronicle',
     },
     {
       id: 'media',
       tab: 'media',
       title: t.wingMediaTitle || 'Media & Voice',
       subtitle: t.wingMediaSub || 'BBC Broadcasts & Historic Audio',
-      icon: Radio
+      icon: Radio,
+      badge: language === 'hi' ? 'ध्वनि व प्रसारण' : language === 'mr' ? 'ध्वनि व प्रसारण' : 'Historic Audio',
     },
     {
       id: 'assistant',
       tab: 'assistant',
       title: t.wingAssistantTitle || 'AI Scholar',
       subtitle: t.wingAssistantSub || 'Grounded Archival Research & Citations',
-      icon: Sparkles
+      icon: Sparkles,
+      badge: language === 'hi' ? 'एआई शोध' : language === 'mr' ? 'एआय संशोधन' : 'AI Intelligence',
     },
     {
       id: 'gallery',
       tab: 'gallery',
       title: t.wingGalleryTitle || 'Visual Folio',
       subtitle: t.wingGallerySub || 'Rare Photographic Prints & Plates',
-      icon: Camera
+      icon: Camera,
+      badge: language === 'hi' ? 'चित्र दीर्घा' : language === 'mr' ? 'चित्र दालन' : 'Photo Prints',
     },
     {
       id: 'graph',
       tab: 'graph',
       title: t.wingGraphTitle || '3D Knowledge Graph',
       subtitle: t.wingGraphSub || 'Interactive Semantic Lineage & Map',
-      icon: Network
+      icon: Network,
+      badge: language === 'hi' ? 'ज्ञान संजाल' : language === 'mr' ? 'ज्ञान आलेख' : 'Semantic Map',
     },
     {
       id: 'stories',
       tab: 'stories',
       title: t.wingStoriesTitle || 'Audio Stories',
       subtitle: t.wingStoriesSub || 'Guided Audiovisual Walkthroughs',
-      icon: Star
+      icon: Star,
+      badge: language === 'hi' ? 'कथा यात्रा' : language === 'mr' ? 'कथा यात्रा' : 'Guided Narrative',
     },
     {
       id: 'quest',
       tab: 'quest',
       title: t.wingQuestTitle || 'Interactive Quest',
       subtitle: t.wingQuestSub || 'Constitutional Challenges & Quiz',
-      icon: Zap
+      icon: Zap,
+      badge: language === 'hi' ? 'प्रश्नोत्तरी' : language === 'mr' ? 'प्रश्नोत्तरी' : 'Constitutional Quiz',
     },
     {
       id: 'collection',
       tab: 'collection',
       title: t.wingCollectionTitle || 'Personal Notebook',
       subtitle: t.wingCollectionSub || 'Saved Dossier & Scholarly Notes',
-      icon: Bookmark
+      icon: Bookmark,
+      badge: language === 'hi' ? 'नोंदवही' : language === 'mr' ? 'नोंदवही' : 'Saved Dossier',
     },
   ];
 
@@ -366,11 +375,17 @@ export const HomeView: React.FC<HomeViewProps> = ({
       {/* =========================================================================
           SECTION 2: MUSEUM EXPLORATION WINGS (Side Navigation Rail Portals)
           ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-5">
 
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#D3D4C0]">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-4 border-b border-[#D3D4C0]">
           <div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif-editorial font-bold text-[#0A2947] mt-1 tracking-tight">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C89D56] animate-pulse" />
+              <span className="text-[11px] font-mono uppercase tracking-widest text-[#8B5E3C] font-semibold">
+                {t.pavilionsCount || "9 Pavilions"}
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-serif-editorial font-bold text-[#0A2947] tracking-tight">
               {t.wingsTitle || "Explore the Museum"}
             </h2>
             <p className="text-xs sm:text-sm text-[#0A2947]/75 mt-0.5 font-dmsans max-w-2xl">
@@ -378,15 +393,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </p>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-[#8B5E3C] bg-white/80 px-3.5 py-1.5 rounded-full border border-[#D3D4C0] shadow-2xs">
+          <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-[#8B5E3C] bg-white/80 px-3.5 py-1.5 rounded-full border border-[#D3D4C0] shadow-2xs shrink-0">
             <span className="w-2 h-2 rounded-full bg-[#C89D56] animate-pulse" />
             <span>{t.pavilionsCount || "9 Pavilions"}</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-          {navigationWings.map((wing) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-3.5">
+          {navigationWings.map((wing, index) => {
             const Icon = wing.icon;
+            const pavilionNum = String(index + 1).padStart(2, '0');
             return (
               <button
                 key={wing.id}
@@ -394,29 +410,47 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   soundEffects.playClick();
                   onNavigateTab(wing.tab);
                 }}
-                className="group relative p-5 sm:p-6 rounded-2xl bg-white/85 hover:bg-white border border-[#D3D4C0] hover:border-[#0A2947]/30 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_-10px_rgba(10,41,71,0.08),0_2px_8px_rgba(200,157,86,0.06)] cursor-pointer flex flex-col justify-between h-[142px] sm:h-[150px] overflow-hidden backdrop-blur-xs shadow-2xs"
+                className="group relative p-3 sm:p-3.5 rounded-xl bg-white/90 hover:bg-white border border-[#D3D4C0] hover:border-[#0A2947]/30 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_24px_-8px_rgba(10,41,71,0.08),0_2px_6px_rgba(200,157,86,0.06)] cursor-pointer flex items-center gap-3 sm:gap-3.5 overflow-hidden backdrop-blur-xs shadow-2xs"
               >
-                {/* Gilded Top Accent Line */}
-                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#C89D56] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* Gilded Left Accent Line */}
+                <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-gradient-to-b from-[#C89D56] to-[#8B5E3C] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-l" />
 
-                {/* Top Row: Icon Squircle & Directional Arrow */}
-                <div className="flex items-center justify-between">
-                  <div className="w-11 h-11 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] flex items-center justify-center text-[#0A2947] group-hover:bg-[#0A2947] group-hover:text-[#F3E4C9] group-hover:border-[#0A2947] group-hover:scale-105 group-hover:rotate-[-2deg] transition-all duration-300 shadow-2xs">
-                    <Icon className="w-5 h-5 transition-transform duration-300" />
-                  </div>
-                  <div className="w-8 h-8 rounded-full border border-transparent group-hover:border-[#D3D4C0] group-hover:bg-[#FAF7F0] flex items-center justify-center text-[#8B5E3C]/60 group-hover:text-[#0A2947] group-hover:translate-x-1 transition-all duration-300">
-                    <ArrowRight className="w-4 h-4" />
-                  </div>
+                {/* Gilded Top Hairline */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#C89D56]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                {/* Archival Folio Watermark Numeral */}
+                <span className="absolute right-2 -bottom-2 text-5xl font-cinzel font-bold text-[#0A2947]/[0.03] select-none pointer-events-none group-hover:text-[#C89D56]/[0.08] transition-colors">
+                  {pavilionNum}
+                </span>
+
+                {/* Icon Squircle */}
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#FAF7F0] border border-[#D3D4C0] flex items-center justify-center text-[#0A2947] group-hover:bg-[#0A2947] group-hover:text-[#F3E4C9] group-hover:border-[#0A2947] group-hover:scale-105 group-hover:-rotate-2 transition-all duration-300 shadow-2xs shrink-0">
+                  <Icon className="w-5 h-5 transition-transform duration-300" />
                 </div>
 
-                {/* Bottom Row: Minimal Title & 1-line Subtitle */}
-                <div className="mt-auto">
-                  <h3 className="font-serif-editorial text-lg sm:text-[19px] font-bold text-[#0A2947] group-hover:text-[#8B5E3C] transition-colors leading-tight line-clamp-1">
+                {/* Center Content Stack */}
+                <div className="flex-1 min-w-0 pr-1">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="font-mono text-[10px] font-bold text-[#8B5E3C] tracking-wider uppercase bg-[#FAF7F0] px-1.5 py-0.5 rounded border border-[#D3D4C0]/70 leading-none">
+                      {pavilionNum}
+                    </span>
+                    {wing.badge && (
+                      <span className="text-[10px] font-mono tracking-wider uppercase text-[#0A2947]/50 font-semibold truncate">
+                        · {wing.badge}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-serif-editorial text-[15px] sm:text-base font-bold text-[#0A2947] group-hover:text-[#8B5E3C] transition-colors leading-snug truncate">
                     {wing.title}
                   </h3>
-                  <p className="text-xs text-[#0A2947]/65 font-dmsans mt-1 truncate">
+                  <p className="text-[11px] sm:text-xs text-[#0A2947]/70 font-dmsans truncate mt-0.5">
                     {wing.subtitle}
                   </p>
+                </div>
+
+                {/* Directional Action Pill */}
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-transparent group-hover:border-[#D3D4C0] group-hover:bg-[#FAF7F0] flex items-center justify-center text-[#8B5E3C]/60 group-hover:text-[#0A2947] group-hover:translate-x-0.5 transition-all duration-300 shrink-0">
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
               </button>
             );

@@ -6,7 +6,7 @@ import {
   ArrowRight, RotateCcw, Sparkles, LayoutGrid, List, Columns3,
   Bookmark, Check, Copy, CheckCircle2, ChevronDown, SlidersHorizontal,
   X, Calendar, Landmark, Eye,
-  ShieldCheck, Volume2, Tag
+  ShieldCheck, Volume2, Tag, Mic
 } from 'lucide-react';
 import { Language, ArchivalDocument } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
@@ -358,21 +358,49 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
 
           {/* Live Voice Status Indicator */}
           {voiceNotice && (
-            <div className={`px-4 py-2 rounded-xl text-xs font-mono flex items-center justify-between border transition-all ${isListeningVoice
-              ? 'bg-amber-100/90 text-amber-900 border-amber-300 animate-pulse'
-              : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-              }`}>
-              <div className="flex items-center gap-2">
-                <span className={`w-2.5 h-2.5 rounded-full ${isListeningVoice ? 'bg-red-600 animate-ping' : 'bg-emerald-600'}`} />
-                <span className="font-semibold">{voiceNotice}</span>
+            <div
+              role="status"
+              aria-live="polite"
+              className={`px-3.5 py-2 rounded-xl text-xs flex items-center justify-between border transition-all duration-300 ${
+                isListeningVoice
+                  ? 'bg-[#0A2947] text-[#FAF7F0] border-[#C89D56]/50 shadow-sm'
+                  : 'bg-[#FAF7F0] text-[#0A2947] border-[#D3D4C0] shadow-2xs'
+              }`}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                {isListeningVoice ? (
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C89D56] opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C89D56]" />
+                    </span>
+                    <Mic className="w-3.5 h-3.5 text-[#C89D56] animate-pulse" />
+                  </div>
+                ) : (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#2A9D8F] shrink-0" />
+                )}
+                <span className="font-dmsans text-xs truncate font-medium">
+                  {voiceNotice}
+                </span>
               </div>
-              {isListeningVoice && (
+
+              {isListeningVoice ? (
                 <button
                   type="button"
                   onClick={handleToggleVoiceSearch}
-                  className="text-xs uppercase font-bold text-red-700 hover:underline cursor-pointer"
+                  className="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-[#FAF7F0] border border-white/20 text-[11px] font-montserrat font-bold uppercase tracking-wider flex items-center gap-1 transition-all cursor-pointer shrink-0 ml-3 active:scale-95"
                 >
-                  Done Speaking
+                  <span>Done</span>
+                  <Check className="w-3 h-3 text-[#C89D56]" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setVoiceNotice(null)}
+                  className="p-1 rounded-md text-[#0A2947]/50 hover:text-[#0A2947] hover:bg-black/5 transition-colors cursor-pointer shrink-0 ml-2"
+                  aria-label="Dismiss voice status"
+                >
+                  <X className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
