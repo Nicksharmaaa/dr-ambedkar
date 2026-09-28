@@ -1,14 +1,14 @@
 """Pydantic schemas for Phase 6 Search — hybrid RRF, reranking, deep-links."""
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class SearchRequest(BaseModel):
     """POST body for hybrid search."""
-    q: str = Field(..., min_length=1, max_length=500, description="Search query")
+    q: str = Field(default="", min_length=1, max_length=500, description="Search query")
     mode: Literal["fts", "vector", "hybrid"] = "hybrid"
     limit: int = Field(default=20, ge=1, le=100)
     language: str | None = None
@@ -18,6 +18,15 @@ class SearchRequest(BaseModel):
     date_from: str | None = None
     date_to: str | None = None
     enable_rerank: bool = True
+
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_query_param(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            q_val = data.get("q") or data.get("query")
+            if q_val:
+                data["q"] = q_val
+        return data
 
 
 class SearchResultChunk(BaseModel):

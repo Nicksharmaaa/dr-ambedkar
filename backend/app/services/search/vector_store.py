@@ -133,6 +133,7 @@ class TursoVectorStore(VectorStore):
 
         candidates = [
             Path("storage/local/vector_cache.npz"),
+            Path("backend/storage/local/vector_cache.npz"),
             Path(__file__).resolve().parent.parent.parent.parent / "storage" / "local" / "vector_cache.npz",
         ]
         for cache_path in candidates:
@@ -238,3 +239,8 @@ class TursoVectorStore(VectorStore):
         result = await self.db.execute("SELECT COUNT(*) AS cnt FROM embeddings")
         row = result.first()
         return int(row["cnt"]) if row else 0
+
+
+# PostgreSQL vector store alias
+PostgresVectorStore = TursoVectorStore
+

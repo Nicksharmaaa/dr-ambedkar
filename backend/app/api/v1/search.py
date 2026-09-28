@@ -213,7 +213,7 @@ async def search_stats() -> SearchStats:
     from app.core.config import settings
 
     chunk_count     = await _count("document_chunks")
-    embedding_count = await _count("embeddings", "embedding_json IS NOT NULL OR embedding IS NOT NULL")
+    embedding_count = await _count("embeddings", "embedding_json IS NOT NULL")
     page_count      = await _count("pages")
     doc_count       = await _count("archival_objects")
     fts_count       = await _count("fts_chunks")

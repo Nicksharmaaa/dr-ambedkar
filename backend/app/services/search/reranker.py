@@ -12,9 +12,10 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Any
+from pathlib import Path
 
-os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
+os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 
 import torch
 
@@ -53,64 +54,56 @@ class RerankerService:
             )
         return cls._instance
 
+    def _resolve_model_path(self) -> tuple[str, str | None]:
+        """Resolve model name and cache dir to ensure fast offline loading."""
+        cache_dir = None
+        try:
+            from app.core.config import settings
+            cache_dir = Path(settings.ai_model_cache_dir)
+        except Exception:
+            pass
+
+        base_dirs = [
+            Path("backend/models/cache"),
+            Path("models/cache"),
+            Path(__file__).resolve().parent.parent.parent.parent / "models" / "cache",
+        ]
+        if cache_dir:
+            base_dirs.insert(0, cache_dir)
+
+        # First check if cross-encoder snapshot exists (standard sequence classification cross-encoder)
+        for bd in base_dirs:
+            ce_snap = bd / "models--cross-encoder--ms-marco-MiniLM-L-6-v2" / "snapshots" / "233902d25c440f23af6f7d6e94d2946bac0bee0a"
+            if ce_snap.exists() and (ce_snap / "model.safetensors").exists():
+                return str(ce_snap), str(bd)
+
+        return "cross-encoder/ms-marco-MiniLM-L-6-v2", str(base_dirs[0]) if base_dirs else None
+
     def _ensure_loaded(self) -> None:
         if self._model is not None:
             return
 
-        from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoConfig  # type: ignore
+        from transformers import AutoTokenizer, AutoModelForSequenceClassification  # type: ignore
 
         logger.info("Loading reranker model …", extra={"model": self.model_name})
-        cache_dir = None
-        try:
-            from app.core.config import settings
-            cache_dir = str(settings.ai_model_cache_dir)
-        except Exception:
-            pass
+        model_path, cache_dir = self._resolve_model_path()
 
-        # Check model architecture
-        try:
-            cfg = AutoConfig.from_pretrained(self.model_name, cache_dir=cache_dir, local_files_only=True)
-            archs = getattr(cfg, "architectures", []) or []
-            is_causal = any("CausalLM" in a for a in archs)
-        except Exception:
-            try:
-                cfg = AutoConfig.from_pretrained(self.model_name, cache_dir=cache_dir)
-                archs = getattr(cfg, "architectures", []) or []
-                is_causal = any("CausalLM" in a for a in archs)
-            except Exception:
-                is_causal = False
+        dtype = torch.float16 if self.device == "cuda" else torch.float32
 
-        target_model = self.model_name
-        if is_causal:
-            # If CausalLM requested, use compatible cross-encoder for standard scoring
-            target_model = "cross-encoder/ms-marco-MiniLM-L-6-v2"
-
-        try:
-            self._tokenizer = AutoTokenizer.from_pretrained(
-                target_model,
-                cache_dir=cache_dir,
-                local_files_only=True,
-            )
-            self._model = AutoModelForSequenceClassification.from_pretrained(
-                target_model,
-                cache_dir=cache_dir,
-                dtype=torch.float16 if self.device == "cuda" else torch.float32,
-                num_labels=1,
-                local_files_only=True,
-            ).to(self.device)
-        except Exception:
-            self._tokenizer = AutoTokenizer.from_pretrained(
-                target_model,
-                cache_dir=cache_dir,
-            )
-            self._model = AutoModelForSequenceClassification.from_pretrained(
-                target_model,
-                cache_dir=cache_dir,
-                dtype=torch.float16 if self.device == "cuda" else torch.float32,
-                num_labels=1,
-            ).to(self.device)
+        self._tokenizer = AutoTokenizer.from_pretrained(
+            model_path,
+            cache_dir=cache_dir,
+            local_files_only=True,
+        )
+        self._model = AutoModelForSequenceClassification.from_pretrained(
+            model_path,
+            cache_dir=cache_dir,
+            dtype=dtype,
+            num_labels=1,
+            local_files_only=True,
+        ).to(self.device)
         self._model.eval()
-        logger.info("Reranker model ready", extra={"model": target_model})
+        logger.info("Reranker model ready", extra={"model": model_path})
 
     def rerank(
         self,
