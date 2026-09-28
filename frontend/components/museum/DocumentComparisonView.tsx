@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import { 
   GitCompare, Sparkles, BookOpen, Layers, ArrowRight, Check, Copy, 
-  HelpCircle, Scale, Milestone, FileText, ExternalLink, Lightbulb
+  HelpCircle, Scale, Milestone, FileText, ExternalLink, Lightbulb, ShieldCheck
 } from 'lucide-react';
 import { ArchivalDocument, DocComparisonPreset, Language } from '@/types/museum';
 import { ARCHIVE_DOCUMENTS, DOC_COMPARISON_PRESETS } from '@/data/archiveData';
+import { MuseumGrandPavilion } from './MuseumGrandPavilion';
+import { soundEffects } from '@/utils/soundEffects';
 
 interface DocumentComparisonViewProps {
   language: Language;
@@ -30,12 +32,14 @@ export const DocumentComparisonView: React.FC<DocumentComparisonViewProps> = ({
   const currentPreset = DOC_COMPARISON_PRESETS.find(p => p.id === selectedPresetId);
 
   const handleSelectPreset = (preset: DocComparisonPreset) => {
+    soundEffects.playClick();
     setSelectedPresetId(preset.id);
     setDocAId(preset.docAId);
     setDocBId(preset.docBId);
   };
 
   const handleCopyAnalysis = () => {
+    soundEffects.playClick();
     const analysisText = `
 Historical Comparison: "${docA.title}" (${docA.year}) vs "${docB.title}" (${docB.year})
 Source: Dr. B. R. Ambedkar Archival Digital Museum
@@ -56,37 +60,45 @@ ${currentPreset ? currentPreset.historicalEvolution : 'Traces Dr. Ambedkar’s l
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      
-      {/* Header Banner */}
-      <div className="mb-8 border-b border-black/10 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-1 bg-blue-700 text-white text-xs font-montserrat uppercase tracking-wider font-bold rounded">
-              Innovation Feature
-            </span>
-            <span className="px-2.5 py-1 bg-amber-600 text-white text-xs font-montserrat uppercase tracking-wider font-bold rounded flex items-center gap-1">
-              <Scale className="w-3.5 h-3.5" />
-              Comparative Synthesis
-            </span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-archivo uppercase text-black tracking-tight">
-            Document Comparison Engine
-          </h1>
-          <p className="text-neutral-600 text-sm sm:text-base font-dmsans max-w-2xl mt-1">
-            Compare two historical treatises side-by-side. Discover common themes, theological shifts, and Dr. Ambedkar’s intellectual evolution.
-          </p>
-        </div>
-
-        {/* Copy / Export Button */}
-        <button
-          onClick={handleCopyAnalysis}
-          className="px-4 py-2.5 bg-neutral-900 hover:bg-black text-white rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider flex items-center gap-2 self-start md:self-auto shadow-sm"
+    <div className="min-h-screen bg-transparent text-[#0A2947] font-dmsans py-8 sm:py-12 px-4 sm:px-6 lg:px-8 space-y-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        
+        {/* =========================================================================
+            1. MUSEUM ARCHIVAL GRAND PAVILION
+            ========================================================================= */}
+        <MuseumGrandPavilion
+          title={
+            language === 'en' ? (
+              <>
+                Comparative &amp;{' '}
+                <span className="font-serif italic font-normal bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] bg-clip-text text-transparent">
+                  Synthesis
+                </span>{' '}
+                Engine
+              </>
+            ) : (
+              <span className="bg-gradient-to-r from-white via-[#FAF7F0] to-[#EAD8B1] bg-clip-text text-transparent">
+                तुलनात्मक ऐतिहासिक शोध दालन
+              </span>
+            )
+          }
+          watermarkIcon={Scale}
         >
-          {isCopied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-neutral-300" />}
-          <span>{isCopied ? 'Analysis Copied!' : 'Copy Comparative Report'}</span>
-        </button>
-      </div>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 pt-2">
+            <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed max-w-3xl">
+              Compare two historical treatises side-by-side. Trace theological transitions, conceptual evolution, and constitutional codification across Dr. Ambedkar&apos;s lifelong scholarship.
+            </p>
+
+            <button
+              onClick={handleCopyAnalysis}
+              className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-[#FAF7F0] border border-white/20 rounded-2xl text-xs font-montserrat font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-colors shadow-sm shrink-0"
+            >
+              {isCopied ? <Check className="w-4 h-4 text-[#F5D061]" /> : <Copy className="w-4 h-4 text-[#FAF7F0]" />}
+              <span>{isCopied ? 'Analysis Copied!' : 'Copy Comparative Report'}</span>
+            </button>
+          </div>
+        </MuseumGrandPavilion>
+
 
       {/* Preset Pickers */}
       <div className="mb-8">
