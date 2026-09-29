@@ -56,6 +56,7 @@ import {
 } from "@/data/incomingPdfCatalog";
 import { speechController } from "@/utils/speechUtils";
 import { soundEffects } from "@/utils/soundEffects";
+import { resolveIncomingDocumentUrl } from "@/utils/pdfCatalogResolver";
 
 interface ArchivalViewerProps {
   documentId: string;
@@ -103,8 +104,8 @@ export function ArchivalViewer({
   }, [documentId, initialFile]);
 
   const [activePdf, setActivePdf] = useState<IncomingVolumeItem | null>(initialPdf);
-  const [activePdfPath, setActivePdfPath] = useState<string>(
-    initialPdf?.filePath || "/incoming_documents/books_and_writings/hindi/hindi_vol1.pdf"
+  const [activePdfPath, setActivePdfPath] = useState<string>(() =>
+    resolveIncomingDocumentUrl(initialPdf?.filePath || "/incoming_documents/books_and_writings/hindi/hindi_vol1.pdf")
   );
   const [isPdfDrawerOpen, setIsPdfDrawerOpen] = useState<boolean>(false);
   const [pdfPageInput, setPdfPageInput] = useState<string>("1");
@@ -521,7 +522,7 @@ export function ArchivalViewer({
   const handleSelectPdf = (item: IncomingVolumeItem) => {
     soundEffects.playClick();
     setActivePdf(item);
-    setActivePdfPath(item.filePath);
+    setActivePdfPath(resolveIncomingDocumentUrl(item.filePath));
     setSelectedFolderFilter(item.folder);
     setActiveTab("PDF");
     setPdfCurrentPage(1);
@@ -923,10 +924,22 @@ export function ArchivalViewer({
 
               <div className="flex items-center gap-3 shrink-0">
                 <button
-                  onClick={() => setShowNativePdfToolbar(!showNativePdfToolbar)}
-                  className="hover:text-[#0A2947] transition-colors text-[10px] text-slate-600 hover:underline cursor-pointer"
+                  onClick={() => {
+                    soundEffects.playClick();
+                    setActiveTab("READER");
+                  }}
+                  className="px-2.5 py-1 rounded-md bg-[#C89D56]/20 hover:bg-[#C89D56]/30 text-[#0A2947] font-montserrat font-bold text-[10px] sm:text-[11px] flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Read digitized text with chapter navigation, audio narration and translations"
                 >
-                  {showNativePdfToolbar ? "Hide Browser Chrome" : "Show Browser PDF Toolbar"}
+                  <BookOpen className="w-3 h-3 text-[#8B5E3C]" />
+                  <span>Interactive Reader</span>
+                </button>
+
+                <button
+                  onClick={() => setShowNativePdfToolbar(!showNativePdfToolbar)}
+                  className="hover:text-[#0A2947] transition-colors text-[10px] text-slate-600 hover:underline cursor-pointer hidden sm:inline"
+                >
+                  {showNativePdfToolbar ? "Hide Chrome" : "Browser PDF Controls"}
                 </button>
 
                 <a
@@ -934,7 +947,7 @@ export function ArchivalViewer({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-[#0A2947] text-[#8B5E3C] flex items-center gap-1 transition-colors text-[10px] font-medium"
-                  title="Open raw PDF in isolated tab"
+                  title="Open authentic archival volume in new tab"
                 >
                   <ExternalLink className="w-3 h-3" />
                   <span>Raw Tab</span>

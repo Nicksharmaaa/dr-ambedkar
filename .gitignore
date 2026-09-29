@@ -122,7 +122,7 @@ lightning_logs/
 **/exports/
 **/alto/
 **/storage/turso/
-incoming_documents/
+/incoming_documents/
 data/inbox/
 *.pdf
 !data/README.md
