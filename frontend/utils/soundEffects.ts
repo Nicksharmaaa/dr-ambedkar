@@ -132,6 +132,77 @@ class SoundEffectManager {
     }
   }
 
+  // Card flip / paper whoosh
+  playFlip() {
+    if (!this.enabled) return;
+    try {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(540, now + 0.08);
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.09);
+    } catch {
+      // AudioContext policy fallback
+    }
+  }
+
+  // Assembly Gavel strike (double tap)
+  playGavel() {
+    if (!this.enabled) return;
+    try {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      [0, 0.14].forEach((delay) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(140, now + delay);
+        osc.frequency.exponentialRampToValueAtTime(45, now + delay + 0.08);
+        gain.gain.setValueAtTime(0.2, now + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.09);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + delay);
+        osc.stop(now + delay + 0.1);
+      });
+    } catch {
+      // AudioContext policy fallback
+    }
+  }
+
+  // Ratchet tick for the Wheel of Rights
+  playWheelTick() {
+    if (!this.enabled) return;
+    try {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(800 + Math.random() * 200, now);
+      osc.frequency.exponentialRampToValueAtTime(200, now + 0.02);
+      gain.gain.setValueAtTime(0.04, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.025);
+    } catch {
+      // AudioContext policy fallback
+    }
+  }
+
   // Warm resonant museum chime for node selection
   playNodeSelectSound() {
     if (!this.enabled) return;
@@ -201,6 +272,118 @@ class SoundEffectManager {
   // Tactile museum chime for button and action clicks
   playTactileChime() {
     this.playClick();
+  }
+
+  // Sparkling arcade gold coin drop sound
+  playCoinDrop() {
+    if (!this.enabled) return;
+    try {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      // High ringing metallic frequency followed by resonant ping
+      const freqs = [987.77, 1318.51, 1975.53]; // B5, E6, B6
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+        gain.gain.setValueAtTime(0.12, now + idx * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.28);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.05);
+        osc.stop(now + idx * 0.05 + 0.3);
+      });
+    } catch {
+      // AudioContext policy fallback
+    }
+  }
+
+  // Heavy authoritative judicial wax seal stamp slam
+  playStampSlam() {
+    if (!this.enabled) return;
+    try {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      // Heavy thud
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(120, now);
+      osc.frequency.exponentialRampToValueAtTime(30, now + 0.12);
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.15);
+
+      // Paper slap high frequency
+      const slapOsc = ctx.createOscillator();
+      const slapGain = ctx.createGain();
+      slapOsc.type = 'sawtooth';
+      slapOsc.frequency.setValueAtTime(450, now);
+      slapOsc.frequency.exponentialRampToValueAtTime(80, now + 0.06);
+      slapGain.gain.setValueAtTime(0.08, now);
+      slapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+      slapOsc.connect(slapGain);
+      slapGain.connect(ctx.destination);
+      slapOsc.start(now);
+      slapOsc.stop(now + 0.08);
+    } catch {
+      // AudioContext policy fallback
+    }
+  }
+
+  // Tactile book page fluttering / opening sound
+  playBookOpen() {
+    if (!this.enabled) return;
+    try {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      for (let i = 0; i < 3; i++) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(280 + i * 90, now + i * 0.04);
+        osc.frequency.exponentialRampToValueAtTime(600 + i * 80, now + i * 0.04 + 0.08);
+        gain.gain.setValueAtTime(0.05, now + i * 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.04 + 0.09);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + i * 0.04);
+        osc.stop(now + i * 0.04 + 0.1);
+      }
+    } catch {
+      // AudioContext policy fallback
+    }
+  }
+
+  // Ascending energetic combo streak sound
+  playCombo(multiplier: number = 2) {
+    if (!this.enabled) return;
+    try {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const baseFreq = Math.min(1200, 440 + multiplier * 120);
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(baseFreq, now);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.15);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    } catch {
+      // AudioContext policy fallback
+    }
   }
 
   toggleSound(): boolean {

@@ -1,0 +1,172 @@
+/* =========================================================================
+   ARCADE & INTERACTIVE EXPERIENCES - DELUXE VISUAL DYNAMICS
+   Tactile mechanical animations, glowing brass, physical stamp slams,
+   gavel strikes, and coin celebrations for Dr. Ambedkar Museum Games
+   ========================================================================= */
+
+@keyframes gavelStrike {
+  0% { transform: rotate(-45deg) translateY(-20px); }
+  60% { transform: rotate(18deg) translateY(6px); }
+  75% { transform: rotate(-5deg) translateY(-2px); }
+  100% { transform: rotate(0deg) translateY(0); }
+}
+
+@keyframes shockwaveRing {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+
+@keyframes stampSlam {
+  0% { transform: scale(2) rotate(-15deg); opacity: 0; }
+  50% { transform: scale(0.9) rotate(2deg); opacity: 1; }
+  75% { transform: scale(1.05) rotate(-1deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes coinFloat {
+  0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 0; }
+  30% { transform: translateY(-40px) scale(1.2) rotate(180deg); opacity: 1; }
+  70% { transform: translateY(-70px) scale(1) rotate(360deg); opacity: 1; }
+  100% { transform: translateY(-100px) scale(0.6) rotate(540deg); opacity: 0; }
+}
+
+@keyframes wheelTickerBump {
+  0% { transform: rotate(0deg); }
+  35% { transform: rotate(-24deg); }
+  70% { transform: rotate(8deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes pulseGoldGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(200, 157, 86, 0.4), inset 0 0 10px rgba(200, 157, 86, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(200, 157, 86, 0.8), inset 0 0 20px rgba(200, 157, 86, 0.4);
+  }
+}
+
+@keyframes bulbBlink {
+  0%, 100% { opacity: 0.3; filter: drop-shadow(0 0 0px #C89D56); }
+  50% { opacity: 1; filter: drop-shadow(0 0 8px #FFD700); }
+}
+
+@keyframes bookSlideOut {
+  0% { transform: translateY(0) translateZ(0); }
+  100% { transform: translateY(-16px) translateZ(20px) scale(1.03); }
+}
+
+.animate-gavel-strike {
+  animation: gavelStrike 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-shockwave {
+  animation: shockwaveRing 0.7s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+.animate-stamp-slam {
+  animation: stampSlam 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-coin-float {
+  animation: coinFloat 1s ease-out forwards;
+}
+
+.animate-ticker-bump {
+  animation: wheelTickerBump 0.14s ease-out;
+}
+
+.pulse-gold-glow {
+  animation: pulseGoldGlow 2.5s infinite ease-in-out;
+}
+
+.arcade-bulb {
+  animation: bulbBlink 1.2s infinite ease-in-out;
+}
+
+/* Wood grain and leather luxury styling */
+.mahogany-shelf {
+  background: linear-gradient(180deg, #2b1708 0%, #1a0d04 70%, #3e220e 100%);
+  box-shadow: inset 0 8px 16px rgba(0,0,0,0.8), 0 12px 24px rgba(0,0,0,0.6);
+}
+
+.brass-plate {
+  background: linear-gradient(135deg, #d4af37 0%, #aa820a 50%, #ffd700 70%, #805e04 100%);
+  color: #1a0d04;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.6), 0 3px 6px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+}
+
+.leather-spine-maroon {
+  background: linear-gradient(90deg, #3d0a0a 0%, #681717 25%, #882222 55%, #4b0e0e 85%, #2a0505 100%);
+}
+
+.leather-spine-navy {
+  background: linear-gradient(90deg, #041424 0%, #0c2b4c 25%, #164273 55%, #08213b 85%, #020b14 100%);
+}
+
+.leather-spine-green {
+  background: linear-gradient(90deg, #071f11 0%, #123e23 25%, #1a5631 55%, #0c2d19 85%, #04120a 100%);
+}
+
+.leather-spine-amber {
+  background: linear-gradient(90deg, #3a2007 0%, #61360c 25%, #7a4611 55%, #472608 85%, #221203 100%);
+}
+
+/* =========================================================================
+   REAL 3D ARCHIVAL FLASHCARD DECK & PERSPECTIVE
+   ========================================================================= */
+
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.card-deck-stack {
+  position: relative;
+}
+
+.card-stack-layer-1 {
+  transform: rotate(2.5deg) translateY(6px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+}
+
+.card-stack-layer-2 {
+  transform: rotate(-2.8deg) translateY(12px);
+  box-shadow: 0 16px 32px -6px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes cardSlideNext {
+  0% { transform: translateX(0) scale(1) rotate(0deg); opacity: 1; }
+  45% { transform: translateX(120px) scale(0.92) rotate(10deg); opacity: 0.1; }
+  55% { transform: translateX(-120px) scale(0.92) rotate(-10deg); opacity: 0.1; }
+  100% { transform: translateX(0) scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes cardSlidePrev {
+  0% { transform: translateX(0) scale(1) rotate(0deg); opacity: 1; }
+  45% { transform: translateX(-120px) scale(0.92) rotate(-10deg); opacity: 0.1; }
+  55% { transform: translateX(120px) scale(0.92) rotate(10deg); opacity: 0.1; }
+  100% { transform: translateX(0) scale(1) rotate(0deg); opacity: 1; }
+}
+
+.animate-card-slide-next {
+  animation: cardSlideNext 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-card-slide-prev {
+  animation: cardSlidePrev 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+

@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Play, Pause, RotateCcw, Volume2, Sparkles, FastForward, 
-  ExternalLink, Mic, Disc3, Radio, AudioLines, Music, Award
+  ExternalLink, Mic, Disc3, Radio, AudioLines, Music, Award,
+  VolumeX, RadioTower
 } from 'lucide-react';
 import { SOUNDBOARD_CLIPS } from '@/data/interactiveData';
 import { soundEffects } from '@/utils/soundEffects';
@@ -60,6 +61,7 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
     setActiveClipId(clipId);
     setProgress(0);
     setIsPlaying(true);
+    soundEffects.playBookOpen();
 
     const quoteToSpeak = (language !== 'en' && clip.quoteLocal?.[language])
       ? clip.quoteLocal[language]!
@@ -92,29 +94,39 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
   const activeQuote = activeClip.quoteLocal?.[language] || activeClip.quote;
 
   return (
-    <div className="bg-[#0A2947] text-[#FAF7F0] rounded-3xl p-6 sm:p-9 border-2 border-[#C59A45]/40 shadow-2xl relative overflow-hidden font-dmsans">
+    <div className="bg-[#07192C] text-[#FAF7F0] rounded-3xl p-6 sm:p-9 border-2 border-[#C59A45]/40 shadow-2xl relative overflow-hidden font-dmsans">
       
       {/* Antique Brass Corner Accents */}
-      <div className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-[#C59A45]/60 pointer-events-none" />
-      <div className="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-[#C59A45]/60 pointer-events-none" />
-      <div className="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-[#C59A45]/60 pointer-events-none" />
-      <div className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-[#C59A45]/60 pointer-events-none" />
+      <div className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-[#C59A45] pointer-events-none" />
+      <div className="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-[#C59A45] pointer-events-none" />
+      <div className="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-[#C59A45] pointer-events-none" />
+      <div className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-[#C59A45] pointer-events-none" />
 
       {/* Ambient archival warmth */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-[#C59A45]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#8B5E3C]/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 w-80 h-80 bg-[#C59A45]/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#8B5E3C]/20 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Header */}
+      {/* Header with On-Air Tube Beacon */}
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#C59A45]/30">
         <div className="flex items-center gap-3.5">
-          <div className="p-3 bg-gradient-to-tr from-[#C59A45] to-[#D4AF37] text-[#0A2947] rounded-2xl shadow-md border border-[#F3E4C9]/40">
+          <div className="p-3 bg-gradient-to-tr from-[#C59A45] to-[#D4AF37] text-[#0A2947] rounded-2xl shadow-md border border-[#F3E4C9]/40 relative">
             <Radio className="w-6 h-6 animate-pulse" />
+            {isPlaying && (
+              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose-500 rounded-full ring-2 ring-white animate-ping" />
+            )}
           </div>
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-[#D4AF37] font-cinzel font-bold">
-              {t.soundboardBadge || "Archival Broadcasts & Gramophone Recordings · 1930–1956"}
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] uppercase tracking-wider text-[#D4AF37] font-mono font-bold">
+                {t.soundboardBadge || "Archival Broadcasts & Gramophone Recordings · 1930–1956"}
+              </span>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-black uppercase tracking-wider ${
+                isPlaying ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse' : 'bg-white/10 text-white/50'
+              }`}>
+                {isPlaying ? '● ON AIR' : '○ STANDBY'}
+              </span>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-serif-editorial font-bold tracking-tight text-white">
+            <h3 className="text-2xl sm:text-3xl font-serif-editorial font-bold tracking-tight text-white mt-0.5">
               {t.soundboardTitle || "Voice of Babasaheb Soundboard"}
             </h3>
           </div>
@@ -132,48 +144,69 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
         </div>
       </div>
 
-      {/* Main Active Player Bar (Rich tactile parchment console) */}
-      <div className="relative z-10 my-6 p-6 sm:p-7 rounded-2xl bg-[#FAF7F0] text-[#0A2947] border-2 border-[#C59A45] shadow-xl overflow-hidden">
+      {/* Main Gramophone Turntable Player Bar */}
+      <div className="relative z-10 my-6 p-6 sm:p-8 rounded-3xl bg-[#FAF7F0] text-[#0A2947] border-2 border-[#C59A45] shadow-2xl overflow-hidden">
         
-        {/* Animated Sound Waveform Bars and Clip Meta */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-3 border-b border-[#D3D4C0]">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-[#0A2947] text-[#F3E4C9] text-xs font-mono font-bold">
-                {activeClip.year}
-              </span>
-              <span className="text-xs font-cinzel font-bold text-[#8B5E3C] uppercase tracking-wide">
-                {activeEvent}
-              </span>
+        {/* Animated Vinyl Disc + Sound Waveform Bars */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-5 pb-4 border-b border-[#D3D4C0]">
+          
+          {/* Vinyl & Metadata Info */}
+          <div className="flex items-center gap-4">
+            {/* Spinning Golden Vinyl Record Disc */}
+            <div className="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0">
+              <div 
+                className={`w-full h-full rounded-full bg-gradient-to-tr from-[#1A1A1A] via-[#2D2D2D] to-[#111111] border-2 border-[#C59A45] shadow-lg flex items-center justify-center ${
+                  isPlaying ? 'animate-spin' : ''
+                }`}
+                style={{ animationDuration: '3s' }}
+              >
+                {/* Vinyl Grooves */}
+                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center bg-[#C59A45]">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#0A2947]" />
+                  </div>
+                </div>
+              </div>
             </div>
-            <h4 className="text-xl sm:text-2xl font-serif-editorial font-bold text-[#0A2947] mt-1">
-              {activeTitle}
-            </h4>
+
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded bg-[#0A2947] text-[#F3E4C9] text-xs font-mono font-bold">
+                  {activeClip.year}
+                </span>
+                <span className="text-xs font-mono font-bold text-[#8B5E3C] uppercase tracking-wide">
+                  {activeEvent}
+                </span>
+              </div>
+              <h4 className="text-xl sm:text-2xl font-serif-editorial font-bold text-[#0A2947] mt-1">
+                {activeTitle}
+              </h4>
+            </div>
           </div>
 
-          {/* Interactive animated wave visualizer */}
-          <div className="flex items-end gap-1.5 h-10 px-3 py-1 bg-white rounded-xl border border-[#D3D4C0] shrink-0">
-            {[45, 75, 30, 95, 60, 100, 50, 85, 40, 90, 65, 75].map((height, i) => (
+          {/* Interactive animated audio wave visualizer */}
+          <div className="flex items-end gap-1.5 h-12 px-4 py-1.5 bg-white rounded-2xl border border-[#D3D4C0] shrink-0 self-start md:self-auto">
+            {[45, 75, 30, 95, 60, 100, 50, 85, 40, 90, 65, 75, 40, 80].map((height, i) => (
               <div
                 key={i}
                 className="w-1.5 rounded-full transition-all duration-150"
                 style={{
-                  height: isPlaying ? `${Math.max(20, (height * Math.random()) + 20)}%` : '25%',
+                  height: isPlaying ? `${Math.max(20, (height * Math.random()) + 20)}%` : '20%',
                   backgroundColor: isPlaying ? (i % 2 === 0 ? '#C59A45' : '#8B5E3C') : '#D3D4C0',
-                  opacity: isPlaying ? 1 : 0.6
+                  opacity: isPlaying ? 1 : 0.5
                 }}
               />
             ))}
           </div>
         </div>
 
-        {/* Live synced quote preview in elegant historical typography */}
-        <blockquote className="text-sm sm:text-base text-[#0A2947] font-serif italic mb-5 leading-relaxed bg-[#F3E4C9]/60 p-4 rounded-xl border border-[#D3D4C0]">
+        {/* Live synced quote preview in historical manuscript styling */}
+        <blockquote className="text-sm sm:text-base text-[#0A2947] font-serif-editorial italic mb-5 leading-relaxed bg-[#F3E4C9]/60 p-4 sm:p-5 rounded-2xl border border-[#D3D4C0] shadow-2xs">
           &quot;{activeQuote}&quot;
         </blockquote>
 
         {/* Playback Scrub Bar */}
-        <div className="w-full bg-[#D3D4C0] h-2 rounded-full overflow-hidden mb-4">
+        <div className="w-full bg-[#D3D4C0] h-2.5 rounded-full overflow-hidden mb-4">
           <div 
             className="h-full bg-gradient-to-r from-[#C59A45] via-[#8B5E3C] to-[#0A2947] transition-all duration-200"
             style={{ width: `${progress}%` }}
@@ -206,7 +239,7 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
               <RotateCcw className="w-4 h-4 text-[#8B5E3C]" />
             </button>
 
-            <span className="text-xs font-mono text-[#0A2947]/70 font-semibold">
+            <span className="text-xs font-mono text-[#0A2947] font-bold">
               {isPlaying ? (t.askingQuestion || 'Broadcasting Historical Audio...') : (t.listenSpeech || 'Audio Ready · Click to Play')}
             </span>
           </div>
@@ -236,7 +269,7 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
             <button
               key={clip.id}
               onClick={() => handlePlayClip(clip.id)}
-              className={`p-4 rounded-2xl border-2 text-left transition-all flex items-start justify-between gap-3 group cursor-pointer ${
+              className={`p-4 sm:p-5 rounded-2xl border-2 text-left transition-all flex items-start justify-between gap-3 group cursor-pointer ${
                 isThisActive
                   ? 'bg-[#FAF7F0] text-[#0A2947] border-[#C59A45] shadow-lg ring-2 ring-[#C59A45]/30'
                   : 'bg-white/10 hover:bg-white/20 border-white/15 hover:border-[#C59A45]/50 text-[#FAF7F0]'
@@ -248,7 +281,7 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
                 }`}>
                   {clip.year} · {clip.duration}
                 </span>
-                <h5 className={`font-serif-editorial font-bold text-sm line-clamp-1 transition-colors ${
+                <h5 className={`font-serif-editorial font-bold text-base line-clamp-1 transition-colors ${
                   isThisActive ? 'text-[#0A2947]' : 'text-white group-hover:text-[#D4AF37]'
                 }`}>
                   {clipTitle}
@@ -262,7 +295,7 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
 
               <div className={`p-2.5 rounded-xl shrink-0 transition-colors shadow-xs ${
                 isThisPlaying 
-                  ? 'bg-[#C59A45] text-[#0A2947]' 
+                  ? 'bg-[#C59A45] text-[#0A2947] animate-pulse' 
                   : isThisActive
                     ? 'bg-[#0A2947] text-[#F3E4C9]'
                     : 'bg-white/20 group-hover:bg-[#C59A45] group-hover:text-[#0A2947] text-white'
@@ -283,3 +316,4 @@ export const SoundboardWidget: React.FC<SoundboardWidgetProps> = ({
 };
 
 export default SoundboardWidget;
+
