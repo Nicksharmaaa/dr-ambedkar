@@ -11,7 +11,6 @@ import { QUIZ_QUESTIONS } from '@/data/interactiveData';
 import { soundEffects } from '@/utils/soundEffects';
 import { Language } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
-import MuseumGrandPavilion from './MuseumGrandPavilion';
 import ConstitutionalCertificateModal from './interactive/ConstitutionalCertificateModal';
 
 interface ConstitutionalQuestProps {
@@ -164,41 +163,36 @@ export const ConstitutionalQuest: React.FC<ConstitutionalQuestProps> = ({
     <div className="min-h-screen bg-transparent text-[#0A2947] py-6 px-4 sm:px-6 lg:px-8 font-dmsans">
       <div className="max-w-4xl mx-auto space-y-6">
         
-        {/* Top Banner / Quest Identity */}
-        <MuseumGrandPavilion
-          title={t.questTitle || "Constitutional Quest"}
-          subtitle={t.questSubtitle || "Interactive Archival Knowledge Game & Certification"}
-          watermarkIcon={Award}
-        >
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  setSoundEnabled(!soundEnabled);
-                  soundEffects.enabled = !soundEnabled;
-                }}
-                className="p-2.5 rounded-xl border border-[#C59A45]/30 bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                title={soundEnabled ? "Mute Game Audio" : "Enable Game Audio"}
-                aria-label="Sound Toggle"
-              >
-                {soundEnabled ? <Volume2 className="w-4 h-4 text-[#F5D77F]" /> : <VolumeX className="w-4 h-4 text-white/40" />}
-              </button>
-            </div>
+        {/* Arcade Top Status Controls (Audio, Streak, Score) */}
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-white/80 backdrop-blur-xs p-3 px-4 rounded-2xl border border-[#D3D4C0] shadow-xs">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                setSoundEnabled(!soundEnabled);
+                soundEffects.enabled = !soundEnabled;
+              }}
+              className="p-2 rounded-xl border border-[#D3D4C0] bg-white hover:bg-[#F3E4C9] text-[#0A2947] transition-colors cursor-pointer shadow-2xs"
+              title={soundEnabled ? "Mute Game Audio" : "Enable Game Audio"}
+              aria-label="Sound Toggle"
+            >
+              {soundEnabled ? <Volume2 className="w-4 h-4 text-[#C89D56]" /> : <VolumeX className="w-4 h-4 text-[#8B5E3C]/60" />}
+            </button>
+            <span className="text-xs font-mono font-bold text-[#8B5E3C]">Audio: {soundEnabled ? 'ON' : 'OFF'}</span>
+          </div>
 
-            {/* Streak & Score Indicators */}
-            <div className="flex items-center gap-3">
-              {streak > 1 && (
-                <div className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#C59A45] text-[#0A2947] font-montserrat font-black rounded-xl text-xs shadow-md animate-pulse">
-                  <Flame className="w-4 h-4 fill-current text-rose-700" />
-                  <span>{streak}x {t.streakLabel || "Streak"}! (+50 XP)</span>
-                </div>
-              )}
-              <div className="px-3.5 py-1.5 bg-white/10 border border-white/20 text-[#FAF7F0] font-mono text-xs font-bold rounded-xl">
-                Score: {score} / {QUIZ_QUESTIONS.length}
+          {/* Streak & Score Indicators */}
+          <div className="flex items-center gap-3">
+            {streak > 1 && (
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-amber-500 to-rose-600 text-white font-montserrat font-black rounded-xl text-xs shadow-xs animate-pulse">
+                <Flame className="w-3.5 h-3.5 fill-current text-white" />
+                <span>{streak}x {t.streakLabel || "Streak"}! (+50 XP)</span>
               </div>
+            )}
+            <div className="px-3.5 py-1.5 bg-[#0A2947] text-[#C89D56] font-mono text-xs font-bold rounded-xl shadow-xs">
+              Score: {score} / {QUIZ_QUESTIONS.length}
             </div>
           </div>
-        </MuseumGrandPavilion>
+        </div>
 
         {!isCompleted ? (
           <div className="space-y-6">

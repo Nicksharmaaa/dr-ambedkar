@@ -162,11 +162,60 @@
   100% { transform: translateX(0) scale(1) rotate(0deg); opacity: 1; }
 }
 
+@keyframes xpFloatUp {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  30% { transform: translateY(-20px) scale(1.15); opacity: 1; }
+  80% { transform: translateY(-40px) scale(1); opacity: 1; }
+  100% { transform: translateY(-55px) scale(0.9); opacity: 0; }
+}
+
+@keyframes holoFoilShimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .animate-card-slide-next {
   animation: cardSlideNext 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .animate-card-slide-prev {
   animation: cardSlidePrev 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-xp-float {
+  animation: xpFloatUp 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.holo-foil-border {
+  background: linear-gradient(135deg, #C89D56 0%, #FFF3D6 25%, #C89D56 50%, #8A6421 75%, #FFDF9E 100%);
+  background-size: 300% 300%;
+  animation: holoFoilShimmer 6s ease infinite;
+}
+
+/* Courtroom Docket Texture */
+.court-docket-paper {
+  background-color: #FAF6ED;
+  background-image: 
+    radial-gradient(#C89D56 0.6px, transparent 0.6px),
+    linear-gradient(to right, rgba(200, 157, 86, 0.08) 1px, transparent 1px);
+  background-size: 20px 20px, 100% 28px;
+}
+
+/* Illuminated Preamble Border */
+.preamble-illuminated-border {
+  border: 4px double #C89D56;
+  box-shadow: 0 0 20px rgba(200, 157, 86, 0.25), inset 0 0 15px rgba(200, 157, 86, 0.15);
+}
+
+/* Neon Arcade Station Marquee */
+.arcade-marquee-glow {
+  text-shadow: 0 0 10px rgba(200, 157, 86, 0.8), 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+/* Timeline Chrono Rail Glow */
+.timeline-rail-active {
+  background: linear-gradient(180deg, #C89D56 0%, #0A2947 100%);
+  box-shadow: 0 0 12px rgba(200, 157, 86, 0.5);
 }
 
