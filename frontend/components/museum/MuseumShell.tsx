@@ -91,11 +91,7 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
       )}
 
       {/* Floating Top-Right Secondary Utilities Dock - Available across the platform */}
-<<<<<<< HEAD
-      {!showIntro && !isViewerPage && !isDocViewerOpen && !isAccessibilityModalOpen && !isSearchModalOpen && !isVoiceModalOpen && (
-=======
-      {!showIntro && !isDocViewerOpen && !isAccessibilityModalOpen && !isSearchModalOpen && !isVoiceModalOpen && !isScannerModalOpen && (
->>>>>>> ed29737c27a125dabd929302d2e2932c0709e654
+      {!showIntro && !isViewerPage && !isDocViewerOpen && !isAccessibilityModalOpen && !isSearchModalOpen && !isVoiceModalOpen && !isScannerModalOpen && (
         <TopUtilityBar
           language={language}
           onSelectLanguage={setLanguage}
