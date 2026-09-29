@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useMuseum } from './MuseumContext';
 import { MuseumNavRail, TopUtilityBar } from './navigation';
@@ -13,6 +13,7 @@ import { VoiceNavigatorModal } from './VoiceNavigatorModal';
 import { FloatingAssistantDock } from './FloatingAssistantDock';
 import { IntroVideoScreen } from './IntroVideoScreen';
 import { MuseumFooter } from './MuseumFooter';
+import { UserModeToast } from './UserModeToast';
 
 export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
@@ -56,6 +57,16 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
     if (accessibility.textSize === 'xlarge') return 'text-[1.25rem]';
     return '';
   };
+
+  // Mode toast: show only when mode changes after first mount
+  const [toastVisible, setToastVisible] = useState(false);
+  const prevModeRef = useRef(userMode);
+  useEffect(() => {
+    if (prevModeRef.current !== userMode) {
+      prevModeRef.current = userMode;
+      setToastVisible(true);
+    }
+  }, [userMode]);
 
   const handleKioskBack = () => {
     if (isDocViewerOpen) {
@@ -226,6 +237,13 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
           language={language}
         />
       )}
+
+      {/* User Mode Toast — fires on every mode switch */}
+      <UserModeToast
+        mode={userMode}
+        visible={toastVisible}
+        onDismiss={() => setToastVisible(false)}
+      />
     </div>
   );
 };

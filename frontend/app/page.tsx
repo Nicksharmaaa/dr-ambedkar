@@ -9,6 +9,7 @@ export default function HomePage() {
   const router = useRouter();
   const {
     language,
+    userMode,
     openDocument,
     askAssistant,
     navigateToTab,
@@ -28,6 +29,7 @@ export default function HomePage() {
   return (
     <HomeView
       language={language}
+      userMode={userMode}
       onExploreCategory={handleExploreCategory}
       onOpenDocument={openDocument}
       onAskAssistantWithQuery={askAssistant}

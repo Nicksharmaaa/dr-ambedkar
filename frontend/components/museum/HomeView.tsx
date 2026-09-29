@@ -22,8 +22,11 @@ import DepthCarousel from '@/components/ui/DepthCarousel';
 
 const DitherVeil = dynamic(() => import('@/components/ui/DitherVeil'), { ssr: false });
 
+import { UserMode } from '@/types/museum';
+
 interface HomeViewProps {
   language: Language;
+  userMode?: UserMode;
   onExploreCategory: (category: string) => void;
   onOpenDocument: (doc: ArchivalDocument) => void;
   onAskAssistantWithQuery: (query: string) => void;
@@ -36,6 +39,7 @@ interface HomeViewProps {
 
 export const HomeView: React.FC<HomeViewProps> = ({
   language,
+  userMode = 'visitor',
   onExploreCategory,
   onOpenDocument,
   onAskAssistantWithQuery,
@@ -254,12 +258,31 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <span className="px-3 py-1 bg-[#0A2947] text-[#FAF7F0] text-[11px] font-cinzel font-bold uppercase tracking-widest rounded-md shadow-xs">
                 {t.heroBadge || "Dr. B. R. Ambedkar Digital Heritage Archive"}
               </span>
+              {/* Role-aware context pill */}
+              {userMode === 'student' && (
+                <span className="px-3 py-1 bg-[#d6eaf8] text-[#1a5276] text-[11px] font-montserrat font-bold uppercase tracking-widest rounded-md border border-[#7fb3d3] flex items-center gap-1.5 animate-pulse-once">
+                  <GraduationCap className="w-3 h-3" /> Student Mode — Interactive Learning Active
+                </span>
+              )}
+              {userMode === 'researcher' && (
+                <span className="px-3 py-1 bg-[#d5f5e3] text-[#1a3a1a] text-[11px] font-montserrat font-bold uppercase tracking-widest rounded-md border border-[#82e0aa] flex items-center gap-1.5">
+                  <Microscope className="w-3 h-3" /> Researcher Mode — Citations & Fixity Active
+                </span>
+              )}
+              {userMode === 'archivist' && (
+                <span className="px-3 py-1 bg-[#e8daef] text-[#4a235a] text-[11px] font-montserrat font-bold uppercase tracking-widest rounded-md border border-[#c39bd3] flex items-center gap-1.5">
+                  <ShieldCheck className="w-3 h-3" /> Archivist Mode — Preservation Console Active
+                </span>
+              )}
             </div>
 
             {/* Display Exhibition Typography */}
             <div className="space-y-2">
               <p className="font-cinzel text-xs sm:text-sm tracking-[0.25em] text-[#8B5E3C] uppercase font-bold">
-                {t.heroDates || "1891 — 1956 · Curatorial Exhibition"}
+                {userMode === 'student' ? 'Learning Edition · 1891–1956 · Educational Archive'
+                 : userMode === 'researcher' ? '1891–1956 · Scholarly Archive · Full Citations'
+                 : userMode === 'archivist' ? '1891–1956 · Preservation Archive · PREMIS Events'
+                 : (t.heroDates || '1891 — 1956 · Curatorial Exhibition')}
               </p>
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif-editorial font-bold text-[#0A2947] tracking-tight leading-[1.04]">
                 {t.heroTitle1 || "Ideas That"}{' '}
@@ -268,35 +291,98 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </h1>
             </div>
 
-            {/* Concise Archival Subtitle */}
+            {/* Role-adaptive subtitle */}
             <p className="text-sm sm:text-base text-[#0A2947]/80 leading-relaxed font-normal max-w-xl">
-              {t.heroSubtitle || "Explore primary manuscripts, constituent assembly transcripts, photographic records, and source-grounded historical intelligence."}
+              {userMode === 'student'
+                ? 'Start your learning journey with guided flashcards, the Constitutional Quest game, and annotated primary sources designed for students.'
+                : userMode === 'researcher'
+                ? 'Access full archival metadata, BibTeX/APA/MLA citations, PREMIS fixity checksums, and the knowledge graph — built for academic research.'
+                : userMode === 'archivist'
+                ? 'Manage the OCR review pipeline, monitor preservation events, export METS/Dublin Core metadata, and audit fixity across all archival objects.'
+                : (t.heroSubtitle || 'Explore primary manuscripts, constituent assembly transcripts, photographic records, and source-grounded historical intelligence.')}
             </p>
 
-            {/* Direct Exhibition Navigation CTAs */}
+            {/* Role-specific primary CTAs */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
-              <button
-                onClick={() => {
-                  soundEffects.playClick();
-                  onNavigateTab('archive');
-                }}
-                className="px-6 py-3.5 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] rounded-xl text-xs sm:text-sm font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-2.5 cursor-pointer shadow-md active:scale-98"
-              >
-                <BookOpen className="w-4 h-4 text-[#C89D56]" />
-                <span>{t.enterArchive || "Enter The Archive"}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={() => {
-                  soundEffects.playClick();
-                  onNavigateTab('timeline');
-                }}
-                className="px-5 py-3.5 bg-white hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0] hover:border-[#8B5E3C] rounded-xl text-xs sm:text-sm font-montserrat font-semibold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-2xs active:scale-98"
-              >
-                <Compass className="w-4 h-4 text-[#8B5E3C]" />
-                <span>{t.chronology || "Chronology"}</span>
-              </button>
+              {userMode === 'student' ? (
+                <>
+                  <button
+                    onClick={() => { soundEffects.playClick(); onNavigateTab('quest'); }}
+                    className="px-6 py-3.5 bg-[#1a5276] hover:bg-[#154360] text-white rounded-xl text-xs sm:text-sm font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-2.5 cursor-pointer shadow-md active:scale-98"
+                  >
+                    <Zap className="w-4 h-4 text-yellow-300" />
+                    <span>Start Constitutional Quest</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => { soundEffects.playClick(); onNavigateTab('archive'); }}
+                    className="px-5 py-3.5 bg-white hover:bg-[#eaf4fb] text-[#1a5276] border border-[#7fb3d3] rounded-xl text-xs sm:text-sm font-montserrat font-semibold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-2xs active:scale-98"
+                  >
+                    <BookOpen className="w-4 h-4 text-[#1a5276]" />
+                    <span>Explore Archive</span>
+                  </button>
+                </>
+              ) : userMode === 'researcher' ? (
+                <>
+                  <button
+                    onClick={() => { soundEffects.playClick(); onNavigateTab('assistant'); }}
+                    className="px-6 py-3.5 bg-[#1a3a1a] hover:bg-[#145a32] text-white rounded-xl text-xs sm:text-sm font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-2.5 cursor-pointer shadow-md active:scale-98"
+                  >
+                    <Sparkles className="w-4 h-4 text-green-300" />
+                    <span>Open AI Research Scholar</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => { soundEffects.playClick(); onNavigateTab('graph'); }}
+                    className="px-5 py-3.5 bg-white hover:bg-[#eafaf1] text-[#1a3a1a] border border-[#82e0aa] rounded-xl text-xs sm:text-sm font-montserrat font-semibold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-2xs active:scale-98"
+                  >
+                    <Network className="w-4 h-4 text-[#1a3a1a]" />
+                    <span>Knowledge Graph</span>
+                  </button>
+                </>
+              ) : userMode === 'archivist' ? (
+                <>
+                  <button
+                    onClick={() => { soundEffects.playClick(); onNavigateTab('admin'); }}
+                    className="px-6 py-3.5 bg-[#4a235a] hover:bg-[#6c3483] text-white rounded-xl text-xs sm:text-sm font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-2.5 cursor-pointer shadow-md active:scale-98"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-purple-200" />
+                    <span>Open Curatorial Console</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => { soundEffects.playClick(); onNavigateTab('archive'); }}
+                    className="px-5 py-3.5 bg-white hover:bg-[#f5eef8] text-[#4a235a] border border-[#c39bd3] rounded-xl text-xs sm:text-sm font-montserrat font-semibold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-2xs active:scale-98"
+                  >
+                    <BookOpen className="w-4 h-4 text-[#4a235a]" />
+                    <span>Archival Objects</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      soundEffects.playClick();
+                      onNavigateTab('archive');
+                    }}
+                    className="px-6 py-3.5 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] rounded-xl text-xs sm:text-sm font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-2.5 cursor-pointer shadow-md active:scale-98"
+                  >
+                    <BookOpen className="w-4 h-4 text-[#C89D56]" />
+                    <span>{t.enterArchive || "Enter The Archive"}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      soundEffects.playClick();
+                      onNavigateTab('timeline');
+                    }}
+                    className="px-5 py-3.5 bg-white hover:bg-[#F3E4C9] text-[#0A2947] border border-[#D3D4C0] hover:border-[#8B5E3C] rounded-xl text-xs sm:text-sm font-montserrat font-semibold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-2xs active:scale-98"
+                  >
+                    <Compass className="w-4 h-4 text-[#8B5E3C]" />
+                    <span>{t.chronology || "Chronology"}</span>
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Curated Historical Inquiry Chips */}
