@@ -24,6 +24,9 @@ interface MuseumContextType {
   setIsSearchModalOpen: (open: boolean) => void;
   isVoiceModalOpen: boolean;
   setIsVoiceModalOpen: (open: boolean) => void;
+  isScannerModalOpen: boolean;
+  setIsScannerModalOpen: (open: boolean) => void;
+  openScannerModal: () => void;
   selectedDocument: ArchivalDocument | null;
   isDocViewerOpen: boolean;
   openDocument: (doc: ArchivalDocument) => void;
@@ -169,6 +172,12 @@ export const MuseumProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
+  const [isScannerModalOpen, setIsScannerModalOpen] = useState(false);
+
+  const openScannerModal = () => {
+    soundEffects.playClick();
+    setIsScannerModalOpen(true);
+  };
 
   const [selectedDocument, setSelectedDocument] = useState<ArchivalDocument | null>(null);
   const [isDocViewerOpen, setIsDocViewerOpen] = useState(false);
@@ -286,6 +295,7 @@ export const MuseumProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setIsAccessibilityModalOpen(false);
         setIsSearchModalOpen(false);
         setIsVoiceModalOpen(false);
+        setIsScannerModalOpen(false);
       }
       if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName))) {
         e.preventDefault();
@@ -313,6 +323,9 @@ export const MuseumProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setIsSearchModalOpen,
         isVoiceModalOpen,
         setIsVoiceModalOpen,
+        isScannerModalOpen,
+        setIsScannerModalOpen,
+        openScannerModal,
         selectedDocument,
         isDocViewerOpen,
         openDocument,

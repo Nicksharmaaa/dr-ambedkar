@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Mic, Shield, ChevronDown, User, Sparkles, GraduationCap, Microscope, Lock } from 'lucide-react';
+import { Search, Mic, Shield, ChevronDown, User, Sparkles, GraduationCap, Microscope, Lock, Camera } from 'lucide-react';
 import { AccessibilitySettings, Language, UserMode } from '@/types/museum';
 import { soundEffects } from '@/utils/soundEffects';
 import { LanguageDropdown } from './LanguageDropdown';
@@ -16,6 +16,7 @@ interface TopUtilityBarProps {
   userMode?: UserMode;
   onSelectUserMode?: (mode: UserMode) => void;
   onOpenAdmin?: () => void;
+  onOpenScanner?: () => void;
 }
 
 /**
@@ -125,6 +126,7 @@ export const TopUtilityBar: React.FC<TopUtilityBarProps> = ({
   userMode = 'visitor',
   onSelectUserMode,
   onOpenAdmin,
+  onOpenScanner,
 }) => {
   const t = UI_STRINGS[language] || UI_STRINGS.en;
   const modesLoc = USER_MODES_I18N[language] || USER_MODES_I18N.en;
@@ -266,7 +268,26 @@ export const TopUtilityBar: React.FC<TopUtilityBarProps> = ({
         />
       )}
 
-      {/* 5. Admin Portal Direct Link (for Archivists & Admins) */}
+      {/* 5. Mobile & Web Document Scanner Button */}
+      {onOpenScanner && (
+        <button
+          type="button"
+          onClick={() => {
+            soundEffects.playClick();
+            onOpenScanner();
+          }}
+          className="group relative flex items-center justify-center h-10 w-10 rounded-full bg-white/95 hover:bg-white backdrop-blur-xl border border-[#D3D4C0] hover:border-[#0A2947] shadow-[0_2px_10px_rgba(10,41,71,0.06)] hover:shadow-[0_4px_16px_rgba(10,41,71,0.14)] transition-all duration-200 cursor-pointer active:scale-95 text-[#0A2947] hover:text-[#8B5E3C]"
+          title="Scan Document &amp; OCR Digitizer (Mobile Camera)"
+          aria-label="Scan Document"
+        >
+          <Camera className="w-4 h-4 transition-transform group-hover:scale-110" />
+          <span className="absolute top-full mt-2 right-0 px-2.5 py-1 bg-[#0A2947] text-[#FAF7F0] text-[11px] font-montserrat font-medium rounded-xl shadow-xl border border-[#D3D4C0]/40 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+            Scan &amp; OCR
+          </span>
+        </button>
+      )}
+
+      {/* 6. Admin Portal Direct Link (for Archivists & Admins) */}
       {onOpenAdmin && (
         <button
           type="button"

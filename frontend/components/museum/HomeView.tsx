@@ -5,7 +5,7 @@ import {
   Search, BookOpen, Sparkles, ArrowRight, Zap, Radio,
   Compass, Quote, Camera, CheckCircle2, Network, ShieldCheck,
   Star, ExternalLink, Calendar, FileText, ChevronRight, Bookmark, Film,
-  Clock
+  Clock, GraduationCap, Microscope, Gamepad2
 } from 'lucide-react';
 import { Language, ArchivalDocument } from '@/types/museum';
 import { UI_STRINGS } from '@/utils/i18n';
@@ -13,7 +13,6 @@ import {
   ARCHIVE_DOCUMENTS, HERO_IMAGE, DRAFTING_CONSTITUTION_IMAGE,
   HISTORICAL_PHOTOS, TIMELINE_EVENTS
 } from '@/data/archiveData';
-import { WisdomMachine } from './WisdomMachine';
 import { SoundboardWidget } from './SoundboardWidget';
 import { HomeAskAI } from './HomeAskAI';
 import { api } from '@/lib/api';
@@ -534,6 +533,190 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 onNavigateTab('gallery');
               }}
             />
+          </div>
+
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION 5: INTERACTIVE LEARNING & DISCOVERY PAVILIONS
+          ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="border border-[#D3D4C0] rounded-3xl p-6 sm:p-10 space-y-8 bg-[#FAF7F0] shadow-xs">
+          
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#D3D4C0]">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0A2947]/10 text-[#0A2947] font-serif-editorial text-xs rounded-full uppercase tracking-wider mb-2 font-bold">
+                <Sparkles className="w-3.5 h-3.5 text-[#C89D56]" />
+                <span>Interactive Learning & Discovery Lab</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif-editorial font-bold text-[#0A2947]">
+                {language === 'hi' ? 'संवादात्मक अध्ययन एवं अनुसंधान केंद्र' :
+                 language === 'mr' ? 'संवादात्मक अभ्यास व संशोधन दालने' :
+                 language === 'ta' ? 'ஊடாடும் கற்றல் மற்றும் ஆய்வுப் பிரிவுகள்' :
+                 language === 'bn' ? 'ইন্টারেক্টিভ শিক্ষা ও গবেষণা কেন্দ্র' :
+                 'Interactive Learning & Discovery Pavilions'}
+              </h2>
+              <p className="text-sm text-[#8B5E3C] font-dmsans mt-1 max-w-2xl">
+                Dedicated primary-source learning environments custom-engineered for Students, Academic Researchers, and Memorial Visitors.
+              </p>
+            </div>
+
+            <a
+              href="/quest"
+              onClick={(e) => {
+                e.preventDefault();
+                soundEffects.playClick();
+                onNavigateTab('quest');
+              }}
+              className="px-5 py-2.5 bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-xs shrink-0"
+            >
+              <span>Explore Interactive Lab</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          {/* Interactive Showcase Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* CARD 1: STUDENTS */}
+            <div className="bg-white border-2 border-[#D3D4C0] hover:border-[#C89D56] rounded-2xl p-6 sm:p-7 shadow-sm transition-all duration-300 flex flex-col justify-between group hover:shadow-md">
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-xl bg-[#0A2947] text-[#C89D56] flex items-center justify-center group-hover:scale-105 transition-transform shadow-inner">
+                  <GraduationCap className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#8B5E3C] font-bold block mb-1">
+                    For Schools & Colleges
+                  </span>
+                  <h3 className="text-xl font-serif-editorial font-bold text-[#0A2947] group-hover:text-[#8B5E3C] transition-colors">
+                    Students’ Academy
+                  </h3>
+                </div>
+                <p className="text-xs sm:text-sm font-dmsans text-[#0A2947]/80 leading-relaxed">
+                  Interactive Preamble tenets with Dr. Ambedkar’s Constituent Assembly defense, 3D spaced-repetition concept flashcards, and gamified Constitutional Quest with downloadable scholarship certificates.
+                </p>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  <span className="text-[10px] font-mono bg-[#FAF7F0] text-[#0A2947] px-2.5 py-1 rounded-md border border-[#E2D9C8]">
+                    🏛️ Preamble Lab
+                  </span>
+                  <span className="text-[10px] font-mono bg-[#FAF7F0] text-[#0A2947] px-2.5 py-1 rounded-md border border-[#E2D9C8]">
+                    🃏 3D Flashcards
+                  </span>
+                  <span className="text-[10px] font-mono bg-[#FAF7F0] text-[#0A2947] px-2.5 py-1 rounded-md border border-[#E2D9C8]">
+                    📜 Scholar Certificate
+                  </span>
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-[#F4EBD9] mt-6">
+                <a
+                  href="/quest?wing=students"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    soundEffects.playClick();
+                    window.location.href = '/quest?wing=students';
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] font-montserrat font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                >
+                  <span>Enter Students’ Academy</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+
+            {/* CARD 2: RESEARCHERS */}
+            <div className="bg-white border-2 border-[#D3D4C0] hover:border-[#C89D56] rounded-2xl p-6 sm:p-7 shadow-sm transition-all duration-300 flex flex-col justify-between group hover:shadow-md">
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-xl bg-[#0A2947] text-[#C89D56] flex items-center justify-center group-hover:scale-105 transition-transform shadow-inner">
+                  <Microscope className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#8B5E3C] font-bold block mb-1">
+                    Scholarly Workbench
+                  </span>
+                  <h3 className="text-xl font-serif-editorial font-bold text-[#0A2947] group-hover:text-[#8B5E3C] transition-colors">
+                    Researchers’ Laboratory
+                  </h3>
+                </div>
+                <p className="text-xs sm:text-sm font-dmsans text-[#0A2947]/80 leading-relaxed">
+                  Generate source citations for all 22 BAWS volumes in APA 7, MLA 9, Chicago 17, Harvard, and BibTeX. Compare historical text drafts with synchronized diffs, and inspect SHA-256 fixity audits.
+                </p>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  <span className="text-[10px] font-mono bg-[#FAF7F0] text-[#0A2947] px-2.5 py-1 rounded-md border border-[#E2D9C8]">
+                    📖 APA / MLA / BibTeX
+                  </span>
+                  <span className="text-[10px] font-mono bg-[#FAF7F0] text-[#0A2947] px-2.5 py-1 rounded-md border border-[#E2D9C8]">
+                    ⚖️ Variorum Text Differ
+                  </span>
+                  <span className="text-[10px] font-mono bg-[#FAF7F0] text-[#0A2947] px-2.5 py-1 rounded-md border border-[#E2D9C8]">
+                    🔐 PREMIS 3.0 Fixity
+                  </span>
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-[#F4EBD9] mt-6">
+                <a
+                  href="/quest?wing=researchers"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    soundEffects.playClick();
+                    window.location.href = '/quest?wing=researchers';
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] font-montserrat font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                >
+                  <span>Launch Research Workbench</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+
+            {/* CARD 3: INTERACTIVE GAMES ARCADE */}
+            <div className="bg-white border-2 border-[#D3D4C0] hover:border-[#C89D56] rounded-2xl p-6 sm:p-7 shadow-sm transition-all duration-300 flex flex-col justify-between group hover:shadow-md">
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-xl bg-[#0A2947] text-[#C89D56] flex items-center justify-center group-hover:scale-105 transition-transform shadow-inner">
+                  <Gamepad2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#8B5E3C] font-bold block mb-1">
+                    5 Unique Games & Sims
+                  </span>
+                  <h3 className="text-xl font-serif-editorial font-bold text-[#0A2947] group-hover:text-[#8B5E3C] transition-colors">
+                    Interactive Arcade
+                  </h3>
+                </div>
+                <p className="text-xs sm:text-sm font-dmsans text-[#0A2947]/80 leading-relaxed">
+                  Role-play the Constituent Assembly debates, reconstruct the Preamble word jigsaw, spin the Chakra Wheel of Rights, and solve Rajgruha library mystery clues!
+                </p>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  <span className="text-[10px] font-mono bg-[#FAF7F0] text-[#0A2947] px-2.5 py-1 rounded-md border border-[#E2D9C8]">
+                    🏛️ Debate Sim
+                  </span>
+                  <span className="text-[10px] font-mono bg-[#FAF7F0] text-[#0A2947] px-2.5 py-1 rounded-md border border-[#E2D9C8]">
+                    🎡 Wheel of Rights
+                  </span>
+                  <span className="text-[10px] font-mono bg-[#FAF7F0] text-[#0A2947] px-2.5 py-1 rounded-md border border-[#E2D9C8]">
+                    🗝️ Rajgruha Detective
+                  </span>
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-[#F4EBD9] mt-6">
+                <a
+                  href="/quest?wing=games"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    soundEffects.playClick();
+                    window.location.href = '/quest?wing=games';
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-[#0A2947] hover:bg-[#8B5E3C] text-[#FAF7F0] font-montserrat font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                >
+                  <span>Play Interactive Games</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+
           </div>
 
         </div>

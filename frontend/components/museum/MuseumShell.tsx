@@ -7,6 +7,7 @@ import { MuseumNavRail, TopUtilityBar } from './navigation';
 import { KioskBar } from './KioskBar';
 import { AccessibilityModal } from './AccessibilityModal';
 import { DocumentViewerModal } from './DocumentViewerModal';
+import { DocumentScannerModal } from './DocumentScannerModal';
 import { GlobalSearchModal } from './GlobalSearchModal';
 import { VoiceNavigatorModal } from './VoiceNavigatorModal';
 import { FloatingAssistantDock } from './FloatingAssistantDock';
@@ -32,6 +33,9 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsSearchModalOpen,
     isVoiceModalOpen,
     setIsVoiceModalOpen,
+    isScannerModalOpen,
+    setIsScannerModalOpen,
+    openScannerModal,
     selectedDocument,
     isDocViewerOpen,
     openDocument,
@@ -87,7 +91,11 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
       )}
 
       {/* Floating Top-Right Secondary Utilities Dock - Available across the platform */}
+<<<<<<< HEAD
       {!showIntro && !isViewerPage && !isDocViewerOpen && !isAccessibilityModalOpen && !isSearchModalOpen && !isVoiceModalOpen && (
+=======
+      {!showIntro && !isDocViewerOpen && !isAccessibilityModalOpen && !isSearchModalOpen && !isVoiceModalOpen && !isScannerModalOpen && (
+>>>>>>> ed29737c27a125dabd929302d2e2932c0709e654
         <TopUtilityBar
           language={language}
           onSelectLanguage={setLanguage}
@@ -102,6 +110,7 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
           userMode={userMode}
           onSelectUserMode={setUserMode}
           onOpenAdmin={() => navigateToTab('admin')}
+          onOpenScanner={openScannerModal}
         />
       )}
 
@@ -197,6 +206,15 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
           onNavigateTab={navigateToTab}
           onAskAIWithQuery={askAssistant}
           onOpenDocument={openDocument}
+        />
+      )}
+
+      {/* MOBILE & WEB DOCUMENT SCANNER MODAL */}
+      {isScannerModalOpen && (
+        <DocumentScannerModal
+          isOpen={isScannerModalOpen}
+          onClose={() => setIsScannerModalOpen(false)}
+          language={language}
         />
       )}
 
