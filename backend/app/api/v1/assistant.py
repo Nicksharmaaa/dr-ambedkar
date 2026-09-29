@@ -156,6 +156,7 @@ async def ask_page_action(
         action=action_enum,
         question=req.get("question"),
         target_language=req.get("target_language", "en"),
+        context_text=req.get("context_text"),
     )
     engine = AskPageEngine(db)
     res = await engine.execute(action_req)

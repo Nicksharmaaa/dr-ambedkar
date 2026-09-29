@@ -254,16 +254,16 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
           {/* Right: Quick Action Controls */}
           <div className="flex items-center gap-2 shrink-0">
 
-            {/* Deep-Zoom Facsimile External Link */}
+            {/* BookView Facsimile Reader External Link */}
             <a
               href={`/documents/${document.id}/viewer`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-montserrat font-semibold rounded-xl border border-[#D3D4C0] hover:border-[#8B5E3C] bg-[#FAF7F0] hover:bg-[#F3E4C9] text-[#0A2947] transition-all cursor-pointer shadow-2xs"
-              title="Open full IIIF Deep-Zoom viewer in new tab"
+              className="hidden lg:flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-montserrat font-bold rounded-xl border border-[#C89D56]/50 hover:border-[#8B5E3C] bg-gradient-to-r from-[#FAF7F0] to-[#F3E4C9] hover:from-[#F3E4C9] hover:to-[#EAD5B5] text-[#0A2947] transition-all cursor-pointer shadow-sm hover:shadow-md"
+              title="Open full BookView facsimile reader in new tab"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-[#8B5E3C]" />
-              <span>Deep-Zoom</span>
+              <BookOpen className="w-3.5 h-3.5 text-[#8B5E3C]" />
+              <span>BookView</span>
             </a>
 
             {/* Export Menu */}
@@ -317,6 +317,17 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                 </div>
               )}
             </div>
+
+            {/* Open Fullscreen BookView Viewer */}
+            <a
+              href={`/documents/${document.id}/viewer`}
+              className="px-3 py-1.5 text-xs font-montserrat font-bold rounded-xl border border-[#C89D56]/60 bg-gradient-to-r from-[#0A2947] to-[#123C63] text-amber-300 hover:text-white flex items-center gap-1.5 transition-all cursor-pointer shadow-sm hover:shadow-md"
+              title="Open dedicated BookView reader for this volume"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-amber-300" />
+              <span className="hidden sm:inline">BookView</span>
+              <ExternalLink className="w-3 h-3 text-amber-300/70" />
+            </a>
 
             {/* Save to Notebook */}
             <button

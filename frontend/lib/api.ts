@@ -32,7 +32,17 @@ import {
 } from "./types";
 
 function getApiBase(): string {
-  const envUrl = (process.env.NEXT_PUBLIC_API_URL || "").trim();
+  // Client-side: route through relative /api/v1 so requests stay on the same origin
+  // and pass cleanly through Next.js rewrites, eliminating CORS, preflight, and network errors.
+  if (typeof window !== "undefined") {
+    const envUrl = (process.env.NEXT_PUBLIC_API_URL || "").trim();
+    if (envUrl && !envUrl.includes("localhost") && !envUrl.includes("127.0.0.1") && envUrl.startsWith("https://")) {
+      return envUrl.replace(/\/+$/, "");
+    }
+    return "/api/v1";
+  }
+
+  const envUrl = (process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL || "").trim();
   if (envUrl) {
     let raw = envUrl.replace(/^["']|["']$/g, "").trim();
     raw = raw.replace(/\/+$/, ""); // Strip trailing slashes
@@ -48,12 +58,6 @@ function getApiBase(): string {
       }
     }
     return raw;
-  }
-
-  // Client-side default: use relative /api/v1 so requests stay on the same origin
-  // and route cleanly through Next.js proxy / rewrites without hardcoded dead tunnels.
-  if (typeof window !== "undefined") {
-    return "/api/v1";
   }
 
   // Server-side (SSR / API routes) fallback:
@@ -581,7 +585,7 @@ export const api = {
       body: JSON.stringify({ object_id: objectId, page_number: pageNumber }),
     }),
 
-  askPageAction: (objectId: string, pageNumber: number, action: PageActionType, question?: string, targetLanguage = "en") =>
+  askPageAction: (objectId: string, pageNumber: number, action: PageActionType, question?: string, targetLanguage = "en", contextText?: string) =>
     fetchJson<AskPageActionResponse>("/assistant/ask-page-action", {
       method: "POST",
       body: JSON.stringify({
@@ -590,6 +594,7 @@ export const api = {
         action,
         question,
         target_language: targetLanguage,
+        context_text: contextText,
       }),
     }),
 

@@ -96,7 +96,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
-    allow_origin_regex=settings.cors_origin_regex,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$|^https://.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -135,6 +135,11 @@ from pathlib import Path
 _storage_dir = Path(__file__).resolve().parent.parent / "storage" / "local"
 if _storage_dir.exists():
     app.mount("/storage/local", StaticFiles(directory=str(_storage_dir)), name="storage_local")
+
+_incoming_dir = Path(__file__).resolve().parent.parent.parent / "incoming_documents"
+if _incoming_dir.exists():
+    app.mount("/incoming_documents", StaticFiles(directory=str(_incoming_dir)), name="incoming_documents")
+
 
 
 # ── Global exception handler ──────────────────────────────────────────────────

@@ -15,6 +15,8 @@ import { MuseumFooter } from './MuseumFooter';
 
 export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
+  const isViewerPage = pathname?.includes('/viewer');
+
   const {
     currentTab,
     navigateToTab,
@@ -75,7 +77,7 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
       )}
 
       {/* Floating Left-Side Museum Navigation Rail (Compact Icon + Fan Arc Reveal) */}
-      {!showIntro && (
+      {!showIntro && !isViewerPage && (
         <MuseumNavRail
           currentTab={currentTab}
           onSelectTab={navigateToTab}
@@ -85,7 +87,7 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
       )}
 
       {/* Floating Top-Right Secondary Utilities Dock - Available across the platform */}
-      {!showIntro && !isDocViewerOpen && !isAccessibilityModalOpen && !isSearchModalOpen && !isVoiceModalOpen && (
+      {!showIntro && !isViewerPage && !isDocViewerOpen && !isAccessibilityModalOpen && !isSearchModalOpen && !isVoiceModalOpen && (
         <TopUtilityBar
           language={language}
           onSelectLanguage={setLanguage}
@@ -104,7 +106,7 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
       )}
 
       {/* Main Viewport */}
-      <main className="flex-1 pl-0 sm:pl-16">{children}</main>
+      <main className={`flex-1 ${isViewerPage ? 'pl-0' : 'pl-0 sm:pl-16'}`}>{children}</main>
 
       {/* Interactive Archival Document Viewer Modal */}
       {isDocViewerOpen && (
@@ -163,14 +165,16 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
       )}
 
       {/* PERMANENT FLOATING ASSISTANT DOCK: Ask AI Scholar on Bottom Right */}
-      <FloatingAssistantDock
-        language={language}
-        savedCollection={savedCollection}
-        onRemoveSavedItem={removeSavedItem}
-        onUpdateNote={updateNote}
-        onOpenDocument={openDocument}
-        onNavigateTab={navigateToTab}
-      />
+      {!isViewerPage && (
+        <FloatingAssistantDock
+          language={language}
+          savedCollection={savedCollection}
+          onRemoveSavedItem={removeSavedItem}
+          onUpdateNote={updateNote}
+          onOpenDocument={openDocument}
+          onNavigateTab={navigateToTab}
+        />
+      )}
 
       {/* GLOBAL SEARCH COMMAND MODAL */}
       {isSearchModalOpen && (
@@ -197,15 +201,17 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
       )}
 
       {/* World-Class Revamped Museum Heritage Footer */}
-      <MuseumFooter
-        onNavigateTab={navigateToTab}
-        onOpenSearch={() => setIsSearchModalOpen(true)}
-        onOpenVoice={() => setIsVoiceModalOpen(true)}
-        onOpenAccessibility={() => setIsAccessibilityModalOpen(true)}
-        onSelectUserMode={setUserMode}
-        userMode={userMode}
-        language={language}
-      />
+      {!isViewerPage && (
+        <MuseumFooter
+          onNavigateTab={navigateToTab}
+          onOpenSearch={() => setIsSearchModalOpen(true)}
+          onOpenVoice={() => setIsVoiceModalOpen(true)}
+          onOpenAccessibility={() => setIsAccessibilityModalOpen(true)}
+          onSelectUserMode={setUserMode}
+          userMode={userMode}
+          language={language}
+        />
+      )}
     </div>
   );
 };

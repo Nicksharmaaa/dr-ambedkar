@@ -39,6 +39,10 @@ const nextConfig = {
         source: "/storage/:path*",
         destination: `${backendBase}/storage/:path*`,
       },
+      {
+        source: "/incoming_documents/:path*",
+        destination: `${backendBase}/incoming_documents/:path*`,
+      },
     ];
   },
 };

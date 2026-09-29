@@ -3,7 +3,7 @@
 import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useMuseum } from '@/components/museum/MuseumContext';
-import { ExploreArchiveView } from '@/components/museum/ExploreArchiveView';
+import { BookViewLibraryView } from '@/components/museum/BookViewLibraryView';
 
 function DocumentsContent() {
   const searchParams = useSearchParams();
@@ -14,19 +14,15 @@ function DocumentsContent() {
     language,
     openDocument,
     askAssistant,
-    toggleSaveItem,
-    isItemSaved
   } = useMuseum();
 
   return (
-    <ExploreArchiveView
+    <BookViewLibraryView
       language={language}
       onOpenDocument={openDocument}
       initialQuery={q}
       initialCategory={category}
-      onAskAssistantWithQuery={askAssistant}
-      onToggleSaveItem={toggleSaveItem}
-      isItemSaved={isItemSaved}
+      onAskAssistant={askAssistant}
     />
   );
 }

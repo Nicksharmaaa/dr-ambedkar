@@ -17,12 +17,16 @@ export default function DocumentViewerPageRoute({
     ? parseInt(searchParams.get("page")!, 10)
     : 1;
   const initialQuery = searchParams.get("query") || "";
+  const initialTab = searchParams.get("tab") || searchParams.get("mode") || undefined;
+  const initialFile = searchParams.get("file") || undefined;
 
   return (
     <ArchivalViewer
       documentId={docId}
       initialPage={isNaN(initialPage) ? 1 : initialPage}
       initialQuery={initialQuery}
+      initialTab={initialTab}
+      initialFile={initialFile}
     />
   );
 }

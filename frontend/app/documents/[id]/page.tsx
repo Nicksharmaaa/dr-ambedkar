@@ -232,7 +232,7 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
           </div>
         </div>
 
-        {/* ── ACTION BAR (Section 9: Actions & Direct Deep-Zoom Viewer Link) ─────────────── */}
+        {/* ── ACTION BAR (Section 9: Actions & Direct BookView Facsimile Reader Link) ─────────────── */}
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3 pt-5 border-t border-slate-800/80">
           <div className="flex flex-wrap items-center gap-2">
             <Link
@@ -240,7 +240,7 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-semibold text-xs shadow-lg shadow-amber-500/20 transition-all active:scale-95"
             >
               <BookOpen className="h-4 w-4" />
-              <span>Open in Deep-Zoom Facsimile Viewer</span>
+              <span>Open in BookView Facsimile Viewer</span>
             </Link>
 
             <Link
