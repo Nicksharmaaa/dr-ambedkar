@@ -151,6 +151,26 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
             const volNum = r.volume_number || '';
             const pageNum = r.page_number || 1;
             const scorePct = Math.round((r.reranker_score ?? r.score ?? 0.8) * 100);
+
+            // Merge with existing curated document metadata if matched
+            const existing = ARCHIVE_DOCUMENTS.find(
+              (d) =>
+                d.id === r.object_id ||
+                d.title.toLowerCase() === (r.object_title || "").toLowerCase()
+            );
+
+            if (existing) {
+              return {
+                ...existing,
+                shortDescription: r.text.length > 280 ? r.text.slice(0, 280) + '...' : r.text,
+                fullText: r.text || existing.fullText,
+                keyTopics: [
+                  `Relevance: ${scorePct}%`,
+                  ...(existing.keyTopics || []).slice(0, 2),
+                ],
+              };
+            }
+
             return {
               id: r.chunk_id || `chunk-${idx}`,
               title: r.section_title || r.object_title || 'Dr. Ambedkar Archival Corpus',
@@ -204,8 +224,28 @@ export const ExploreArchiveView: React.FC<ExploreArchiveViewProps> = ({
 
   // Filter & Search Logic
   const filteredDocuments = useMemo(() => {
-    // If a free-text search query is entered, source from semantic vector retrieval results!
-    const baseCorpus = searchQuery.trim() ? semanticResults : ARCHIVE_DOCUMENTS;
+    // If a free-text search query is entered, source from semantic vector retrieval results,
+    // or gracefully fall back to local corpus filtering if semantic search is still loading/offline
+    let baseCorpus: ArchivalDocument[] = ARCHIVE_DOCUMENTS;
+    const q = searchQuery.trim().toLowerCase();
+
+    if (q) {
+      if (semanticResults.length > 0) {
+        baseCorpus = semanticResults;
+      } else {
+        baseCorpus = ARCHIVE_DOCUMENTS.filter((doc) => {
+          const titleMatch = doc.title.toLowerCase().includes(q) ||
+            (doc.titleLocal && Object.values(doc.titleLocal).some((t) => t.toLowerCase().includes(q)));
+          const descMatch = doc.shortDescription.toLowerCase().includes(q) ||
+            (doc.shortDescriptionLocal && Object.values(doc.shortDescriptionLocal).some((d) => d.toLowerCase().includes(q)));
+          const textMatch = doc.fullText.toLowerCase().includes(q);
+          const topicMatch = doc.keyTopics && doc.keyTopics.some((t) => t.toLowerCase().includes(q));
+          const catMatch = doc.categoryLabel && doc.categoryLabel.toLowerCase().includes(q);
+          const sourceMatch = doc.source && doc.source.toLowerCase().includes(q);
+          return Boolean(titleMatch || descMatch || textMatch || topicMatch || catMatch || sourceMatch);
+        });
+      }
+    }
 
     let result = baseCorpus.filter((doc) => {
       // Document Type Filter

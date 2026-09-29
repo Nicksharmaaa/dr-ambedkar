@@ -78,6 +78,25 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             const volNum = r.volume_number || '';
             const pageNum = r.page_number || 1;
             const scorePct = Math.round((r.reranker_score ?? r.score ?? 0.8) * 100);
+
+            const existing = ARCHIVE_DOCUMENTS.find(
+              (d) =>
+                d.id === r.object_id ||
+                d.title.toLowerCase() === (r.object_title || "").toLowerCase()
+            );
+
+            if (existing) {
+              return {
+                ...existing,
+                shortDescription: r.text.length > 200 ? r.text.slice(0, 200) + '...' : r.text,
+                fullText: r.text || existing.fullText,
+                keyTopics: [
+                  `Relevance: ${scorePct}%`,
+                  ...(existing.keyTopics || []).slice(0, 2),
+                ],
+              };
+            }
+
             return {
               id: r.chunk_id || `chunk-${idx}`,
               title: r.section_title || r.object_title || 'Dr. Ambedkar Archival Corpus',
@@ -166,8 +185,12 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
         ? semanticDocs
         : ARCHIVE_DOCUMENTS.filter(doc => 
             doc.title.toLowerCase().includes(cleanQuery) || 
+            (doc.titleLocal && Object.values(doc.titleLocal).some(t => t.toLowerCase().includes(cleanQuery))) ||
             doc.shortDescription.toLowerCase().includes(cleanQuery) ||
-            doc.keyTopics.some(t => t.toLowerCase().includes(cleanQuery))
+            (doc.shortDescriptionLocal && Object.values(doc.shortDescriptionLocal).some(d => d.toLowerCase().includes(cleanQuery))) ||
+            doc.fullText.toLowerCase().includes(cleanQuery) ||
+            doc.keyTopics.some(t => t.toLowerCase().includes(cleanQuery)) ||
+            (doc.categoryLabel && doc.categoryLabel.toLowerCase().includes(cleanQuery))
           ).slice(0, 4))
     : ARCHIVE_DOCUMENTS.slice(0, 4);
 

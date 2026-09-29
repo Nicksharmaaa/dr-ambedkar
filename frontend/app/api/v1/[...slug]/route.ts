@@ -28,6 +28,28 @@ async function proxyToBackend(
     }
   });
 
+  // On Vercel, if backend base points to loopback/localhost, return graceful 503 instead of 502 crash
+  const isVercel = Boolean(process.env.VERCEL);
+  const isLoopback = BACKEND_BASE.includes("localhost") || BACKEND_BASE.includes("127.0.0.1");
+  if (isVercel && isLoopback) {
+    return NextResponse.json(
+      {
+        error: "Backend unavailable",
+        message: "Standalone cloud deployment: local microservice is offline.",
+        path,
+      },
+      { status: 503 }
+    );
+  }
+
+  const isLongRunning =
+    path.includes("search") ||
+    path.includes("assistant") ||
+    path.includes("corpus") ||
+    path.includes("ocr") ||
+    path.includes("rag");
+  const timeoutMs = isLongRunning ? 35000 : 15000;
+
   try {
     const isBodyAllowed = req.method !== "GET" && req.method !== "HEAD";
     const body = isBodyAllowed ? await req.blob() : undefined;
@@ -38,7 +60,7 @@ async function proxyToBackend(
       body,
       // @ts-ignore
       duplex: "half",
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(timeoutMs),
     });
 
     const responseHeaders = new Headers();
