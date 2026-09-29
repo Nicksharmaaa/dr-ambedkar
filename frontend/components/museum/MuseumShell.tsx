@@ -71,8 +71,8 @@ export const MuseumShell: React.FC<{ children: React.ReactNode }> = ({ children 
         accessibility.highContrast ? 'contrast-125 saturate-125' : ''
       } ${getTextSizeClass()}`}
     >
-      {/* 5-Second Cinematic Ambedkar Intro Exhibition Screen */}
-      {showIntro && (
+      {/* 5-Second Cinematic Ambedkar Intro Exhibition Screen - Only on root home page */}
+      {showIntro && !isViewerPage && pathname === '/' && (
         <IntroVideoScreen
           onComplete={handleIntroComplete}
           videoSrc="/intro/ambedkar-intro.mp4"

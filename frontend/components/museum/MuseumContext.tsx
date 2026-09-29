@@ -108,14 +108,23 @@ export const MuseumProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     try {
-      const seen = sessionStorage.getItem('ambedkar_museum_intro_seen');
-      if (!seen) {
+      if (typeof window === 'undefined') return;
+      const seen =
+        localStorage.getItem('ambedkar_museum_intro_seen') ||
+        sessionStorage.getItem('ambedkar_museum_intro_seen');
+
+      // Only show intro exhibition on first visit to the root homepage
+      if (!seen && pathname === '/') {
         setShowIntro(true);
+      } else if (pathname !== '/') {
+        // If landing directly on book, documents, or archive subpage, mark as seen
+        localStorage.setItem('ambedkar_museum_intro_seen', 'true');
+        sessionStorage.setItem('ambedkar_museum_intro_seen', 'true');
       }
     } catch {
-      // sessionStorage restricted fallback
+      // Storage restricted fallback
     }
-  }, []);
+  }, [pathname]);
 
   const [language, setLanguageState] = useState<Language>('en');
 
@@ -277,7 +286,10 @@ export const MuseumProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const handleIntroComplete = () => {
     setShowIntro(false);
     try {
-      sessionStorage.setItem('ambedkar_museum_intro_seen', 'true');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('ambedkar_museum_intro_seen', 'true');
+        sessionStorage.setItem('ambedkar_museum_intro_seen', 'true');
+      }
     } catch {
       // Storage access blocked or restricted
     }
