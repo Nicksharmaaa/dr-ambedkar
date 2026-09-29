@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ARCHIVE_DOCUMENTS } from "@/data/archiveData";
+import { ARCHIVE_DOCUMENTS, TIMELINE_EVENTS } from "@/data/archiveData";
 import { INCOMING_DOCUMENTS_CATALOG } from "@/data/incomingDocumentsData";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +22,10 @@ interface SearchResultItem {
 const CONCEPT_EXPANSIONS: Record<string, string[]> = {
   "caste": ["caste", "annihilation", "untouchability", "graded inequality", "varna", "shudra", "brahmin", "jati", "जाति", "वर्ण"],
   "constitution": ["constitution", "constituent assembly", "drafting committee", "preamble", "article 32", "fundamental rights", "संविधान"],
-  "poona": ["poona pact", "communal award", "separate electorates", "gandhi", "yerwada", "पुणे करार"],
+  "poona": ["poona pact", "communal award", "separate electorates", "gandhi", "yerwada", "पुणे करार", "पूना पैक्ट"],
+  "pact": ["poona pact", "communal award", "separate electorates", "gandhi", "yerwada", "पुणे करार", "पूना पैक्ट"],
+  "पुणे": ["poona pact", "communal award", "separate electorates", "gandhi", "yerwada", "पुणे करार", "पूना पैक्ट"],
+  "करार": ["poona pact", "communal award", "separate electorates", "gandhi", "yerwada", "पुणे करार", "पूना पैक्ट"],
   "mahad": ["mahad satyagraha", "chavdar tank", "water rights", "declaration of human rights", "1927", "महाड"],
   "dhamma": ["dhamma", "buddha", "buddhism", "conversion", "deeksha", "nagpur", "धम्म", "बौद्ध"],
   "rupee": ["rupee", "currency", "silver standard", "gold standard", "exchange rate", "economics", "inflation", "रुपया"],
@@ -185,6 +188,51 @@ function executeLocalArchivalSearch(
         page_number: 1,
         language: item.language || "en",
         viewer_url: item.streamUrl || `/documents?id=${encodeURIComponent(item.id)}`,
+      });
+    }
+  }
+
+  // 3. Search TIMELINE_EVENTS (Historical Milestones, Pacts, Conferences)
+  for (const evt of TIMELINE_EVENTS) {
+    const titleLower = evt.title.toLowerCase();
+    const descLower = (evt.description || "").toLowerCase();
+    const locLower = (evt.location || "").toLowerCase();
+    const localTitles = evt.titleLocal ? Object.values(evt.titleLocal).join(" ").toLowerCase() : "";
+    const localDescs = evt.descriptionLocal ? Object.values(evt.descriptionLocal).join(" ").toLowerCase() : "";
+
+    let score = 0;
+    if (titleLower.includes(qClean)) score += 18.0;
+    if (localTitles.includes(qClean)) score += 16.0;
+    if (descLower.includes(qClean)) score += 9.0;
+    if (localDescs.includes(qClean)) score += 8.0;
+    if (locLower.includes(qClean)) score += 4.0;
+
+    for (const token of expandedTokens) {
+      if (titleLower.includes(token)) score += 4.0;
+      if (localTitles.includes(token)) score += 3.5;
+      if (descLower.includes(token)) score += 2.0;
+      if (localDescs.includes(token)) score += 1.8;
+      if (locLower.includes(token)) score += 1.2;
+    }
+
+    if (score > 0) {
+      const normalizedScore = Math.min(0.99, 0.72 + Math.min(score / 35.0, 0.27));
+      const rerankScore = Math.min(0.999, normalizedScore + 0.005);
+      const snippet = evt.description || evt.title;
+      const targetDocId = evt.relatedDocIds?.[0] || "annihilation-of-caste";
+
+      scoredResults.push({
+        chunk_id: `milestone-${evt.id}`,
+        object_id: targetDocId,
+        object_title: evt.title,
+        section_title: `Historical Milestone (${evt.year}) · ${evt.location || "Archival Milestone"}`,
+        text: snippet,
+        score: parseFloat(normalizedScore.toFixed(4)),
+        reranker_score: parseFloat(rerankScore.toFixed(4)),
+        volume_number: String(evt.year),
+        page_number: 1,
+        language: "en",
+        viewer_url: `/timeline?eventId=${encodeURIComponent(evt.id)}`,
       });
     }
   }
