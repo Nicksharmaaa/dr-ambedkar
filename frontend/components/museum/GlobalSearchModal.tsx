@@ -86,10 +86,11 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             );
 
             if (existing) {
+              const safeText = r.text || existing.shortDescription || '';
               return {
                 ...existing,
-                shortDescription: r.text.length > 200 ? r.text.slice(0, 200) + '...' : r.text,
-                fullText: r.text || existing.fullText,
+                shortDescription: safeText.length > 200 ? safeText.slice(0, 200) + '...' : safeText,
+                fullText: safeText || existing.fullText,
                 keyTopics: [
                   `Relevance: ${scorePct}%`,
                   ...(existing.keyTopics || []).slice(0, 2),
@@ -97,6 +98,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               };
             }
 
+            const safeText = r.text || r.object_title || 'Archival passage from Dr. Ambedkar\'s writings.';
             return {
               id: r.chunk_id || `chunk-${idx}`,
               title: r.section_title || r.object_title || 'Dr. Ambedkar Archival Corpus',
@@ -110,11 +112,11 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               source: r.object_title || 'BAWS Archival Repository',
               accessionNo: r.object_id || r.chunk_id?.slice(0, 8) || 'AMBEDKAR-ARC',
               accessRights: 'Public Domain',
-              shortDescription: r.text.length > 200 ? r.text.slice(0, 200) + '...' : r.text,
-              fullText: r.text,
+              shortDescription: safeText.length > 200 ? safeText.slice(0, 200) + '...' : safeText,
+              fullText: safeText,
               ocrConfidence: 99.4,
               keyTopics: [`Relevance: ${scorePct}%`, volNum ? `Vol. ${volNum}` : 'Passage'],
-              aiSummary: { en: r.text.slice(0, 160), hi: '', mr: '' },
+              aiSummary: { en: safeText.slice(0, 160), hi: '', mr: '' },
               relatedDocumentIds: []
             };
           });

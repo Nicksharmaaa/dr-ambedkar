@@ -46,7 +46,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onReplayIntro
 }) => {
   const t = UI_STRINGS[language] || UI_STRINGS.en;
-  const [heroVisualMode, setHeroVisualMode] = useState<'prism' | 'dither'>('prism');
+  const [heroVisualMode, setHeroVisualMode] = useState<'prism' | 'dither'>('dither');
   const [totalPhotosCount, setTotalPhotosCount] = useState<number>(HISTORICAL_PHOTOS.length);
 
   React.useEffect(() => {

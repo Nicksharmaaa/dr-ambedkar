@@ -134,7 +134,7 @@ function executeLocalArchivalSearch(
         object_id: doc.id,
         object_title: doc.title,
         section_title: doc.categoryLabel,
-        text: snippet,
+        text: (snippet || doc.shortDescription || doc.title || '').slice(0, 2000),
         score: parseFloat(normalizedScore.toFixed(4)),
         reranker_score: parseFloat(rerankScore.toFixed(4)),
         volume_number: doc.year ? String(doc.year) : "1",
@@ -181,7 +181,7 @@ function executeLocalArchivalSearch(
         object_id: item.id,
         object_title: item.title,
         section_title: item.category || "BAWS Canonical Volume",
-        text: item.description || item.title,
+        text: (item.description || item.title || '').slice(0, 2000),
         score: parseFloat(normalizedScore.toFixed(4)),
         reranker_score: parseFloat(normalizedScore.toFixed(4)),
         volume_number: volNum,
@@ -226,7 +226,7 @@ function executeLocalArchivalSearch(
         object_id: targetDocId,
         object_title: evt.title,
         section_title: `Historical Milestone (${evt.year}) · ${evt.location || "Archival Milestone"}`,
-        text: snippet,
+        text: (snippet || evt.title || '').slice(0, 2000),
         score: parseFloat(normalizedScore.toFixed(4)),
         reranker_score: parseFloat(rerankScore.toFixed(4)),
         volume_number: String(evt.year),
@@ -267,110 +267,127 @@ function executeLocalArchivalSearch(
 }
 
 async function handleSearch(req: NextRequest) {
-  let query = "";
-  let mode: "fts" | "vector" | "hybrid" = "hybrid";
-  let limit = 20;
-  let language: string | undefined;
-  let objectType: string | undefined;
-  let enableRerank = true;
+  try {
+    let query = "";
+    let mode: "fts" | "vector" | "hybrid" = "hybrid";
+    let limit = 20;
+    let language: string | undefined;
+    let objectType: string | undefined;
+    let enableRerank = true;
 
-  if (req.method === "POST") {
-    try {
-      const body = await req.json();
-      query = body.q || body.query || "";
-      mode = body.mode || "hybrid";
-      limit = body.limit ? parseInt(String(body.limit), 10) : 20;
-      language = body.language;
-      objectType = body.object_type;
-      enableRerank = body.enable_rerank !== undefined ? body.enable_rerank : true;
-    } catch {
-      query = req.nextUrl.searchParams.get("q") || "";
-    }
-  } else {
-    query = req.nextUrl.searchParams.get("q") || "";
-    mode = (req.nextUrl.searchParams.get("mode") as any) || "hybrid";
-    limit = parseInt(req.nextUrl.searchParams.get("limit") || "20", 10);
-    language = req.nextUrl.searchParams.get("language") || undefined;
-    objectType = req.nextUrl.searchParams.get("object_type") || undefined;
-  }
-
-  if (!query.trim()) {
-    return NextResponse.json({
-      query: "",
-      mode,
-      results: [],
-      total: 0,
-      took_ms: 1,
-      fts_count: 0,
-      vector_count: 0,
-    });
-  }
-
-  // Attempt backend proxy first if valid backend URL is available
-  let rawBackend = (
-    process.env.BACKEND_INTERNAL_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    ""
-  ).trim();
-
-  // On non-Vercel local development, allow default to 127.0.0.1:8000
-  if (!rawBackend && !process.env.VERCEL) {
-    rawBackend = "http://127.0.0.1:8000";
-  }
-
-  const isLocalOnVercel =
-    Boolean(process.env.VERCEL) &&
-    (!rawBackend || rawBackend.includes("localhost") || rawBackend.includes("127.0.0.1"));
-
-  if (rawBackend && !isLocalOnVercel) {
-    const backendBase = rawBackend
-      .replace(/\/api\/v1\/?$/, "")
-      .replace(/\/api\/?$/, "")
-      .replace(/\/+$/, "");
-    const targetUrl = `${backendBase}/api/v1/search`;
-
-    try {
-      const proxyRes = await fetch(targetUrl, {
-        method: req.method,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body:
-          req.method === "POST"
-            ? JSON.stringify({
-                q: query,
-                mode,
-                limit,
-                language,
-                object_type: objectType,
-                enable_rerank: enableRerank,
-              })
-            : undefined,
-        signal: AbortSignal.timeout(15000),
-      });
-
-      if (proxyRes.ok) {
-        const data = await proxyRes.json();
-        // If backend returned results, return them
-        if (data && Array.isArray(data.results) && data.results.length > 0) {
-          return NextResponse.json(data);
-        }
+    if (req.method === "POST") {
+      try {
+        const body = await req.json();
+        query = body.q || body.query || "";
+        mode = body.mode || "hybrid";
+        limit = body.limit ? parseInt(String(body.limit), 10) : 20;
+        language = body.language;
+        objectType = body.object_type;
+        enableRerank = body.enable_rerank !== undefined ? body.enable_rerank : true;
+      } catch {
+        query = req.nextUrl.searchParams.get("q") || "";
       }
-    } catch {
-      // Backend failed or timed out — fall through to local archival search
+    } else {
+      query = req.nextUrl.searchParams.get("q") || "";
+      mode = (req.nextUrl.searchParams.get("mode") as any) || "hybrid";
+      limit = parseInt(req.nextUrl.searchParams.get("limit") || "20", 10);
+      language = req.nextUrl.searchParams.get("language") || undefined;
+      objectType = req.nextUrl.searchParams.get("object_type") || undefined;
     }
-  }
 
-  // Execute high-fidelity archival fallback
-  const fallbackResults = executeLocalArchivalSearch(
-    query,
-    mode,
-    limit,
-    language,
-    objectType
-  );
-  return NextResponse.json(fallbackResults);
+    if (!query.trim()) {
+      return NextResponse.json({
+        query: "",
+        mode,
+        results: [],
+        total: 0,
+        took_ms: 1,
+        fts_count: 0,
+        vector_count: 0,
+      });
+    }
+
+    // Attempt backend proxy first if valid backend URL is available
+    let rawBackend = (
+      process.env.BACKEND_INTERNAL_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      ""
+    ).trim();
+
+    // On non-Vercel local development, allow default to 127.0.0.1:8000
+    if (!rawBackend && !process.env.VERCEL) {
+      rawBackend = "http://127.0.0.1:8000";
+    }
+
+    const isLocalOnVercel =
+      Boolean(process.env.VERCEL) &&
+      (!rawBackend || rawBackend.includes("localhost") || rawBackend.includes("127.0.0.1"));
+
+    if (rawBackend && !isLocalOnVercel) {
+      const backendBase = rawBackend
+        .replace(/\/api\/v1\/?$/, "")
+        .replace(/\/api\/?$/, "")
+        .replace(/\/+$/, "");
+      const targetUrl = `${backendBase}/api/v1/search`;
+
+      try {
+        const proxyRes = await fetch(targetUrl, {
+          method: req.method,
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body:
+            req.method === "POST"
+              ? JSON.stringify({
+                  q: query,
+                  mode,
+                  limit,
+                  language,
+                  object_type: objectType,
+                  enable_rerank: enableRerank,
+                })
+              : undefined,
+          signal: AbortSignal.timeout(15000),
+        });
+
+        if (proxyRes.ok) {
+          const data = await proxyRes.json();
+          // If backend returned results, return them
+          if (data && Array.isArray(data.results) && data.results.length > 0) {
+            return NextResponse.json(data);
+          }
+        }
+      } catch {
+        // Backend failed or timed out — fall through to local archival search
+      }
+    }
+
+    // Execute high-fidelity archival fallback
+    const fallbackResults = executeLocalArchivalSearch(
+      query,
+      mode,
+      limit,
+      language,
+      objectType
+    );
+    return NextResponse.json(fallbackResults);
+  } catch (err: any) {
+    console.error("[search/route] Unexpected error:", err);
+    return NextResponse.json(
+      {
+        query: "",
+        mode: "hybrid",
+        results: [],
+        total: 0,
+        took_ms: 0,
+        fts_count: 0,
+        vector_count: 0,
+        error: "Internal search error",
+      },
+      { status: 200 } // Return 200 so UI doesn't crash on error boundary
+    );
+  }
 }
 
 export const GET = handleSearch;
