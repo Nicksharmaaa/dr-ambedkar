@@ -143,14 +143,25 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       return;
     }
 
+    // Set listening state immediately so the button responds without waiting for async onStart
+    setIsListeningVoice(true);
+
     const started = voiceRecognitionController.startListening({
       lang: language,
+      autoStopOnFinal: true,
       onStart: () => setIsListeningVoice(true),
-      onResult: (transcript) => {
+      onResult: (transcript, isFinal) => {
         setQuery(transcript);
+        if (isFinal) {
+          // Auto-stop mic and trigger search after a brief moment
+          setIsListeningVoice(false);
+        }
       },
       onEnd: () => setIsListeningVoice(false),
-      onError: () => setIsListeningVoice(false)
+      onError: (err) => {
+        setIsListeningVoice(false);
+        console.warn('[Search Voice] Error:', err);
+      },
     });
 
     if (!started) {

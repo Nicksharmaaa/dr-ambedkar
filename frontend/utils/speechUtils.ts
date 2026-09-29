@@ -151,11 +151,14 @@ export const speechController = new SpeechController();
 
 export interface VoiceRecognitionOptions {
   lang?: 'en' | 'hi' | 'mr' | 'ta' | 'bn';
+  /** Called with each transcript update. isFinal=true means the utterance is complete. */
   onResult: (transcript: string, isFinal: boolean) => void;
   onStart?: () => void;
   onEnd?: () => void;
   onError?: (error: string) => void;
   onStatusChange?: (status: string) => void;
+  /** If true, auto-stop after the first final result (single-utterance mode). Default: true */
+  autoStopOnFinal?: boolean;
 }
 
 class VoiceRecognitionController {
@@ -163,14 +166,11 @@ class VoiceRecognitionController {
   private isListening: boolean = false;
   private mediaRecorder: any = null;
   private audioChunks: Blob[] = [];
+  private mediaStream: MediaStream | null = null;
 
   constructor() {
-    if (typeof window !== 'undefined') {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        this.recognition = new SpeechRecognition();
-      }
-    }
+    // Defer SpeechRecognition construction to startListening() to avoid
+    // stale instances across calls.
   }
 
   public isSupported(): boolean {
@@ -186,25 +186,33 @@ class VoiceRecognitionController {
     return this.isListening;
   }
 
+  // ---------------------------------------------------------------------------
+  // MediaRecorder fallback (for browsers without native SpeechRecognition,
+  // or when the Web Speech API returns a 'network' error).
+  // ---------------------------------------------------------------------------
   private async startMediaRecorderFallback(options: VoiceRecognitionOptions): Promise<boolean> {
     if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-      if (options.onError) {
-        options.onError('Microphone input is unavailable on this device.');
-      }
+      if (options.onError) options.onError('Microphone input is unavailable on this device.');
       return false;
     }
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const preferredMime = (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))
-        ? 'audio/webm;codecs=opus'
-        : (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported('audio/webm'))
-        ? 'audio/webm'
-        : '';
+      this.mediaStream = stream;
 
-      this.mediaRecorder = preferredMime ? new MediaRecorder(stream, { mimeType: preferredMime }) : new MediaRecorder(stream);
+      const preferredMime =
+        (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))
+          ? 'audio/webm;codecs=opus'
+          : (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported('audio/webm'))
+          ? 'audio/webm'
+          : '';
+
+      this.mediaRecorder = preferredMime
+        ? new MediaRecorder(stream, { mimeType: preferredMime })
+        : new MediaRecorder(stream);
       this.audioChunks = [];
       this.isListening = true;
+
       if (options.onStatusChange) options.onStatusChange('Listening...');
       if (options.onStart) options.onStart();
 
@@ -215,11 +223,16 @@ class VoiceRecognitionController {
       };
 
       this.mediaRecorder.onstop = async () => {
-        stream.getTracks().forEach((track) => track.stop());
+        // Release the mic track immediately
+        stream.getTracks().forEach(track => track.stop());
+        this.mediaStream = null;
         this.isListening = false;
+
         if (options.onStatusChange) options.onStatusChange('Transcribing...');
+
         const actualMime = this.mediaRecorder?.mimeType || 'audio/webm';
         const audioBlob = new Blob(this.audioChunks, { type: actualMime });
+
         if (audioBlob.size > 200) {
           try {
             const { api } = await import('@/lib/api');
@@ -232,7 +245,7 @@ class VoiceRecognitionController {
           } catch (transcribeErr: any) {
             console.warn('Backend voice transcription fallback error:', transcribeErr);
             if (options.onError) {
-              options.onError('Voice transcription is currently unavailable. Please try again or type your question.');
+              options.onError('Voice transcription is currently unavailable. Please type your question.');
             }
           }
         } else {
@@ -250,14 +263,17 @@ class VoiceRecognitionController {
       if (options.onError) {
         options.onError(
           err.name === 'NotAllowedError'
-            ? 'Microphone permission denied in browser settings.'
-            : 'Microphone recording failed.'
+            ? 'Microphone permission denied. Please allow microphone access in browser settings.'
+            : 'Microphone recording failed. Please check your device settings.'
         );
       }
       return false;
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Primary: Web Speech API (continuous=false for single-shot utterances)
+  // ---------------------------------------------------------------------------
   public startListening(options: VoiceRecognitionOptions): boolean {
     if (!this.isSupported()) {
       if (options.onError) {
@@ -266,34 +282,42 @@ class VoiceRecognitionController {
       return false;
     }
 
-    const SpeechRecognition =
+    // If already listening, stop first
+    if (this.isListening) {
+      this.stopListening();
+    }
+
+    const autoStop = options.autoStopOnFinal !== false; // default true
+
+    const SpeechRecognitionAPI =
       typeof window !== 'undefined' &&
       ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
 
-    if (!SpeechRecognition) {
+    if (!SpeechRecognitionAPI) {
+      // No native API — go straight to MediaRecorder
       this.startMediaRecorderFallback(options);
       return true;
     }
 
     try {
-      if (this.isListening && this.recognition) {
-        this.recognition.stop();
-      }
+      this.recognition = new SpeechRecognitionAPI();
 
-      this.recognition = new SpeechRecognition();
-      this.recognition.continuous = true;
+      // Use continuous=false so the browser auto-fires onend after silence.
+      // This is the most reliable cross-browser setting.
+      this.recognition.continuous = false;
       this.recognition.interimResults = true;
+      this.recognition.maxAlternatives = 1;
 
-      const langCode = options.lang === 'hi' 
-        ? 'hi-IN' 
-        : options.lang === 'mr' 
-          ? 'mr-IN' 
-          : options.lang === 'ta' 
-            ? 'ta-IN' 
-            : options.lang === 'bn' 
-              ? 'bn-IN' 
-              : 'en-IN';
+      const langCode =
+        options.lang === 'hi' ? 'hi-IN'
+        : options.lang === 'mr' ? 'mr-IN'
+        : options.lang === 'ta' ? 'ta-IN'
+        : options.lang === 'bn' ? 'bn-IN'
+        : 'en-IN';
       this.recognition.lang = langCode;
+
+      // Track the best final transcript across the session
+      let accumulatedFinal = '';
 
       this.recognition.onstart = () => {
         this.isListening = true;
@@ -306,45 +330,73 @@ class VoiceRecognitionController {
         let finalTranscript = '';
 
         for (let i = event.resultIndex; i < event.results.length; ++i) {
-          const transcript = event.results[i][0].transcript;
+          const t = event.results[i][0].transcript;
           if (event.results[i].isFinal) {
-            finalTranscript += transcript;
+            finalTranscript += t;
           } else {
-            interimTranscript += transcript;
+            interimTranscript += t;
           }
         }
 
-        const effectiveText = finalTranscript || interimTranscript;
+        if (finalTranscript) {
+          accumulatedFinal += (accumulatedFinal ? ' ' : '') + finalTranscript;
+        }
+
+        const effectiveText = accumulatedFinal || interimTranscript;
         if (effectiveText) {
           options.onResult(effectiveText, Boolean(finalTranscript));
+        }
+
+        // Auto-stop after a final result in single-utterance mode
+        if (finalTranscript && autoStop) {
+          try { this.recognition.stop(); } catch {}
         }
       };
 
       this.recognition.onerror = (event: any) => {
-        console.warn('Speech recognition event:', event.error);
+        console.warn('[VoiceRecognition] Error:', event.error);
+
         if (event.error === 'network') {
-          console.info('SpeechRecognition network error — falling back to backend Whisper ASR...');
-          if (options.onStatusChange) options.onStatusChange('Using server transcription...');
-          try {
-            this.recognition.stop();
-          } catch {}
+          // Web Speech API requires internet for Google's STT service.
+          // Fall back to MediaRecorder + backend Whisper.
+          console.info('[VoiceRecognition] network error — falling back to MediaRecorder...');
+          if (options.onStatusChange) options.onStatusChange('Using local transcription...');
+          try { this.recognition.abort(); } catch {}
+          this.recognition = null;
+          this.isListening = false;
           this.startMediaRecorderFallback(options);
           return;
         }
 
-        this.isListening = false;
-        if (options.onError) {
-          options.onError(
-            event.error === 'not-allowed'
-              ? 'Microphone permission denied.'
-              : 'Voice recognition paused.'
-          );
+        if (event.error === 'no-speech') {
+          // User didn't say anything — treat as soft reset, not a hard error
+          this.isListening = false;
+          if (options.onError) options.onError('No speech detected. Please speak clearly and try again.');
+          if (options.onEnd) options.onEnd();
+          return;
         }
+
+        if (event.error === 'not-allowed' || event.error === 'permission-denied') {
+          this.isListening = false;
+          if (options.onError) options.onError('Microphone permission denied. Please allow access in browser settings.');
+          if (options.onEnd) options.onEnd();
+          return;
+        }
+
+        if (event.error === 'aborted') {
+          // Intentional stop — do not fire error callback
+          return;
+        }
+
+        this.isListening = false;
+        if (options.onError) options.onError('Voice recognition stopped. Please try again.');
+        if (options.onEnd) options.onEnd();
       };
 
       this.recognition.onend = () => {
+        this.isListening = false;
+        // Only fire onEnd if we're not mid-MediaRecorder fallback
         if (!this.mediaRecorder || this.mediaRecorder.state === 'inactive') {
-          this.isListening = false;
           if (options.onEnd) options.onEnd();
         }
       };
@@ -352,30 +404,30 @@ class VoiceRecognitionController {
       this.recognition.start();
       return true;
     } catch (err: any) {
-      console.warn('Error starting speech recognition, trying fallback:', err);
+      console.warn('[VoiceRecognition] Failed to start, trying MediaRecorder fallback:', err);
+      this.isListening = false;
       this.startMediaRecorderFallback(options);
       return true;
     }
   }
 
   public stopListening() {
+    // Stop MediaRecorder
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-      try {
-        this.mediaRecorder.stop();
-      } catch (e) {
-        // Ignore
-      }
+      try { this.mediaRecorder.stop(); } catch {}
     }
-    if (this.recognition && this.isListening) {
-      try {
-        this.recognition.stop();
-      } catch (e) {
-        // Ignore stop error
-      }
+    // Release mic stream if held
+    if (this.mediaStream) {
+      this.mediaStream.getTracks().forEach(t => t.stop());
+      this.mediaStream = null;
+    }
+    // Stop Web Speech API
+    if (this.recognition) {
+      try { this.recognition.abort(); } catch {}
+      this.recognition = null;
     }
     this.isListening = false;
   }
 }
 
 export const voiceRecognitionController = new VoiceRecognitionController();
-

@@ -62,43 +62,53 @@ export const VoiceNavigatorModal: React.FC<VoiceNavigatorModalProps> = ({
     if (isListening) {
       voiceRecognitionController.stopListening();
       setIsListening(false);
-      setFeedbackMessage('Microphone paused. Processing your speech...');
+      setFeedbackMessage('Microphone stopped. Processing your speech...');
       if (transcript) {
         processVoiceCommand(transcript);
       }
-    } else {
-      setTranscript('');
-      setAiAnswer(null);
-      setFeedbackMessage('Listening... Speak now!');
+      return;
+    }
 
-      const started = voiceRecognitionController.startListening({
-        lang: selectedLang,
-        onStart: () => {
-          setIsListening(true);
-        },
-        onResult: (text, isFinal) => {
-          setTranscript(text);
-          if (isFinal) {
-            setFeedbackMessage('Understood! Processing your request...');
-            setTimeout(() => {
-              voiceRecognitionController.stopListening();
-              setIsListening(false);
-              processVoiceCommand(text);
-            }, 600);
-          }
-        },
-        onError: (err) => {
+    // Optimistic state update — show listening immediately before browser permission dialog
+    setTranscript('');
+    setAiAnswer(null);
+    setFeedbackMessage('Listening... Speak now!');
+    setIsListening(true);
+
+    const started = voiceRecognitionController.startListening({
+      lang: selectedLang,
+      autoStopOnFinal: true,
+      onStart: () => {
+        setIsListening(true);
+        setFeedbackMessage('Listening... Speak now!');
+      },
+      onResult: (text, isFinal) => {
+        setTranscript(text);
+        if (isFinal) {
+          setFeedbackMessage('Understood! Processing your request...');
           setIsListening(false);
-          setFeedbackMessage(err || 'Could not understand speech. Please try again or click a suggestion.');
-        },
-        onEnd: () => {
-          setIsListening(false);
+          setTimeout(() => {
+            processVoiceCommand(text);
+          }, 300);
+        } else {
+          setFeedbackMessage(`Hearing: "${text.slice(0, 60)}${text.length > 60 ? '…' : ''}"`);
         }
-      });
+      },
+      onError: (err) => {
+        setIsListening(false);
+        setFeedbackMessage(err || 'Could not understand speech. Please try again or click a suggestion.');
+      },
+      onEnd: () => {
+        setIsListening(false);
+      },
+      onStatusChange: (status) => {
+        setFeedbackMessage(status);
+      },
+    });
 
-      if (!started) {
-        setFeedbackMessage('Microphone access unavailable. You can tap any suggestion below.');
-      }
+    if (!started) {
+      setIsListening(false);
+      setFeedbackMessage('Microphone access unavailable. You can tap any suggestion below.');
     }
   };
 
